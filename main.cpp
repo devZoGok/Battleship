@@ -1,7 +1,8 @@
-#include<irrlicht.h>
-#include"util.h"
-#include"GameManager.h"
-#include"GuiAppState.h"
+#include <irrlicht.h>
+
+#include "util.h"
+#include "gameManager.h"
+#include "guiAppState.h"
 
 using namespace irr;
 using namespace irr::core;

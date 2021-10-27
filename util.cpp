@@ -1,8 +1,9 @@
-#include"util.h"
-#include"GameManager.h"
-#include"GuiAppState.h"
-#include"InGameAppState.h"
-#include<cmath>
+#include <cmath>
+
+#include "util.h"
+#include "gameManager.h"
+#include "guiAppState.h"
+#include "inGameAppState.h"
 
 using namespace std;
 using namespace game;

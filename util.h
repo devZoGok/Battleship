@@ -2,12 +2,12 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include<iostream>
-#include<fstream>
-#include<vector>
-#include<string>
-#include<irrlicht.h>
-#include<chrono>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <irrlicht.h>
+#include <chrono>
 
 namespace game{
     typedef unsigned char u8;
