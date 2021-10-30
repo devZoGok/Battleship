@@ -7,7 +7,7 @@ using namespace game::core;
 
 namespace game{
     namespace gui{
-        Checkbox::CheckboxButton::CheckboxButton(GameManager *gM, Checkbox *ch, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) :Button(gM, pos, size, name, separate) {
+        Checkbox::CheckboxButton::CheckboxButton(Checkbox *ch, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) :Button(pos, size, name, separate) {
             checkbox = ch;
         }
         
@@ -15,10 +15,9 @@ namespace game{
             checkbox->check();
         }
 
-        Checkbox::Checkbox(GameManager *gM,vector2d<s32> pos){
-            gameManager = gM;
+        Checkbox::Checkbox(vector2d<s32> pos){
             this->pos = pos;
-            checkboxButton = new CheckboxButton(gM, this, pos, vector2d<s32>(length,length), "CheckboxButton", false);
+            checkboxButton = new CheckboxButton(this, pos, vector2d<s32>(length,length), "CheckboxButton", false);
         }
         
         Checkbox::~Checkbox() {
@@ -26,7 +25,7 @@ namespace game{
         }
         
         void Checkbox::update() {
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->draw2DRectangle(SColor(255, 100, 100, 100), rect<s32>(pos.X, pos.Y, pos.X + length, pos.Y + length), nullptr);
             if (checked) {
                 driver->draw2DLine(pos, vector2d<s32>(pos.X + length, pos.Y + length),SColor(255,255,255,255));

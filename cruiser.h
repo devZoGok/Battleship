@@ -10,7 +10,7 @@ namespace game
     namespace content {
         class Cruiser : public Vessel {
         public:
-            Cruiser(core::GameManager*, Player*,vector3df, int);
+            Cruiser(Player*,vector3df, int);
             void launch(Order);
         private:
             bool canFire();

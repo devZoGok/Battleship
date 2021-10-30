@@ -8,7 +8,7 @@ namespace game{
     namespace gui {
         class Listbox {
         public:
-            Listbox(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, std::vector<irr::core::stringw>, int,bool=false);
+            Listbox(irr::core::vector2d<s32>, irr::core::vector2d<s32>, std::vector<irr::core::stringw>, int,bool=false);
             ~Listbox();
             void update();
             void openUp();
@@ -24,14 +24,14 @@ namespace game{
         private:
             class ListboxButton : public Button {
             public:
-                ListboxButton(core::GameManager*, Listbox*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                ListboxButton(Listbox*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
                 Listbox *listbox = nullptr;
             };
             class ScrollingButton : public Button {
             public:
-                ScrollingButton(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                ScrollingButton(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
             };
@@ -41,7 +41,6 @@ namespace game{
             irr::core::vector2d<s32> pos, size;
             ListboxButton *listboxButton = nullptr;
             Button *scrollingButton = nullptr;
-            core::GameManager *gameManager;
         public:
             inline ListboxButton* getListboxButton(){return listboxButton;}
             inline bool isControlsListbox(){return controlsListbox;}

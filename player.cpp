@@ -4,8 +4,7 @@ using namespace game::core;
 
 namespace game{
     namespace content{
-        Player::Player(GameManager *gM, int difficulty, int faction,vector3df spawnPoint) {
-            gameManager = gM;
+        Player::Player(int difficulty, int faction,vector3df spawnPoint) {
             this->difficulty = difficulty;
             this->faction = faction;
             this->spawnPoint=spawnPoint;

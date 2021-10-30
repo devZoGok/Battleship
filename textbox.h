@@ -10,7 +10,7 @@ namespace game{
     namespace gui {
         class Textbox {
         public:
-            Textbox(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>);
+            Textbox(irr::core::vector2d<s32>, irr::core::vector2d<s32>);
             ~Textbox();
             void update();
             void enable();
@@ -27,12 +27,12 @@ namespace game{
         private:
             class TextboxButton : public Button {
             public:
-                TextboxButton(core::GameManager*, Textbox*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                TextboxButton(Textbox*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
                 Textbox *textbox;
             };
-            core::GameManager *gameManager;
+
             irr::gui::IGUIFont *font;
             irr::core::vector2d<s32> pos, size;
             irr::core::stringw entry = "";

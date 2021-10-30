@@ -6,11 +6,11 @@ using namespace game::core;
 namespace game
 {
     namespace gui{
-        ExitButton::ExitButton(GameManager *gM, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(gM, pos, size, name, separate) {
+        ExitButton::ExitButton(vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
         }
 
         void ExitButton::onClick() {
-            gameManager->getDevice()->closeDevice();
+						GameManager::getSingleton()->getDevice()->closeDevice();
         }
     }
 }

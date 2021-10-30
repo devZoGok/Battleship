@@ -10,59 +10,59 @@ namespace game{
     namespace gui {
         class OptionsButton : public Button {
         public:
-            OptionsButton(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+            OptionsButton(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
             class OkButton : public Button {
             public:
-                OkButton(core::GameManager*);
+                OkButton();
                 void onClick();
             private:
                 core::GuiAppState *state;
             };
             class DefaultsButton : public Button {
             public:
-                DefaultsButton(core::GameManager*);
+                DefaultsButton();
                 void onClick();
             private:
                 core::GuiAppState *state;
             };
             class BackButton : public Button {
             public:
-                BackButton(core::GameManager*);
+                BackButton();
                 void onClick();
             private:
                 core::GuiAppState *state;
             };
             class TabButton : public Button {
             public:
-                TabButton(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw);
+                TabButton(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw);
                 void onClick();
             protected:
                 core::GuiAppState *state;
             };
             class ControlsTab : public TabButton {
             public:
-                ControlsTab(core::GameManager*);
+                ControlsTab();
                 void onClick();
             };
             class MouseTab : public TabButton {
             public:
-                MouseTab(core::GameManager*);
+                MouseTab();
                 void onClick();
             private:
             };
             class VideoTab : public TabButton {
             public:
-                VideoTab(core::GameManager*);
+                VideoTab();
                 void onClick();
             };
             class AudioTab : public TabButton {
             public:
-                AudioTab(core::GameManager*);
+                AudioTab();
                 void onClick();
             };
             class MultiplayerTab : public TabButton {
             public:
-                MultiplayerTab(core::GameManager*);
+                MultiplayerTab();
                 void onClick();
             };
             virtual void onClick();

@@ -32,7 +32,7 @@ namespace game{
         
         class Unit {
         public:
-            Unit(core::GameManager*, Player*,vector3df, int);
+            Unit(Player*,vector3df, int);
             ~Unit();
             virtual void update();
             virtual void blowUp();
@@ -80,7 +80,6 @@ namespace game{
             sf::SoundBuffer *selectionSfxBuffer;
             sf::Sound *selectionSfx=nullptr;
         protected:
-            core::GameManager *gameManager;
             Player *player;
             MoveDir moveDir = MoveDir::FORWARD;
             irr::video::SMaterial createLineMaterial();

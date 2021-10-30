@@ -18,8 +18,7 @@ using namespace std;
 
 namespace game{
     namespace gui{
-        ConsoleCommand::ConsoleCommand(GameManager *gM, Listbox *l, vector<Player*> players, stringw name, vector<stringw> args) {
-            gameManager = gM;
+        ConsoleCommand::ConsoleCommand(Listbox *l, vector<Player*> players, stringw name, vector<stringw> args) {
             listbox = l;
             this->players = players;
             this->name = name;
@@ -56,27 +55,27 @@ namespace game{
                 Unit *u = nullptr;
                 switch (unitType[unitId]) {
                     case UNIT_TYPE::VESSEL:
-                        u = new Vessel(gameManager, players[playerId],pos, unitId);
+                        u = new Vessel(players[playerId],pos, unitId);
                         break;
                     case UNIT_TYPE::DESTROYER:
-                        u = new Destroyer(gameManager, players[playerId], pos, unitId);
+                        u = new Destroyer(players[playerId], pos, unitId);
                         break;
                     case UNIT_TYPE::CRUISER:
-                        u = new Cruiser(gameManager, players[playerId],pos, unitId);
+                        u = new Cruiser(players[playerId],pos, unitId);
                         break;
                     case UNIT_TYPE::SUBMARINE:
-                        u = new Submarine(gameManager, players[playerId], pos, unitId);
+                        u = new Submarine(players[playerId], pos, unitId);
                         break;
                     case UNIT_TYPE::AIRCRAFT_CARRIER:
                     {
-                        u = new AircraftCarrier(gameManager, players[playerId],pos, unitId);
+                        u = new AircraftCarrier(players[playerId],pos, unitId);
                         break;
                     }
                     case UNIT_TYPE::MISSILE_JET:
-                        u = new MissileJet(gameManager, players[playerId],pos, unitId, false);
+                        u = new MissileJet(players[playerId],pos, unitId, false);
                         break;
                     case UNIT_TYPE::DEMO_JET:
-                        u = new DemoJet(gameManager, players[playerId],pos, unitId, false);
+                        u = new DemoJet(players[playerId],pos, unitId, false);
                         break;
                     default:
                         break;

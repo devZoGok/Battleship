@@ -7,8 +7,7 @@ using namespace game::core;
 namespace game
 {
     namespace gui{
-        AbstractImage::AbstractImage(GameManager *gM, ITexture *image, vector2d<s32> pos, vector2d<s32> size) {
-            gameManager = gM;
+        AbstractImage::AbstractImage(ITexture *image, vector2d<s32> pos, vector2d<s32> size) {
             this->image = image;
             this->pos = pos;
             this->size = size;
@@ -18,7 +17,7 @@ namespace game
         }
 
         void AbstractImage::update() {
-            irr::video::IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            irr::video::IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->draw2DImage(image, pos);
         }
     }

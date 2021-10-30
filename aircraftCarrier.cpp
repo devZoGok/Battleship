@@ -7,7 +7,7 @@ using namespace game::core;
 
 namespace game{
     namespace content{
-        AircraftCarrier::AircraftCarrier(GameManager *gM, Player *player,vector3df pos, int unitId) : Vessel(gM, player,pos, unitId) {
+        AircraftCarrier::AircraftCarrier(Player *player,vector3df pos, int unitId) : Vessel(player,pos, unitId) {
             maxNumJets=unitData::numJets[unitId];
             jets=new Jet*[maxNumJets];
             for(int i=0;i<maxNumJets;i++)
@@ -31,10 +31,10 @@ namespace game{
                 Jet *j = nullptr;
                 if (this->id == 6) {
                     id = 9;
-                    j = (MissileJet*)new MissileJet(gameManager, player,getJetPos(slot), id);
+                    j = (MissileJet*)new MissileJet(player,getJetPos(slot), id);
                 } else {
                     id = 10;
-                    j = (DemoJet*)new DemoJet(gameManager, player,getJetPos(slot), id);
+                    j = (DemoJet*)new DemoJet(player,getJetPos(slot), id);
                 }
                 j->setJetId(slot);
                 jets[slot]=j;

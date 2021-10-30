@@ -6,10 +6,9 @@ namespace game{
         using namespace irr::video;
         using namespace game::core;
         
-        Tooltip::Tooltip(GameManager *gm, vector2di pos, stringw entry){
-            gameManager=gm;
+        Tooltip::Tooltip(vector2di pos, stringw entry){
             this->pos=pos;
-            text=new BitmapText(gm,entry,pos,gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fontcourier.bmp"));
+            text=new BitmapText(entry,pos,GameManager::getSingleton()->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fontcourier.bmp"));
             gameManager->attachBitmapText(text);
         }
         

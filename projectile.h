@@ -14,7 +14,7 @@ namespace game{
         
         class Projectile {
         public:
-            Projectile(core::GameManager*, Unit*, irr::scene::ISceneNode*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            Projectile(Unit*, irr::scene::ISceneNode*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
             virtual ~Projectile();
             virtual void update();
             virtual void debug();
@@ -24,7 +24,6 @@ namespace game{
         protected:
             virtual void checkForCollision();
             void explode(irr::scene::ISceneNode*);
-            core::GameManager *gameManager;
             irr::scene::IAnimatedMesh *mesh;
             irr::scene::ISceneNode *node=nullptr;
             bool exploded = false;

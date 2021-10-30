@@ -5,6 +5,7 @@
 #include "defConfigs.h"
 #include "depthCharge.h"
 #include "inGameAppState.h"
+#include "stateManager.h"
 #include "projectileData.h"
 #include "util.h"
 
@@ -15,7 +16,7 @@ using namespace game::content::unitData;
 
 namespace game{
     namespace content{
-        Destroyer::Destroyer(GameManager *gM, Player *player,vector3df pos,int id) :Vessel(gM, player,pos, id) {
+        Destroyer::Destroyer(Player *player,vector3df pos,int id) :Vessel(player,pos, id) {
             this->maxDepthCharges=unitData::maxDepthCharges[id];
             depthCharges=maxDepthCharges;
             this->rateOfDrops=unitData::rateOfDrops[id];
@@ -29,7 +30,7 @@ namespace game{
         void Destroyer::attack(Order order){
             vector3df t=*order.targetPos[0];
             bool sub=false;
-            InGameAppState *inGameState=((InGameAppState*)gameManager->getAppState(AppStateTypes::IN_GAME_STATE));
+            InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
             for(Player *p : inGameState->getPlayers())
                 for(Unit *u : p->getUnits())
                     if(u->getType()==UNIT_TYPE::SUBMARINE&&order.targetPos[0]==u->getPosPtr())
@@ -44,7 +45,7 @@ namespace game{
                 float angle=rand()%360;
                 float radius=1;
                 vector3df offsetVec=vector3df(cos(angle),0,sin(angle))*radius;
-                addProjectile(new DepthCharge(gameManager,this,pos+projectileData::pos[id][1][1]+offsetVec,dirVec,leftVec,upVec,id,1,0));
+                addProjectile(new DepthCharge(this,pos+projectileData::pos[id][1][1]+offsetVec,dirVec,leftVec,upVec,id,1,0));
                 lastDropTime=getTime();
                 if(depthCharges==maxDepthCharges)
                     reloadStartTime=getTime();

@@ -14,7 +14,7 @@ namespace game{
         class Button {
         public:
             Button();
-            Button(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+            Button(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
             ~Button();
             virtual void onClick(){}
             virtual void onMouseOver(){}
@@ -45,7 +45,6 @@ namespace game{
         protected:
             irr::core::stringw name;
             irr::core::vector2d<s32> pos, size;
-            core::GameManager *gameManager = nullptr;
             irr::video::SColor *color = nullptr;
             bool mouseOverDone=false,mouseAwayDone=false;
         };

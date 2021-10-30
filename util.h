@@ -28,7 +28,7 @@ namespace game{
         irr::scene::ISceneNode* castRay(irr::scene::ISceneManager*,irr::core::vector3df,irr::core::vector3df);
         std::vector<irr::core::stringw> readFile(std::string,int=0,int=-1);
         void writeFile(std::string,std::vector<std::string>);
-        void makeTitlescreenButtons(core::GameManager*,core::GuiAppState*);
+        void makeTitlescreenButtons(core::GuiAppState*);
         double getAngleBetween(irr::core::vector3df, irr::core::vector3df);
         bool isWithinRect(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
         bool isWithinCuboid(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);

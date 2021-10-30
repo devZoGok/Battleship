@@ -10,7 +10,7 @@ using namespace game::util;
 
 namespace game{
     namespace content{
-        Submarine::Submarine(GameManager *gM, Player *player,vector3df pos, int id) : Unit(gM, player,pos, id) {}
+        Submarine::Submarine(Player *player,vector3df pos, int id) : Unit(player,pos, id) {}
 
         void Submarine::attack(Order order) {
             float angle=getAngleBetween(dirVec,*(order.targetPos[0])-pos);
@@ -18,7 +18,7 @@ namespace game{
                 Unit::move(order, range);
             if (canFire()) {
                 vector3df p = pos + projectileData::pos[id][0][0].X * leftVec + projectileData::pos[id][0][0].Y * upVec - projectileData::pos[id][0][0].Z*dirVec;
-                addProjectile(new Torpedo(gameManager, this, p, dirVec, leftVec, upVec, getId(), 0, 0));
+                addProjectile(new Torpedo(this, p, dirVec, leftVec, upVec, getId(), 0, 0));
                 lastShotTime=getTime();
             }
         }

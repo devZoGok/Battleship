@@ -8,7 +8,7 @@ namespace game{
     namespace content{
         class DepthCharge : public Projectile {
         public:
-            DepthCharge(core::GameManager*, Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            DepthCharge(Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
             void update();
         private:
             s64 initTime;

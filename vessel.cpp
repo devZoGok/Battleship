@@ -17,14 +17,14 @@ using namespace sf;
 
 namespace game{
     namespace content{
-        Vessel::Turret::Turret(GameManager *gM, Unit *vessel, int unitId, int turretId) {
-            gameManager = gM;
+        Vessel::Turret::Turret(Unit *vessel, int unitId, int turretId) {
             this->vessel = vessel;
             hullNode = vessel->getNode();
             this->unitId = unitId;
             this->turretId = turretId;
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            GameManager *gm = GameManager::getSingleton();
+            ISceneManager *smgr = gm->getDevice()->getSceneManager();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
             turretMesh = smgr->getMesh(basePath[unitId] + turretNames[unitId][turretId] + ".x");
             turretNode = smgr->addAnimatedMeshSceneNode(turretMesh);
             turretNode->setMaterialFlag(EMF_LIGHTING, false);
@@ -129,7 +129,7 @@ namespace game{
 
         void Vessel::Turret::debug(const SMaterial &mat) {
             float length = turretAxisLength[unitId][turretId]*0 + 1;
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->setTransform(ETS_WORLD, IdentityMatrix);
             driver->setMaterial(mat);
             driver->draw3DLine(turretPosition, turretPosition + dirVec*length, SColor(255, 0, 0, 255));
@@ -167,16 +167,16 @@ namespace game{
             startPos += rotQuat * (leftVec * turretMantletNodes[barId]->getPosition().X + upVec * turretMantletNodes[barId]->getPosition().Y + dirVec * turretMantletNodes[barId]->getPosition().Z);
             startPos += rotQuat * (leftVec * turretBarrelNodes[barId]->getPosition().X + upVec * turretBarrelNodes[barId]->getPosition().Y + dirVec * turretBarrelNodes[barId]->getPosition().Z);
             startPos += rotQuat * (leftVec * projectileData::pos[unitId][0][turretId].X + upVec * projectileData::pos[unitId][0][turretId].Y + dirVec * projectileData::pos[unitId][0][turretId].Z);
-            vessel->addProjectile(new Shell(gameManager, vessel, startPos, rotQuat*dirVec, rotQuat*leftVec, rotQuat*upVec, unitId, 0, turretId));
+            vessel->addProjectile(new Shell(vessel, startPos, rotQuat*dirVec, rotQuat*leftVec, rotQuat*upVec, unitId, 0, turretId));
 //             fxNode->setVisible(true);
             if(sfx) sfx->play();
             lastShotTime = getTime();
         }
 
-        Vessel::Vessel(GameManager *gM, Player *player,vector3df pos, int id) : Unit(gM, player,pos, id) {
+        Vessel::Vessel(Player *player,vector3df pos, int id) : Unit(player,pos, id) {
             if (numberOfTurrets[id] > 0)
                 for (int i = 0; i < numberOfTurrets[id]; i++)
-                    turrets.push_back(new Turret(Unit::gameManager, this, id, i));
+                    turrets.push_back(new Turret(this, id, i));
         }
 
         void Vessel::update() {

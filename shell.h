@@ -9,7 +9,7 @@ namespace game{
     namespace content {
         class Shell : public Projectile {
         public:
-            Shell(core::GameManager*, Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            Shell(Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
             ~Shell(){}
             virtual void update();
         protected:

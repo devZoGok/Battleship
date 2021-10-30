@@ -1,4 +1,5 @@
 #include "eventListener.h"
+#include "stateManager.h"
 
 using namespace irr;
 
@@ -12,25 +13,30 @@ namespace game{
 
         bool EventListener::OnEvent(const SEvent& event) {
             int offsetTrigger = -1;
+						StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+
             if (event.EventType == EET_KEY_INPUT_EVENT) {
-                for (int i = 0; i < gameManager->getAppStateNumber(); i++) {
-                    for (Key *k : gameManager->getAppState(i)->getKeys()) {
+                for (int i = 0; i < stateManager->getAppStateNumber(); i++) {
+                    for (Key *k : stateManager->getAppState(i)->getKeys()) {
                         if (k->key && k->trigger == event.KeyInput.Key) {
                             if (!k->analog) {
                                 if (!event.KeyInput.PressedDown)
                                     k->beingUsed=false;
+
                                 if (!k->beingUsed) {
                                     if (event.KeyInput.PressedDown)
                                         k->beingUsed=true;
+
                                     k->pressed=event.KeyInput.PressedDown;
-                                    gameManager->getAppState(i)->onAction(k->bind, k->pressed);
+                                    stateManager->getAppState(i)->onAction(k->bind, k->pressed);
                                 }
                             } else {
                                 k->pressed=event.KeyInput.PressedDown;
-                                gameManager->getAppState(i)->onAnalog(k->bind, 0.);
+                                stateManager->getAppState(i)->onAnalog(k->bind, 0.);
                             }
                         }
-                        gameManager->getAppState(i)->onRawKeyPress(event.KeyInput);
+
+                        stateManager->getAppState(i)->onRawKeyPress(event.KeyInput);
                     }
                 }
             }
@@ -68,18 +74,20 @@ namespace game{
                             offsetTrigger = 4;
                         break;
                 }
-                for (int i = 0; i < gameManager->getAppStateNumber(); i++) {
-                    for (Key *k : gameManager->getAppState(i)->getKeys()) {
+
+                for (int i = 0; i < stateManager->getAppStateNumber(); i++) {
+                    for (Key *k : stateManager->getAppState(i)->getKeys()) {
                         if (offsetTrigger == k->trigger) {
                             if (!k->analog) {
                                 k->pressed=isPressed;
-                                gameManager->getAppState(i)->onAction(k->bind, k->pressed);
+                                stateManager->getAppState(i)->onAction(k->bind, k->pressed);
                             } else {
                                 k->beingUsed=isPressed;
                             }
                         }
+
                         if(offsetTrigger<=2)
-                            gameManager->getAppState(i)->onRawMousePress(event.MouseInput);
+                            stateManager->getAppState(i)->onRawMousePress(event.MouseInput);
                     }
                 }
             }
@@ -87,10 +95,12 @@ namespace game{
         }
 
         void EventListener::update() {
-            for (int i = 0; i < gameManager->getAppStateNumber(); i++) {
-                for (Key *k : gameManager->getAppState(i)->getKeys()) {
+						StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+
+            for (int i = 0; i < stateManager->getAppStateNumber(); i++) {
+                for (Key *k : stateManager->getAppState(i)->getKeys()) {
                     if (k->beingUsed && k->analog) {
-                        gameManager->getAppState(i)->onAnalog(k->bind, 0.);
+                        stateManager->getAppState(i)->onAnalog(k->bind, 0.);
                     }
                 }
             }

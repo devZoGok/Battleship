@@ -9,7 +9,7 @@ namespace game{
     namespace content {
         class DemoJet : public Jet {
         public:
-            DemoJet(core::GameManager*, Player*,vector3df, int, bool = 1);
+            DemoJet(Player*,vector3df, int, bool = 1);
             void attack(Order);
             void update();
         private:

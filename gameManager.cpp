@@ -1,7 +1,9 @@
 #include <algorithm>
+#include <irrlicht.h>
 
 #include "gameManager.h"
 #include "guiAppState.h"
+#include "stateManager.h"
 #include "eventListener.h"
 #include "abstractBitmapText.h"
 #include "abstractImage.h"
@@ -12,8 +14,24 @@ using namespace irr;
 
 namespace game{
     namespace core{
-        GameManager::GameManager(IrrlichtDevice *dev) {
-            device = dev;
+				GameManager *gameManager = nullptr;
+
+				GameManager* GameManager::getSingleton(){
+						if(!gameManager)
+								gameManager = new GameManager();
+
+						return gameManager;
+				}
+
+        GameManager::GameManager() {
+    				IrrlichtDevice *device = createDevice(video::EDT_OPENGL, irr::core::dimension2d<u32>(800,600), 32, false, true, true, nullptr);
+    				device->setResizable(true);
+						irr::video::IVideoDriver *driver = device->getVideoDriver();
+						irr::scene::ISceneManager *smgr = device->getSceneManager();
+						irr::gui::IGUIEnvironment *guiEnv = device->getGUIEnvironment();
+
+    				device->setWindowCaption(L"(((A)))");
+						stateManager = new StateManager();
             listener = new EventListener(this);
             device->setEventReceiver(listener);
             width = device->getVideoDriver()->getScreenSize().Width;
@@ -21,31 +39,6 @@ namespace game{
         }
 
         GameManager::~GameManager() {}
-
-        void GameManager::attachState(AbstractAppState *a) {
-            bool alreadyAttached = false;
-            for (int i = 0; i < appStates.size()&&!alreadyAttached; i++)
-                if (appStates[i] == a)
-                    alreadyAttached = true;
-            if (!alreadyAttached) {
-                a->onAttachment();
-                appStates.push_back(a);
-            }
-        }
-
-        void GameManager::dettachState(AbstractAppState *a) {
-            bool alreadyDetached = false;
-            for (int i = 0; i < appStates.size()&&!alreadyDetached; i++)
-                if (appStates[i] == a)
-                    alreadyDetached = true;
-            if (!alreadyDetached) {
-                a->onDetachment();
-                for (int i = 0; i < appStates.size(); i++)
-                    if (a == appStates[i]) {
-                        appStates.erase(appStates.begin() + i);
-                    }
-            }
-        }
 
         void GameManager::detachBitmapText(AbstractBitmapText *bitmapText) {
             for (int i = 0; i < bitmapTexts.size(); i++)
@@ -79,21 +72,13 @@ namespace game{
 
         void GameManager::update() {
             listener->update();
-            for (AbstractAppState *a : appStates)
-                if (a->isAttached() && a)
-                    a->update();
+						stateManager->update();
+
             for (BitmapText *b : bitmapTexts)
                 b->update();
+
             for (Image *i : images)
                 i->update();
-        }
-
-        AbstractAppState* GameManager::getAppState(AppStateTypes t) {
-            AbstractAppState *state = nullptr;
-            for (AbstractAppState *a : appStates)
-                if (a->getType() == t)
-                    state = a;
-            return state;
         }
     }
 }

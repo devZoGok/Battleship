@@ -1,5 +1,6 @@
 #include "unit.h"
 #include "inGameAppState.h"
+#include "stateManager.h"
 #include "util.h"
 #include "unitData.h"
 
@@ -10,10 +11,9 @@ using namespace sf;
 
 namespace game{
     namespace content{
-        Unit::Unit(GameManager *gM, Player *player, vector3df pos, int id) {
+        Unit::Unit(Player *player, vector3df pos, int id) {
             this->id = id;
             this->player = player;
-            gameManager = gM;
             type = unitData::unitType[id];
             this->health = unitData::health[id];
             this->maxTurnAngle = unitData::maxTurnAngle[id];
@@ -22,8 +22,10 @@ namespace game{
             width = unitData::unitCornerPoints[id][0].X - unitData::unitCornerPoints[id][1].X;
             height = unitData::unitCornerPoints[id][4].Y - unitData::unitCornerPoints[id][0].Y;
             length = unitData::unitCornerPoints[id][3].Z - unitData::unitCornerPoints[id][0].Z;
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+
+						GameManager *gm = GameManager::getSingleton();
+            ISceneManager *smgr = gm->getDevice()->getSceneManager();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
             this->speed = unitData::speed[id];
             mesh = smgr->getMesh(basePath[id] + meshPath[id]);
             node = smgr->addAnimatedMeshSceneNode(mesh);
@@ -33,22 +35,26 @@ namespace game{
             node->setTriangleSelector(tr);
             tr->drop();
             ITexture *diffuseTexture = driver->getTexture(basePath[id] + "diffuseMap.png");
+
             if (diffuseTexture)
                 node->setMaterialTexture(0, diffuseTexture);
             else
                 node->setMaterialTexture(0, driver->getTexture(DEFAULT_TEXTURE));
+
             light = smgr->addLightSceneNode(node, vector3df(0, 2, 0), SColor(255, 255, 255, 255), lineOfSight);
             light->setVisible(false);
             node->setVisible(false);
             selectionSfxBuffer=new SoundBuffer();
             path p=PATH+"Sounds/"+unitData::name[id]+"s/selection.ogg";
+
             if(selectionSfxBuffer->loadFromFile(p.c_str()))
                 selectionSfx=new Sound(*selectionSfxBuffer);
         }
 
         Unit::~Unit() {
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+						GameManager *gm = GameManager::getSingleton();
+            ISceneManager *smgr = gm->getDevice()->getSceneManager();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
 //             driver->removeTexture(node->getMaterial(0).getTexture(0));
             node->removeChild(light);
             node->getParent()->removeChild(node);
@@ -71,7 +77,7 @@ namespace game{
                             r=255,g=255;
                             break;
                     }
-                    gameManager->getDevice()->getVideoDriver()->draw3DLine(pos,*(orders[0].targetPos[0]),SColor(255,r,g,b));
+										GameManager::getSingleton()->getDevice()->getVideoDriver()->draw3DLine(pos,*(orders[0].targetPos[0]),SColor(255,r,g,b));
                 }
                 while (patrolPoints.size() > 0 && orders[0].type != Order::TYPE::PATROL) {
                     patrolPoints.pop_back();
@@ -92,15 +98,18 @@ namespace game{
             float unitH = camPos.getDistanceFrom(pos) * cos(getAngleBetween(pos - camPos, camDir));
             float ratio = unitH / camH;
             float minRatio = ((cam->getViewFrustum()->getNearLeftUp() - camPos) / (farLeftUpPoint - camPos)).getLength();
+
             if (minRatio <= ratio && ratio <= 1.) {
                 float width = farRightUpPoint.getDistanceFrom(farLeftUpPoint) * ratio;
                 float height = farLeftUpPoint.getDistanceFrom(farLeftDownPoint) * ratio;
                 vector3df edgePoint = (farLeftUpPoint - camPos) * ratio + camPos;
                 float angle = getAngleBetween(pos - edgePoint, -camLeft);
                 float x = pos.getDistanceFrom(edgePoint) * cos(angle), y = pos.getDistanceFrom(edgePoint) * cos(PI / 2 - angle);
+
                 if (x <= width && y <= height) {
                     selectable = true;
-                    screenPos = vector2d<s32>(gameManager->getWidth() * x / width, gameManager->getHeight() * y / height);
+										GameManager *gm = GameManager::getSingleton();
+                    screenPos = vector2d<s32>(gm->getWidth() * x / width, gm->getHeight() * y / height);
                 } else
                     selectable = false;
             } else
@@ -120,7 +129,7 @@ namespace game{
         }
 
         void Unit::displayUnitStats() {
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             SColor white = SColor(255, 255, 255, 255);
             driver->draw2DLine(screenPos + vector2d<s32>(-51, 0), screenPos + vector2d<s32>(50, 0), white);
             driver->draw2DLine(screenPos + vector2d<s32>(-51, 0), screenPos + vector2d<s32>(-51, -20), white);
@@ -131,7 +140,7 @@ namespace game{
         }
 
         void Unit::drawCuboid() {
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->setTransform(ETS_WORLD, IdentityMatrix);
             for (int i = 0; i < 8; i++) {
                 vector3df vec = unitCornerPoints[id][i];
@@ -150,7 +159,7 @@ namespace game{
         }
 
         void Unit::debug() {
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->setTransform(ETS_WORLD, IdentityMatrix);
             driver->setMaterial(createLineMaterial());
             float length = unitAxisLength[id];
@@ -297,7 +306,7 @@ namespace game{
 
         std::vector<Projectile*> Unit::getProjectiles(){
             std::vector<Projectile*> projectiles;
-            InGameAppState *inGameState=((InGameAppState*)gameManager->getAppState(AppStateTypes::IN_GAME_STATE));
+            InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
             for(Projectile *p: inGameState->getProjectiles())
                 if(p->getUnit()==this)
                     projectiles.push_back(p);
@@ -307,7 +316,7 @@ namespace game{
         void Unit::removeOrder(int id) {
             for (vector3df *v : orders[id].targetPos) {
                 bool isUnitPos = false;
-                InGameAppState *state = (InGameAppState*) gameManager->getAppState(AppStateTypes::IN_GAME_STATE);
+                InGameAppState *state = (InGameAppState*) GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE);
                 for (Player *p : state->getPlayers())
                     for (Unit *u : p->getUnits())
                         if (v == u->getPosPtr())
@@ -331,6 +340,6 @@ namespace game{
             return mat;
         }
 
-        void Unit::addProjectile(Projectile *p) {((InGameAppState*)gameManager->getAppState(AppStateTypes::IN_GAME_STATE))->addProjectile(p);}
+        void Unit::addProjectile(Projectile *p) {((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE))->addProjectile(p);}
     }
 }

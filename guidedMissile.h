@@ -8,7 +8,7 @@ namespace game{
     namespace content{
         class GuidedMissile : public Projectile {
         public:
-            GuidedMissile(core::GameManager*, Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            GuidedMissile(Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
             ~GuidedMissile(){}
             void update();
         private:

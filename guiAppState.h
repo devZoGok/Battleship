@@ -15,7 +15,7 @@ namespace game{
     namespace core{
         class GuiAppState : public AbstractAppState {
         public:
-            GuiAppState(GameManager*);
+            GuiAppState();
             ~GuiAppState();
             void onAttachment();
             void onDetachment();
@@ -53,7 +53,6 @@ namespace game{
             void checkKeyboard(gui::Textbox*, Bind, bool);
             void updateControlsListbox(int);
             
-            GameManager *gameManager;
             std::vector<gui::Button*> buttons;
             std::vector<gui::Listbox*> listboxes;
             std::vector<gui::Checkbox*> checkboxes;

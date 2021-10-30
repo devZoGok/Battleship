@@ -8,7 +8,7 @@ using namespace game::content::unitData;
 
 namespace game{
     namespace content{
-        Jet::Jet(GameManager *gM, Player *player, vector3df pos, int unitId, bool onBoard) : Unit(gM, player, pos, unitId) {
+        Jet::Jet(Player *player, vector3df pos, int unitId, bool onBoard) : Unit(player, pos, unitId) {
             offsetPos = pos;
             this->onBoard = onBoard;
             this->pitchSpeed = unitData::pitchSpeed[id];

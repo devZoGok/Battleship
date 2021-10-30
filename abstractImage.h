@@ -9,7 +9,7 @@ namespace game
     namespace gui{
         class AbstractImage {
         public:
-            AbstractImage(core::GameManager*, irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>);
+            AbstractImage(irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>);
             ~AbstractImage();
             void update();
             inline irr::video::ITexture* getImage(){return image;}
@@ -20,7 +20,6 @@ namespace game
             inline void setSize(irr::core::vector2d<s32> s){this->size=s;}
             inline irr::core::stringw getPath(){return path;}
         private:
-            core::GameManager *gameManager;
             irr::video::ITexture *image;
             irr::core::vector2d<s32> pos, size;
             irr::core::stringw path;

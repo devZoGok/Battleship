@@ -8,8 +8,7 @@ using namespace game::core;
 
 namespace game{
     namespace gui{
-        AbstractBitmapText::AbstractBitmapText(GameManager *gM, stringw text, vector2d<s32> pos, IGUIFont *font) {
-            gameManager = gM;
+        AbstractBitmapText::AbstractBitmapText(stringw text, vector2d<s32> pos, IGUIFont *font) {
             this->text = text;
             this->pos = pos;
             this->font = font;

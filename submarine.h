@@ -9,7 +9,7 @@ namespace game{
     namespace content{
         class Submarine : public Unit {
         public:
-            Submarine(core::GameManager*, Player*, irr::core::vector3df, int);
+            Submarine(Player*, irr::core::vector3df, int);
             inline bool isSubmerged() {return submerged;}
             void emerge();
             void submerge();

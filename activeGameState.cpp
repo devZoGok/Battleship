@@ -1,5 +1,6 @@
 #include "activeGameState.h"
 #include "inGameAppState.h"
+#include "stateManager.h"
 #include "util.h"
 #include "cruiser.h"
 #include "destroyer.h"
@@ -21,7 +22,7 @@ namespace game{
     namespace core{
         const int size=50;
         
-        ActiveGameState::UnitButton::UnitButton(GameManager *gm,ActiveGameState *activeState,vector2di pos, vector2di size, irr::core::stringw name,int faction,int unitId) : gui::Button(gm,pos,size,name,true){
+        ActiveGameState::UnitButton::UnitButton(ActiveGameState *activeState,vector2di pos, vector2di size, irr::core::stringw name,int faction,int unitId) : gui::Button(pos,size,name,true){
             this->activeState=activeState;
             this->faction=faction;
             this->unitId=unitId;
@@ -33,19 +34,19 @@ namespace game{
             Unit *u;
             switch(unitData::unitType[unitId]){
                 case unitData::UNIT_TYPE::VESSEL:
-                    u=new Vessel(gameManager,player,spawnPoint,unitId);
+                    u=new Vessel(player,spawnPoint,unitId);
                     break;
                 case unitData::UNIT_TYPE::DESTROYER:
-                    u=new Destroyer(gameManager,player,spawnPoint,unitId);
+                    u=new Destroyer(player,spawnPoint,unitId);
                     break;
                 case unitData::UNIT_TYPE::CRUISER:
-                    u=new Cruiser(gameManager,player,spawnPoint,unitId);
+                    u=new Cruiser(player,spawnPoint,unitId);
                     break;
                 case unitData::UNIT_TYPE::AIRCRAFT_CARRIER:
-                    u=new AircraftCarrier(gameManager,player,spawnPoint,unitId);
+                    u=new AircraftCarrier(player,spawnPoint,unitId);
                     break;
                 case unitData::UNIT_TYPE::SUBMARINE:
-                    u=new Submarine(gameManager,player,spawnPoint,unitId);
+                    u=new Submarine(player,spawnPoint,unitId);
                     break;
             }
             player->addUnit(u);
@@ -53,23 +54,25 @@ namespace game{
         
         void ActiveGameState::UnitButton::onMouseOver(){
             if(!mouseOverDone){
-                GuiAppState *guiState=((GuiAppState*)gameManager->getAppState(AppStateTypes::GUI_STATE));
-                guiState->addTooltip(new gui::Tooltip(gameManager,pos-vector2di(100,0),name));
+								GameManager *gm = GameManager::getSingleton();
+                GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
+                guiState->addTooltip(new gui::Tooltip(pos-vector2di(100,0),name));
             }
         }
 
         void ActiveGameState::UnitButton::onMouseAway(){
             if(!mouseAwayDone){
-                GuiAppState *guiState=((GuiAppState*)gameManager->getAppState(AppStateTypes::GUI_STATE));
+                GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
                 guiState->removeAllTooltips();
             }
         }
         
-        ActiveGameState::UnitActionButton::UnitActionButton(GameManager *gm, unitData::UNIT_TYPE type, vector2di pos, vector2di size, stringw name, stringw path) : gui::Button(gm,pos,size,name,true){
+        ActiveGameState::UnitActionButton::UnitActionButton(unitData::UNIT_TYPE type, vector2di pos, vector2di size, stringw name, stringw path) : gui::Button(pos,size,name,true){
             this->type=type;
-            IVideoDriver *driver=gameManager->getDevice()->getVideoDriver();
-            activeState=((ActiveGameState*)gm->getAppState(AppStateTypes::ACTIVE_STATE));
-            setImageButton(new Image(gameManager,driver->getTexture(path),pos,vector2di(50,50)));
+						GameManager *gm = GameManager::getSingleton();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+            activeState=((ActiveGameState*)gm->getStateManager()->getAppState(AppStateTypes::ACTIVE_STATE));
+            setImageButton(new Image(driver->getTexture(path),pos,vector2di(50,50)));
         }
 
         void ActiveGameState::UnitActionButton::onClick(){
@@ -81,27 +84,28 @@ namespace game{
 
         void ActiveGameState::UnitActionButton::onMouseOver(){
             if(!mouseOverDone){
-                GuiAppState *guiState=((GuiAppState*)gameManager->getAppState(AppStateTypes::GUI_STATE));
-                guiState->addTooltip(new gui::Tooltip(gameManager,pos-vector2di(100,0),name));
+                GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
+                guiState->addTooltip(new gui::Tooltip(pos-vector2di(100,0),name));
             }
         }
 
         void ActiveGameState::UnitActionButton::onMouseAway(){
             if(!mouseAwayDone){
-                GuiAppState *guiState=((GuiAppState*)gameManager->getAppState(AppStateTypes::GUI_STATE));
+                GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
                 guiState->removeAllTooltips();
             }
         }
         
-        ActiveGameState::ActiveGameState(GameManager *gM, GuiAppState *guiState, Map *map, vector<Player*> players, int playerId) {
-            gameManager = gM;
+        ActiveGameState::ActiveGameState(GuiAppState *guiState, Map *map, vector<Player*> players, int playerId) {
             type = AppStateTypes::ACTIVE_STATE;
             this->guiState = guiState;
             this->map = map;
             this->players = players;
-            cam = gM->getDevice()->getSceneManager()->addCameraSceneNodeFPS(0, 100, 0.f, -1, nullptr, 10, false, 0.6f);
+
+						GameManager *gm = GameManager::getSingleton();
+            cam = gm->getDevice()->getSceneManager()->addCameraSceneNodeFPS(0, 100, 0.f, -1, nullptr, 10, false, 0.6f);
             cam->setInputReceiverEnabled(false);
-            gameManager->getDevice()->getCursorControl()->setVisible(true);
+            gm->getDevice()->getCursorControl()->setVisible(true);
             this->playerId = playerId;
             mainPlayer = players[playerId];
             cam->setPosition(vector3df(0, 5, 0));
@@ -114,18 +118,22 @@ namespace game{
 
         void ActiveGameState::onAttachment() {
             AbstractAppState::onAttachment();
-            IVideoDriver *driver=gameManager->getDevice()->getVideoDriver();
-            int faction=mainPlayer->getFaction(),width=gameManager->getWidth(),heigh=gameManager->getHeight(),size=50;
-            stringw names[5]={"Battleship","Destroyer","Cruiser","Carrier","Submarine"};
+						GameManager *gm = GameManager::getSingleton();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+            int faction = mainPlayer->getFaction(), width = gm->getWidth(), height = gm->getHeight(),size=50;
+            stringw names[5] = {"Battleship","Destroyer","Cruiser","Carrier","Submarine"};
+
             for(int i=0;i<5;i++){
                 int id=2*i+(i==4&&faction==1?0:faction);
                 vector2di pos=vector2di(width-size-1,1+i*size),sizeVec=vector2di(size,size);
-                UnitButton *button=new UnitButton(gameManager,this,pos,sizeVec,names[i],faction,id);
+                UnitButton *button=new UnitButton(this,pos,sizeVec,names[i],faction,id);
+
                 if(i==3)
                     names[i]="aircraftCarrier";
                 else
                     names[i].make_lower();
-                button->setImageButton(new Image(gameManager,driver->getTexture(PATH+"Textures/Icons/"+names[i]+"0"+stringw(faction)+".png"),pos,sizeVec));
+
+                button->setImageButton(new Image(driver->getTexture(PATH+"Textures/Icons/"+names[i]+"0"+stringw(faction)+".png"),pos,sizeVec));
                 guiState->addButton(button);
             }
         }
@@ -183,7 +191,7 @@ namespace game{
         }
 
         void ActiveGameState::renderUnits(vector<Unit*> units) {
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
+            ISceneManager *smgr = GameManager::getSingleton()->getDevice()->getSceneManager();
             for (Unit *rendUn : units) {
                 vector3df rendUnPos = rendUn->getPos();
                 rendUnPos.Y = 0;
@@ -202,8 +210,10 @@ namespace game{
         }
 
         void ActiveGameState::renderGUIBorders(){
-            IVideoDriver *driver=gameManager->getDevice()->getVideoDriver();
-            int width=gameManager->getWidth(),height=gameManager->getHeight(),size=50;
+						GameManager *gm = GameManager::getSingleton();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+            int width = gm->getWidth(), height = gm->getHeight(), size = 50;
+
             for(int i=0;i<height/size;i++){
                 driver->draw2DRectangleOutline(recti(vector2di(width-(2*size+3),size*i),dimension2di(size+2,size+2)));
                 driver->draw2DRectangleOutline(recti(vector2di(width-(size+2),size*i),dimension2di(size+2,size+2)));
@@ -213,7 +223,7 @@ namespace game{
         void ActiveGameState::renderActionButtons(){
             class MakeJetButton : public UnitActionButton{
             public:
-                MakeJetButton(GameManager *gm,int faction,unitData::UNIT_TYPE type,vector2di pos, vector2di size):UnitActionButton(gm,type,pos,size,"Jet",PATH+"Textures/Icons/jet0"+stringw(faction)+".png"){
+                MakeJetButton(int faction,unitData::UNIT_TYPE type,vector2di pos, vector2di size):UnitActionButton(type,pos,size,"Jet",PATH+"Textures/Icons/jet0"+stringw(faction)+".png"){
                 }
                 ~MakeJetButton(){}
                 void onClick(){
@@ -225,7 +235,7 @@ namespace game{
             };
             class LaunchButton : public UnitActionButton{
             public:
-                LaunchButton(GameManager *gm,int faction,unitData::UNIT_TYPE type,vector2di pos,vector2di size) : UnitActionButton(gm,type,pos,size,"Launch",PATH+"Textures/Icons/guidedMissile0"+stringw(faction)+".png"){}
+                LaunchButton(int faction,unitData::UNIT_TYPE type,vector2di pos,vector2di size) : UnitActionButton(type,pos,size,"Launch",PATH+"Textures/Icons/guidedMissile0"+stringw(faction)+".png"){}
                 ~LaunchButton(){}
                 void onClick(){
                     UnitActionButton::onClick();
@@ -235,7 +245,7 @@ namespace game{
             };
             class MissileButton : public UnitActionButton{
             public:
-                MissileButton(GameManager *gm,bool aam,vector2di pos,vector2di size,stringw name,stringw path) : UnitActionButton(gm,unitData::UNIT_TYPE::MISSILE_JET,pos,size,name,path){
+                MissileButton(bool aam,vector2di pos,vector2di size,stringw name,stringw path) : UnitActionButton(unitData::UNIT_TYPE::MISSILE_JET,pos,size,name,path){
                     this->aam=aam;
                 }
                 ~MissileButton(){}
@@ -247,8 +257,11 @@ namespace game{
             private:
                 bool aam;
             };
-            int width=gameManager->getWidth(),height=gameManager->getHeight(),slotSize=size+2,faction=mainPlayer->getFaction();
-            bool carriers=false,cruisers=false,missileJets=false;
+
+						GameManager *gm = GameManager::getSingleton();
+            int width = gm->getWidth(), height = gm->getHeight(), slotSize = size + 2, faction = mainPlayer->getFaction();
+            bool carriers=false, cruisers=false, missileJets=false;
+
             for(int i=0;i<selectedUnits.size()&&!(carriers&&cruisers&&missileJets);i++){
                 if(selectedUnits[i]->getType()==unitData::UNIT_TYPE::AIRCRAFT_CARRIER)
                     carriers=true;
@@ -258,7 +271,7 @@ namespace game{
                     missileJets=true;
             }
             if(carriers&&!actionButtons[0]){
-                actionButtons[0]=new MakeJetButton(gameManager,faction,unitData::UNIT_TYPE::AIRCRAFT_CARRIER,vector2di(width-2*slotSize,0),vector2di(size,size));
+                actionButtons[0]=new MakeJetButton(faction,unitData::UNIT_TYPE::AIRCRAFT_CARRIER,vector2di(width-2*slotSize,0),vector2di(size,size));
                 guiState->addButton(actionButtons[0]);
             }
             else if(!carriers&&actionButtons[0]){
@@ -266,7 +279,7 @@ namespace game{
                 actionButtons[0]=nullptr;
             }
             if(cruisers&&!actionButtons[1]){
-                actionButtons[1]=new LaunchButton(gameManager,faction,unitData::UNIT_TYPE::CRUISER,vector2di(width-2*slotSize,slotSize),vector2di(size,size));
+                actionButtons[1]=new LaunchButton(faction,unitData::UNIT_TYPE::CRUISER,vector2di(width-2*slotSize,slotSize),vector2di(size,size));
                 guiState->addButton(actionButtons[1]);
             }
             else if(!cruisers&&actionButtons[1]){
@@ -274,8 +287,8 @@ namespace game{
                 actionButtons[1]=nullptr;
             }
             if(missileJets&&!actionButtons[2]){
-                actionButtons[2]=new MissileButton(gameManager,true,vector2di(width-2*slotSize,slotSize*3),vector2di(size,size),"AAM",PATH+"Textures/Icons/aam.png");
-                actionButtons[3]=new MissileButton(gameManager,false,vector2di(width-2*slotSize,slotSize*4),vector2di(size,size),"AWM",PATH+"Textures/Icons/awm.png");
+                actionButtons[2]=new MissileButton(true,vector2di(width-2*slotSize,slotSize*3),vector2di(size,size),"AAM",PATH+"Textures/Icons/aam.png");
+                actionButtons[3]=new MissileButton(false,vector2di(width-2*slotSize,slotSize*4),vector2di(size,size),"AWM",PATH+"Textures/Icons/awm.png");
                 guiState->addButton(actionButtons[2]);
                 guiState->addButton(actionButtons[3]);
             }
@@ -297,8 +310,10 @@ namespace game{
         }
 
         void ActiveGameState::updateSelectionBox() {
-            vector2d<s32> mousePos = gameManager->getDevice()->getCursorControl()->getPosition();
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+						GameManager *gm = GameManager::getSingleton();
+            vector2d<s32> mousePos = gm->getDevice()->getCursorControl()->getPosition();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+
             if (mousePos.X >= clickPoint.X && mousePos.Y >= clickPoint.Y) {
                 selectionBoxOrigin = vector2d<s32>(clickPoint.X, clickPoint.Y);
                 selectionBoxEnd = vector2d<s32>(mousePos.X, mousePos.Y);
@@ -316,10 +331,12 @@ namespace game{
         }
 
         void ActiveGameState::updateVectors() {
-            vector2d<s32> cursorPos = gameManager->getDevice()->getCursorControl()->getPosition();
+						GameManager *gm = GameManager::getSingleton();
+            vector2d<s32> cursorPos = gm->getDevice()->getCursorControl()->getPosition();
             camDir = (cam->getTarget() - cam->getPosition()).normalize();
             float vecAngle = getAngleBetween(vector3df(0, 0, 1), vector3df(camDir.X, 0, camDir.Z));
             quaternion rotQuat;
+
             if (quaternion(0, 0, 0, 0).fromAngleAxis(vecAngle, vector3df(0, 1, 0)) * vector3df(0, 0, 1) != vector3df(camDir.X, 0, camDir.Z).normalize()) {
                 rotQuat.fromAngleAxis(-vecAngle + PI / 2, vector3df(0, 1, 0));
                 camLeft = rotQuat * vector3df(0, 0, -1);
@@ -329,19 +346,19 @@ namespace game{
             }
             vector3df forwVec = quaternion(0, 0, 0, 0).fromAngleAxis(PI / 2, vector3df(0, 1, 0)) * camLeft;
             camUp = quaternion(0, 0, 0, 0).fromAngleAxis(PI / 2, camLeft.normalize()) * camDir;
-            if (cursorPos.X == 0 && cursorPos.Y < gameManager->getHeight() && cursorPos.Y > 0) {
+            if (cursorPos.X == 0 && cursorPos.Y < gm->getHeight() && cursorPos.Y > 0) {
                 cam->setPosition(cam->getPosition() + camLeft * camPanSpeed);
                 cam->setTarget(cam->getPosition() + camDir);
             }//<-
-            if (cursorPos.X >= gameManager->getWidth() - 1 && cursorPos.Y < gameManager->getHeight() && cursorPos.Y > 0) {
+            if (cursorPos.X >= gm->getWidth() - 1 && cursorPos.Y < gm->getHeight() && cursorPos.Y > 0) {
                 cam->setPosition(cam->getPosition() - camLeft * camPanSpeed);
                 cam->setTarget(cam->getPosition() + camDir);
             }//->
-            if (cursorPos.X > 0 && cursorPos.X < gameManager->getWidth() && cursorPos.Y == 0) {
+            if (cursorPos.X > 0 && cursorPos.X < gm->getWidth() && cursorPos.Y == 0) {
                 cam->setPosition(cam->getPosition() + (forwVec.normalize()) * camPanSpeed);
                 cam->setTarget(cam->getPosition() + camDir);
             }//^
-            if (cursorPos.X > 0 && cursorPos.X < gameManager->getWidth() && cursorPos.Y >= gameManager->getHeight() - 1) {
+            if (cursorPos.X > 0 && cursorPos.X < gm->getWidth() && cursorPos.Y >= gm->getHeight() - 1) {
                 cam->setPosition(cam->getPosition() - (forwVec.normalize()) * camPanSpeed);
                 cam->setTarget(cam->getPosition() + camDir);
             }
@@ -368,13 +385,14 @@ namespace game{
             vector3df topLeft=cam->getViewFrustum()->getNearLeftUp();
             vector3df topRight=cam->getViewFrustum()->getNearRightUp();
             vector3df bottomLeft=cam->getViewFrustum()->getNearLeftDown();
-            vector2d<int> mousePos=gameManager->getDevice()->getCursorControl()->getPosition();
+						GameManager *gm = GameManager::getSingleton();
+            vector2d<int> mousePos = gm->getDevice()->getCursorControl()->getPosition();
             vector3df p=topLeft;
-            p+=(topRight-topLeft)*((float)mousePos.X/gameManager->getWidth());
-            p+=(bottomLeft-topLeft)*((float)mousePos.Y/gameManager->getHeight());
+            p+=(topRight-topLeft)*((float)mousePos.X / gm->getWidth());
+            p+=(bottomLeft-topLeft)*((float)mousePos.Y / gm->getHeight());
             vector3df orderDir=(p-camPos).normalize();
             
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
+            ISceneManager *smgr = gm->getDevice()->getSceneManager();
             ISceneCollisionManager *collMan = smgr->getSceneCollisionManager();
             line3d<float> ray;
             ray.start = camPos;
@@ -382,6 +400,7 @@ namespace game{
             triangle3df t;
             vector3df collPoint;
             ISceneNode *collNode = collMan->getSceneNodeAndCollisionPointFromRay(ray, collPoint, t, 0, 0);
+
             if (collNode) {
                 for (Player *p : players)
                     for (int i = 0; i < p->getNumberOfUnits(); i++)
@@ -392,6 +411,7 @@ namespace game{
             else {
                 if(orderDir.Y>0)
                     orderDir.Y*=-1;
+
                 float angle = getAngleBetween(vector3df(0, -1, 0), orderDir);
                 float hyp = camPos.Y / cos(angle);
                 vector3df *v=new vector3df(orderDir * hyp + camPos);
@@ -400,21 +420,24 @@ namespace game{
             }
             if (!selectingPatrolPoints) {
                 Order::TYPE t = Order::TYPE::MOVE;
+
                 if (selectingGuidedMissileTarget)
                     t = Order::TYPE::LAUNCH;
                 else if (controlPressed)
                     t = Order::TYPE::ATTACK;
+
                 issueOrder(t, orderPos, false);
             }
         }
         
         void ActiveGameState::onAction(Bind bind, bool isPressed) {
-            InGameAppState *inGameState = (InGameAppState*) gameManager->getAppState(AppStateTypes::IN_GAME_STATE);
+						GameManager *gm = GameManager::getSingleton();
+            InGameAppState *inGameState = (InGameAppState*) gm->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE);
             switch(bind){
                 case DRAG_BOX: 
                     isSelectionBox = isPressed;
                     if (isPressed) {
-                        clickPoint = gameManager->getDevice()->getCursorControl()->getPosition();
+                        clickPoint = gm->getDevice()->getCursorControl()->getPosition();
                         if (!selectedUnits.empty())
                             addPos();
                     }
@@ -454,7 +477,7 @@ namespace game{
                     break;
                 case LOOK_AROUND:
                     cam->setInputReceiverEnabled(isPressed);
-                    gameManager->getDevice()->getCursorControl()->setVisible(!isPressed);
+                    gm->getDevice()->getCursorControl()->setVisible(!isPressed);
                     lookingAround=isPressed;
                     break;
                 case HALT: 

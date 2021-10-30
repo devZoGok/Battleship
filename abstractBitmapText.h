@@ -7,7 +7,7 @@ namespace game{
     namespace gui{
         class AbstractBitmapText {
         public:
-            AbstractBitmapText(core::GameManager*, irr::core::stringw, irr::core::vector2d<s32>, irr::gui::IGUIFont*);
+            AbstractBitmapText(irr::core::stringw, irr::core::vector2d<s32>, irr::gui::IGUIFont*);
             ~AbstractBitmapText();
             void update();
             inline irr::core::vector2d<s32> getPos(){return pos;}

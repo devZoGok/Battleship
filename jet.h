@@ -13,7 +13,7 @@ namespace game{
         
         class Jet : public Unit {
         public:
-            Jet(core::GameManager*, Player*,vector3df, int, bool);
+            Jet(Player*,vector3df, int, bool);
 //             virtual void attack(Order);
             virtual void update();
             inline void setJetId(int i){this->jetId=i;}

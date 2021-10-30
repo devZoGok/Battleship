@@ -11,8 +11,7 @@ namespace game{
     namespace gui{
         Button::Button() {}
 
-        Button::Button(GameManager *gM, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) {
-            gameManager = gM;
+        Button::Button(vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) {
             color = new SColor(255, 200, 200, 200);
             this->name = name;
             this->pos = pos;
@@ -26,11 +25,13 @@ namespace game{
         }
 
         void Button::update() {
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+						GameManager *gm = GameManager::getSingleton();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+
             if (!imageButton) {
                 driver->draw2DRectangle(*color, rect<s32>(pos.X, pos.Y, pos.X + size.X, pos.Y + size.Y), nullptr);
                 if (separate) {
-                    IGUIFont *font = gameManager->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fontcourier.bmp");
+                    IGUIFont *font = gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fontcourier.bmp");
                     font->draw(name, rect<s32>(pos.X + size.X / 4 + textXOffset, pos.Y + size.Y / 4 + textYOffset, size.X, size.Y), SColor(255, 250, 250, 250));
                 }
             } else

@@ -8,7 +8,7 @@ namespace game{
     namespace gui {
         class Checkbox {
         public:
-            Checkbox(core::GameManager*, irr::core::vector2d<s32>);
+            Checkbox(irr::core::vector2d<s32>);
             ~Checkbox();
             void update();
             virtual void check(){checked=!checked;}
@@ -16,14 +16,13 @@ namespace game{
         private:
             class CheckboxButton : public Button {
             public:
-                CheckboxButton(core::GameManager*, Checkbox*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                CheckboxButton(Checkbox*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
                 Checkbox *checkbox = nullptr;
             };
             const int length=15;
             bool checked = false;
-            core::GameManager *gameManager;
             irr::core::vector2d<s32> pos;
             CheckboxButton *checkboxButton;
         public:

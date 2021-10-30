@@ -21,7 +21,7 @@ namespace game{
         
         class InGameAppState : public AbstractAppState {
         public:
-            InGameAppState(GameManager*, std::vector<irr::core::stringw>, std::vector<irr::core::stringw>);
+            InGameAppState(std::vector<irr::core::stringw>, std::vector<irr::core::stringw>);
             ~InGameAppState();
             void onAttachment();
             void onDetachment();
@@ -36,7 +36,7 @@ namespace game{
         private:
             class ResumeButton : public gui::Button {
             public:
-                ResumeButton(GuiAppState*, InGameAppState*, GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                ResumeButton(GuiAppState*, InGameAppState*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
                 GuiAppState *getGuiState();
             private:
@@ -46,7 +46,7 @@ namespace game{
 
             class ConsoleButton : public gui::Button {
             public:
-                ConsoleButton(GuiAppState*, InGameAppState*, GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                ConsoleButton(GuiAppState*, InGameAppState*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
                 GuiAppState *guiState;
@@ -55,7 +55,7 @@ namespace game{
 
             class MainMenuButton : public gui::Button {
             public:
-                MainMenuButton(GuiAppState*, InGameAppState*, GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                MainMenuButton(GuiAppState*, InGameAppState*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
                 GuiAppState *guiState;
@@ -64,12 +64,12 @@ namespace game{
 
             class InGameOptionsButton : public gui::OptionsButton {
             public:
-                InGameOptionsButton(GuiAppState*, InGameAppState*, GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                InGameOptionsButton(GuiAppState*, InGameAppState*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
                 class ReturnButton : public gui::Button {
                 public:
-                    ReturnButton(GuiAppState*, InGameAppState*, GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                    ReturnButton(GuiAppState*, InGameAppState*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                     void onClick();
                 private:
                     GuiAppState *guiState;
@@ -82,7 +82,7 @@ namespace game{
 
             class UnitCreationButton : public gui::Button {
             public:
-                UnitCreationButton(GameManager*, irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                UnitCreationButton(irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
                 void update();
             private:
@@ -91,33 +91,34 @@ namespace game{
 
             class BattleshipCreationButton : public UnitCreationButton {
             public:
-                BattleshipCreationButton(GameManager*, irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                BattleshipCreationButton(irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             };
 
             class DestroyerCreationButton : public UnitCreationButton {
             public:
-                DestroyerCreationButton(GameManager*, irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                DestroyerCreationButton(irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             };
 
             class CruiserCreationButton : public UnitCreationButton {
             public:
-                CruiserCreationButton(GameManager*, irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                CruiserCreationButton(irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             };
 
             class CarrierCreationButton : public UnitCreationButton {
             public:
-                CarrierCreationButton(GameManager*, irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                CarrierCreationButton(irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             };
 
             class SubmarineCreationButton : public UnitCreationButton {
             public:
-                SubmarineCreationButton(GameManager*, irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                SubmarineCreationButton(irr::video::ITexture*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             };
+
             ResumeButton *resumeButton;
             ConsoleButton *consoleButton;
             InGameOptionsButton *optionsButton;
@@ -138,7 +139,6 @@ namespace game{
             std::vector<content::Projectile*> projectiles;
             std::vector<Fx> fx;
             content::Player *mainPlayer;
-            GameManager *gameManager;
             content::Map *map;
             int playerId;
             ActiveGameState* activeState;

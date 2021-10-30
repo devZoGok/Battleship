@@ -1,6 +1,8 @@
 #include "map.h"
+#include "gameManager.h"
 #include "defConfigs.h"
 
+using namespace irr;
 using namespace irr::core;
 using namespace irr::video;
 using namespace irr::scene;
@@ -9,8 +11,7 @@ using namespace game::core;
 
 namespace game{
     namespace content{
-        Map::Map(GameManager *gM) {
-            gameManager = gM;
+        Map::Map() {
             size = vector2d<s32>(50, 50);
         }
 
@@ -21,9 +22,10 @@ namespace game{
         }
 
         void Map::load() {
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
+						GameManager *gm = GameManager::getSingleton();
+            ISceneManager *smgr = gm->getDevice()->getSceneManager();
             smgr->setAmbientLight(SColor(255, 100, 100, 100));
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
 //             sunLight=smgr->addLightSceneNode(0,vector3df(0,20,0),SColor(255,255,255,255));
 //             sunLight->setLightType(E_LIGHT_TYPE::ELT_COUNT);
             ISceneNode *skybox = smgr->addSkyBoxSceneNode(driver->getTexture(PATH + "Textures/up.jpg")

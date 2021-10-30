@@ -21,14 +21,11 @@ namespace game{
 
     namespace core{
         class EventListener;
+        class StateManager;
         
         class GameManager {
         public:
-            GameManager(irr::IrrlichtDevice*);
-            ~GameManager();
-            void attachState(AbstractAppState*);
-            void dettachState(AbstractAppState*);
-            void dettachState(AppStateTypes);
+						static GameManager* getSingleton();
             inline void attachBitmapText(gui::AbstractBitmapText *a){bitmapTexts.push_back(a);}
             void detachBitmapText(gui::AbstractBitmapText*);
             void detachAllBitmapTexts();
@@ -39,16 +36,17 @@ namespace game{
             inline irr::IrrlichtDevice* getDevice(){return device;}
             inline irr::scene::ISceneManager* getSceneManager(){return device->getSceneManager();}
             inline void setDevice(irr::IrrlichtDevice *d){this->device=d;}
-            inline AbstractAppState* getAppState(int id){return appStates[id];}
-            AbstractAppState* getAppState(AppStateTypes);
-            inline void setAppState(int i, AbstractAppState *a){appStates[i]=a;}
-            inline int getAppStateNumber(){return appStates.size();}
             inline int getWidth(){return width;}
             inline int getHeight(){return height;}
             inline EventListener* getListener(){return listener;}
             inline bool isServerSide(){return serverSide;}
+						inline StateManager* getStateManager(){return stateManager;}
         private:
+            GameManager();
+            ~GameManager();
+
             irr::IrrlichtDevice *device = nullptr;
+						StateManager *stateManager = nullptr;
             std::vector<AbstractAppState*> appStates;
             int width, height;
             std::vector<gui::AbstractBitmapText*> bitmapTexts;

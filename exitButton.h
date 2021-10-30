@@ -9,7 +9,7 @@ namespace game
     namespace gui {
         class ExitButton : public Button {
         public:
-            ExitButton(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+            ExitButton(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
             void onClick();
         };
     }

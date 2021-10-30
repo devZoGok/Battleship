@@ -12,7 +12,7 @@ namespace game{
     namespace core{
         class ActiveGameState : public AbstractAppState {
         public:
-            ActiveGameState(core::GameManager*, GuiAppState*, content::Map*, std::vector<content::Player*> players, int);
+            ActiveGameState(GuiAppState*, content::Map*, std::vector<content::Player*> players, int);
             ~ActiveGameState();
             void onAttachment();
             void onDetachment();
@@ -26,7 +26,7 @@ namespace game{
         private:
             class UnitButton : public gui::Button{
             public:
-                UnitButton(GameManager*,ActiveGameState*,vector2di, vector2di, irr::core::stringw,int,int);
+                UnitButton(ActiveGameState*,vector2di, vector2di, irr::core::stringw,int,int);
                 ~UnitButton();
                 virtual void onClick();
                 virtual void onMouseOver();
@@ -37,7 +37,7 @@ namespace game{
             };
             class UnitActionButton : public gui::Button{
             public:
-                UnitActionButton(GameManager*, content::unitData::UNIT_TYPE, irr::core::vector2di, irr::core::vector2di, irr::core::stringw, irr::core::stringw);
+                UnitActionButton(content::unitData::UNIT_TYPE, irr::core::vector2di, irr::core::vector2di, irr::core::stringw, irr::core::stringw);
                 ~UnitActionButton();
                 virtual void onClick();
                 virtual void onMouseOver();
@@ -56,7 +56,6 @@ namespace game{
             void addPos();
             void issueOrder(content::Order::TYPE, std::vector<irr::core::vector3df*>, bool);
             void lookAround(bool);
-            GameManager *gameManager;
             GuiAppState *guiState;
             content::Map *map;
             std::vector<content::Player*> players;

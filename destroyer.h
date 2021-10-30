@@ -12,7 +12,7 @@ namespace game
     namespace content {
         class Destroyer : public Vessel {
         public:
-            Destroyer(core::GameManager*, Player*,vector3df, int);
+            Destroyer(Player*,vector3df, int);
             void dropDepthCharge();
             void attack(Order);
             void update();

@@ -11,7 +11,7 @@ namespace game{
     namespace gui{
         class Slider {
         public:
-            Slider(core::GameManager*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, double, double);
+            Slider(irr::core::vector2d<s32>, irr::core::vector2d<s32>, double, double);
             ~Slider();
             void update();
             inline void addTextbox(Textbox *t){this->textbox=t;}
@@ -27,7 +27,7 @@ namespace game{
         private:
             class MovableSliderButton : public Button {
             public:
-                MovableSliderButton(core::GameManager*, Slider*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                MovableSliderButton(Slider*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
                 void update();
             private:
@@ -36,7 +36,7 @@ namespace game{
             };
             class StaticSliderButton : public Button {
             public:
-                StaticSliderButton(core::GameManager*, Slider*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+                StaticSliderButton(Slider*, irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
                 void onClick();
             private:
                 Slider *slider;
@@ -44,7 +44,6 @@ namespace game{
             MovableSliderButton *movableSliderButton = nullptr;
             StaticSliderButton *staticSliderButton = nullptr;
             double minValue, value, maxValue, increment = .1;
-            core::GameManager *gameManager = nullptr;
             irr::core::vector2d<s32> pos, size;
             Textbox *textbox = nullptr;
         public:

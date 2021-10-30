@@ -4,6 +4,7 @@
 
 #include <irrlicht.h>
 #include <vector>
+
 #include "gameManager.h"
 #include "unit.h"
 
@@ -11,7 +12,7 @@ namespace game{
     namespace content{
         class Player {
         public:
-            Player(core::GameManager*, int, int,irr::core::vector3df=irr::core::vector3df(0,0,0));
+            Player(int, int,irr::core::vector3df=irr::core::vector3df(0,0,0));
             ~Player();
             void update();
             bool isThisPlayersUnit(Unit*);
@@ -28,7 +29,6 @@ namespace game{
             int credits, faction, difficulty,side,id;
             std::vector<Unit*> units;
             irr::core::vector3df spawnPoint;
-            core::GameManager *gameManager;
         };
     }
 }

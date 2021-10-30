@@ -10,7 +10,7 @@ namespace game{
     namespace content{
         class AircraftCarrier : public Vessel {
         public:
-            AircraftCarrier(core::GameManager*, Player*, irr::core::vector3df, int);
+            AircraftCarrier(Player*, irr::core::vector3df, int);
             ~AircraftCarrier();
             void makeJet();
             inline void setJet(int i, Jet *j){this->jets[i]=j;}

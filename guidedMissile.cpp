@@ -10,8 +10,8 @@ using namespace irr::core;
 
 namespace game{
     namespace content{
-        GuidedMissile::GuidedMissile(GameManager *gM, Unit *unit, vector3df pos, vector3df target, vector3df dirVec, vector3df leftVec, vector3df upVec, int id, int weaponTypeId, int weaponId) :
-        Projectile(gM, unit, nullptr, pos, dirVec, leftVec, upVec, id, weaponTypeId, weaponId) {
+        GuidedMissile::GuidedMissile(Unit *unit, vector3df pos, vector3df target, vector3df dirVec, vector3df leftVec, vector3df upVec, int id, int weaponTypeId, int weaponId) :
+        Projectile(unit, nullptr, pos, dirVec, leftVec, upVec, id, weaponTypeId, weaponId) {
             speed = .05;
             for (int i = 0; i < 180; i++)
                 arcLength += speed * cos(turnAngle * i);

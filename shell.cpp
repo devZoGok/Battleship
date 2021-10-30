@@ -10,7 +10,7 @@ using namespace irr::core;
 
 namespace game{
     namespace content{
-        Shell::Shell(GameManager *gM, Unit *unit, vector3df pos, vector3df dir, vector3df left, vector3df up, int id, int weaponTypeId, int weaponId) : Projectile(gM, unit, nullptr, pos, dir, left, up, id, weaponTypeId, weaponId) {
+        Shell::Shell(Unit *unit, vector3df pos, vector3df dir, vector3df left, vector3df up, int id, int weaponTypeId, int weaponId) : Projectile(unit, nullptr, pos, dir, left, up, id, weaponTypeId, weaponId) {
             this->speed = projectileData::speed[id][weaponTypeId][weaponId];
             node->setScale(vector3df(1, 1, 1) * projectileData::scale[id][weaponTypeId][weaponId]);
             initTime = getTime();

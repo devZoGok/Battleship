@@ -1,7 +1,7 @@
-#include <irrlicht.h>
 
 #include "util.h"
 #include "gameManager.h"
+#include "stateManager.h"
 #include "guiAppState.h"
 
 using namespace irr;
@@ -13,25 +13,21 @@ using namespace game::util;
 using namespace irr::video;
 
 int main() {
-    IrrlichtDevice *device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600), 32, false, true, true, nullptr);
-    device->setResizable(true);
-    IVideoDriver *driver = device->getVideoDriver();
-    ISceneManager *smgr = device->getSceneManager();
-    IGUIEnvironment *guiEnv = device->getGUIEnvironment();
-    device->setWindowCaption(L"(((A)))");
-    GameManager *gameManager = new GameManager(device);
-    GuiAppState *state = new GuiAppState(gameManager);
-    gameManager->attachState(state);
-    makeTitlescreenButtons(gameManager, state);
-    //smgr->getMesh(PATH+"Models/Battel");
+    GameManager *gameManager = GameManager::getSingleton();
+    GuiAppState *state = new GuiAppState();
+    gameManager->getStateManager()->attachState(state);
+    makeTitlescreenButtons(state);
+		IrrlichtDevice *device = gameManager->getDevice();
+		IVideoDriver *driver = device->getVideoDriver();
+
     while (device->run()) {
         driver->beginScene(true, true, 0);
-        smgr->drawAll();
-        guiEnv->drawAll();
+        device->getSceneManager()->drawAll();
+        device->getGUIEnvironment()->drawAll();
         gameManager->update();
         driver->endScene();
     }
+
     device->drop();
-    delete gameManager;
     return 0;
 }

@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "projectile.h"
+#include "stateManager.h"
 #include "projectileData.h"
 #include "inGameAppState.h"
 #include "unit.h"
@@ -17,8 +18,7 @@ using namespace sf;
 
 namespace game{
     namespace content{
-        Projectile::Projectile(GameManager *gM, Unit *unit, ISceneNode *node, vector3df pos, vector3df dir, vector3df left, vector3df up, int id, int weaponTypeId, int weaponId) {
-            gameManager = gM;
+        Projectile::Projectile(Unit *unit, ISceneNode *node, vector3df pos, vector3df dir, vector3df left, vector3df up, int id, int weaponTypeId, int weaponId) {
             this->unit=unit;
             this->id=id;
             this->weaponTypeId=weaponTypeId;
@@ -26,9 +26,12 @@ namespace game{
             leftVec = left;
             upVec = up;
             this->rayLength=projectileData::length[id][weaponTypeId][weaponId];
-            IVideoDriver *driver = gameManager->getDevice()->getVideoDriver();
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
+
+						GameManager *gm = GameManager::getSingleton();
+            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+            ISceneManager *smgr = gm->getDevice()->getSceneManager();
             this->node=node;
+
             if(!node){
                 mesh = smgr->getMesh(projectileData::meshPath[id][weaponTypeId]);
                 this->node = smgr->addAnimatedMeshSceneNode(mesh);
@@ -60,31 +63,34 @@ namespace game{
         }
 
         Projectile::~Projectile(){
-            ISceneManager *smgr = gameManager->getDevice()->getSceneManager();
+            ISceneManager *smgr = GameManager::getSingleton()->getDevice()->getSceneManager();
             node->getParent()->removeChild(node);
         }
         
         void Projectile::update() {
             if(unit->isDebuggable())
                 debug();
+
             checkForCollision();
         }
 
         void Projectile::checkForCollision() {
-            ISceneNode *collNode = castRay(gameManager->getSceneManager(),pos,pos+dirVec*rayLength);
+            ISceneNode *collNode = castRay(GameManager::getSingleton()->getSceneManager(),pos,pos+dirVec*rayLength);
+
             if (pos.Y<-7 || (collNode&&collNode!=unit->getNode()))
                 explode(collNode);
         }
 
         void Projectile::explode(ISceneNode *collNode) {
             exploded = true;
-            vector<Player*> players = ((InGameAppState*) gameManager->getAppState(AppStateTypes::IN_GAME_STATE))->getPlayers();
+						StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+            vector<Player*> players = ((InGameAppState*) stateManager->getAppState(AppStateTypes::IN_GAME_STATE))->getPlayers();
             for (Player *p : players) {
                 for (Unit *u : p->getUnits())
                     if (collNode == u->getNode())
                         u->takeDamage(damage);
             }
-            InGameAppState *inGameState=((InGameAppState*)gameManager->getAppState(AppStateTypes::IN_GAME_STATE));
+            InGameAppState *inGameState=((InGameAppState*)stateManager->getAppState(AppStateTypes::IN_GAME_STATE));
             if(id==8)
                 detonateTorpedo(inGameState,pos);
             else if(weaponTypeId==1&&(id==2||id==3))
@@ -94,7 +100,7 @@ namespace game{
         }
         
         void Projectile::debug(){
-            IVideoDriver *driver=gameManager->getDevice()->getVideoDriver();
+            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->draw3DLine(pos,pos+dirVec,SColor(255,0,0,255));
             driver->draw3DLine(pos,pos+leftVec,SColor(255,255,0,0));
             driver->draw3DLine(pos,pos+upVec,SColor(255,0,255,0));

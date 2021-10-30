@@ -11,50 +11,59 @@ namespace game{
     namespace core{
         irr::u16 mousePos[2]{};
 
-        GuiAppState::GuiAppState(GameManager* gM) {
-            gameManager = gM;
+        GuiAppState::GuiAppState() {
             type = AppStateTypes::GUI_STATE;
         }
 
         GuiAppState::~GuiAppState() {}
 
         void GuiAppState::update() {
-            mousePos[0] = gameManager->getDevice()->getCursorControl()->getPosition().X;
-            mousePos[1] = gameManager->getDevice()->getCursorControl()->getPosition().Y;
+						GameManager *gm = GameManager::getSingleton();
+            mousePos[0] = gm->getDevice()->getCursorControl()->getPosition().X;
+            mousePos[1] = gm->getDevice()->getCursorControl()->getPosition().Y;
+
             for (Button *b : buttons) {
                 if (b->isSeparate())
                     b->update();
+
                 bool withinX=mousePos[0] > b->getPos().X && mousePos[0] < b->getPos().X + b->getSize().X;
                 bool withinY=mousePos[1] > b->getPos().Y && mousePos[1] < b->getPos().Y + b->getSize().Y;
+
                 if(withinX&&withinY)
                     b->onMouseOver();
                 else
                     b->onMouseAway();
+
                 b->setMouseOverDone(withinX&&withinY);
                 b->setMouseAwayDone(!(withinX&&withinY));
             }
+
             for (Listbox *l : listboxes)
                 l->update();
+
             for (Checkbox *c : checkboxes)
                 c->update();
+
             for (Slider *s : sliders)
                 s->update();
+
             for (Textbox *t : textboxes)
                 t->update();
+
             for (Tooltip *t : tooltips)
                 t->update();
         }
 
         void GuiAppState::onAttachment() {
             AbstractAppState::onAttachment();
-            gameManager->getDevice()->getCursorControl()->setVisible(true);
+						GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(true);
             attachKeyboardKeys();
         }
 
         void GuiAppState::onDetachment() {
             AbstractAppState::onDetachment();
             AbstractAppState::detachAllKeys();
-            gameManager->getDevice()->getCursorControl()->setVisible(false);
+            GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(false);
         }
         
         void GuiAppState::attachKeyboardKeys() {
@@ -258,7 +267,7 @@ namespace game{
             for (int i = 0; i < buttons.size(); i++) {
                 if (b == buttons[i]) {
                     if (b->isImageButton())
-                        gameManager->detachImage(b->getImage());
+                        GameManager::getSingleton()->detachImage(b->getImage());
                     delete b;
                     buttons.erase(buttons.begin() + i);
                 }
@@ -269,7 +278,7 @@ namespace game{
             for (int i = 0; i < buttons.size(); i++) {
                 if (name == buttons[i]->getName() && buttons[i]->isSeparate()) {
                     if (buttons[i]->isImageButton())
-                        gameManager->detachImage(buttons[i]->getImage());
+                        GameManager::getSingleton()->detachImage(buttons[i]->getImage());
                     delete buttons[i];
                     buttons.erase(buttons.begin() + i);
                 }

@@ -10,7 +10,7 @@ namespace game{
         
         class Missile : public Projectile {
         public:
-            Missile(core::GameManager*, Unit*, irr::scene::ISceneNode*, irr::core::vector3df*,irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            Missile(Unit*, irr::scene::ISceneNode*, irr::core::vector3df*,irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
             ~Missile(){}
             void update();
         private:

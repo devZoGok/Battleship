@@ -10,7 +10,7 @@ namespace game{
     namespace content {
         class MissileJet : public Jet {
         public:
-            MissileJet(core::GameManager*, Player*,vector3df, int, bool = 1);
+            MissileJet(Player*,vector3df, int, bool = 1);
             void installMissiles(bool);
         private:
             void attack(Order);

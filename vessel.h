@@ -9,7 +9,7 @@ namespace game{
     namespace content {
         class Vessel : public Unit {
         public:
-            Vessel(core::GameManager*, Player*,vector3df, int);
+            Vessel(Player*,vector3df, int);
             void update();
         protected:
         void attack(Order);
@@ -17,7 +17,7 @@ namespace game{
             void debug();
             class Turret {
             public:
-                Turret(core::GameManager*, Unit*, int, int);
+                Turret(Unit*, int, int);
                 void update();
                 void fire();
                 void rotate(double);
@@ -36,7 +36,6 @@ namespace game{
                 irr::scene::IParticleSystemSceneNode *fxNode;
                 irr::scene::IParticleEmitter *emitter;
                 irr::scene::IParticleAffector *affector;
-                core::GameManager *gameManager;
                 Unit *vessel;
                 irr::scene::IAnimatedMesh *turretMesh;
                 irr::scene::ISceneNode *turretNode, *hullNode;
