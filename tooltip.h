@@ -11,7 +11,6 @@ namespace game{
             ~Tooltip();
             void update();
         private:
-            core::GameManager *gameManager;
             irr::core::vector2di pos;
             BitmapText *text;
         };

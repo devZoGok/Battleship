@@ -24,7 +24,7 @@ namespace game{
 				}
 
         GameManager::GameManager() {
-    				IrrlichtDevice *device = createDevice(video::EDT_OPENGL, irr::core::dimension2d<u32>(800,600), 32, false, true, true, nullptr);
+    				device = createDevice(video::EDT_OPENGL, irr::core::dimension2d<u32>(800,600), 32, false, true, true, nullptr);
     				device->setResizable(true);
 						irr::video::IVideoDriver *driver = device->getVideoDriver();
 						irr::scene::ISceneManager *smgr = device->getSceneManager();

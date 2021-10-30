@@ -8,8 +8,8 @@
 
 namespace game{
     namespace core{
-        const irr::io::path PATH = "/home/dominykas/c++/Game/Assets/";
-        const std::string PATH_STR = "/home/dominykas/c++/Game/Assets/";
+        const irr::io::path PATH = "/home/dominykas/c++/Battleship/Assets/";
+        const std::string PATH_STR = "/home/dominykas/c++/Battleship/Assets/";
         const double camPanSpeed = .1;
         const irr::io::path DEFAULT_TEXTURE = PATH + "Textures/defaultTexture.jpg";
 
