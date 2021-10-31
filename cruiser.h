@@ -10,7 +10,7 @@ namespace game
     namespace content {
         class Cruiser : public Vessel {
         public:
-            Cruiser(Player*,vector3df, int);
+            Cruiser(Player*, vb01::Vector3, int);
             void launch(Order);
         private:
             bool canFire();

@@ -18,6 +18,7 @@ namespace game{
             		inline AbstractAppState* getAppState(int id){return appStates[id];}
             		inline void setAppState(int i, AbstractAppState *a){appStates[i]=a;}
             		inline int getAppStateNumber(){return appStates.size();}
+								inline std::vector<AbstractAppState*> getAppStates(){return appStates;}
 						private:
            		std::vector<AbstractAppState*> appStates;
 				};

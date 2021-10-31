@@ -1,63 +1,63 @@
-#pragma once
 #ifndef DEF_CONFIGS_H
 #define DEF_CONFIGS_H
 
-#include <irrlicht.h>
 #include <string>
+#include <glfw3.h>
+
 #include "key.h"
 
 namespace game{
     namespace core{
-        const irr::io::path PATH = "/home/dominykas/c++/Battleship/Assets/";
+        const std::string PATH = "/home/dominykas/c++/Battleship/Assets/";
         const std::string PATH_STR = "/home/dominykas/c++/Battleship/Assets/";
+        const std::string DEFAULT_TEXTURE = PATH + "Textures/defaultTexture.jpg";
         const double camPanSpeed = .1;
-        const irr::io::path DEFAULT_TEXTURE = PATH + "Textures/defaultTexture.jpg";
 
-        const static int numAppStates=3,numMaxBinds=23;
-        static const int numBinds[numAppStates]{12,1,23};
-        static const int numConfBinds[numAppStates]{0,1,13};
-        const static Bind binds[numAppStates][numMaxBinds]{
+        const static int numAppStates = 3, numMaxBinds = 23;
+        static const int numBinds[numAppStates]{12, 1, 23};
+        static const int numConfBinds[numAppStates]{0, 1, 13};
+        const static Mapping::Bind binds[numAppStates][numMaxBinds]{
             {
-                LEFT_CLICK,
-                SCROLLING_UP,
-                SCROLLING_DOWN,
-                LEFT,
-                RIGHT,
-                DELETE_CHAR,
-                CAPS_LOCK,
-                SHIFT_CAPS,
-                SPACE,
-                PLUS,
-                MINUS,
-                DEVSTERISK
+								Mapping::LEFT_CLICK,
+                Mapping::SCROLLING_UP,
+                Mapping::SCROLLING_DOWN,
+                Mapping::LEFT,
+                Mapping::RIGHT,
+                Mapping::DELETE_CHAR,
+                Mapping::CAPS_LOCK,
+                Mapping::SHIFT_CAPS,
+                Mapping::SPACE,
+                Mapping::PLUS,
+                Mapping::MINUS,
+                Mapping::DEVSTERISK
             },
             {
-                TOGGLE_MAIN_MENU
+								Mapping::TOGGLE_MAIN_MENU
             },
             {
-                HALT,
-                ZOOM_IN,
-                ZOOM_OUT,
-                LOOK_AROUND,
-                DRAG_BOX,
-                DESELECT,
-                LEFT_CONTROL,
-                LEFT_SHIFT,
-                SELECT_PATROL_POINTS,
-                LAUNCH,
-                TOGGLE_SUB,
-                INSTALL_AAM,
-                INSTALL_AWM,
-                GROUP_0,
-                GROUP_1,
-                GROUP_2,
-                GROUP_3,
-                GROUP_4,
-                GROUP_5,
-                GROUP_6,
-                GROUP_7,
-                GROUP_8,
-                GROUP_9
+								Mapping::HALT,
+                Mapping::ZOOM_IN,
+                Mapping::ZOOM_OUT,
+                Mapping::LOOK_AROUND,
+                Mapping::DRAG_BOX,
+                Mapping::DESELECT,
+                Mapping::LEFT_CONTROL,
+                Mapping::LEFT_SHIFT,
+                Mapping::SELECT_PATROL_POINTS,
+                Mapping::LAUNCH,
+                Mapping::TOGGLE_SUB,
+                Mapping::INSTALL_AAM,
+                Mapping::INSTALL_AWM,
+                Mapping::GROUP_0,
+                Mapping::GROUP_1,
+                Mapping::GROUP_2,
+                Mapping::GROUP_3,
+                Mapping::GROUP_4,
+                Mapping::GROUP_5,
+                Mapping::GROUP_6,
+                Mapping::GROUP_7,
+                Mapping::GROUP_8,
+                Mapping::GROUP_9
             }
         };
         const static int triggers[numAppStates][numMaxBinds]{
@@ -65,44 +65,44 @@ namespace game{
                 0,
                 3,
                 4,
-                irr::KEY_LEFT,
-                irr::KEY_RIGHT,
-                irr::KEY_BACK,
-                irr::KEY_CAPITAL,
-                irr::KEY_LSHIFT,
-                irr::KEY_SPACE,
-                irr::KEY_PLUS,
-                irr::KEY_MINUS,
-                irr::KEY_OEM_3
+                GLFW_KEY_LEFT,
+                GLFW_KEY_RIGHT,
+                GLFW_KEY_BACKSPACE,
+                GLFW_KEY_CAPS_LOCK,
+                GLFW_KEY_LEFT_SHIFT,
+                GLFW_KEY_SPACE,
+                GLFW_KEY_KP_ADD,
+                GLFW_KEY_MINUS,
+                GLFW_KEY_3
             },
             {
-                irr::KEY_ESCAPE
+                GLFW_KEY_ESCAPE
                 
             },
             {
-                irr::KEY_KEY_H, 
+                GLFW_KEY_H, 
                 3, 
                 4, 
                 1, 
                 0, 
                 2, 
-                irr::KEY_LCONTROL, 
-                irr::KEY_LSHIFT, 
-                irr::KEY_KEY_P, 
-                irr::KEY_KEY_C, 
-                irr::KEY_KEY_S,
-                irr::KEY_KEY_A,
-                irr::KEY_KEY_W,
-                irr::KEY_KEY_0,
-                irr::KEY_KEY_1,
-                irr::KEY_KEY_2,
-                irr::KEY_KEY_3,
-                irr::KEY_KEY_4,
-                irr::KEY_KEY_5,
-                irr::KEY_KEY_6,
-                irr::KEY_KEY_7,
-                irr::KEY_KEY_8,
-                irr::KEY_KEY_9
+                GLFW_KEY_LEFT_CONTROL, 
+                GLFW_KEY_LEFT_SHIFT, 
+                GLFW_KEY_P, 
+                GLFW_KEY_C, 
+                GLFW_KEY_S,
+                GLFW_KEY_A,
+                GLFW_KEY_W,
+                GLFW_KEY_0,
+                GLFW_KEY_1,
+                GLFW_KEY_2,
+                GLFW_KEY_3,
+                GLFW_KEY_4,
+                GLFW_KEY_5,
+                GLFW_KEY_6,
+                GLFW_KEY_7,
+                GLFW_KEY_8,
+                GLFW_KEY_9
             }
         };
         const static bool isKey[numAppStates][numMaxBinds]{

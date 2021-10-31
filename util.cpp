@@ -1,4 +1,5 @@
 #include <cmath>
+#include <vector.h>
 
 #include "util.h"
 #include "gameManager.h"
@@ -7,69 +8,32 @@
 #include "inGameAppState.h"
 
 using namespace std;
+using namespace vb01;
+using namespace vb01Gui;
 using namespace game;
-using namespace game::core;
 using namespace game::gui;
-using namespace irr::gui;
-using namespace irr::scene;
+using namespace game::core;
 
 namespace game{
     namespace util{
-        ISceneNode* castRay(ISceneManager *smgr, vector3df start, vector3df end){
-            ISceneCollisionManager *collMan = smgr->getSceneCollisionManager();
-            line3d<float> ray;
-            ray.start = start;
-            ray.end = end;
-            triangle3df t;
-            vector3df collPoint;
-            ISceneNode *collNode = collMan->getSceneNodeAndCollisionPointFromRay(ray, collPoint, t, 0, 0);
-            return collNode;
-        }
-        
-        vector<stringw> readFile(std::string path,int firstLine,int lastLine) {
-            vector<stringw> fileLines;
-            ifstream inFile;
-            inFile.open(path);
-            if (inFile.is_open()) {
-                int i=0;
-                std::string line;
-                while (getline(inFile,line)) {
-                    if((lastLine!=0&&firstLine<=i&&i<lastLine)||lastLine==-1)
-                        fileLines.push_back(stringw(line.c_str()));
-                    i++;
-                }
-            }
-            inFile.close();
-            return fileLines;
-        }
-
-        void writeFile(std::string path, vector<std::string> fileLines) {
-            ofstream outFile;
-            outFile.open(path);
-            if (outFile.is_open()) 
-                for (int i = 0; i < fileLines.size(); i++)
-                    outFile << fileLines[i] << "\n";
-            outFile.close();
-        }
-
         void makeTitlescreenButtons(GuiAppState *state) {
 
             class SpButton : public Button {
             public:
-
-                SpButton(GuiAppState *state, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+                SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
                     this->state = state;
                 }
 
                 void onClick() {
-                    vector<stringw> difficulties, factions;
+                    vector<string> difficulties, factions;
 
                     class PlayButton : public Button {
                     public:
-                        PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+                        PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
                             this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
                             this->lengths[0]=lengths[0];
                             this->lengths[1]=lengths[1];
+
                             difficultiesListboxes=difficulties;
                             factionsListboxes=factions;
                         }
@@ -79,13 +43,15 @@ namespace game{
                             gm->detachAllBitmapTexts();
                             state->removeButton("Back");
 //                             gameManager->dettachState(state);
-                            std::vector<stringw> difficulties,factions;
+                            std::vector<string> difficulties, factions;
 
+														/*
                             for(int i=0;i<lengths[0];i++)
-                                difficulties.push_back(difficultiesListboxes[i]->getLine(difficultiesListboxes[i]->getSelectedOption()));
+                                difficulties.push_back(difficultiesListboxes[i]->getContents()[difficultiesListboxes[i]->getSelectedOption()]);
 
                             for(int i=0;i<lengths[1];i++)
-                                factions.push_back(stringw(factionsListboxes[i]->getSelectedOption()));
+                                factions.push_back(factionsListboxes[i]->getSelectedOption());
+																*/
 
                             gm->getStateManager()->attachState(new InGameAppState(difficulties, factions));
                             state->removeAllListboxes();
@@ -102,7 +68,7 @@ namespace game{
                     class ReturnButton : public Button {
                     public:
 
-                        ReturnButton(GuiAppState *state, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+                        ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
                             this->state = state;
                         }
 
@@ -121,28 +87,31 @@ namespace game{
                     };
 
 										GameManager *gm = GameManager::getSingleton();
-                    IGUIFont *font = gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fonthaettenschweiler.bmp");
-                    vector2d<s32> pos(gm->getWidth() / 8, gm->getHeight() / 8);
+                    //IGUIFont *font = gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fonthaettenschweiler.bmp");
+                    Vector2 pos(gm->getWidth() / 8, gm->getHeight() / 8);
                     difficulties.push_back("Easy");
                     difficulties.push_back("Medium");
                     difficulties.push_back("Hard");
                     factions.push_back("0");
                     factions.push_back("1");
+										/*
                     gm->attachBitmapText(new BitmapText("Difficulty", vector2d<s32>(pos.X, pos.Y - 20), font));
                     gm->attachBitmapText(new BitmapText("Faction", vector2d<s32>(pos.X + 110, pos.Y - 20), font));
                     gm->attachBitmapText(new BitmapText("Player", vector2d<s32>(pos.X - 40, pos.Y), font));
                     gm->attachBitmapText(new BitmapText("CPU", vector2d<s32>(pos.X - 20, pos.Y + 30), font));
-                    Listbox *cpuDifficulty = new Listbox(vector2d<s32>(pos.X, pos.Y + 30), vector2d<s32>(100, 20), difficulties, 3);
-                    Listbox *cpuFaction = new Listbox(vector2d<s32>(pos.X + 110, pos.Y + 30), vector2d<s32>(100, 20), factions, 2);
-                    Listbox *playerFaction = new Listbox(vector2d<s32>(pos.X + 110, pos.Y), vector2d<s32>(100, 20), factions, 2);
+										*/
+										string font = PATH + "Fonts/batang.ttf";
+                    Listbox *cpuDifficulty = new Listbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), difficulties, 3, font);
+                    Listbox *cpuFaction = new Listbox(Vector2(pos.x + 110, pos.y + 30), Vector2(100, 20), factions, 2, font);
+                    Listbox *playerFaction = new Listbox(Vector2(pos.x + 110, pos.y), Vector2(100, 20), factions, 2, font);
                     Listbox **difficultyListboxes=new Listbox*[1];
                     Listbox **factionListboxes=new Listbox*[2];
                     difficultyListboxes[0]=cpuDifficulty;
                     factionListboxes[0]=playerFaction;
                     factionListboxes[1]=cpuFaction;
                     int lengths[]{1,2};
-                    PlayButton *playButton = new PlayButton(difficultyListboxes, factionListboxes, lengths, vector2d<s32>(50, gm->getHeight() - 150), vector2d<s32>(140, 50), "Play", true);
-                    ReturnButton *returnButton = new ReturnButton(state, vector2d<s32>(200, gm->getHeight() - 150), vector2d<s32>(140, 50), "Back", true);
+                    PlayButton *playButton = new PlayButton(difficultyListboxes, factionListboxes, lengths, Vector2(50, gm->getHeight() - 150), Vector2(140, 50), "Play", true);
+                    ReturnButton *returnButton = new ReturnButton(state, Vector2(200, gm->getHeight() - 150), Vector2(140, 50), "Back", true);
                     state->addButton(playButton);
                     state->addButton(returnButton);
                     state->addListbox(cpuDifficulty);
@@ -159,12 +128,12 @@ namespace game{
             class MainMenuOptionsButton : public OptionsButton {
             public:
 
-                MainMenuOptionsButton(GuiAppState *state, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : OptionsButton(pos, size, name, separate) {
+                MainMenuOptionsButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : OptionsButton(pos, size, name, separate) {
                     this->state = state;
                 }
 
                 void onClick() {
-                    ReturnButton *returnButton = new ReturnButton(state, vector2d<s32>(50, GameManager::getSingleton()->getHeight() - 150), vector2d<s32>(150, 50), "Back", true);
+                    ReturnButton *returnButton = new ReturnButton(state, Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(150, 50), "Back", true);
                     state->addButton(returnButton);
                     state->removeButton("Singleplayer");
                     state->removeButton("Exit");
@@ -176,7 +145,7 @@ namespace game{
                 class ReturnButton : public Button {
                 public:
 
-                    ReturnButton(GuiAppState *state, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
                         this->state = state;
                     }
 
@@ -191,10 +160,10 @@ namespace game{
                         state->removeButton("Audio");
                         state->removeButton("Multiplayer");
 												GameManager *gm = GameManager::getSingleton();
-                        SpButton *spButton = new SpButton(state, vector2d<s32>(gm->getWidth() / 16, gm->getHeight() / 12), vector2d<s32>(150, 40), "Singleplayer", true);
-                        MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, vector2d<s32>(gm->getWidth() / 16, gm->getHeight() / 12 * 2), vector2d<s32>(150, 40), "Options", true);
+                        SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
+                        MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);
                         state->addButton(optionsButton);
-                        ExitButton *exitButton = new ExitButton(vector2d<s32>(gm->getWidth() / 16, gm->getHeight() / 12 * 3), vector2d<s32>(150, 40), "Exit", true);
+                        ExitButton *exitButton = new ExitButton(Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 3), Vector2(150, 40), "Exit", true);
                         state->addButton(spButton);
                         state->addButton(exitButton);
                         state->removeButton("Back");
@@ -205,19 +174,15 @@ namespace game{
             };
 
 						GameManager *gm = GameManager::getSingleton();
-            SpButton *spButton = new SpButton(state, vector2d<s32>(gm->getWidth() / 16, gm->getHeight() / 12), vector2d<s32>(150, 40), "Singleplayer", true);
-            MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, vector2d<s32>(gm->getWidth() / 16, gm->getHeight() / 12 * 2), vector2d<s32>(150, 40), "Options", true);
-            ExitButton *exitButton = new ExitButton(vector2d<s32>(gm->getWidth() / 16, gm->getHeight() / 12 * 3), vector2d<s32>(150, 40), "Exit", true);
+            SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
+            MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);
+            ExitButton *exitButton = new ExitButton(Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 3), Vector2(150, 40), "Exit", true);
             state->addButton(optionsButton);
             state->addButton(spButton);
             state->addButton(exitButton);
         }
 
-        double getAngleBetween(vector3df v1, vector3df v2) {
-            v1.normalize();
-            v2.normalize();
-            return acos(v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z);
-        }
+				/*
         bool isWithinRect(vector3df c1,vector3df c2, vector3df p, vector3df dir){
             float mainAngle=getAngleBetween(c1-c2,dir);
             float mainHyp=(c1-c2).getLength();
@@ -239,5 +204,6 @@ namespace game{
             bool withinC=cAngle<=PI/2&&p*cos(cAngle)<=c;
             return withinA&&withinB&&withinC;
         }
+				*/
     }
 }

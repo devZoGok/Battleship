@@ -7,7 +7,6 @@
 #include "key.h"
 #include "util.h"
 #include <vector>
-#include <irrlicht.h>
 #include <string>
 
 namespace game{
@@ -20,7 +19,7 @@ namespace game{
     typedef gui::AbstractImage Image;
 
     namespace core{
-        class EventListener;
+        class InputManager;
         class StateManager;
         
         class GameManager {
@@ -33,25 +32,21 @@ namespace game{
             void detachImage(gui::AbstractImage*);
             void detachAllImages();
             void update();
-            inline irr::IrrlichtDevice* getDevice(){return device;}
-            inline irr::scene::ISceneManager* getSceneManager(){return device->getSceneManager();}
-            inline void setDevice(irr::IrrlichtDevice *d){this->device=d;}
             inline int getWidth(){return width;}
             inline int getHeight(){return height;}
-            inline EventListener* getListener(){return listener;}
+            inline InputManager* getListener(){return listener;}
             inline bool isServerSide(){return serverSide;}
 						inline StateManager* getStateManager(){return stateManager;}
         private:
             GameManager();
             ~GameManager();
 
-            irr::IrrlichtDevice *device = nullptr;
 						StateManager *stateManager = nullptr;
             std::vector<AbstractAppState*> appStates;
             int width, height;
             std::vector<gui::AbstractBitmapText*> bitmapTexts;
             std::vector<gui::AbstractImage*> images;
-            EventListener *listener = nullptr;
+            InputManager *listener = nullptr;
             bool serverSide;
         };
         

@@ -1,15 +1,14 @@
-#include "abstractAppState.h"
-#include "defConfigs.h"
-#include "util.h"
-#include <irrlicht.h>
 #include <algorithm>
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <util.h>
 
-using namespace irr::core;
-using namespace game::util;
+#include "abstractAppState.h"
+#include "defConfigs.h"
+
 using namespace game::core;
+using namespace vb01;
 using namespace std;
 
 namespace game{
@@ -17,29 +16,47 @@ namespace game{
         void AbstractAppState::onAttachment() {
             const int stateId=(int)type,numBinds=core::numBinds[stateId];
             int firstLine=0,lastLine;
+
             for(int i=0;i<stateId;i++)
                 firstLine+=core::numConfBinds[i];
+
 //             firstLine++;
             lastLine=firstLine+core::numConfBinds[stateId];
-            std::vector<stringw> lines=readFile(PATH_STR+"../options.cfg",firstLine,lastLine);
+            std::vector<string> lines;
+            readFile(PATH_STR + "../options.cfg", lines, firstLine,lastLine);
+
             for(int i=0;i<numBinds;i++){
                 int trigger=core::triggers[stateId][i];
+
                 if(i<core::numConfBinds[stateId]&&stateId!=(int)AppStateTypes::GUI_STATE){
                     int xId=-1;
+
                     for(int i2=0;i2<lines[i].size()&&xId==-1;i2++)
                         if(lines[i].c_str()[i2]=='x')
                             xId=i2;
+
                     char ch[2];
+
                     for(int i2=0;i2<2;i2++)
-                        ch[i2]=(char)lines[i].subString(xId+1,2).c_str()[i2];
+                        ch[i2]=(char)lines[i].substr(xId+1,2).c_str()[i2];
+
                     stringstream ss;
                     ss<<ch;
                     ss>>std::hex>>trigger;
                 }
-                Bind bind=binds[stateId][i];
-                bool isKey=stateId>0?trigger>4:core::triggers[stateId][i],isAnalog=core::isAnalog[stateId][i];
-                attachedKeys.push_back(new Key(bind,trigger,isKey,isAnalog));
+
+								Mapping::Bind bind=binds[stateId][i];
+								Mapping::BindType type = (stateId > 0 ? Mapping::KEYBOARD : Mapping::MOUSE_KEY);
+								bool isAnalog = core::isAnalog[stateId][i];
+
+								Mapping *m = new Mapping;
+								m->bind = bind;
+								m->trigger = trigger;
+								m->type = type;
+								m->action = !isAnalog;
+                attachedKeys.push_back(m);
             }
+
             attached = true;
         }
 
@@ -47,7 +64,7 @@ namespace game{
             attached = false;
         }
 
-        void AbstractAppState::detachKey(Key *key) {
+        void AbstractAppState::detachKey(Mapping *key) {
             for (int i = 0; i < attachedKeys.size(); i++)
                 if (key == attachedKeys[i]) {
                     delete key;

@@ -2,7 +2,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <irrlicht.h>
+#include <vector.h>
 
 namespace game{
     namespace content{
@@ -13,12 +13,14 @@ namespace game{
             void update();
             void load();
             void unload();
-            inline irr::core::vector2d<irr::s32> getSize(){return size;}
+            inline vb01::Vector2 getSize(){return size;}
         private:
-            irr::core::vector2d<irr::s32> size;
+            vb01::Vector2 size;
+						/*
             irr::scene::ILightSceneNode *sunLight;
             irr::scene::IAnimatedMesh *waterMesh;
             irr::scene::ISceneNode *waterNode;
+						*/
         };
     }
 }

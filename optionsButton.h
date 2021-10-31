@@ -2,15 +2,16 @@
 #ifndef OPTIONS_BUTTON_H
 #define OPTIONS_BUTTON_H
 
+#include <button.h>
+
 #include "guiAppState.h"
 #include "gameManager.h"
-#include "button.h"
 
 namespace game{
     namespace gui {
-        class OptionsButton : public Button {
+        class OptionsButton : public vb01Gui::Button {
         public:
-            OptionsButton(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+            OptionsButton(vb01::Vector2, vb01::Vector2, std::string, bool);
             class OkButton : public Button {
             public:
                 OkButton();
@@ -34,7 +35,7 @@ namespace game{
             };
             class TabButton : public Button {
             public:
-                TabButton(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw);
+                TabButton(vb01::Vector2, vb01::Vector2, std::string);
                 void onClick();
             protected:
                 core::GuiAppState *state;

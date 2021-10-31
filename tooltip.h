@@ -1,18 +1,18 @@
 #ifndef TOOLTIP_H
 #define TOOLTIP_H
 
-#include "abstractBitmapText.h"
+#include <text.h>
 
 namespace game{
     namespace gui{
         class Tooltip{
         public:
-            Tooltip(irr::core::vector2di, irr::core::stringw);
+            Tooltip(vb01::Vector2, std::string);
             ~Tooltip();
             void update();
         private:
-            irr::core::vector2di pos;
-            BitmapText *text;
+            vb01::Vector2 pos;
+            //BitmapText *text;
         };
     }
 }

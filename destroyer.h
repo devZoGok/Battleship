@@ -12,17 +12,17 @@ namespace game
     namespace content {
         class Destroyer : public Vessel {
         public:
-            Destroyer(Player*,vector3df, int);
+            Destroyer(Player*, vb01::Vector3, int);
             void dropDepthCharge();
             void attack(Order);
             void update();
         private:
             void reload();
-            inline bool canDropDepthCharge(){return util::getTime()-lastDropTime>rateOfDrops;}
+            inline bool canDropDepthCharge(){return vb01::getTime() - lastDropTime > rateOfDrops;}
             bool reloading = false;
             float maxDepthChargeDropRange;
             int depthCharges, maxDepthCharges, rateOfDrops, reloadRate;
-            s64 lastShotTime=0, reloadStartTime=0,lastDropTime=0;
+            s64 lastShotTime = 0, reloadStartTime = 0, lastDropTime = 0;
         };
     }
 }

@@ -2,16 +2,16 @@
 #ifndef EXPLOSION_H
 #define EXPLOSION_H
 
-#include <irrlicht.h>
+#include <vector.h>
 
 namespace game{
     namespace core{
         class InGameAppState;
     }
     namespace content{
-        void detonate(core::InGameAppState*,irr::core::vector3df,irr::core::vector3df);
-        void detonateDepthCharge(core::InGameAppState*,irr::core::vector3df);
-        void detonateTorpedo(core::InGameAppState*,irr::core::vector3df);
+        void detonate(core::InGameAppState*, vb01::Vector3, vb01::Vector3);
+        void detonateDepthCharge(core::InGameAppState*, vb01::Vector3);
+        void detonateTorpedo(core::InGameAppState*, vb01::Vector3);
     }
 }
 

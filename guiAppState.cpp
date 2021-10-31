@@ -1,15 +1,17 @@
 #include <sstream>
+#include <vector.h>
 
+#include "gameManager.h"
 #include "guiAppState.h"
 
 using namespace game::gui;
-using namespace irr;
-using namespace irr::core;
+using namespace vb01;
+using namespace vb01Gui;
 using namespace std;
 
 namespace game{
     namespace core{
-        irr::u16 mousePos[2]{};
+        Vector2 mousePos;
 
         GuiAppState::GuiAppState() {
             type = AppStateTypes::GUI_STATE;
@@ -19,16 +21,19 @@ namespace game{
 
         void GuiAppState::update() {
 						GameManager *gm = GameManager::getSingleton();
+						/*
             mousePos[0] = gm->getDevice()->getCursorControl()->getPosition().X;
             mousePos[1] = gm->getDevice()->getCursorControl()->getPosition().Y;
+						*/
 
             for (Button *b : buttons) {
                 if (b->isSeparate())
                     b->update();
 
-                bool withinX=mousePos[0] > b->getPos().X && mousePos[0] < b->getPos().X + b->getSize().X;
-                bool withinY=mousePos[1] > b->getPos().Y && mousePos[1] < b->getPos().Y + b->getSize().Y;
+                bool withinX=mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
+                bool withinY=mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
 
+								/*
                 if(withinX&&withinY)
                     b->onMouseOver();
                 else
@@ -36,6 +41,7 @@ namespace game{
 
                 b->setMouseOverDone(withinX&&withinY);
                 b->setMouseAwayDone(!(withinX&&withinY));
+								*/
             }
 
             for (Listbox *l : listboxes)
@@ -56,43 +62,47 @@ namespace game{
 
         void GuiAppState::onAttachment() {
             AbstractAppState::onAttachment();
-						GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(true);
+						//GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(true);
             attachKeyboardKeys();
         }
 
         void GuiAppState::onDetachment() {
             AbstractAppState::onDetachment();
             AbstractAppState::detachAllKeys();
-            GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(false);
+            //GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(false);
         }
         
         void GuiAppState::attachKeyboardKeys() {
-            int firstId=Bind::LAST_BIND+1,lastId=firstId+numKeys;
+						/*
+            int firstId = Bind::LAST_BIND + 1, lastId = firstId + numKeys;
+
             for (int i = firstId; i <= lastId; i++){
                 int offset=i-firstId;
-                int trigger=offset<10?int(irr::KEY_KEY_0)+offset:int(irr::KEY_KEY_A)+offset-10;
+                int trigger = offset < 10 ? int(irr::KEY_KEY_0)+offset:int(irr::KEY_KEY_A)+offset-10;
                 AbstractAppState::attachKey(new Key((Bind)i, trigger, true, false));
             } 
+						*/
         }
 
-        void GuiAppState::onAction(Bind bind, bool isPressed) {
+        void GuiAppState::onAction(Mapping::Bind bind, bool isPressed) {
             switch(bind){
-                case LEFT_CLICK:
+								case Mapping::LEFT_CLICK:
                     if(isPressed)
                         for (int i=0;i<buttons.size();i++) {
                             Button *b=buttons[i];
-                            bool withinX=mousePos[0] > b->getPos().X && mousePos[0] < b->getPos().X + b->getSize().X;
-                            bool withinY=mousePos[1] > b->getPos().Y && mousePos[1] < b->getPos().Y + b->getSize().Y;
+                            bool withinX=mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
+                            bool withinY=mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
+
                             if (withinX&&withinY) 
                                 b->onClick();
                         }
                     break;
-                case SCROLLING_UP:
+								case Mapping::SCROLLING_UP:
                     for (Listbox *l : listboxes) 
                         if (l->isOpen())
                             l->scrollUp();
                     break;
-                case SCROLLING_DOWN: 
+								case Mapping::SCROLLING_DOWN: 
                     for (Listbox *l : listboxes) 
                         if (l->isOpen())
                             l->scrollDown();
@@ -101,44 +111,46 @@ namespace game{
             Textbox *t = getOpenTextbox();
                 if (t) 
                     switch(bind){
-                        case SHIFT_CAPS:
+												case Mapping::SHIFT_CAPS:
                             shiftPressed = !shiftPressed;
-                            t->setIsCapitalLeters(isPressed);
+                            //t->setIsCapitalLeters(isPressed);
                             break;
-                        case LEFT:
-                            if(isPressed)t->moveCursor(true);
+												case Mapping::LEFT:
+                            //if(isPressed)t->moveCursor(true);
                             break;
-                        case RIGHT:
-                            if(isPressed)t->moveCursor(false);
+												case Mapping::RIGHT:
+                            //if(isPressed)t->moveCursor(false);
                             break;
-                        case CAPS_LOCK: 
-                            if(isPressed)t->setIsCapitalLeters(!t->isCapitalLeters());
+												case Mapping::CAPS_LOCK: 
+                            //if(isPressed)t->setIsCapitalLeters(!t->isCapitalLeters());
                             break;
-                        case SPACE:
+												case Mapping::SPACE:
                             if(isPressed)t->type(' ');
                             break;
-                        case DELETE_CHAR:
+												case Mapping::DELETE_CHAR:
                             if(isPressed)t->deleteCharacter();
                             break;
-                        case PLUS:
+												case Mapping::PLUS:
                             if(isPressed) t->type(shiftPressed?'+':'=');
                             break;
-                        case MINUS:
+												case Mapping::MINUS:
                             if(isPressed) t->type(shiftPressed?'_':'-');
                             break;
-                        case DEVSTERISK:
+												case Mapping::DEVSTERISK:
                             if(isPressed) t->type(shiftPressed?'~':'`');
                             break;
                         default:
-                            if(bind>LAST_BIND)checkKeyboard(t, bind, isPressed);
+                            if(bind>Mapping::LAST_BIND)checkKeyboard(t, bind, isPressed);
                     }
         }
 
-        void GuiAppState::checkKeyboard(Textbox *t, Bind bind, bool isPressed) {
-            int firstId=Bind::LAST_BIND+1,lastId=firstId+numKeys;
+        void GuiAppState::checkKeyboard(Textbox *t, Mapping::Bind bind, bool isPressed) {
+            int firstId = Mapping::Bind::LAST_BIND+1,lastId=firstId+numKeys;
+
             for (int i = firstId; i <= lastId; i++) {
                 int offset=i-firstId;
                 char c = keyChars[offset];
+
                 if (bind==i&&isPressed) {
                     if (shiftPressed) {
                         switch(offset){
@@ -174,6 +186,7 @@ namespace game{
                                 break;
                         }
                     }
+
                     t->type(c);
                 }
             }
@@ -181,22 +194,27 @@ namespace game{
 
         void GuiAppState::updateControlsListbox(int trigger){
             Listbox *controlsListbox=nullptr;
+
             for(Listbox *l : listboxes)
-                if(l->isOpen()&&l->isControlsListbox())
+                if(l->isOpen() /*&& l->isControlsListbox()*/)
                     controlsListbox=l;
+
             if(controlsListbox){
                 int selectedOption=controlsListbox->getSelectedOption(),colonId=-1;
-                stringw line=controlsListbox->getLine(selectedOption);
+                wstring line = controlsListbox->getContents()[selectedOption];
+
                 for(int i=0;i<line.size()&&colonId==-1;i++)
                     if(line.c_str()[i]==':')
                         colonId=i;
+
                 stringstream ss;
                 ss<<hex<<trigger;
-                line=line.subString(0,colonId+1)+stringw("0x")+stringw(ss.str().c_str());
+                line=line.substr(0,colonId+1)+L"0x"/*+ss.str().c_str()*/;
                 controlsListbox->changeLine(selectedOption,line);
             }
         }
         
+				/*
         void GuiAppState::onRawKeyPress(SEvent::SKeyInput event){
             updateControlsListbox(event.Key);
         }
@@ -209,6 +227,7 @@ namespace game{
                 trigger=2;
             updateControlsListbox(trigger);
         }
+				*/
         
         Textbox* GuiAppState::getOpenTextbox() {
             Textbox* t = nullptr;
@@ -232,7 +251,7 @@ namespace game{
                 return nullptr;
         }
 
-        void GuiAppState::onAnalog(Bind bind, double strength) {}
+        void GuiAppState::onAnalog(Mapping::Bind bind, double strength) {}
 
         void GuiAppState::addButton(Button* b) {
             buttons.push_back(b);
@@ -266,20 +285,26 @@ namespace game{
         void GuiAppState::removeButton(Button *b) {
             for (int i = 0; i < buttons.size(); i++) {
                 if (b == buttons[i]) {
+										/*
                     if (b->isImageButton())
                         GameManager::getSingleton()->detachImage(b->getImage());
+												*/
                     delete b;
                     buttons.erase(buttons.begin() + i);
                 }
             }
         }
 
-        void GuiAppState::removeButton(stringw name) {
+        void GuiAppState::removeButton(string name) {
             for (int i = 0; i < buttons.size(); i++) {
                 if (name == buttons[i]->getName() && buttons[i]->isSeparate()) {
+										/*
                     if (buttons[i]->isImageButton())
                         GameManager::getSingleton()->detachImage(buttons[i]->getImage());
+												*/
+
                     delete buttons[i];
+
                     buttons.erase(buttons.begin() + i);
                 }
             }

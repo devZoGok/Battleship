@@ -8,11 +8,11 @@ namespace game{
     namespace content{
         class DepthCharge : public Projectile {
         public:
-            DepthCharge(Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            DepthCharge(Unit*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
             void update();
         private:
             s64 initTime;
-            void explode(irr::scene::ISceneNode*);
+            void explode(vb01::Node*);
             void checkForCollision();
         };
     }

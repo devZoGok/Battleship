@@ -2,11 +2,13 @@
 #ifndef ACTIVE_GAME_STATE_H
 #define ACTIVE_GAME_STATE_H
 
-#include "gameManager.h"
-#include <irrlicht.h>
 #include "guiAppState.h"
 #include "player.h"
 #include "map.h"
+
+namespace vb01{
+		class Node;
+}
 
 namespace game{
     namespace core{
@@ -17,27 +19,27 @@ namespace game{
             void onAttachment();
             void onDetachment();
             void update();
-            void onAction(Bind, bool);
-            void onAnalog(Bind, double);
+            void onAction(Mapping::Bind, bool);
+            void onAnalog(Mapping::Bind, double);
             inline void setSelectingLaunchPoint(bool s){this->selectingGuidedMissileTarget=s;}
             inline content::Player* getPlayer(){return mainPlayer;}
             inline std::vector<content::Unit*>& getSelectedUnits(){return selectedUnits;}
             inline std::vector<content::Unit*>& getUnitGroup(int i){return unitGroups[i];}
         private:
-            class UnitButton : public gui::Button{
+            class UnitButton : public vb01Gui::Button{
             public:
-                UnitButton(ActiveGameState*,vector2di, vector2di, irr::core::stringw,int,int);
+                UnitButton(ActiveGameState*, vb01::Vector2, vb01::Vector2, std::string, int, int);
                 ~UnitButton();
                 virtual void onClick();
                 virtual void onMouseOver();
                 virtual void onMouseAway();
             private:
                 ActiveGameState *activeState;
-                int faction,unitId;
+                int faction, unitId;
             };
-            class UnitActionButton : public gui::Button{
+            class UnitActionButton : public vb01Gui::Button{
             public:
-                UnitActionButton(content::unitData::UNIT_TYPE, irr::core::vector2di, irr::core::vector2di, irr::core::stringw, irr::core::stringw);
+                UnitActionButton(content::unitData::UNIT_TYPE, vb01::Vector2, vb01::Vector2, std::string, std::string);
                 ~UnitActionButton();
                 virtual void onClick();
                 virtual void onMouseOver();
@@ -54,22 +56,22 @@ namespace game{
             void updateVectors();
             void updateSelectionBox();
             void addPos();
-            void issueOrder(content::Order::TYPE, std::vector<irr::core::vector3df*>, bool);
+            void issueOrder(content::Order::TYPE, std::vector<vb01::Vector3*>, bool);
             void lookAround(bool);
             GuiAppState *guiState;
             content::Map *map;
             std::vector<content::Player*> players;
             content::Player *mainPlayer;
-            irr::scene::ICameraSceneNode* cam;
-            irr::core::vector3df camDir = irr::core::vector3df(0, 0, 1), camLeft = irr::core::vector3df(1, 0, 0), camUp = irr::core::vector3df(0, 1, 0);
-            irr::core::vector2d<s32> clickPoint, selectionBoxOrigin, selectionBoxEnd;
-            std::vector<irr::core::vector2d<s32>> unitScreenPosVec;
-            std::vector<vector3df*> orderPos;
-            std::vector<ILightSceneNode*> unitLightNodes;
+            vb01::Camera *cam;
+            vb01::Vector3 camDir = vb01::Vector3(0, 0, 1), camLeft = vb01::Vector3(1, 0, 0), camUp = vb01::Vector3(0, 1, 0);
+            vb01::Vector2 clickPoint, selectionBoxOrigin, selectionBoxEnd;
+            std::vector<vb01::Vector2> unitScreenPosVec;
+            std::vector<vb01::Vector3*> orderPos;
+            std::vector<vb01::Node*> unitLightNodes;
             std::vector<content::Unit*> unitGroups[9], selectedUnits;
             UnitActionButton *actionButtons[4]{nullptr,nullptr,nullptr,nullptr};
             bool isSelectionBox = false, shiftPressed=false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false,lookingAround=false;
-            bool isInLineOfSight(irr::core::vector3df, float, content::Unit*);
+            bool isInLineOfSight(vb01::Vector3, float, content::Unit*);
             int playerId, zooms = 0;
         };
     }

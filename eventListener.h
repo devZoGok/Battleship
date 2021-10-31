@@ -3,18 +3,23 @@
 
 #include "gameManager.h"
 
+class GLFWwindow;
+
 namespace game{
     namespace core{
-        class EventListener : public irr::IEventReceiver {
+				class StateManager;
+
+        class InputManager {
         public:
-            EventListener(GameManager*);
-            ~EventListener();
-            virtual bool OnEvent(const irr::SEvent&);
+            InputManager(GLFWwindow*);
+            ~InputManager();
+            //virtual bool OnEvent(const irr::SEvent&);
             void update();
         private:
-            irr::SEvent* event;
+            //irr::SEvent* event;
+						GLFWwindow *window = nullptr;
+						StateManager *stateManager = nullptr;
             bool keyEvent = false, mouseEvent = false;
-            GameManager* gameManager;
         };
     }
 }

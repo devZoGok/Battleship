@@ -2,6 +2,8 @@
 #ifndef JET_DATA_H
 #define JET_DATA_H
 
+#include "unitData.h"
+
 /*
 0：戦艦
 1：駆逐艦

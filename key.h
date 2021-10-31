@@ -4,7 +4,8 @@
 
 namespace game{
     namespace core{
-        enum Bind{
+			struct Mapping{
+				enum Bind{
             LEFT_CLICK,
             SCROLLING_UP,
             SCROLLING_DOWN,
@@ -42,14 +43,15 @@ namespace game{
             GROUP_8,
             GROUP_9,
             LAST_BIND
-        };
-        
-        struct Key {
-            Key(Bind,int,bool,bool);
-            Bind bind;
-            int trigger;
-            bool key, pressed, analog, beingUsed;
-        };
+				};
+				enum BindType{KEYBOARD, MOUSE_KEY, MOUSE_AXIS, JOYSTICK_KEY, JOYSTICK_AXIS};
+				enum AuxTriggers{MOUSE_AXIS_LEFT = 310, MOUSE_AXIS_RIGHT = 311, MOUSE_AXIS_UP = 312, MOUSE_AXIS_DOWN = 313};
+			
+				Bind bind;
+				BindType type;
+				int trigger;
+				bool action, pressed = false;
+			};
     }
 }
 

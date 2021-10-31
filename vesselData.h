@@ -28,7 +28,7 @@ namespace game{
                 {FORWARD,BACKWARD},
                 {FORWARD,FORWARD,FORWARD,BACKWARD,BACKWARD},
             };
-            const stringw turretNames[numberOfUnits][maxNumTurrets]{
+            const std::string turretNames[numberOfUnits][maxNumTurrets]{
                 {
                     "bigTurret00", 
                     "bigTurret00", 
@@ -64,59 +64,59 @@ namespace game{
                 {"turret00", "turret00"},
                 {"turret01", "turret01", "turret01", "turret01", "turret01"}
             };
-            const vector3df turretPos[numberOfUnits][maxNumTurrets]{
+            const vb01::Vector3 turretPos[numberOfUnits][maxNumTurrets]{
                 {
-                    vector3df(0, .77703, -3.24292),
-                    vector3df(0, 0.96741, -1.67253), 
-                    vector3df(0, 0.77703, 3.29185),
-                    vector3df(0.90322, 0.78121, -0.17934), 
-                    vector3df(0.90322, 0.78121, 0.42676), 
-                    vector3df(0.90322, 0.78121, 1.03286),
-                    vector3df(0.90322, 0.78121, 1.63896), 
-                    vector3df(0.90322, 0.78121, 2.24506), 
-                    vector3df(-0.90322, 0.78121, -0.17934),
-                    vector3df(-0.90322, 0.78121, 0.42676), 
-                    vector3df(-0.90322, 0.78121, 1.03286), 
-                    vector3df(-0.90322, 0.78121, 1.63896),
-                    vector3df(-0.90322, 0.78121, 2.24506)
+										vb01::Vector3(0, .77703, -3.24292),
+                    vb01::Vector3(0, 0.96741, -1.67253), 
+                    vb01::Vector3(0, 0.77703, 3.29185),
+                    vb01::Vector3(0.90322, 0.78121, -0.17934), 
+                    vb01::Vector3(0.90322, 0.78121, 0.42676), 
+                    vb01::Vector3(0.90322, 0.78121, 1.03286),
+                    vb01::Vector3(0.90322, 0.78121, 1.63896), 
+                    vb01::Vector3(0.90322, 0.78121, 2.24506), 
+                    vb01::Vector3(-0.90322, 0.78121, -0.17934),
+                    vb01::Vector3(-0.90322, 0.78121, 0.42676), 
+                    vb01::Vector3(-0.90322, 0.78121, 1.03286), 
+                    vb01::Vector3(-0.90322, 0.78121, 1.63896),
+                    vb01::Vector3(-0.90322, 0.78121, 2.24506)
                 },
                 {
-                    vector3df(0, 0.70974, -2.73371), 
-                    vector3df(0, 0.915258, -1.62768), 
-                    vector3df(0, 0.70974, 3.33251),
-                    vector3df(0.58824, 0.76908, 0.30145), 
-                    vector3df(0.58824, 0.98059, 0.58992), 
-                    vector3df(0.58824, 0.76908, 0.8634), 
-                    vector3df(0.58824, 0.98059, 1.13294), 
-                    vector3df(0.58824, 0.76908, 1.40591),
-                    vector3df(-0.58824, 0.76908, 0.30145), 
-                    vector3df(-0.58824, 0.98059, 0.58992), 
-                    vector3df(-0.58824, 0.76908, 0.8634), 
-                    vector3df(-0.58824, 0.98059, 1.13294), 
-                    vector3df(-0.58824, 0.76908, 1.40591)
+										vb01::Vector3(0, 0.70974, -2.73371), 
+                    vb01::Vector3(0, 0.915258, -1.62768), 
+                    vb01::Vector3(0, 0.70974, 3.33251),
+                    vb01::Vector3(0.58824, 0.76908, 0.30145), 
+                    vb01::Vector3(0.58824, 0.98059, 0.58992), 
+                    vb01::Vector3(0.58824, 0.76908, 0.8634), 
+                    vb01::Vector3(0.58824, 0.98059, 1.13294), 
+                    vb01::Vector3(0.58824, 0.76908, 1.40591),
+                    vb01::Vector3(-0.58824, 0.76908, 0.30145), 
+                    vb01::Vector3(-0.58824, 0.98059, 0.58992), 
+                    vb01::Vector3(-0.58824, 0.76908, 0.8634), 
+                    vb01::Vector3(-0.58824, 0.98059, 1.13294), 
+                    vb01::Vector3(-0.58824, 0.76908, 1.40591)
                 },
                 {
-                    vector3df(0, 0.04967, -2.08348), 
-                    vector3df(0, 0.25291, -1.26886), 
-                    vector3df(0, 0.25291, 1.61533), 
-                    vector3df(0, 0.04967, 2.42996)
+										vb01::Vector3(0, 0.04967, -2.08348), 
+                    vb01::Vector3(0, 0.25291, -1.26886), 
+                    vb01::Vector3(0, 0.25291, 1.61533), 
+                    vb01::Vector3(0, 0.04967, 2.42996)
                 },
                 {
-                    vector3df(0, 0.53012, -2.92538), 
-                    vector3df(0, 0.707, -2.45061), 
-                    vector3df(0, 0.55879, 2.16916), 
-                    vector3df(0, 0.3808, 2.72071)
+										vb01::Vector3(0, 0.53012, -2.92538), 
+                    vb01::Vector3(0, 0.707, -2.45061), 
+                    vb01::Vector3(0, 0.55879, 2.16916), 
+                    vb01::Vector3(0, 0.3808, 2.72071)
                 },
                 {
-                    vector3df(0, 0.73788, -2.79825), 
-                    vector3df(0, 0.73788, 2.79825)
+										vb01::Vector3(0, 0.73788, -2.79825), 
+                    vb01::Vector3(0, 0.73788, 2.79825)
                 },
                 {
-                    vector3df(0, 0.52632, -3.64706), 
-                    vector3df(0, 0.71625, -2.81714), 
-                    vector3df(0, 0.86667, -1.92772), 
-                    vector3df(0, 0.7724, 2.53618), 
-                    vector3df(0, 0.52632, 3.41345)
+										vb01::Vector3(0, 0.52632, -3.64706), 
+                    vb01::Vector3(0, 0.71625, -2.81714), 
+                    vb01::Vector3(0, 0.86667, -1.92772), 
+                    vb01::Vector3(0, 0.7724, 2.53618), 
+                    vb01::Vector3(0, 0.52632, 3.41345)
                 }
             };
             const float turretAngleOffset[numberOfUnits][maxNumTurrets]{
@@ -175,7 +175,7 @@ namespace game{
                 {1, 1},
                 {3, 3, 3, 3, 3}
             };
-            const stringw mantletNames[numberOfUnits][maxNumTurrets]{
+            const std::string mantletNames[numberOfUnits][maxNumTurrets]{
                 {
                     "bigMantlet00", 
                     "bigMantlet00", 
@@ -211,59 +211,59 @@ namespace game{
                 {"mantlet00", "mantlet00"},
                 {"mantlet01", "mantlet01", "mantlet01", "mantlet01", "mantlet01"}
             };
-            const vector3df mantletPos[numberOfUnits][maxNumTurrets]{
+            const vb01::Vector3 mantletPos[numberOfUnits][maxNumTurrets]{
                 {
-                    vector3df(0, 0.19722f, -0.38441f),
-                    vector3df(0, 0.183f, -0.38876f), 
-                    vector3df(0, 0.183f, -0.38876f),
-                    vector3df(0, 0.06484f, -0.08587f), 
-                    vector3df(0, 0.06484f, -0.08587f), 
-                    vector3df(0, 0.06484f, -0.08587f),
-                    vector3df(0, 0.06484f, -0.08587f), 
-                    vector3df(0, 0.06484f, -0.08587f), 
-                    vector3df(0, 0.06484f, -0.08587f),
-                    vector3df(0, 0.06484f, -0.08587f), 
-                    vector3df(0, 0.06484f, -0.08587f), 
-                    vector3df(0, 0.06484f, -0.08587f),
-                    vector3df(0, 0.06484f, -0.08587f)
+										vb01::Vector3(0, 0.19722f, -0.38441f),
+                    vb01::Vector3(0, 0.183f, -0.38876f), 
+                    vb01::Vector3(0, 0.183f, -0.38876f),
+                    vb01::Vector3(0, 0.06484f, -0.08587f), 
+                    vb01::Vector3(0, 0.06484f, -0.08587f), 
+                    vb01::Vector3(0, 0.06484f, -0.08587f),
+                    vb01::Vector3(0, 0.06484f, -0.08587f), 
+                    vb01::Vector3(0, 0.06484f, -0.08587f), 
+                    vb01::Vector3(0, 0.06484f, -0.08587f),
+                    vb01::Vector3(0, 0.06484f, -0.08587f), 
+                    vb01::Vector3(0, 0.06484f, -0.08587f), 
+                    vb01::Vector3(0, 0.06484f, -0.08587f),
+                    vb01::Vector3(0, 0.06484f, -0.08587f)
                 },
                 {
-                    vector3df(0, 0.111116, -0.335219), 
-                    vector3df(0, 0.111116, -0.335219), 
-                    vector3df(0, 0.111116, -0.335219),
-                    vector3df(0, 0.025217, -0.071749), 
-                    vector3df(0, 0.025217, -0.071749), 
-                    vector3df(0, 0.025217, -0.071749),
-                    vector3df(0, 0.025217, -0.071749), 
-                    vector3df(0, 0.025217, -0.071749), 
-                    vector3df(0, 0.025217, -0.071749),
-                    vector3df(0, 0.025217, -0.071749), 
-                    vector3df(0, 0.025217, -0.071749), 
-                    vector3df(0, 0.025217, -0.071749),
-                    vector3df(0, 0.025217, -0.071749)
+										vb01::Vector3(0, 0.111116, -0.335219), 
+                    vb01::Vector3(0, 0.111116, -0.335219), 
+                    vb01::Vector3(0, 0.111116, -0.335219),
+                    vb01::Vector3(0, 0.025217, -0.071749), 
+                    vb01::Vector3(0, 0.025217, -0.071749), 
+                    vb01::Vector3(0, 0.025217, -0.071749),
+                    vb01::Vector3(0, 0.025217, -0.071749), 
+                    vb01::Vector3(0, 0.025217, -0.071749), 
+                    vb01::Vector3(0, 0.025217, -0.071749),
+                    vb01::Vector3(0, 0.025217, -0.071749), 
+                    vb01::Vector3(0, 0.025217, -0.071749), 
+                    vb01::Vector3(0, 0.025217, -0.071749),
+                    vb01::Vector3(0, 0.025217, -0.071749)
                 },
                 {
-                    vector3df(0, 0.22782f, -0.12394f), 
-                    vector3df(0, 0.22782f, -0.12394f), 
-                    vector3df(0, 0.22782f, -0.12394f), 
-                    vector3df(0, 0.22782f, -0.12394f)
+										vb01::Vector3(0, 0.22782f, -0.12394f), 
+                    vb01::Vector3(0, 0.22782f, -0.12394f), 
+                    vb01::Vector3(0, 0.22782f, -0.12394f), 
+                    vb01::Vector3(0, 0.22782f, -0.12394f)
                 },
                 {
-                    vector3df(0, 0.14613, -0.0217), 
-                    vector3df(0, 0.14613, -0.0217), 
-                    vector3df(0, 0.14613, -0.0217), 
-                    vector3df(0, 0.14613, -0.0217)
+										vb01::Vector3(0, 0.14613, -0.0217), 
+                    vb01::Vector3(0, 0.14613, -0.0217), 
+                    vb01::Vector3(0, 0.14613, -0.0217), 
+                    vb01::Vector3(0, 0.14613, -0.0217)
                 },
                 {
-                    vector3df(0, 0.2842f, -0.1274f), 
-                    vector3df(0, 0.2842f, -0.1274f)
+										vb01::Vector3(0, 0.2842f, -0.1274f), 
+                    vb01::Vector3(0, 0.2842f, -0.1274f)
                 },
                 {
-                    vector3df(0, 0.09455, -0.19379), 
-                    vector3df(0, 0.09455, -0.19379), 
-                    vector3df(0, 0.09455, -0.19379), 
-                    vector3df(0, 0.09455, -0.19379), 
-                    vector3df(0, 0.09455, -0.19379)
+										vb01::Vector3(0, 0.09455, -0.19379), 
+                    vb01::Vector3(0, 0.09455, -0.19379), 
+                    vb01::Vector3(0, 0.09455, -0.19379), 
+                    vb01::Vector3(0, 0.09455, -0.19379), 
+                    vb01::Vector3(0, 0.09455, -0.19379)
                 }
             };
             const float mantletPosSideOffset[numberOfUnits][maxNumTurrets]{
@@ -320,60 +320,60 @@ namespace game{
                 {40, 40},
                 {40, 40, 40, 40, 40}
             };
-            const vector3df barrelPos[numberOfUnits][maxNumTurrets]{
+            const vb01::Vector3 barrelPos[numberOfUnits][maxNumTurrets]{
                 {
-                    vector3df(0, 0, -0.16689f), 
-                    vector3df(0, 0, -0.16689f), 
-                    vector3df(0, 0, -0.16689f),
-                    vector3df(0, 0, -0.1021f),
-                    vector3df(0, 0, -0.1021f), 
-                    vector3df(0, 0, -0.1021f),
-                    vector3df(0, 0, -0.1021f), 
-                    vector3df(0, 0, -0.1021f), 
-                    vector3df(0, 0, -0.1021f),
-                    vector3df(0, 0, -0.1021f), 
-                    vector3df(0, 0, -0.1021f), 
-                    vector3df(0, 0, -0.1021f),
-                    vector3df(0, 0, -0.1021f)},
+										vb01::Vector3(0, 0, -0.16689f), 
+                    vb01::Vector3(0, 0, -0.16689f), 
+                    vb01::Vector3(0, 0, -0.16689f),
+                    vb01::Vector3(0, 0, -0.1021f),
+                    vb01::Vector3(0, 0, -0.1021f), 
+                    vb01::Vector3(0, 0, -0.1021f),
+                    vb01::Vector3(0, 0, -0.1021f), 
+                    vb01::Vector3(0, 0, -0.1021f), 
+                    vb01::Vector3(0, 0, -0.1021f),
+                    vb01::Vector3(0, 0, -0.1021f), 
+                    vb01::Vector3(0, 0, -0.1021f), 
+                    vb01::Vector3(0, 0, -0.1021f),
+                    vb01::Vector3(0, 0, -0.1021f)},
                 {
-                    vector3df(0, 0, -0.246837), 
-                    vector3df(0, 0, -0.246837), 
-                    vector3df(0, 0, -0.246837),
-                    vector3df(0, 0, -0.054993), 
-                    vector3df(0, 0, -0.054993), 
-                    vector3df(0, 0, -0.054993),
-                    vector3df(0, 0, -0.054993), 
-                    vector3df(0, 0, -0.054993), 
-                    vector3df(0, 0, -0.054993),
-                    vector3df(0, 0, -0.054993), 
-                    vector3df(0, 0, -0.054993), 
-                    vector3df(0, 0, -0.054993),
-                    vector3df(0, 0, -0.054993)
+										vb01::Vector3(0, 0, -0.246837), 
+                    vb01::Vector3(0, 0, -0.246837), 
+                    vb01::Vector3(0, 0, -0.246837),
+                    vb01::Vector3(0, 0, -0.054993), 
+                    vb01::Vector3(0, 0, -0.054993), 
+                    vb01::Vector3(0, 0, -0.054993),
+                    vb01::Vector3(0, 0, -0.054993), 
+                    vb01::Vector3(0, 0, -0.054993), 
+                    vb01::Vector3(0, 0, -0.054993),
+                    vb01::Vector3(0, 0, -0.054993), 
+                    vb01::Vector3(0, 0, -0.054993), 
+                    vb01::Vector3(0, 0, -0.054993),
+                    vb01::Vector3(0, 0, -0.054993)
                 },
                 {
-                    vector3df(0, 0, -0.12806f), 
-                    vector3df(0, 0, -0.12806f), 
-                    vector3df(0, 0, -0.12806f), 
-                    vector3df(0, 0, -0.12806f)},
+										vb01::Vector3(0, 0, -0.12806f), 
+                    vb01::Vector3(0, 0, -0.12806f), 
+                    vb01::Vector3(0, 0, -0.12806f), 
+                    vb01::Vector3(0, 0, -0.12806f)},
                 {
-                    vector3df(0, 0, -0.11048), 
-                    vector3df(0, 0, -0.11048), 
-                    vector3df(0, 0, -0.11048),
-                    vector3df(0, 0, -0.11048)
+										vb01::Vector3(0, 0, -0.11048), 
+                    vb01::Vector3(0, 0, -0.11048), 
+                    vb01::Vector3(0, 0, -0.11048),
+                    vb01::Vector3(0, 0, -0.11048)
                 },
                 {
-                    vector3df(0, 0, -0.23015f), 
-                    vector3df(0, 0, -0.23015f)
+										vb01::Vector3(0, 0, -0.23015f), 
+                    vb01::Vector3(0, 0, -0.23015f)
                 },
                 {
-                    vector3df(0, 0, -0.14595), 
-                    vector3df(0, 0, -0.14595), 
-                    vector3df(0, 0, -0.14595), 
-                    vector3df(0, 0, -0.14595), 
-                    vector3df(0, 0, -0.14595)
+										vb01::Vector3(0, 0, -0.14595), 
+                    vb01::Vector3(0, 0, -0.14595), 
+                    vb01::Vector3(0, 0, -0.14595), 
+                    vb01::Vector3(0, 0, -0.14595), 
+                    vb01::Vector3(0, 0, -0.14595)
                 }
             };
-            const stringw barrelNames[numberOfUnits][maxNumTurrets]{
+            const std::string barrelNames[numberOfUnits][maxNumTurrets]{
                 {
                     "bigBarrel00", 
                     "bigBarrel00", 
@@ -409,20 +409,20 @@ namespace game{
                 {"barrel00", "barrel00"},
                 {"barrel01", "barrel01", "barrel01", "barrel01", "barrel01"}
             };
-            const vector3df guidedMissilePos[numberOfUnits][6]{
+            const vb01::Vector3 guidedMissilePos[numberOfUnits][6]{
                 {},
                 {},
                 {},
                 {},
                 {
-                    vector3df(0.24482, 1.14985, 1.32775), 
-                    vector3df(0.24482, 1.14985, 1.62698), 
-                    vector3df(0.24482, 1.14985, 1.88017),
-                    vector3df(-0.24482, 1.14985, 1.32775), 
-                    vector3df(-0.24482, 1.14985, 1.62698), 
-                    vector3df(-0.24482, 1.14985, 1.88017)
+										vb01::Vector3(0.24482, 1.14985, 1.32775), 
+                    vb01::Vector3(0.24482, 1.14985, 1.62698), 
+                    vb01::Vector3(0.24482, 1.14985, 1.88017),
+                    vb01::Vector3(-0.24482, 1.14985, 1.32775), 
+                    vb01::Vector3(-0.24482, 1.14985, 1.62698), 
+                    vb01::Vector3(-0.24482, 1.14985, 1.88017)
                 },
-                {vector3df(0.17192, 0.57858, 0.64471), vector3df(-0.17192, 0.57858, 0.64471)}
+                {vb01::Vector3(0.17192, 0.57858, 0.64471), vb01::Vector3(-0.17192, 0.57858, 0.64471)}
             };
         }
     }

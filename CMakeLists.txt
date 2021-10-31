@@ -1,16 +1,24 @@
 cmake_minimum_required(VERSION 2.9)
 project(game)
 
-include_directories(/usr/include/irrlicht)
-
-link_directories(/usr/lib/)
-
 set(CMAKE_BUILD_TYPE Debug)
 cmake_policy(SET CMP0015 NEW)
 
+include_directories(../vb01)
+include_directories(../vb01Gui)
+include_directories(/usr/include/freetype2)
+include_directories(/usr/include/GLFW)
+include_directories(/usr/include/glm)
+include_directories(/usr/include/sfml)
+include_directories(/usr/include/mysql++)
+
+link_directories(../vb01/build)
+link_directories(../vb01Gui/build)
+link_directories(/usr/lib)
+
 set(states abstractAppState.cpp activeGameState.cpp inGameAppState.cpp guiAppState.cpp)
 set(util util.cpp)
-set(gui abstractImage.cpp abstractBitmapText.cpp tooltip.cpp button.cpp listbox.cpp textbox.cpp checkbox.cpp slider.cpp optionsButton.cpp exitButton.cpp consoleCommand.cpp)
+set(gui tooltip.cpp optionsButton.cpp exitButton.cpp consoleCommand.cpp)
 set(core eventListener.cpp gameManager.cpp main.cpp key.cpp stateManager.cpp)
 set(ships vessel.cpp destroyer.cpp cruiser.cpp aircraftCarrier.cpp submarine.cpp)
 set(projectiles projectile.cpp guidedMissile.cpp depthCharge.cpp missile.cpp shell.cpp torpedo.cpp)
@@ -19,6 +27,8 @@ set(fx explosion.cpp)
 set(content player.cpp unit.cpp map.cpp ${ships} ${projectiles} ${aircraft} ${fx})
 
 add_executable(battleship ${states} ${gui} ${core} ${content} ${util})
-target_link_libraries(battleship Irrlicht)
+target_link_libraries(battleship vb01d)
+target_link_libraries(battleship vb01Gui)
 target_link_libraries(battleship sfml-system)
 target_link_libraries(battleship sfml-audio)
+target_link_libraries(battleship glfw)

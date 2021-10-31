@@ -1,12 +1,11 @@
 #pragma once
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef UTIL_BATTLESHIP_H
+#define UTIL_BATTLESHIP_H
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
-#include <irrlicht.h>
 #include <chrono>
 
 namespace game{
@@ -25,14 +24,11 @@ namespace game{
     }
     
     namespace util{
-        irr::scene::ISceneNode* castRay(irr::scene::ISceneManager*,irr::core::vector3df,irr::core::vector3df);
-        std::vector<irr::core::stringw> readFile(std::string,int=0,int=-1);
-        void writeFile(std::string,std::vector<std::string>);
         void makeTitlescreenButtons(core::GuiAppState*);
-        double getAngleBetween(irr::core::vector3df, irr::core::vector3df);
+				/*
         bool isWithinRect(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
         bool isWithinCuboid(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
-        inline s64 getTime(){return (s64)(std::chrono::system_clock::now().time_since_epoch()/std::chrono::milliseconds(1));}
+				*/
     }
 }
 

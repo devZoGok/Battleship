@@ -2,14 +2,16 @@
 #ifndef GUI_APP_STATE_H
 #define GUI_APP_STATE_H
 
-#include "gameManager.h"
-#include "button.h"
-#include "listbox.h"
-#include "checkbox.h"
-#include "textbox.h"
-#include "slider.h"
-#include "tooltip.h"
+#include <button.h>
+#include <listbox.h>
+#include <checkbox.h>
+#include <textbox.h>
+#include <slider.h>
 #include <vector>
+
+#include "abstractAppState.h"
+#include "tooltip.h"
+#include "key.h"
 
 namespace game{
     namespace core{
@@ -20,20 +22,20 @@ namespace game{
             void onAttachment();
             void onDetachment();
             void update();
-            void addButton(gui::Button*);
-            void removeButton(gui::Button*);
-            void removeSeparateButton(gui::Button*);
-            void removeButton(irr::core::stringw);
-            void addListbox(gui::Listbox*);
-            void removeListbox(gui::Listbox*);
-            void addCheckbox(gui::Checkbox*);
-            void removeCheckbox(gui::Checkbox*);
-            void addTextbox(gui::Textbox*);
-            void removeTextbox(gui::Textbox*);
-            void addSlider(gui::Slider*);
+            void addButton(vb01Gui::Button*);
+            void removeButton(vb01Gui::Button*);
+            void removeSeparateButton(vb01Gui::Button*);
+            void removeButton(std::string);
+            void addListbox(vb01Gui::Listbox*);
+            void removeListbox(vb01Gui::Listbox*);
+            void addCheckbox(vb01Gui::Checkbox*);
+            void removeCheckbox(vb01Gui::Checkbox*);
+            void addTextbox(vb01Gui::Textbox*);
+            void removeTextbox(vb01Gui::Textbox*);
+            void addSlider(vb01Gui::Slider*);
             void addTooltip(gui::Tooltip*);
             void removeTooltip(gui::Tooltip*);
-            void removeSlider(gui::Slider*);
+            void removeSlider(vb01Gui::Slider*);
             void removeAllButtons();
             void removeAllListboxes();
             void removeAllCheckboxes();
@@ -42,22 +44,24 @@ namespace game{
             void removeAllTooltips();
             inline bool isLeftMousePressed(){return leftMousePressed;}
         private:
-            virtual void onAction(Bind, bool);
-            virtual void onAnalog(Bind, double);
+            virtual void onAction(Mapping::Bind, bool);
+            virtual void onAnalog(Mapping::Bind, double);
+						/*
             virtual void onRawKeyPress(irr::SEvent::SKeyInput);
             virtual void onRawMousePress(irr::SEvent::SMouseInput);
-            gui::Textbox* getOpenTextbox();
-            gui::Listbox* getOpenListbox();
+						*/
+            vb01Gui::Textbox* getOpenTextbox();
+            vb01Gui::Listbox* getOpenListbox();
             void attachBindKeys();
             void attachKeyboardKeys();
-            void checkKeyboard(gui::Textbox*, Bind, bool);
+            void checkKeyboard(vb01Gui::Textbox*, Mapping::Bind, bool);
             void updateControlsListbox(int);
             
-            std::vector<gui::Button*> buttons;
-            std::vector<gui::Listbox*> listboxes;
-            std::vector<gui::Checkbox*> checkboxes;
-            std::vector<gui::Textbox*> textboxes;
-            std::vector<gui::Slider*> sliders;
+            std::vector<vb01Gui::Button*> buttons;
+            std::vector<vb01Gui::Listbox*> listboxes;
+            std::vector<vb01Gui::Checkbox*> checkboxes;
+            std::vector<vb01Gui::Textbox*> textboxes;
+            std::vector<vb01Gui::Slider*> sliders;
             std::vector<gui::Tooltip*> tooltips;
             bool leftMousePressed = false, shiftPressed = false;
             const static int numKeys=36;

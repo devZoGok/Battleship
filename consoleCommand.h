@@ -2,10 +2,8 @@
 #ifndef CONSOLE_COMMAND_H
 #define CONSOLE_COMMAND_H
 
-#include <irrlicht.h>
 #include <vector>
 
-#include "gameManager.h"
 #include "unit.h"
 #include "listbox.h"
 #include "player.h"
@@ -15,16 +13,16 @@ namespace game
     namespace gui{
         class ConsoleCommand{
         public:
-            ConsoleCommand(Listbox*,std::vector<content::Player*>,irr::core::stringw,std::vector<irr::core::stringw>);
+            ConsoleCommand(vb01Gui::Listbox*, std::vector<content::Player*>, std::string, std::vector<std::string>);
             ~ConsoleCommand();
             void execute();
         private:
-            Listbox *listbox;
-            void printConsoleMessage(irr::core::stringw);
+						vb01Gui::Listbox *listbox;
+            void printConsoleMessage(std::string);
             std::vector<content::Player*> players;
-            irr::core::stringw name;
-            std::vector<stringw> arguments;
-            irr::core::stringw commandList[2]={"addUnit","debugUnits"};
+            std::string name;
+            std::vector<std::string> arguments;
+            std::string commandList[2] = {"addUnit","debugUnits"};
             // #0
             void addUnit();
             // #1

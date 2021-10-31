@@ -2,7 +2,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <irrlicht.h>
 #include <vector>
 
 #include "gameManager.h"
@@ -12,7 +11,7 @@ namespace game{
     namespace content{
         class Player {
         public:
-            Player(int, int,irr::core::vector3df=irr::core::vector3df(0,0,0));
+            Player(int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO);
             ~Player();
             void update();
             bool isThisPlayersUnit(Unit*);
@@ -24,11 +23,11 @@ namespace game{
             inline int getNumberOfUnits(){return units.size();}
             inline int getFaction(){return faction;}
             inline int getSide(){return side;}
-            inline irr::core::vector3df getSpawnPoint(){return spawnPoint;}
+            inline vb01::Vector3 getSpawnPoint(){return spawnPoint;}
         private:
             int credits, faction, difficulty,side,id;
             std::vector<Unit*> units;
-            irr::core::vector3df spawnPoint;
+            vb01::Vector3 spawnPoint;
         };
     }
 }

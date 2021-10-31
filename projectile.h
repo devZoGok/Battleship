@@ -2,11 +2,17 @@
 #ifndef PROJECTILE_H
 #define PROJECTILE_H
 
-#include <irrlicht.h>
 #include <SFML/Audio.hpp>
+#include <vector.h>
 
 #include "gameManager.h"
 #include "util.h"
+
+namespace vb01{
+		class Node;
+		class Model;
+		class Mesh;
+}
 
 namespace game{
     namespace content {
@@ -14,23 +20,23 @@ namespace game{
         
         class Projectile {
         public:
-            Projectile(Unit*, irr::scene::ISceneNode*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            Projectile(Unit*, vb01::Node*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
             virtual ~Projectile();
             virtual void update();
             virtual void debug();
-            void orientProjectile(irr::core::vector3df);
+            void orientProjectile(vb01::Vector3);
             inline bool isExploded() {return exploded;}
             inline Unit* getUnit(){return unit;}
         protected:
             virtual void checkForCollision();
-            void explode(irr::scene::ISceneNode*);
-            irr::scene::IAnimatedMesh *mesh;
-            irr::scene::ISceneNode *node=nullptr;
+            void explode(vb01::Node*);
+
+            vb01::Model *node=nullptr;
             bool exploded = false;
             const float g = 2.2;
             float speed, angle, rayLength, scale;
             int damage,id,weaponTypeId;
-            irr::core::vector3df initPos, pos, dirVec, leftVec, upVec;
+            vb01::Vector3 initPos, pos, dirVec, leftVec, upVec;
             s64 lastUpdateTime = 0;
             Unit *unit;
             sf::SoundBuffer *shotSfxBuffer, *explosionSfxBuffer;

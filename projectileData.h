@@ -17,10 +17,7 @@
 namespace game{
     namespace content{
         namespace projectileData {
-            using namespace irr;
-            using namespace irr::core;
             using namespace game::core;
-            using namespace irr::io;
             
             const int numberOfTypesOfWeapons = 2;
             const float speed[unitData::numberOfUnits][numberOfTypesOfWeapons][13]{
@@ -101,88 +98,88 @@ namespace game{
                     {.6, .6, .6, .6, .6}
                 }
             };
-            const vector3df pos[unitData::numberOfUnits][numberOfTypesOfWeapons][13]{
+            const vb01::Vector3 pos[unitData::numberOfUnits][numberOfTypesOfWeapons][13]{
                 {
                     {
-                        vector3df(0, 0, 1.05), 
-                        vector3df(0, 0, 1.05), 
-                        vector3df(0, 0, 1.05),
-                        vector3df(0, 0, 1.5), 
-                        vector3df(0, 0, 2.5), 
-                        vector3df(0, 0, 2.5), 
-                        vector3df(0, 0, 2.5), 
-                        vector3df(0, 0, 2.5),
-                        vector3df(0, 0, 2.5), 
-                        vector3df(0, 0, 2.5), 
-                        vector3df(0, 0, 2.5), 
-                        vector3df(0, 0, 2.5), 
-                        vector3df(0, 0, 2.5)
+												vb01::Vector3(0, 0, 1.05), 
+                        vb01::Vector3(0, 0, 1.05), 
+                        vb01::Vector3(0, 0, 1.05),
+                        vb01::Vector3(0, 0, 1.5), 
+                        vb01::Vector3(0, 0, 2.5), 
+                        vb01::Vector3(0, 0, 2.5), 
+                        vb01::Vector3(0, 0, 2.5), 
+                        vb01::Vector3(0, 0, 2.5),
+                        vb01::Vector3(0, 0, 2.5), 
+                        vb01::Vector3(0, 0, 2.5), 
+                        vb01::Vector3(0, 0, 2.5), 
+                        vb01::Vector3(0, 0, 2.5), 
+                        vb01::Vector3(0, 0, 2.5)
                     }
                 },
                 {
                     {
-                        vector3df(0, 0, 0.79254), 
-                        vector3df(0, 0, 0.79254), 
-                        vector3df(0, 0, 0.79254),
-                        vector3df(0, 0, 0.17723), 
-                        vector3df(0, 0, 0.17723), 
-                        vector3df(0, 0, 0.17723),
-                        vector3df(0, 0, 0.17723), 
-                        vector3df(0, 0, 0.17723), 
-                        vector3df(0, 0, 0.17723),
-                        vector3df(0, 0, 0.17723), 
-                        vector3df(0, 0, 0.17723), 
-                        vector3df(0, 0, 0.17723),
-                        vector3df(0, 0, 0.17723)
+												vb01::Vector3(0, 0, 0.79254), 
+                        vb01::Vector3(0, 0, 0.79254), 
+                        vb01::Vector3(0, 0, 0.79254),
+                        vb01::Vector3(0, 0, 0.17723), 
+                        vb01::Vector3(0, 0, 0.17723), 
+                        vb01::Vector3(0, 0, 0.17723),
+                        vb01::Vector3(0, 0, 0.17723), 
+                        vb01::Vector3(0, 0, 0.17723), 
+                        vb01::Vector3(0, 0, 0.17723),
+                        vb01::Vector3(0, 0, 0.17723), 
+                        vb01::Vector3(0, 0, 0.17723), 
+                        vb01::Vector3(0, 0, 0.17723),
+                        vb01::Vector3(0, 0, 0.17723)
                     }
                 },
                 {
                     {
-                        vector3df(0, 0, -0.36178), 
-                        vector3df(0, 0, -0.36178), 
-                        vector3df(0, 0, -0.36178), 
-                        vector3df(0, 0, -0.36178)
+												vb01::Vector3(0, 0, -0.36178), 
+                        vb01::Vector3(0, 0, -0.36178), 
+                        vb01::Vector3(0, 0, -0.36178), 
+                        vb01::Vector3(0, 0, -0.36178)
                     },
-                    {vector3df(0, -3, 0)}
+                    {vb01::Vector3(0, -3, 0)}
                 },
                 {
                     {
-                        vector3df(0, 0, -0.30074), 
-                        vector3df(0, 0, -0.30074), 
-                        vector3df(0, 0, -0.30074), 
-                        vector3df(0, 0, -0.30074)
+												vb01::Vector3(0, 0, -0.30074), 
+                        vb01::Vector3(0, 0, -0.30074), 
+                        vb01::Vector3(0, 0, -0.30074), 
+                        vb01::Vector3(0, 0, -0.30074)
                     },
-                    {vector3df(0, -2, 0)}
+                    {vb01::Vector3(0, -2, 0)}
                 },
                 {
-                    {vector3df(0, 0, -0.62118), vector3df(0, 0, -0.62118)},
+                    {vb01::Vector3(0, 0, -0.62118), vb01::Vector3(0, 0, -0.62118)},
                     {
-                        vector3df(0.24482, 1.14985, 1.32775), 
-                        vector3df(0.24482, 1.14985, 1.62698), 
-                        vector3df(0.24482, 1.14985, 1.88017),
-                        vector3df(-0.24482, 1.14985, 1.32775), 
-                        vector3df(-0.24482, 1.14985, 1.62698), 
-                        vector3df(-0.24482, 1.14985, 1.88017)
+												vb01::Vector3(0.24482, 1.14985, 1.32775), 
+                        vb01::Vector3(0.24482, 1.14985, 1.62698), 
+                        vb01::Vector3(0.24482, 1.14985, 1.88017),
+                        vb01::Vector3(-0.24482, 1.14985, 1.32775), 
+                        vb01::Vector3(-0.24482, 1.14985, 1.62698), 
+                        vb01::Vector3(-0.24482, 1.14985, 1.88017)
                     }
                 },
                 {
                     {
-                        vector3df(0, 0, -0.59117), 
-                        vector3df(0, 0, -0.59117), 
-                        vector3df(0, 0, -0.59117), 
-                        vector3df(0, 0, -0.59117), 
-                        vector3df(0, 0, -0.59117)
+												vb01::Vector3(0, 0, -0.59117), 
+                        vb01::Vector3(0, 0, -0.59117), 
+                        vb01::Vector3(0, 0, -0.59117), 
+                        vb01::Vector3(0, 0, -0.59117), 
+                        vb01::Vector3(0, 0, -0.59117)
                     },
-                    {vector3df(0.17192, 0.57858, 0.64471), vector3df(-0.17192, 0.57858, 0.64471)}
+                    {vb01::Vector3(0.17192, 0.57858, 0.64471), vb01::Vector3(-0.17192, 0.57858, 0.64471)}
                 },
                 {},
                 {},
                 {
-                    {vector3df(0,-.3,-1.5)}
+                    {vb01::Vector3(0,-.3,-1.5)}
                 },
                 {
-                    {vector3df(-.25,0,0),vector3df(.25,0,0)},
-                    {vector3df(-.25,0,0),vector3df(.25,0,0)}
+                    {vb01::Vector3(-.25,0,0),vb01::Vector3(.25,0,0)},
+                    {vb01::Vector3(-.25,0,0),vb01::Vector3(.25,0,0)}
                 },
                 {}
             };
@@ -220,7 +217,7 @@ namespace game{
                 },
                 {}
             };
-            const stringw name[unitData::numberOfUnits][numberOfTypesOfWeapons]{
+            const std::string name[unitData::numberOfUnits][numberOfTypesOfWeapons]{
                 {"shell"},
                 {"shell"},
                 {"shell"},
@@ -232,7 +229,7 @@ namespace game{
                 {"torpedo"},
                 {"missile","missile"},
             };
-            const path meshPath[unitData::numberOfUnits][numberOfTypesOfWeapons]{
+            const std::string meshPath[unitData::numberOfUnits][numberOfTypesOfWeapons]{
                 {PATH + "Models/Shell/shell.x"},
                 {PATH + "Models/Shell/shell.x"},
                 {PATH + "Models/Shell/shell.x", PATH + "Models/Depth charge/depthCharge.x"},
@@ -244,7 +241,7 @@ namespace game{
                 {PATH + "Models/Torpedo/torpedo.x"},
                 {PATH + "Models/Jets/aam.x", PATH + "Models/Jets/awm.x"},
             };
-            const path diffuseMapTextPath[unitData::numberOfUnits][numberOfTypesOfWeapons]{
+            const std::string diffuseMapTextPath[unitData::numberOfUnits][numberOfTypesOfWeapons]{
                 {},
                 {},
                 {},

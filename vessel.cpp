@@ -1,4 +1,7 @@
 #include <algorithm>
+#include <quaternion.h>
+#include <model.h>
+#include <texture.h>
 
 #include "vessel.h"
 #include "util.h"
@@ -9,30 +12,28 @@
 
 using namespace game::core;
 using namespace game::util;
-using namespace irr::core;
-using namespace irr::io;
-using namespace irr::video;
-using namespace irr::scene;
-using namespace sf;
+using namespace std;
+using namespace vb01;
 
 namespace game{
     namespace content{
         Vessel::Turret::Turret(Unit *vessel, int unitId, int turretId) {
             this->vessel = vessel;
-            hullNode = vessel->getNode();
+            //hullNode = vessel->getNode();
             this->unitId = unitId;
             this->turretId = turretId;
+
             GameManager *gm = GameManager::getSingleton();
-            ISceneManager *smgr = gm->getDevice()->getSceneManager();
-            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+						/*
             turretMesh = smgr->getMesh(basePath[unitId] + turretNames[unitId][turretId] + ".x");
             turretNode = smgr->addAnimatedMeshSceneNode(turretMesh);
             turretNode->setMaterialFlag(EMF_LIGHTING, false);
-            ITexture *turretDiffuseTexture = driver->getTexture(basePath[unitId] + turretNames[unitId][turretId] + "DiffuseMap.png");
-            if (turretDiffuseTexture)
-                turretNode->setMaterialTexture(0, turretDiffuseTexture);
-            else
-                turretNode->setMaterialTexture(0, driver->getTexture(DEFAULT_TEXTURE));
+						*/
+						string fr[]{basePath[unitId] + turretNames[unitId][turretId] + "DiffuseMap.png"};
+            Texture *turretDiffuseTexture = new Texture(fr);
+
+
+						/*
             turretNode->setParent(vessel->getNode());
             turretNode->setPosition(turretPos[unitId][turretId]);
             quaternion rotQuat = rotQuat.fromAngleAxis(PI / 180 * turretAngleOffset[unitId][turretId], vector3df(0, 1, 0));
@@ -41,7 +42,9 @@ namespace game{
             rotationSpeed = unitData::turretRotationSpeed[unitId][turretId];
             maxAngle = unitData::turretMaxAngle[unitId][turretId];
             this->rateOfFire = unitData::turretRateOfFire[unitId][turretId];
+						*/
             
+						/*
             for (int i = 0; i < numberOfMantlets[unitId][turretId]; i++) {
                 IAnimatedMesh *mantletMesh = smgr->getMesh(basePath[unitId] + mantletNames[unitId][turretId] + ".x");
                 IAnimatedMesh *barrelMesh = smgr->getMesh(basePath[unitId] + barrelNames[unitId][turretId] + ".x");
@@ -52,11 +55,14 @@ namespace game{
                 turretBarrelMeshes.push_back(barrelMesh);
                 turretBarrelNodes.push_back(barrelNode);
             }
+
             if (turretMantletNodes.size() > 1) {
                 turretMantletNodes[0]->setPosition(turretMantletNodes[0]->getPosition() + vector3df(mantletPosSideOffset[unitId][turretId], 0, 0));
                 turretMantletNodes[1]->setPosition(turretMantletNodes[1]->getPosition() - vector3df(mantletPosSideOffset[unitId][turretId], 0, 0));
             }
+						*/
 
+						/*
             fxNode=smgr->addParticleSystemSceneNode(false);
             emitter=fxNode->createPointEmitter(dirVec,
                                                10,10,
@@ -76,12 +82,15 @@ namespace game{
             fxNode->setMaterialTexture(0, driver->getTexture(PATH+"Textures/Explosions/fire.bmp"));
             fxNode->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
             fxNode->setVisible(false);
+						*/
             
-            sfxBuffer=new SoundBuffer();
+            sfxBuffer = new sf::SoundBuffer();
+
             if(sfxBuffer->loadFromFile(getExplosionSfxPath().c_str()))
-                sfx=new Sound(*sfxBuffer);
+                sfx = new sf::Sound(*sfxBuffer);
         }
 
+				/*
         ISceneNode* Vessel::Turret::initMantletNode(IVideoDriver *driver, ISceneManager *smgr, IAnimatedMesh *mantletMesh, int unitId, int turretId) {
             ISceneNode *mantletNode = smgr->addAnimatedMeshSceneNode(mantletMesh);
             mantletNode->setMaterialFlag(EMF_LIGHTING, false);
@@ -107,27 +116,32 @@ namespace game{
             barrelNode->setPosition(barrelPos[unitId][turretId]);
             return barrelNode;
         }
+				*/
 
         void Vessel::Turret::rotate(double angle) {
-            quaternion rotQuat = rotQuat.fromAngleAxis(PI / 180 * angle, vector3df(0, 1, 0));
-            turretNode->setRotation(vector3df(0, turretNode->getRotation().Y + angle, 0));
+            Quaternion rotQuat = Quaternion(PI / 180 * angle, Vector3(0, 1, 0));
+            //turret->setOrientation(vector3df(0, turret->getRotation().Y + angle, 0));
             dirVec = rotQuat*dirVec, leftVec = rotQuat*leftVec;
             this->angle += angle;
         }
 
         void Vessel::Turret::update() {
-            turretPosition = turretNode->getAbsolutePosition();
-            float hullAngle = PI / 180 * hullNode->getRotation().Y;
+						Node *rootNode = Root::getSingleton()->getRootNode();
+            turretPosition = rootNode->localToGlobalPosition(turret->getPosition());
+            float hullAngle = PI / 180 /* hullNode->getRotation().Y*/;
             float turretAngle = PI / 180 * angle;
+						/*
             quaternion rotQuat = rotQuat.fromAngleAxis(hullAngle + turretAngle, vector3df(0, 1, 0));
             quaternion offsetQuat = offsetQuat.fromAngleAxis(PI / 180 * unitData::turretAngleOffset[unitId][turretId], vector3df(0, 1, 0));
             dirVec = rotQuat * (offsetQuat * vector3df(0, 0, -1)), leftVec = rotQuat * (offsetQuat * vector3df(1, 0, 0));
             emitter->setDirection(dirVec);
 //             if(getTime()-lastShotTime>30&&fxNode->isVisible())
 //                 fxNode->setVisible(false);
+//                 */
         }
 
-        void Vessel::Turret::debug(const SMaterial &mat) {
+        void Vessel::Turret::debug(const Material &mat) {
+						/*
             float length = turretAxisLength[unitId][turretId]*0 + 1;
             IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->setTransform(ETS_WORLD, IdentityMatrix);
@@ -135,10 +149,11 @@ namespace game{
             driver->draw3DLine(turretPosition, turretPosition + dirVec*length, SColor(255, 0, 0, 255));
             driver->draw3DLine(turretPosition, turretPosition + leftVec*length, SColor(255, 255, 0, 0));
             driver->draw3DLine(turretPosition, turretPosition + upVec*length, SColor(255, 0, 255, 0));
+						*/
         }
 
-        vector3df* Vessel::Turret::getInitDirs(){
-            vector3df *initDirs=new vector3df[2];
+        Vector3* Vessel::Turret::getInitDirs(){
+            Vector3 *initDirs = new Vector3[2];
             switch(unitData::initDirs[unitId][turretId]){
                 case unitData::FORWARD:
                     initDirs[0]=vessel->getDirVec();
@@ -161,6 +176,7 @@ namespace game{
         }
         
         void Vessel::Turret::fire() {
+						/*
             quaternion rotQuat = rotQuat.fromAngleAxis(barrelAngle / 180 * PI, leftVec);
             int barId = 0;
             vector3df startPos = vessel->getPos() + vessel->getLeftVec() * turretNode->getPosition().X + vessel->getUpVec() * turretNode->getPosition().Y - vessel->getDirVec() * turretNode->getPosition().Z;
@@ -171,9 +187,10 @@ namespace game{
 //             fxNode->setVisible(true);
             if(sfx) sfx->play();
             lastShotTime = getTime();
+						*/
         }
 
-        Vessel::Vessel(Player *player,vector3df pos, int id) : Unit(player,pos, id) {
+        Vessel::Vessel(Player *player, Vector3 pos, int id) : Unit(player,pos, id) {
             if (numberOfTurrets[id] > 0)
                 for (int i = 0; i < numberOfTurrets[id]; i++)
                     turrets.push_back(new Turret(this, id, i));
@@ -191,26 +208,31 @@ namespace game{
         }
 
         void Vessel::attack(Order order) {
-            vector3df target=*order.targetPos[0];
+            Vector3 target = *order.targetPos[0];
             Unit::attack(order);
+
             for (Turret *t : turrets) {
-                vector3df *initDirs=t->getInitDirs();
-                bool right = getAngleBetween(t->getLeftVec(), target - t->getPos()) > PI / 2;
-                float angle = getAngleBetween(initDirs[0], target - t->getPos()) / PI * 180;
+								Vector3 *initDirs = t->getInitDirs();
+                bool right = t->getLeftVec().getAngleBetween(target - t->getPos()) > PI / 2;
+                float angle = initDirs[0].getAngleBetween(target - t->getPos()) / PI * 180;
                 float rotAngle = t->getRotationSpeed() > angle ? angle : t->getRotationSpeed()*(right?1:-1);
+
                 if (-t->getMaxAngle() <= t->getAngle() + rotAngle 
                     && t->getAngle() + rotAngle <= t->getMaxAngle()) {
                     t->rotate(rotAngle);
+
                     if (t->canFire()) t->fire();
                 }
+
                 delete[] initDirs;
             }
         }
 
         void Vessel::debug() {
-//             Unit::debug();
+            /*
             for (Turret *t : turrets)
                 t->debug(createLineMaterial());
+						*/
         }
     }
 }

@@ -10,14 +10,14 @@ namespace game{
     namespace content{
         class AircraftCarrier : public Vessel {
         public:
-            AircraftCarrier(Player*, irr::core::vector3df, int);
+            AircraftCarrier(Player*, vb01::Vector3, int);
             ~AircraftCarrier();
             void makeJet();
             inline void setJet(int i, Jet *j){this->jets[i]=j;}
             inline int getMaxNumJets(){return maxNumJets;}
             inline Jet* getJet(int i){return jets[i];}
             inline Jet** getJets(){return jets;}
-            inline irr::core::vector3df getJetPos(int i){return pos+unitData::jetPos[id][i].X * leftVec - unitData::jetPos[id][i].Z * dirVec + unitData::jetPos[id][i].Y*upVec;}
+            inline vb01::Vector3 getJetPos(int i){return pos + leftVec * unitData::jetPos[id][i].x - dirVec * unitData::jetPos[id][i].z + upVec * unitData::jetPos[id][i].y;}
             inline float getRunwayLength(){return runwayLength;}
         private:
             Jet** jets;

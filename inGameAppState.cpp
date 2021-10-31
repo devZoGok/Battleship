@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <button.h>
 
 #include "stateManager.h"
 #include "inGameAppState.h"
@@ -9,12 +10,13 @@
 using namespace game::gui;
 using namespace game::util;
 using namespace game::content;
-using namespace irr::video;
+using namespace vb01;
+using namespace vb01Gui;
 using namespace std;
 
 namespace game{
     namespace core{
-        InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+        InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
             this->guiState = guiState;
             this->inGameState = inGameState;
         }
@@ -27,7 +29,7 @@ namespace game{
             return guiState;
         }
 
-        InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+        InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
             this->guiState = guiState;
             this->inGameState = inGameState;
         }
@@ -37,58 +39,67 @@ namespace game{
             class ConsoleCommandEntryButton : public Button {
             public:
 
-                ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+                ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
                     this->inGameState = inGameState;
                     textbox = t;
                     listbox = l;
                 }
 
                 void onClick() {
-                    stringw name;
-                    vector<stringw> args;
+                    wstring name;
+                    vector<string> args;
                     vector<int> spaceIds;
-                    for (int i = 0; i < textbox->getEntry().size(); i++) {
-                        if (textbox->getEntry()[i] == ' ') {
+
+                    for (int i = 0; i < textbox->getText().size(); i++) {
+                        if (textbox->getText()[i] == ' ') {
                             spaceIds.push_back(i);
                         }
                     }
+
                     if (spaceIds.size() > 0) {
                         for (int i = 0; i < spaceIds[0]; i++)
-                            name += textbox->getEntry()[i];
+                            name += textbox->getText()[i];
+
                         for (int i = 0; i < spaceIds.size() - 1; i++) {
-                            stringw w;
+                            string w;
                             for (int i2 = spaceIds[i]; i2 < spaceIds[i + 1]; i2++)
-                                w += textbox->getEntry()[i2];
+                                w += textbox->getText()[i2];
                             args.push_back(w);
                         }
+
                         args.push_back("");
-                        for (int i = spaceIds[spaceIds.size() - 1]; i < textbox->getEntry().size(); i++) {
-                            args[args.size() - 1] += textbox->getEntry()[i];
+
+                        for (int i = spaceIds[spaceIds.size() - 1]; i < textbox->getText().size(); i++) {
+                            args[args.size() - 1] += textbox->getText()[i];
                         }
                     } else
-                        name = textbox->getEntry();
-                    ConsoleCommand c(listbox, inGameState->getPlayerList(), name, args);
+                        name = textbox->getText();
+
+                    //ConsoleCommand c(listbox, inGameState->getPlayerList(), name, args);
                 }
             private:
                 InGameAppState *inGameState;
                 Textbox *textbox;
                 Listbox *listbox;
             };
-            vector<stringw> list;
+
+            vector<string> list;
             int emptyEntries = 20;
+
             for (int i = 0; i < emptyEntries; i++)
                 list.push_back("");
-            vector2d<s32> pos(300, 100);
-            Listbox *consoleListbox = new Listbox(vector2d<s32>(pos.X, pos.Y), vector2d<s32>(420, 20), list, 20);
+
+            Vector2 pos = Vector2(300, 100);
+            Listbox *consoleListbox = new Listbox(Vector2(pos.x, pos.y), Vector2(420, 20), list, 20, PATH + "Fonts/batang.ttf");
             consoleListbox->openUp();
             guiState->addListbox(consoleListbox);
-            Textbox *consoleTextbox = new Textbox(vector2d<s32>(pos.X, pos.Y + 20 * (emptyEntries + 1)), vector2d<s32>(300, 20));
+            Textbox *consoleTextbox = new Textbox(Vector2(pos.x, pos.y + 20 * (emptyEntries + 1)), Vector2(300, 20), PATH + "Fonts/batang.ttf");
             guiState->addTextbox(consoleTextbox);
-            ConsoleCommandEntryButton *entryButton = new ConsoleCommandEntryButton(inGameState, consoleTextbox, consoleListbox, vector2d<s32>(pos.X + 320, pos.Y + 20 * (emptyEntries + 1)), vector2d<s32>(100, 20), "Enter", true);
+            ConsoleCommandEntryButton *entryButton = new ConsoleCommandEntryButton(inGameState, consoleTextbox, consoleListbox, Vector2(pos.x + 320, pos.y + 20 * (emptyEntries + 1)), Vector2(100, 20), "Enter", true);
             guiState->addButton(entryButton);
         }
 
-        InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+        InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
             this->guiState = guiState;
             this->inGameState = inGameState;
         }
@@ -103,12 +114,12 @@ namespace game{
             guiState->removeButton("Video");
             guiState->removeButton("Audio");
             guiState->removeButton("Multiplayer");
-            vector2d<s32> pos(100, 100);
-            ResumeButton *resumeButton = new ResumeButton(guiState, inGameState, vector2d<s32>(pos.X, pos.Y), vector2d<s32>(150, 50), "Resume", true);
-            ConsoleButton *consoleButton = new ConsoleButton(guiState, inGameState, vector2d<s32>(pos.X, pos.Y + 60), vector2d<s32>(150, 50), "Console", true);
-            InGameOptionsButton *optionsButton = new InGameOptionsButton(guiState, inGameState, vector2d<s32>(pos.X, pos.Y + 120), vector2d<s32>(150, 50), "Options", true);
-            MainMenuButton *mainMenuButton = new MainMenuButton(guiState, inGameState, vector2d<s32>(pos.X, pos.Y + 180), vector2d<s32>(150, 50), "Main menu", true);
-            ExitButton *exitButton = new ExitButton(vector2d<s32>(pos.X, pos.Y + 240), vector2d<s32>(150, 50), "Exit", true);
+            Vector2 pos = Vector2(100, 100);
+            ResumeButton *resumeButton = new ResumeButton(guiState, inGameState, Vector2(pos.x, pos.y), Vector2(150, 50), "Resume", true);
+            ConsoleButton *consoleButton = new ConsoleButton(guiState, inGameState, Vector2(pos.x, pos.y + 60), Vector2(150, 50), "Console", true);
+            InGameOptionsButton *optionsButton = new InGameOptionsButton(guiState, inGameState, Vector2(pos.x, pos.y + 120), Vector2(150, 50), "Options", true);
+            MainMenuButton *mainMenuButton = new MainMenuButton(guiState, inGameState, Vector2(pos.x, pos.y + 180), Vector2(150, 50), "Main menu", true);
+            ExitButton *exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), Vector2(150, 50), "Exit", true);
             inGameState->setResumeButton(resumeButton);
             inGameState->setConsoleButton(consoleButton);
             inGameState->setOptionsButton(optionsButton);
@@ -122,13 +133,13 @@ namespace game{
             guiState->removeButton("Back");
         }
 
-        InGameAppState::InGameOptionsButton::InGameOptionsButton(GuiAppState *guiState, InGameAppState *inGameState, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : OptionsButton(pos, size, name, separate) {
+        InGameAppState::InGameOptionsButton::InGameOptionsButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : OptionsButton(pos, size, name, separate) {
             this->guiState = guiState;
             this->inGameState = inGameState;
         }
 
         void InGameAppState::InGameOptionsButton::onClick() {
-            returnButton = new ReturnButton(guiState, inGameState, vector2d<s32>(50, GameManager::getSingleton()->getHeight() - 150), vector2d<s32>(150, 50), "Back", true);
+            returnButton = new ReturnButton(guiState, inGameState, Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(150, 50), "Back", true);
             guiState->addButton(returnButton);
             guiState->removeButton("Resume");
             guiState->removeButton("Console");
@@ -137,7 +148,7 @@ namespace game{
             OptionsButton::onClick();
         }
 
-        InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+        InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
             this->guiState = guiState;
             this->inGameState = inGameState;
         }
@@ -146,8 +157,8 @@ namespace game{
 
         }
 
-        InGameAppState::UnitCreationButton::UnitCreationButton(ITexture *icon, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
-            setImageButton(new Image(icon, pos, size));
+        InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+            //setImageButton(new Image(icon, pos, size));
         }
 
         void InGameAppState::UnitCreationButton::onClick() {
@@ -157,42 +168,42 @@ namespace game{
             Button::update();
         }
 
-        InGameAppState::BattleshipCreationButton::BattleshipCreationButton(ITexture *icon, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate)
+        InGameAppState::BattleshipCreationButton::BattleshipCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
         : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
         }
 
         void InGameAppState::BattleshipCreationButton::onClick() {
         }
 
-        InGameAppState::DestroyerCreationButton::DestroyerCreationButton(ITexture *icon, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate)
+        InGameAppState::DestroyerCreationButton::DestroyerCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
         : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
         }
 
         void InGameAppState::DestroyerCreationButton::onClick() {
         }
 
-        InGameAppState::CruiserCreationButton::CruiserCreationButton(ITexture *icon, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate)
+        InGameAppState::CruiserCreationButton::CruiserCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
         : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
         }
 
         void InGameAppState::CruiserCreationButton::onClick() {
         }
 
-        InGameAppState::CarrierCreationButton::CarrierCreationButton(ITexture *icon, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate)
+        InGameAppState::CarrierCreationButton::CarrierCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
         : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
         }
 
         void InGameAppState::CarrierCreationButton::onClick() {
         }
 
-        InGameAppState::SubmarineCreationButton::SubmarineCreationButton(ITexture *icon, vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate)
+        InGameAppState::SubmarineCreationButton::SubmarineCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
         : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
         }
 
         void InGameAppState::SubmarineCreationButton::onClick() {
         }
 
-        InGameAppState::InGameAppState(vector<stringw> difficultyLevels, vector<stringw> factions) {
+        InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions) {
             type = AppStateTypes::IN_GAME_STATE;
             this->playerId = 0;
             this->difficultyLevels = difficultyLevels;
@@ -210,6 +221,7 @@ namespace game{
             for (int i = 0; i < factions.size(); i++) {
                 int faction;
                 int difficulty;
+
                 if (i == 0)
                     difficulty = -1;
                 else {
@@ -226,6 +238,7 @@ namespace game{
                 players.push_back(p);
                 p->setId(players.size() - 1);
             }
+
             mainPlayer = players[playerId];
 						StateManager *stateManager = GameManager::getSingleton()->getStateManager();
             guiState = ((GuiAppState*)stateManager->getAppState(AppStateTypes::GUI_STATE));
@@ -243,8 +256,10 @@ namespace game{
 
             if (isMainMenuActive) {
 								GameManager *gm = GameManager::getSingleton();
+								/*
                 IVideoDriver *driver = gm->getDevice()->getVideoDriver();
                 driver->draw2DRectangle(SColor(100, 0, 0, 0), rect<s32>(0, 0, gm->getWidth(), gm->getHeight()));
+								*/
             }
 
             for (Player *p : players)
@@ -325,6 +340,7 @@ namespace game{
 
             for(int i=0;i<fx.size();i++){
                 if(getTime()-fx[i].initTime>fx[i].time){
+										/*
                     IParticleSystemSceneNode *node=fx[i].node;
 
                     if(node){
@@ -338,6 +354,7 @@ namespace game{
                     }
 
                     fx.erase(fx.begin()+i);
+										*/
                 }
             }
         }
@@ -348,8 +365,8 @@ namespace game{
             if (mainPlayer->getFaction() == 1)
                 idOffset += 7;
 
-            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             /*
+            IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             bcb = new BattleshipCreationButton(gameManager, driver->getTexture(iconPath[idOffset]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 540), vector2d<s32>(100, 100), "battleships", true);
             dcb = new DestroyerCreationButton(gameManager, driver->getTexture(iconPath[idOffset + 1]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 430), vector2d<s32>(100, 100), "destroyers", true);
             crcb = new CruiserCreationButton(gameManager, driver->getTexture(iconPath[idOffset + 2]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 320), vector2d<s32>(100, 100), "cruisers", true);
@@ -377,13 +394,13 @@ namespace game{
             if (!isMainMenuActive) {
                 isMainMenuActive = true;
                 gm->getStateManager()->dettachState(activeState);
-                vector2d<s32> pos(100, 100);
+                Vector2 pos = Vector2(100, 100);
                 //detachGui();
-                resumeButton = new ResumeButton(guiState, this, vector2d<s32>(pos.X, pos.Y), vector2d<s32>(150, 50), "Resume", true);
-                consoleButton = new ConsoleButton(guiState, this, vector2d<s32>(pos.X, pos.Y + 60), vector2d<s32>(150, 50), "Console", true);
-                optionsButton = new InGameOptionsButton(guiState, this, vector2d<s32>(pos.X, pos.Y + 120), vector2d<s32>(150, 50), "Options", true);
-                mainMenuButton = new MainMenuButton(guiState, this, vector2d<s32>(pos.X, pos.Y + 180), vector2d<s32>(150, 50), "Main menu", true);
-                exitButton = new ExitButton(vector2d<s32>(pos.X, pos.Y + 240), vector2d<s32>(150, 50), "Exit", true);
+                resumeButton = new ResumeButton(guiState, this, Vector2(pos.x, pos.y), Vector2(150, 50), "Resume", true);
+                consoleButton = new ConsoleButton(guiState, this, Vector2(pos.x, pos.y + 60), Vector2(150, 50), "Console", true);
+                optionsButton = new InGameOptionsButton(guiState, this, Vector2(pos.x, pos.y + 120), Vector2(150, 50), "Options", true);
+                mainMenuButton = new MainMenuButton(guiState, this, Vector2(pos.x, pos.y + 180), Vector2(150, 50), "Main menu", true);
+                exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), Vector2(150, 50), "Exit", true);
                 guiState->addButton(resumeButton);
                 guiState->addButton(consoleButton);
                 guiState->addButton(optionsButton);
@@ -409,14 +426,14 @@ namespace game{
             }
         }
 
-        void InGameAppState::onAction(Bind bind, bool isPressed) {
+        void InGameAppState::onAction(Mapping::Bind bind, bool isPressed) {
             switch(bind){
-                case TOGGLE_MAIN_MENU: 
+								case Mapping::TOGGLE_MAIN_MENU: 
                     if(isPressed)toggleMainMenu();
                     break;
             }
         }
 
-        void InGameAppState::onAnalog(Bind bind, double str) {}
+        void InGameAppState::onAnalog(Mapping::Bind bind, double str) {}
     }
 }

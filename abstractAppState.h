@@ -2,8 +2,8 @@
 #define ABSTRACT_APP_STATE
 
 #include "key.h"
+
 #include <vector>
-#include <IEventReceiver.h>
 
 namespace game{
     namespace core{
@@ -12,26 +12,28 @@ namespace game{
         public:
             AbstractAppState(){}
             ~AbstractAppState(){}
-            void setKey(int, Key*);
+            void setKey(int, Mapping*);
             AppStateTypes getType() {return type;}
             inline bool isAttached(){return attached;}
             inline int getKeysNumber(){return attachedKeys.size();}
-            inline Key* getKey(int i){return attachedKeys[i];}
-            inline std::vector<Key*>& getKeys(){return attachedKeys;}
+            inline Mapping* getKey(int i){return attachedKeys[i];}
+            inline std::vector<Mapping*>& getKeys(){return attachedKeys;}
             virtual void onAttachment();
             virtual void onDetachment();
             virtual void update(){}
-            virtual void onAction(Bind, bool){}
-            virtual void onAnalog(Bind, double){}
+            virtual void onAction(Mapping::Bind, bool){}
+            virtual void onAnalog(Mapping::Bind, double){}
+						/*
             virtual void onRawKeyPress(irr::SEvent::SKeyInput){}
             virtual void onRawMousePress(irr::SEvent::SMouseInput){}
+						*/
         private:
             bool attached = false;
-            std::vector<Key*> attachedKeys;
+            std::vector<Mapping*> attachedKeys;
         protected:
             AppStateTypes type;
-            inline void attachKey(Key *k){attachedKeys.push_back(k);}
-            void detachKey(Key*);
+            inline void attachKey(Mapping *k){attachedKeys.push_back(k);}
+            void detachKey(Mapping*);
             void detachAllKeys();
         };
     }

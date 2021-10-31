@@ -1,16 +1,17 @@
 #include "exitButton.h"
+#include <root.h>
 
-using namespace irr::core;
-using namespace game::core;
+using namespace std;
+using namespace vb01;
 
 namespace game
 {
     namespace gui{
-        ExitButton::ExitButton(vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+        ExitButton::ExitButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
         }
 
         void ExitButton::onClick() {
-						GameManager::getSingleton()->getDevice()->closeDevice();
+						//Root::getSingleton()->set
         }
     }
 }

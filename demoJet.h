@@ -9,12 +9,12 @@ namespace game{
     namespace content {
         class DemoJet : public Jet {
         public:
-            DemoJet(Player*,vector3df, int, bool = 1);
+            DemoJet(Player*, vb01::Vector3, int, bool = 1);
             void attack(Order);
             void update();
         private:
-            float length=1;
-            int damage=250;
+            float length = 1;
+            int damage = 250;
         };
     }
 }

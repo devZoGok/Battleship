@@ -1,3 +1,5 @@
+#include <model.h>
+
 #include "missileJet.h"
 #include "projectileData.h"
 #include "inGameAppState.h"
@@ -5,29 +7,33 @@
 
 using namespace game::core;
 using namespace game::util;
-using namespace irr::scene;
+using namespace vb01;
 
 namespace game{
     namespace content{
-        MissileJet::MissileJet(Player *player, vector3df pos, int id, bool onBoard) : Jet(player, pos, id, onBoard) {}
+        MissileJet::MissileJet(Player *player, Vector3 pos, int id, bool onBoard) : Jet(player, pos, id, onBoard) {}
 
         void MissileJet::attack(Order order) {
-            if(!onBoard&&canFire()&&missilesInstalled){
-                vector3df target = *order.targetPos[0];
+            if(!onBoard && canFire() && missilesInstalled){
+                Vector3 target = *order.targetPos[0];
                 float distance=pos.getDistanceFrom(target);
+
                 if(distance <= range){
-                    vector3df *targetPtr=nullptr;
-                    InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
+                    Vector3 *targetPtr = nullptr;
+                    InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
+
                     for(Player *p : inGameState->getPlayers())
                         for(Unit *u : p->getUnits()){
-                            bool jet=u->getType()==UNIT_TYPE::MISSILE_JET||u->getType()==UNIT_TYPE::DEMO_JET;
-                            if((jet&&type==AAM)&&(!jet&&type==AWM)&&u->getPosPtr()==order.targetPos[0])
-                                targetPtr=u->getPosPtr();
+                            bool jet = (u->getType() == UNIT_TYPE::MISSILE_JET || u->getType() == UNIT_TYPE::DEMO_JET);
+                            if((jet && type == AAM) && (!jet && type == AWM) && u->getPosPtr() == order.targetPos[0])
+                                targetPtr = u->getPosPtr();
                         }
+										
                     if(!targetPtr){
-                        targetPtr=new vector3df();
-                        *targetPtr=target;
+                        targetPtr = new Vector3();
+                        *targetPtr = target;
                     }
+
                     fireMissile(targetPtr);
                 }
                 else
@@ -39,17 +45,17 @@ namespace game{
                 removeOrder(0);
         }
 
-        void MissileJet::fireMissile(vector3df *t) {
-            ISceneManager *smgr=GameManager::getSingleton()->getDevice()->getSceneManager();
-            vector3df p = pos + projectileData::pos[id][0][missiles - 1].X * leftVec + projectileData::pos[id][0][missiles - 1].Y * upVec - projectileData::pos[id][0][missiles - 1].Z*dirVec;
+        void MissileJet::fireMissile(Vector3 *t) {
+            Vector3 p = pos + leftVec * projectileData::pos[id][0][missiles - 1].x + upVec * projectileData::pos[id][0][missiles - 1].y - dirVec * projectileData::pos[id][0][missiles - 1].z;
             addProjectile(new Missile(this, missileNodes[missiles-1], t, p, dirVec, leftVec, upVec, id, 0, 0));
-            missileNodes[missiles-1]->setParent(smgr->getRootSceneNode());
-            missileNodes[missiles-1]=nullptr;
+            missileNodes[missiles-1]->setParent(Root::getSingleton()->getRootNode());
+            missileNodes[missiles-1] = nullptr;
             missiles--;
             lastFireTime=getTime();
         }
         
         void MissileJet::installMissiles(bool aam){
+						/*
             if(!missilesInstalled){
                 missiles=2;
 								GameManager *gm = GameManager::getSingleton();
@@ -73,6 +79,7 @@ namespace game{
                 type=(MissileType)aam;
                 missilesInstalled=true;
             }
+						*/
         }
     }
 }

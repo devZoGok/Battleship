@@ -8,7 +8,7 @@ namespace game{
     namespace content{
         class Torpedo : public Projectile {
         public:
-            Torpedo(Unit*, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            Torpedo(Unit*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
             ~Torpedo(){}
             void update();
 //             void explode()

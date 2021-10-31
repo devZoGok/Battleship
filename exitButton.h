@@ -2,14 +2,15 @@
 #ifndef EXIT_BUTTON_H
 #define EXIT_BUTTON_H
 
-#include "button.h"
+#include <button.h>
+#include <vector.h>
 
 namespace game
 {
     namespace gui {
-        class ExitButton : public Button {
+        class ExitButton : public vb01Gui::Button {
         public:
-            ExitButton(irr::core::vector2d<s32>, irr::core::vector2d<s32>, irr::core::stringw, bool);
+            ExitButton(vb01::Vector2, vb01::Vector2, std::string, bool);
             void onClick();
         };
     }

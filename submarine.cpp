@@ -1,4 +1,5 @@
 #include <time.h>
+#include <node.h>
 
 #include "submarine.h"
 #include "defConfigs.h"
@@ -7,17 +8,20 @@
 
 using namespace game::core;
 using namespace game::util;
+using namespace vb01;
 
 namespace game{
     namespace content{
-        Submarine::Submarine(Player *player,vector3df pos, int id) : Unit(player,pos, id) {}
+        Submarine::Submarine(Player *player, Vector3 pos, int id) : Unit(player,pos, id) {}
 
         void Submarine::attack(Order order) {
-            float angle=getAngleBetween(dirVec,*(order.targetPos[0])-pos);
-            if(angle/PI*180>50)
+            float angle = dirVec.getAngleBetween(*(order.targetPos[0]) - pos);
+
+            if(angle / PI * 180 > 50)
                 Unit::move(order, range);
+
             if (canFire()) {
-                vector3df p = pos + projectileData::pos[id][0][0].X * leftVec + projectileData::pos[id][0][0].Y * upVec - projectileData::pos[id][0][0].Z*dirVec;
+                Vector3 p = pos + leftVec * projectileData::pos[id][0][0].x + upVec * projectileData::pos[id][0][0].y - dirVec * projectileData::pos[id][0][0].z;
                 addProjectile(new Torpedo(this, p, dirVec, leftVec, upVec, getId(), 0, 0));
                 lastShotTime=getTime();
             }
@@ -25,13 +29,13 @@ namespace game{
         
         void Submarine::emerge() {
             submerged = false;
-            pos.Y += 5;
+            pos.y += 5;
             node->setPosition(pos);
         }
         
         void Submarine::submerge() {
             submerged = true;
-            pos.Y -= 5;
+            pos.y -= 5;
             node->setPosition(pos);
         }
     }

@@ -3,29 +3,27 @@
 #include "util.h"
 
 using namespace game::core;
-using namespace game::util;
-using namespace irr::core;
-using namespace irr::io;
-using namespace irr::video;
-using namespace irr::gui;
+using namespace vb01Gui;
+using namespace vb01;
+using namespace std;
 
 namespace game{
     namespace gui{
-        OptionsButton::OkButton::OkButton() :Button(vector2d<s32>(50, GameManager::getSingleton()->getHeight() - 150), vector2d<s32>(140, 50), "Ok", true) {
+        OptionsButton::OkButton::OkButton() : Button(Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Ok", true) {
             this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
         }
         void OptionsButton::OkButton::onClick() {
 
         }
 
-        OptionsButton::DefaultsButton::DefaultsButton() :Button(vector2d<s32>(200, GameManager::getSingleton()->getHeight() - 150), vector2d<s32>(140, 50), "Restore defaults", true) {
+        OptionsButton::DefaultsButton::DefaultsButton() : Button(Vector2(200, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Restore defaults", true) {
             this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
         }
         void OptionsButton::DefaultsButton::onClick() {
             
         }
 
-        OptionsButton::BackButton::BackButton() :Button(vector2d<s32>(350, GameManager::getSingleton()->getHeight() - 150), vector2d<s32>(140, 50), "Back", true) {
+        OptionsButton::BackButton::BackButton() : Button(Vector2(350, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Back", true) {
             this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
         }
         void OptionsButton::BackButton::onClick() {
@@ -38,12 +36,12 @@ namespace game{
             state->removeAllTextboxes();
             state->removeButton("Ok");
             state->removeButton("Restore defaults");
-            OptionsButton *optionsButton = new OptionsButton(vector2d<s32>(), vector2d<s32>(), "Options", true);
+            OptionsButton *optionsButton = new OptionsButton(Vector2(), Vector2(), "Options", true);
             optionsButton->onClick();
             state->removeButton("Back");
         }
 
-        OptionsButton::TabButton::TabButton(vector2d<s32> pos, vector2d<s32> size, stringw name) :Button(pos, size, name, true) {
+        OptionsButton::TabButton::TabButton(Vector2 pos, Vector2 size, string name) :Button(pos, size, name, true) {
             this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
         }
         void OptionsButton::TabButton::onClick() {
@@ -51,25 +49,27 @@ namespace game{
             OkButton *okButton = new OkButton();
             DefaultsButton *defaultsButton = new DefaultsButton();
             BackButton *returnButton = new BackButton();
-            defaultsButton->moveText(-25, 0);
+            //defaultsButton->moveText(-25, 0);
             state->addButton(okButton);
             state->addButton(defaultsButton);
             state->addButton(returnButton);
         }
 
         OptionsButton::ControlsTab::ControlsTab() : TabButton(
-								vector2d<s32>(GameManager::getSingleton()->getWidth() / 4,
-								GameManager::getSingleton()->getHeight() / 10),
-							 	vector2d<s32>(100, 50),
+								Vector2(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10),
+							 	Vector2(100, 50),
 							 	"Controls"
 				) {}
 
         void OptionsButton::ControlsTab::onClick() {
             TabButton::onClick();
-            std::vector<stringw> lines=readFile(std::string((PATH+path("../options.cfg")).c_str()));
+            std::vector<string> lines;
+            readFile(PATH + "../options.cfg", lines);
+
 						GameManager *gm = GameManager::getSingleton();
-            Listbox *listbox = new Listbox(vector2d<s32>(gm->getWidth() / 4, gm->getHeight() / 10), vector2d<s32>(360, 20), lines, lines.size()<5?lines.size():5,true);
+            Listbox *listbox = new Listbox(Vector2(gm->getWidth() / 4, gm->getHeight() / 10), Vector2(360, 20), lines, lines.size() < 5 ? lines.size() : 5, PATH + "Fonts/batang.ttf", Listbox::CONTROLS);
             listbox->openUp();
+
             state->addListbox(listbox);
             state->removeButton("Mouse");
             state->removeButton("Video");
@@ -79,21 +79,27 @@ namespace game{
         }
 
         OptionsButton::MouseTab::MouseTab() : TabButton(
-								vector2d<s32>(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 60),
-							 	vector2d<s32>(100, 50),
+								Vector2(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 60),
+							 	Vector2(100, 50),
 							 	"Mouse"
 				) {}
 
         void OptionsButton::MouseTab::onClick() {
             TabButton::onClick();
+
 						GameManager *gm = GameManager::getSingleton();
-            vector2d<s32> pos(gm->getWidth() / 3, gm->getHeight() / 4);
-            IGUIFont *font = gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fonthaettenschweiler.bmp");
-            Slider *mouseSensitivitySlider = new Slider(vector2d<s32>(pos.X, pos.Y), vector2d<s32>(300, 10), .1, 3.);
-            Textbox *mouseSensitivityTextbox = new Textbox(vector2d<s32>(pos.X + 320, pos.Y - 10), vector2d<s32>(100, 20));
-            Checkbox *reverseMouseCheckbox = new Checkbox(vector2d<s32>(pos.X, pos.Y + 50));
+            Vector2 pos = Vector2(gm->getWidth() / 3, gm->getHeight() / 4);
+
+            string font = PATH + "Fonts/batang.ttf";
+            Slider *mouseSensitivitySlider = new Slider(Vector2(pos.x, pos.y), Vector2(300, 10), .1, 3.);
+            Textbox *mouseSensitivityTextbox = new Textbox(Vector2(pos.x + 320, pos.y - 10), Vector2(100, 20), font);
+            Checkbox *reverseMouseCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50));
+
+						/*
             gm->attachBitmapText(new BitmapText("MouseSensitivity", vector2d<s32>(gm->getWidth() / 3 - 90, gm->getHeight() / 4 - 5), font));
             gm->attachBitmapText(new BitmapText("ReverseMouse", vector2d<s32>(gm->getWidth() / 3 + 20, gm->getHeight() / 4 + 50), font));
+						*/
+
             state->addTextbox(mouseSensitivityTextbox);
             state->addSlider(mouseSensitivitySlider);
             state->addCheckbox(reverseMouseCheckbox);
@@ -104,31 +110,35 @@ namespace game{
             state->removeButton("Mouse");
         }
 
-        OptionsButton::VideoTab::VideoTab() :TabButton(vector2d<s32>(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 120), vector2d<s32>(100, 50), "Video") {}
+        OptionsButton::VideoTab::VideoTab() : TabButton(Vector2(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 120), Vector2(100, 50), "Video") {}
         void OptionsButton::VideoTab::onClick() {
             TabButton::onClick();
-            std::vector<stringw> lines;
+            std::vector<string> lines;
+
             for (int i = 0; i < 10; i++) {
-                stringw s;
+                string s;
                 s += i;
                 lines.push_back(s);
             }
+
 						GameManager *gm = GameManager::getSingleton();
-            IGUIFont *font = gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fonthaettenschweiler.bmp");
-            vector2d<s32> pos(gm->getWidth() / 3, gm->getHeight() / 8);
-            Listbox *resolutionsListbox = new Listbox(vector2d<s32>(pos.X, pos.Y), vector2d<s32>(100, 20), lines, 5);
+            string font = PATH + "Fonts/batang.ttf";
+            Vector2 pos = Vector2(gm->getWidth() / 3, gm->getHeight() / 8);
+            Listbox *resolutionsListbox = new Listbox(Vector2(pos.x, pos.y), Vector2(100, 20), lines, 5, font);
 
-            Checkbox *fullscreenCheckbox = new Checkbox(vector2d<s32>(pos.X, pos.Y + 30));
-            Checkbox *vsyncCheckbox = new Checkbox(vector2d<s32>(pos.X, pos.Y + 50));
-            Checkbox *normalMapCheckbox = new Checkbox(vector2d<s32>(pos.X, pos.Y + 70));
-            Checkbox *parallaxMapCheckbox = new Checkbox(vector2d<s32>(pos.X, pos.Y + 90));
-            Checkbox *specularMapCheckbox = new Checkbox(vector2d<s32>(pos.X, pos.Y + 110));
+            Checkbox *fullscreenCheckbox = new Checkbox(Vector2(pos.x, pos.y + 30));
+            Checkbox *vsyncCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50));
+            Checkbox *normalMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 70));
+            Checkbox *parallaxMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 90));
+            Checkbox *specularMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 110));
 
+						/*
             gm->attachBitmapText(new BitmapText("Fullscreen", vector2d<s32>(pos.X + 20, pos.Y + 30), font));
             gm->attachBitmapText(new BitmapText("VSync", vector2d<s32>(pos.X + 20, pos.Y + 50), font));
             gm->attachBitmapText(new BitmapText("Normal map", vector2d<s32>(pos.X + 20, pos.Y + 70), font));
             gm->attachBitmapText(new BitmapText("Parallax map", vector2d<s32>(pos.X + 20, pos.Y + 90), font));
             gm->attachBitmapText(new BitmapText("Specular map", vector2d<s32>(pos.X + 20, pos.Y + 110), font));
+						*/
 
             state->addListbox(resolutionsListbox);
             state->addCheckbox(fullscreenCheckbox);
@@ -144,13 +154,13 @@ namespace game{
             state->removeButton("Video");
         }
 
-        OptionsButton::AudioTab::AudioTab() :TabButton(vector2d<s32>(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 180), vector2d<s32>(100, 50), "Audio") {}
+        OptionsButton::AudioTab::AudioTab() : TabButton(Vector2(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 180), Vector2(100, 50), "Audio") {}
         void OptionsButton::AudioTab::onClick() {
             TabButton::onClick();
 						GameManager *gm = GameManager::getSingleton();
-            vector2d<s32> pos(gm->getWidth() / 3, gm->getHeight() / 8);
-            Slider *volumeSlider = new Slider(vector2d<s32>(pos.X, pos.Y), vector2d<s32>(300, 10), 0., 2.);
-            Textbox *volumeTextbox = new Textbox(vector2d<s32>(pos.X + 320, pos.Y), vector2d<s32>(100, 20));
+            Vector2 pos(gm->getWidth() / 3, gm->getHeight() / 8);
+            Slider *volumeSlider = new Slider(Vector2(pos.x, pos.y), Vector2(300, 10), 0., 2.);
+            Textbox *volumeTextbox = new Textbox(Vector2(pos.x + 320, pos.y), Vector2(100, 20), PATH + "Fonts/batang.ttf");
             state->addTextbox(volumeTextbox);
             state->addSlider(volumeSlider);
             state->removeButton("Controls");
@@ -160,18 +170,22 @@ namespace game{
             state->removeButton("Audio");
         }
 
-        OptionsButton::MultiplayerTab::MultiplayerTab() : TabButton(vector2d<s32>(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 240), vector2d<s32>(100, 50), "Multiplayer") {}
+        OptionsButton::MultiplayerTab::MultiplayerTab() : TabButton(Vector2(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10 + 240), Vector2(100, 50), "Multiplayer") {}
         void OptionsButton::MultiplayerTab::onClick() {
             TabButton::onClick();
 						GameManager *gm = GameManager::getSingleton();
-            IGUIFont *font = gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fonthaettenschweiler.bmp");
-            vector2d<s32> pos(gm->getWidth() / 3, gm->getHeight() / 6);
-            Textbox *tcpTextbox = new Textbox(vector2d<s32>(pos.X, pos.Y), vector2d<s32>(100, 20));
-            Textbox *udpTextbox = new Textbox(vector2d<s32>(pos.X, pos.Y + 30), vector2d<s32>(100, 20));
-            Textbox *playerNameTextbox = new Textbox(vector2d<s32>(pos.X, pos.Y + 60), vector2d<s32>(100, 20));
+            string font = PATH + "Fonts/batang.ttf";
+            Vector2 pos = Vector2(gm->getWidth() / 3, gm->getHeight() / 6);
+            Textbox *tcpTextbox = new Textbox(Vector2(pos.x, pos.y), Vector2(100, 20), font);
+            Textbox *udpTextbox = new Textbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), font);
+            Textbox *playerNameTextbox = new Textbox(Vector2(pos.x, pos.y + 60), Vector2(100, 20), font);
+
+						/*
             gm->attachBitmapText(new BitmapText("TCP port", vector2d<s32>(pos.X - 50, pos.Y), font));
             gm->attachBitmapText(new BitmapText("UDP port", vector2d<s32>(pos.X - 50, pos.Y + 30), font));
             gm->attachBitmapText(new BitmapText("Player name", vector2d<s32>(pos.X - 65, pos.Y + 60), font));
+						*/
+
             state->addTextbox(tcpTextbox);
             state->addTextbox(udpTextbox);
             state->addTextbox(playerNameTextbox);
@@ -182,7 +196,7 @@ namespace game{
             state->removeButton("Multiplayer");
         }
 
-        OptionsButton::OptionsButton(vector2d<s32> pos, vector2d<s32> size, stringw name, bool separate) : Button(pos, size, name, separate) {
+        OptionsButton::OptionsButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
             this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
         }
         void OptionsButton::onClick() {
@@ -191,7 +205,7 @@ namespace game{
             VideoTab *videoTab = new VideoTab();
             AudioTab *audioTab = new AudioTab();
             MultiplayerTab *mupltiplayerTab = new MultiplayerTab();
-            mupltiplayerTab->moveText(-20, 0);
+            //mupltiplayerTab->moveText(-20, 0);
             state->addButton(controlsTab);
             state->addButton(mouseTab);
             state->addButton(videoTab);

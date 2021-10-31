@@ -1,3 +1,5 @@
+#include <model.h>
+
 #include "guidedMissile.h"
 #include "unit.h"
 #include "guidedMissileData.h"
@@ -6,24 +8,27 @@
 using namespace game::core;
 using namespace game::util;
 using namespace game::content;
-using namespace irr::core;
+using namespace vb01;
+using namespace std;
 
 namespace game{
     namespace content{
-        GuidedMissile::GuidedMissile(Unit *unit, vector3df pos, vector3df target, vector3df dirVec, vector3df leftVec, vector3df upVec, int id, int weaponTypeId, int weaponId) :
+        GuidedMissile::GuidedMissile(Unit *unit, Vector3 pos, Vector3 target, Vector3 dirVec, Vector3 leftVec, Vector3 upVec, int id, int weaponTypeId, int weaponId) :
         Projectile(unit, nullptr, pos, dirVec, leftVec, upVec, id, weaponTypeId, weaponId) {
             speed = .05;
+
             for (int i = 0; i < 180; i++)
                 arcLength += speed * cos(turnAngle * i);
+
             this->target = target;
-            vector3df targVec = vector3df(target.X-initPos.X, 0, target.Z-initPos.Z);
-            b=targVec.getLength()/2;
-            x=-b;
-            dirVec=vector3df(0,1,0);
-            upVec=-targVec.normalize();
-            leftVec=quaternion(0,0,0,1).fromAngleAxis(PI/2,dirVec)*upVec;
-            rayLength=3;
-            damage=100;
+            Vector3 targVec = Vector3(target.x - initPos.x, 0, target.z - initPos.z);
+            b = targVec.getLength() / 2;
+            x = -b;
+            dirVec = Vector3(0,1,0);
+            upVec = -targVec.norm();
+            leftVec = Quaternion(PI / 2, dirVec) * dirVec;
+            rayLength = 3;
+            damage = 100;
         }
 
         void GuidedMissile::update() {
@@ -34,18 +39,18 @@ namespace game{
         }
 
         void GuidedMissile::updateVecs() {
-            if(x<b){
-                vector3df targVec = vector3df(target.X-initPos.X, 0, target.Z-initPos.Z);
-                pos += targVec.normalize()*speed;
+            if(x < b){
+                Vector3 targVec = Vector3(target.x - initPos.x, 0, target.z - initPos.z);
+                pos = pos + targVec.norm() * speed;
                 x += speed;
-                pos.Y=sqrt(1.-x*x/(b*b))*a;
+                pos.y = sqrt(1. - x * x / (b * b)) * a;
                 float tanAngle = atan(-a*x/(b*b*sqrt(1.-x*x/(b*b))));
-                quaternion rotQuat = quaternion().fromAngleAxis(tanAngle, leftVec);
-                vector3df dirProj=dirVec==vector3df(0,1,0)?upVec:vector3df(dirVec.X,0,dirVec.Z).normalize();
+                Quaternion rotQuat = Quaternion(tanAngle, leftVec);
+                Vector3 dirProj = (dirVec == Vector3::VEC_J ? upVec : Vector3(dirVec.x, 0, dirVec.z).norm());
                 orientProjectile(rotQuat * targVec);
             }
             else
-                pos.Y-=speed;
+                pos.y -= speed;
         }
     }
 }

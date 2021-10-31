@@ -6,18 +6,18 @@
 
 namespace game{
     namespace content{
-        enum MissileType {AAM,AWM};
+        enum MissileType {AAM, AWM};
         
         class Missile : public Projectile {
         public:
-            Missile(Unit*, irr::scene::ISceneNode*, irr::core::vector3df*,irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, irr::core::vector3df, int, int, int);
+            Missile(Unit*, vb01::Node*, vb01::Vector3*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
             ~Missile(){}
             void update();
         private:
             s64 initTime;
-            int selfDistructTime=10000;
-            irr::core::vector3df *target;
-            float rotationSpeed=5;
+            int selfDistructTime = 10000;
+            vb01::Vector3 *target;
+            float rotationSpeed = 5;
             MissileType type;
         };
     }
