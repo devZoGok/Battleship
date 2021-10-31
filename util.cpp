@@ -40,7 +40,7 @@ namespace game{
 
                         void onClick() {
 														GameManager *gm = GameManager::getSingleton();
-                            gm->detachAllBitmapTexts();
+                            //gm->detachAllBitmapTexts();
                             state->removeButton("Back");
 //                             gameManager->dettachState(state);
                             std::vector<string> difficulties, factions;
@@ -77,7 +77,7 @@ namespace game{
                             state->removeAllListboxes();
                             state->removeAllSliders();
                             state->removeAllTextboxes();
-														GameManager::getSingleton()->detachAllBitmapTexts();
+														//GameManager::getSingleton()->detachAllBitmapTexts();
                             makeTitlescreenButtons(state);
                             state->removeButton("Play");
                             state->removeButton("Back");

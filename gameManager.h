@@ -25,12 +25,6 @@ namespace game{
         class GameManager {
         public:
 						static GameManager* getSingleton();
-            inline void attachBitmapText(gui::AbstractBitmapText *a){bitmapTexts.push_back(a);}
-            void detachBitmapText(gui::AbstractBitmapText*);
-            void detachAllBitmapTexts();
-            inline void attachImage(gui::AbstractImage *a){images.push_back(a);}
-            void detachImage(gui::AbstractImage*);
-            void detachAllImages();
             void update();
             inline int getWidth(){return width;}
             inline int getHeight(){return height;}

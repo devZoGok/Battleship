@@ -172,8 +172,8 @@ namespace game{
         }
 				*/
 
-				/*
         void Unit::debug() {
+				/*
             IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
             driver->setTransform(ETS_WORLD, IdentityMatrix);
             driver->setMaterial(createLineMaterial());
@@ -181,8 +181,8 @@ namespace game{
             driver->draw3DLine(pos, pos + dirVec * length, SColor(255, 0, 0, 255));
             driver->draw3DLine(pos, pos + leftVec * length, SColor(255, 255, 0, 0));
             driver->draw3DLine(pos, pos + upVec * length, SColor(255, 0, 255, 0));
-        }
 				*/
+        }
 
         void Unit::executeOrders() {
             if (orders.size() > 0) {

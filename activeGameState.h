@@ -29,7 +29,7 @@ namespace game{
             class UnitButton : public vb01Gui::Button{
             public:
                 UnitButton(ActiveGameState*, vb01::Vector2, vb01::Vector2, std::string, int, int);
-                ~UnitButton();
+                ~UnitButton(){}
                 virtual void onClick();
                 virtual void onMouseOver();
                 virtual void onMouseAway();
@@ -37,10 +37,11 @@ namespace game{
                 ActiveGameState *activeState;
                 int faction, unitId;
             };
+
             class UnitActionButton : public vb01Gui::Button{
             public:
                 UnitActionButton(content::unitData::UNIT_TYPE, vb01::Vector2, vb01::Vector2, std::string, std::string);
-                ~UnitActionButton();
+                ~UnitActionButton(){}
                 virtual void onClick();
                 virtual void onMouseOver();
                 virtual void onMouseAway();

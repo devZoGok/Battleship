@@ -28,8 +28,10 @@ namespace game{
         }
         void OptionsButton::BackButton::onClick() {
 						GameManager *gm = GameManager::getSingleton();
+						/*
             gm->detachAllBitmapTexts();
             gm->detachAllImages();
+						*/
             state->removeAllListboxes();
             state->removeAllCheckboxes();
             state->removeAllSliders();
