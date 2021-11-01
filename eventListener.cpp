@@ -5,8 +5,7 @@
 
 using namespace std;
 
-namespace game{
-    namespace core{
+namespace battleship{
 	double *posX,*posY,strX,strY;
 	int width,height;
 	
@@ -122,5 +121,4 @@ namespace game{
 			*/
 		}
     }
-		}
 }

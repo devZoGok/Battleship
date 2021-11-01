@@ -4,15 +4,12 @@
 
 #include <vector.h>
 
-namespace game{
-    namespace core{
-        class InGameAppState;
-    }
-    namespace content{
-        void detonate(core::InGameAppState*, vb01::Vector3, vb01::Vector3);
-        void detonateDepthCharge(core::InGameAppState*, vb01::Vector3);
-        void detonateTorpedo(core::InGameAppState*, vb01::Vector3);
-    }
+namespace battleship{
+    class InGameAppState;
+
+    void detonate(InGameAppState*, vb01::Vector3, vb01::Vector3);
+    void detonateDepthCharge(InGameAppState*, vb01::Vector3);
+    void detonateTorpedo(InGameAppState*, vb01::Vector3);
 }
 
 #endif

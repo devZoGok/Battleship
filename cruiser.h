@@ -5,19 +5,16 @@
 #include "vessel.h"
 #include "player.h"
 
-namespace game
-{
-    namespace content {
-        class Cruiser : public Vessel {
-        public:
-            Cruiser(Player*, vb01::Vector3, int);
-            void launch(Order);
-        private:
-            bool canFire();
-            int guidedMissiles, reloadTime = 5000;
-            s64 lastUpdateTime;
-        };
-    }
+namespace battleship {
+    class Cruiser : public Vessel {
+    public:
+        Cruiser(Player*, vb01::Vector3, int);
+        void launch(Order);
+    private:
+        bool canFire();
+        int guidedMissiles, reloadTime = 5000;
+        s64 lastUpdateTime;
+    };
 }
 
 #endif

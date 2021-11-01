@@ -7,76 +7,75 @@
 #include "abstractAppState.h"
 #include "defConfigs.h"
 
-using namespace game::core;
 using namespace vb01;
 using namespace std;
 
-namespace game{
-    namespace core{
-        void AbstractAppState::onAttachment() {
-            const int stateId=(int)type,numBinds=core::numBinds[stateId];
-            int firstLine=0,lastLine;
+namespace battleship{
+	using namespace configData;
 
-            for(int i=0;i<stateId;i++)
-                firstLine+=core::numConfBinds[i];
+    void AbstractAppState::onAttachment() {
+        const int stateId = (int)type, numBinds = configData::numBinds[stateId];
+        int firstLine=0,lastLine;
 
-//             firstLine++;
-            lastLine=firstLine+core::numConfBinds[stateId];
-            std::vector<string> lines;
-            readFile(PATH_STR + "../options.cfg", lines, firstLine,lastLine);
+        for(int i=0;i<stateId;i++)
+            firstLine += configData::numConfBinds[i];
 
-            for(int i=0;i<numBinds;i++){
-                int trigger=core::triggers[stateId][i];
+           //firstLine++;
+        lastLine=firstLine + configData::numConfBinds[stateId];
+        std::vector<string> lines;
+        readFile(PATH + "../options.cfg", lines, firstLine,lastLine);
 
-                if(i<core::numConfBinds[stateId]&&stateId!=(int)AppStateTypes::GUI_STATE){
-                    int xId=-1;
+        for(int i=0;i<numBinds;i++){
+            int trigger=triggers[stateId][i];
 
-                    for(int i2=0;i2<lines[i].size()&&xId==-1;i2++)
-                        if(lines[i].c_str()[i2]=='x')
-                            xId=i2;
+            if(i<configData::numConfBinds[stateId]&&stateId!=(int)AppStateTypes::GUI_STATE){
+                int xId=-1;
 
-                    char ch[2];
+                for(int i2=0;i2<lines[i].size()&&xId==-1;i2++)
+                    if(lines[i].c_str()[i2]=='x')
+                        xId=i2;
 
-                    for(int i2=0;i2<2;i2++)
-                        ch[i2]=(char)lines[i].substr(xId+1,2).c_str()[i2];
+                char ch[2];
 
-                    stringstream ss;
-                    ss<<ch;
-                    ss>>std::hex>>trigger;
-                }
+                for(int i2=0;i2<2;i2++)
+                    ch[i2]=(char)lines[i].substr(xId+1,2).c_str()[i2];
 
-								Mapping::Bind bind=binds[stateId][i];
-								Mapping::BindType type = (stateId > 0 ? Mapping::KEYBOARD : Mapping::MOUSE_KEY);
-								bool isAnalog = core::isAnalog[stateId][i];
-
-								Mapping *m = new Mapping;
-								m->bind = bind;
-								m->trigger = trigger;
-								m->type = type;
-								m->action = !isAnalog;
-                attachedKeys.push_back(m);
+                stringstream ss;
+                ss<<ch;
+                ss>>std::hex>>trigger;
             }
 
-            attached = true;
+						Mapping::Bind bind=binds[stateId][i];
+						Mapping::BindType type = (stateId > 0 ? Mapping::KEYBOARD : Mapping::MOUSE_KEY);
+						bool isAnalog = configData::isAnalog[stateId][i];
+
+						Mapping *m = new Mapping;
+						m->bind = bind;
+						m->trigger = trigger;
+						m->type = type;
+						m->action = !isAnalog;
+            attachedKeys.push_back(m);
         }
 
-        void AbstractAppState::onDetachment() {
-            attached = false;
-        }
+        attached = true;
+    }
 
-        void AbstractAppState::detachKey(Mapping *key) {
-            for (int i = 0; i < attachedKeys.size(); i++)
-                if (key == attachedKeys[i]) {
-                    delete key;
-                    attachedKeys.erase(attachedKeys.begin() + i);
-                }
-        }
+    void AbstractAppState::onDetachment() {
+        attached = false;
+    }
 
-        void AbstractAppState::detachAllKeys() {
-            while (attachedKeys.size() > 0) {
-                delete attachedKeys[attachedKeys.size() - 1];
-                attachedKeys.pop_back();
+    void AbstractAppState::detachKey(Mapping *key) {
+        for (int i = 0; i < attachedKeys.size(); i++)
+            if (key == attachedKeys[i]) {
+                delete key;
+                attachedKeys.erase(attachedKeys.begin() + i);
             }
+    }
+
+    void AbstractAppState::detachAllKeys() {
+        while (attachedKeys.size() > 0) {
+            delete attachedKeys[attachedKeys.size() - 1];
+            attachedKeys.pop_back();
         }
     }
 }

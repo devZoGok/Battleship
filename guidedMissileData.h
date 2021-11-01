@@ -4,26 +4,23 @@
 
 #include "projectileData.h"
 
-namespace game
-{
-    namespace content{
-        namespace projectileData {
-            const vb01::Vector3 guidedMissilePos[unitData::numberOfUnits][6]{
-                {},
-                {},
-                {},
-                {},
-                {
-										vb01::Vector3(0.24482, 1.14985, 1.32775),
-										vb01::Vector3(0.24482, 1.14985, 1.62698),
-									 	vb01::Vector3(0.24482, 1.14985, 1.88017),
-                    vb01::Vector3(-0.24482, 1.14985, 1.32775),
-									 	vb01::Vector3(-0.24482, 1.14985, 1.62698),
-									 	vb01::Vector3(-0.24482, 1.14985, 1.88017)
-								},
-                {vb01::Vector3(0.17192, 0.57858, 0.64471), vb01::Vector3(-0.17192, 0.57858, 0.64471)}
-            };
-        }
+namespace battleship{
+    namespace projectileData {
+        const vb01::Vector3 guidedMissilePos[unitData::numberOfUnits][6]{
+            {},
+            {},
+            {},
+            {},
+            {
+								vb01::Vector3(0.24482, 1.14985, 1.32775),
+								vb01::Vector3(0.24482, 1.14985, 1.62698),
+							 	vb01::Vector3(0.24482, 1.14985, 1.88017),
+                vb01::Vector3(-0.24482, 1.14985, 1.32775),
+							 	vb01::Vector3(-0.24482, 1.14985, 1.62698),
+							 	vb01::Vector3(-0.24482, 1.14985, 1.88017)
+						},
+            {vb01::Vector3(0.17192, 0.57858, 0.64471), vb01::Vector3(-0.17192, 0.57858, 0.64471)}
+        };
     }
 }
 

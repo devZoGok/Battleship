@@ -5,23 +5,21 @@
 
 class GLFWwindow;
 
-namespace game{
-    namespace core{
-				class StateManager;
+namespace battleship{
+		class StateManager;
 
-        class InputManager {
-        public:
-            InputManager(GLFWwindow*);
-            ~InputManager();
-            //virtual bool OnEvent(const irr::SEvent&);
-            void update();
-        private:
-            //irr::SEvent* event;
-						GLFWwindow *window = nullptr;
-						StateManager *stateManager = nullptr;
-            bool keyEvent = false, mouseEvent = false;
-        };
-    }
+    class InputManager {
+    public:
+        InputManager(GLFWwindow*);
+        ~InputManager();
+        //virtual bool OnEvent(const irr::SEvent&);
+        void update();
+    private:
+        //irr::SEvent* event;
+				GLFWwindow *window = nullptr;
+				StateManager *stateManager = nullptr;
+        bool keyEvent = false, mouseEvent = false;
+    };
 }
 
 #endif

@@ -4,16 +4,14 @@
 
 #include "projectile.h"
 
-namespace game{
-    namespace content{
-        class Torpedo : public Projectile {
-        public:
-            Torpedo(Unit*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
-            ~Torpedo(){}
-            void update();
-//             void explode()
-        };
-    }
+namespace battleship{
+    class Torpedo : public Projectile {
+    public:
+        Torpedo(Unit*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
+        ~Torpedo(){}
+        void update();
+        //void explode()
+    };
 }
 
 #endif

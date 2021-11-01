@@ -14,11 +14,9 @@
 6：巡航ミサイル
 */
 
-namespace game{
-    namespace content {
-        namespace unitData {
-            const float pitchSpeed[numberOfUnits]{0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5};
-        }
+namespace battleship {
+    namespace unitData {
+        const float pitchSpeed[numberOfUnits]{0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5};
     }
 }
 

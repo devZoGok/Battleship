@@ -4,14 +4,11 @@
 using namespace std;
 using namespace vb01;
 
-namespace game
-{
-    namespace gui{
-        ExitButton::ExitButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
-        }
+namespace battleship{
+    ExitButton::ExitButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+    }
 
-        void ExitButton::onClick() {
-						//Root::getSingleton()->set
-        }
+    void ExitButton::onClick() {
+				//Root::getSingleton()->set
     }
 }

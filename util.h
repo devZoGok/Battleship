@@ -8,7 +8,7 @@
 #include <string>
 #include <chrono>
 
-namespace game{
+namespace battleship{
     typedef unsigned char u8;
     typedef unsigned short u16;
     typedef unsigned int u32;
@@ -18,18 +18,14 @@ namespace game{
     typedef int s32;
     typedef long long s64;
     
-    namespace core{
-        class GameManager;
-        class GuiAppState;
-    }
+    class GameManager;
+    class GuiAppState;
     
-    namespace util{
-        void makeTitlescreenButtons(core::GuiAppState*);
-				/*
-        bool isWithinRect(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
-        bool isWithinCuboid(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
-				*/
-    }
+    void makeTitlescreenButtons(GuiAppState*);
+		/*
+    bool isWithinRect(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
+    bool isWithinCuboid(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
+		*/
 }
 
 #endif

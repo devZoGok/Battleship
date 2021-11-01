@@ -3,7 +3,7 @@
 #include "stateManager.h"
 #include "guiAppState.h"
 
-using namespace game::core;
+using namespace battleship;
 
 int main() {
     GameManager *gameManager = GameManager::getSingleton();
@@ -14,7 +14,7 @@ int main() {
     makeTitlescreenButtons(state);
 		*/
 		while(true){
-				//gameManager->update();
+				gameManager->update();
 		}
     return 0;
 }

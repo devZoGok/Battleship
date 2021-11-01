@@ -5,18 +5,16 @@
 #include "jet.h"
 #include "player.h"
 
-namespace game{
-    namespace content {
-        class DemoJet : public Jet {
-        public:
-            DemoJet(Player*, vb01::Vector3, int, bool = 1);
-            void attack(Order);
-            void update();
-        private:
-            float length = 1;
-            int damage = 250;
-        };
-    }
+namespace battleship {
+    class DemoJet : public Jet {
+    public:
+        DemoJet(Player*, vb01::Vector3, int, bool = 1);
+        void attack(Order);
+        void update();
+    private:
+        float length = 1;
+        int damage = 250;
+    };
 }
 
 #endif
