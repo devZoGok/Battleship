@@ -9,21 +9,21 @@ using namespace std;
 namespace battleship{
 	using namespace configData;
 
-    OptionsButton::OkButton::OkButton() : Button(Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Ok", true) {
+    OptionsButton::OkButton::OkButton() : Button(Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Ok", PATH + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
     }
     void OptionsButton::OkButton::onClick() {
 
     }
 
-    OptionsButton::DefaultsButton::DefaultsButton() : Button(Vector2(200, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Restore defaults", true) {
+    OptionsButton::DefaultsButton::DefaultsButton() : Button(Vector2(200, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Restore defaults", PATH + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
     }
     void OptionsButton::DefaultsButton::onClick() {
         
     }
 
-    OptionsButton::BackButton::BackButton() : Button(Vector2(350, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Back", true) {
+    OptionsButton::BackButton::BackButton() : Button(Vector2(350, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Back", PATH + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
     }
     void OptionsButton::BackButton::onClick() {
@@ -43,7 +43,7 @@ namespace battleship{
         state->removeButton("Back");
     }
 
-    OptionsButton::TabButton::TabButton(Vector2 pos, Vector2 size, string name) :Button(pos, size, name, true) {
+    OptionsButton::TabButton::TabButton(Vector2 pos, Vector2 size, string name) :Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
     }
     void OptionsButton::TabButton::onClick() {
@@ -198,7 +198,7 @@ namespace battleship{
         state->removeButton("Multiplayer");
     }
 
-    OptionsButton::OptionsButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+    OptionsButton::OptionsButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
     }
     void OptionsButton::onClick() {

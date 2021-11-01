@@ -27,7 +27,7 @@ namespace battleship{
 
     const int size = 50;
     
-    ActiveGameState::UnitButton::UnitButton(ActiveGameState *activeState, Vector2 pos, Vector2 size, std::string name,int faction,int unitId) : vb01Gui::Button(pos,size,name,true){
+    ActiveGameState::UnitButton::UnitButton(ActiveGameState *activeState, Vector2 pos, Vector2 size, std::string name,int faction,int unitId) : vb01Gui::Button(pos, size, name, "", -1, true){
         this->activeState=activeState;
         this->faction=faction;
         this->unitId=unitId;
@@ -78,7 +78,7 @@ namespace battleship{
 				*/
     }
     
-    ActiveGameState::UnitActionButton::UnitActionButton(unitData::UNIT_TYPE type, Vector2 pos, Vector2 size, string name, string path) : vb01Gui::Button(pos,size,name,true){
+    ActiveGameState::UnitActionButton::UnitActionButton(unitData::UNIT_TYPE type, Vector2 pos, Vector2 size, string name, string path) : vb01Gui::Button(pos, size, name, "", -1, true){
         this->type=type;
 				GameManager *gm = GameManager::getSingleton();
         activeState=((ActiveGameState*)gm->getStateManager()->getAppState(AppStateTypes::ACTIVE_STATE));

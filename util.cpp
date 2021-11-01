@@ -18,7 +18,7 @@ namespace battleship{
 
         class SpButton : public Button {
         public:
-            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
                 this->state = state;
             }
 
@@ -27,7 +27,7 @@ namespace battleship{
 
                 class PlayButton : public Button {
                 public:
-                    PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+                    PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
                         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
                         this->lengths[0]=lengths[0];
                         this->lengths[1]=lengths[1];
@@ -66,7 +66,7 @@ namespace battleship{
                 class ReturnButton : public Button {
                 public:
 
-                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
                         this->state = state;
                     }
 
@@ -143,7 +143,7 @@ namespace battleship{
             class ReturnButton : public Button {
             public:
 
-                ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+                ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
                     this->state = state;
                 }
 
@@ -172,6 +172,7 @@ namespace battleship{
         };
 
 				GameManager *gm = GameManager::getSingleton();
+				string font = PATH + "Fonts/batang.ttf";
         SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
         MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);
         ExitButton *exitButton = new ExitButton(Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 3), Vector2(150, 40), "Exit", true);

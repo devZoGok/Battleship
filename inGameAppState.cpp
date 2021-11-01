@@ -14,7 +14,7 @@ using namespace std;
 namespace battleship{
 		using namespace configData;
 
-    InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+    InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -27,7 +27,7 @@ namespace battleship{
         return guiState;
     }
 
-    InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+    InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -37,7 +37,7 @@ namespace battleship{
         class ConsoleCommandEntryButton : public Button {
         public:
 
-            ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+            ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
                 this->inGameState = inGameState;
                 textbox = t;
                 listbox = l;
@@ -97,7 +97,7 @@ namespace battleship{
         guiState->addButton(entryButton);
     }
 
-    InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+    InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -146,7 +146,7 @@ namespace battleship{
         OptionsButton::onClick();
     }
 
-    InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+    InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -155,7 +155,7 @@ namespace battleship{
 
     }
 
-    InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, separate) {
+    InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
         //setImageButton(new Image(icon, pos, size));
     }
 
