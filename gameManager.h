@@ -16,7 +16,7 @@ namespace battleship{
     class GameManager {
     public:
 				static GameManager* getSingleton();
-				void start();
+				void start(int, int);
         void update();
         inline int getWidth(){return width;}
         inline int getHeight(){return height;}

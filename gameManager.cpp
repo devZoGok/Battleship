@@ -24,9 +24,12 @@ namespace battleship{
 
     GameManager::~GameManager() {}
 
-		void GameManager::start() {
+		void GameManager::start(int width, int height) {
+				this->width = 800;
+				this->height = 600;
+
 				Root *root = Root::getSingleton();
-				root->start(800, 600, "../../vb01/", "Battleship");
+				root->start(width, height, "../../vb01/", "Battleship");
 
 				stateManager = new StateManager();
         listener = new InputManager(root->getWindow());

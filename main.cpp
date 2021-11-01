@@ -7,7 +7,7 @@ using namespace battleship;
 
 int main() {
     GameManager *gameManager = GameManager::getSingleton();
-		gameManager->start();
+		gameManager->start(800, 600);
     GuiAppState *state = new GuiAppState();
     gameManager->getStateManager()->attachState(state);
     makeTitlescreenButtons(state);
