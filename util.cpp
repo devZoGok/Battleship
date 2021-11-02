@@ -22,6 +22,14 @@ namespace battleship{
                 this->state = state;
             }
 
+						void onMouseOver(){
+								setColor(Vector4(.8, .8, .8, 1));
+						}
+
+						void onMouseOff(){
+								setColor(Vector4(.6, .6, .6, 1));
+						}
+
             void onClick() {
                 vector<string> difficulties, factions;
 

@@ -1,5 +1,6 @@
 #include <sstream>
 #include <vector.h>
+#include <util.h>
 
 #include "gameManager.h"
 #include "guiAppState.h"
@@ -19,27 +20,19 @@ namespace battleship{
 
     void GuiAppState::update() {
 				GameManager *gm = GameManager::getSingleton();
-				/*
-        mousePos[0] = gm->getDevice()->getCursorControl()->getPosition().X;
-        mousePos[1] = gm->getDevice()->getCursorControl()->getPosition().Y;
-				*/
+        mousePos = getCursorPos();
 
         for (Button *b : buttons) {
             if (b->isSeparate())
                 b->update();
 
-            bool withinX=mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
-            bool withinY=mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
+            bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
+            bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
 
-						/*
-            if(withinX&&withinY)
+            if(withinX && withinY)
                 b->onMouseOver();
             else
-                b->onMouseAway();
-
-            b->setMouseOverDone(withinX&&withinY);
-            b->setMouseAwayDone(!(withinX&&withinY));
-						*/
+                b->onMouseOff();
         }
 
         for (Listbox *l : listboxes)
@@ -86,12 +79,12 @@ namespace battleship{
         switch(bind){
 						case Mapping::LEFT_CLICK:
                 if(isPressed)
-                    for (int i=0;i<buttons.size();i++) {
-                        Button *b=buttons[i];
-                        bool withinX=mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
-                        bool withinY=mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
+                    for (int i = 0; i < buttons.size(); i++) {
+                        Button *b = buttons[i];
+                        bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
+                        bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
 
-                        if (withinX&&withinY) 
+                        if (withinX && withinY) 
                             b->onClick();
                     }
                 break;
