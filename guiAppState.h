@@ -45,10 +45,8 @@ namespace battleship{
     private:
         virtual void onAction(Mapping::Bind, bool);
         virtual void onAnalog(Mapping::Bind, double);
-				/*
-        virtual void onRawKeyPress(irr::SEvent::SKeyInput);
-        virtual void onRawMousePress(irr::SEvent::SMouseInput);
-				*/
+        virtual void onRawKeyPress(vb01::u8);
+        virtual void onRawMousePress(vb01::u8);
         vb01Gui::Textbox* getOpenTextbox();
         vb01Gui::Listbox* getOpenListbox();
         void attachBindKeys();

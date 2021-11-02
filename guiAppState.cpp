@@ -205,20 +205,22 @@ namespace battleship{
         }
     }
     
-		/*
-    void GuiAppState::onRawKeyPress(SEvent::SKeyInput event){
-        updateControlsListbox(event.Key);
+    void GuiAppState::onRawKeyPress(u8 trigger){
+				Button *button = nullptr;
+
+				for(Button *b : buttons)
+						if(b->getTrigger() == trigger){
+								button = b;
+								break;
+						}
+
+				if(button)
+						button->onClick();
     }
     
-    void GuiAppState::onRawMousePress(SEvent::SMouseInput event){
-        int trigger=0;
-        if(event.isMiddlePressed())
-            trigger=1;
-        else if(event.isRightPressed())
-            trigger=2;
+    void GuiAppState::onRawMousePress(u8 trigger){
         updateControlsListbox(trigger);
     }
-		*/
     
     Textbox* GuiAppState::getOpenTextbox() {
         Textbox* t = nullptr;

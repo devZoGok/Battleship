@@ -18,7 +18,7 @@ namespace battleship{
 
         class SpButton : public Button {
         public:
-            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_S, separate) {
                 this->state = state;
             }
 
@@ -35,7 +35,7 @@ namespace battleship{
 
                 class PlayButton : public Button {
                 public:
-                    PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+                    PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
                         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
                         this->lengths[0]=lengths[0];
                         this->lengths[1]=lengths[1];
@@ -74,7 +74,7 @@ namespace battleship{
                 class ReturnButton : public Button {
                 public:
 
-                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_B, separate) {
                         this->state = state;
                     }
 
@@ -93,7 +93,6 @@ namespace battleship{
                 };
 
 								GameManager *gm = GameManager::getSingleton();
-                //IGUIFont *font = gm->getDevice()->getGUIEnvironment()->getFont(PATH + "Fonts/fonthaettenschweiler.bmp");
                 Vector2 pos(gm->getWidth() / 8, gm->getHeight() / 8);
                 difficulties.push_back("Easy");
                 difficulties.push_back("Medium");
@@ -112,9 +111,11 @@ namespace battleship{
                 Listbox *playerFaction = new Listbox(Vector2(pos.x + 110, pos.y), Vector2(100, 20), factions, 2, font);
                 Listbox **difficultyListboxes=new Listbox*[1];
                 Listbox **factionListboxes=new Listbox*[2];
+								
                 difficultyListboxes[0]=cpuDifficulty;
                 factionListboxes[0]=playerFaction;
                 factionListboxes[1]=cpuFaction;
+
                 int lengths[]{1,2};
                 PlayButton *playButton = new PlayButton(difficultyListboxes, factionListboxes, lengths, Vector2(50, gm->getHeight() - 150), Vector2(140, 50), "Play", true);
                 ReturnButton *returnButton = new ReturnButton(state, Vector2(200, gm->getHeight() - 150), Vector2(140, 50), "Back", true);
