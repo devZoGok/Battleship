@@ -404,7 +404,7 @@ namespace battleship{
         if (cursorPos.y <= 0 && 0 < cursorPos.x && cursorPos.x < width) 
             cam->setPosition(cam->getPosition() + (forwVec.norm()) * camPanSpeed);
 				
-        if (cursorPos.y > height && 0 < cursorPos.x && cursorPos.x < width) 
+        if (cursorPos.y >= height && 0 < cursorPos.x && cursorPos.x < width) 
             cam->setPosition(cam->getPosition() - (forwVec.norm()) * camPanSpeed);
     }
 

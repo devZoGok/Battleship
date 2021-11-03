@@ -4,7 +4,7 @@
 #include "gameManager.h"
 #include "guiAppState.h"
 #include "stateManager.h"
-#include "eventListener.h"
+#include "inputManager.h"
 
 using namespace std;
 using namespace vb01;
