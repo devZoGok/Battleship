@@ -1,5 +1,6 @@
 #include <cmath>
 #include <vector.h>
+#include <util.h>
 
 #include "util.h"
 #include "gameManager.h"
@@ -51,13 +52,11 @@ namespace battleship{
                         gm->getStateManager()->dettachState(state);
                         std::vector<string> difficulties, factions;
 
-												/*
                         for(int i=0;i<lengths[0];i++)
-                            difficulties.push_back(difficultiesListboxes[i]->getContents()[difficultiesListboxes[i]->getSelectedOption()]);
+                            difficulties.push_back(wstringToString(difficultiesListboxes[i]->getContents()[difficultiesListboxes[i]->getSelectedOption()]));
 
                         for(int i=0;i<lengths[1];i++)
-                            factions.push_back(factionsListboxes[i]->getSelectedOption());
-														*/
+                            factions.push_back(to_string(factionsListboxes[i]->getSelectedOption()));
 
                         gm->getStateManager()->attachState(new InGameAppState(difficulties, factions));
                         state->removeAllListboxes();
@@ -146,6 +145,14 @@ namespace battleship{
                 state->removeButton("Exit");
                 OptionsButton::onClick();
             }
+
+						void onMouseOver(){
+								setColor(Vector4(.8, .8, .8, 1));
+						}
+
+						void onMouseOff(){
+								setColor(Vector4(.6, .6, .6, 1));
+						}
         private:
             GuiAppState *state;
 
@@ -185,8 +192,8 @@ namespace battleship{
         SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
         MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);
         ExitButton *exitButton = new ExitButton(Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 3), Vector2(150, 40), "Exit", true);
-        state->addButton(optionsButton);
         state->addButton(spButton);
+        state->addButton(optionsButton);
         state->addButton(exitButton);
     }
 

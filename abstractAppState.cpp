@@ -46,7 +46,7 @@ namespace battleship{
             }
 
 						Mapping::Bind bind=binds[stateId][i];
-						Mapping::BindType type = (stateId > 0 ? Mapping::KEYBOARD : Mapping::MOUSE_KEY);
+						Mapping::BindType type = (stateId > 0 ? Mapping::MOUSE_KEY : Mapping::KEYBOARD);
 						bool isAnalog = configData::isAnalog[stateId][i];
 
 						Mapping *m = new Mapping;

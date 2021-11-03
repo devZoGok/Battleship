@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "eventListener.h"
+#include "inputManager.h"
 #include "stateManager.h"
 
 using namespace std;
@@ -70,14 +70,15 @@ namespace battleship{
 						case Mapping::MOUSE_AXIS:
 							{
 								float str;
+
 								switch(m->trigger){
 									case Mapping::MOUSE_AXIS_LEFT:
 									case Mapping::MOUSE_AXIS_RIGHT:
-										str=strX;
+										str = strX;
 										break;
 									case Mapping::MOUSE_AXIS_UP:
 									case Mapping::MOUSE_AXIS_DOWN:
-										str=strY;
+										str = strY;
 										break;
 								}
 								a->onAnalog(m->bind,str);

@@ -58,6 +58,8 @@ namespace battleship{
         void addPos();
         void issueOrder(Order::TYPE, std::vector<vb01::Vector3*>, bool);
         void lookAround(bool);
+				void orientCamera(vb01::Vector3, double);
+
         GuiAppState *guiState;
         Map *map;
         std::vector<Player*> players;

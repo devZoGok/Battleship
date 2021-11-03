@@ -27,7 +27,7 @@ namespace battleship{
 
     const int size = 50;
     
-    ActiveGameState::UnitButton::UnitButton(ActiveGameState *activeState, Vector2 pos, Vector2 size, std::string name,int faction,int unitId) : vb01Gui::Button(pos, size, name, "", -1, true){
+    ActiveGameState::UnitButton::UnitButton(ActiveGameState *activeState, Vector2 pos, Vector2 size, std::string name, int faction, int unitId) : vb01Gui::Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, true){
         this->activeState=activeState;
         this->faction=faction;
         this->unitId=unitId;
@@ -139,11 +139,11 @@ namespace battleship{
     void ActiveGameState::onAttachment() {
         AbstractAppState::onAttachment();
 				GameManager *gm = GameManager::getSingleton();
-        int faction = mainPlayer->getFaction(), width = gm->getWidth(), height = gm->getHeight(),size=50;
-        string names[5] = {"Battleship","Destroyer","Cruiser","Carrier","Submarine"};
+        int faction = mainPlayer->getFaction(), width = gm->getWidth(), height = gm->getHeight(), size = 50;
+        string names[5] = {"Battleship", "Destroyer", "Cruiser", "Carrier", "Submarine"};
 
-        for(int i=0;i<5;i++){
-            int id=2*i+(i==4&&faction==1?0:faction);
+        for(int i = 0; i < 5; i++){
+            int id = 2 * i + (i == 4 && faction == 1 ? 0 : faction);
             Vector2 pos = Vector2(width - size - 1, 1 + i * size), sizeVec = Vector2(size, size);
             UnitButton *button = new UnitButton(this, pos, sizeVec, names[i], faction, id);
 
@@ -157,6 +157,20 @@ namespace battleship{
             //button->setImageButton(new Image(driver->getTexture(PATH+"Textures/Icons/"+names[i]+"0"+stringw(faction)+".png"),pos,sizeVec));
             guiState->addButton(button);
         }
+
+				Mapping::Bind binds[]{Mapping::LOOK_UP, Mapping::LOOK_DOWN, Mapping::LOOK_LEFT, Mapping::LOOK_RIGHT};
+				int triggers[]{Mapping::MOUSE_AXIS_UP, Mapping::MOUSE_AXIS_DOWN, Mapping::MOUSE_AXIS_LEFT, Mapping::MOUSE_AXIS_RIGHT};
+				int numData = sizeof(triggers) / sizeof(int);
+
+				for(int i = 0; i < numData; i++){
+					Mapping *m = new Mapping;
+					m->bind = binds[i];
+					m->trigger = triggers[i];
+					m->action = false;
+					m->type = Mapping::MOUSE_AXIS;
+
+					AbstractAppState::attachKey(m);
+				}
     }
 
     void ActiveGameState::onDetachment() {
@@ -216,6 +230,9 @@ namespace battleship{
         //cam->setTarget(cam->getPosition() + camDir);
         renderGUIBorders();
         renderActionButtons();
+
+				if(!lookingAround)
+					updateVectors();
     }
 
     void ActiveGameState::renderUnits(vector<Unit*> units) {
@@ -370,39 +387,25 @@ namespace battleship{
     }
 
     void ActiveGameState::updateVectors() {
-				/*
 				GameManager *gm = GameManager::getSingleton();
-        Vector2 cursorPos = gm->getDevice()->getCursorControl()->getPosition();
-        camDir = (cam->getTarget() - cam->getPosition()).normalize();
-        float vecAngle = getAngleBetween(vector3df(0, 0, 1), vector3df(camDir.X, 0, camDir.Z));
-        Quaternion rotQuat;
+        Vector2 cursorPos = getCursorPos();
+				Camera *cam = Root::getSingleton()->getCamera();
+				Vector3 camDir = cam->getDirection();
+        Vector3 forwVec = Vector3(camDir.x, 0, camDir.z).norm();
+				int width, height;
+				glfwGetWindowSize(Root::getSingleton()->getWindow(), &width, &height);
 
-        if (quaternion(0, 0, 0, 0).fromAngleAxis(vecAngle, vector3df(0, 1, 0)) * vector3df(0, 0, 1) != vector3df(camDir.X, 0, camDir.Z).normalize()) {
-            rotQuat.fromAngleAxis(-vecAngle + PI / 2, vector3df(0, 1, 0));
-            camLeft = rotQuat * vector3df(0, 0, -1);
-        } else {
-            rotQuat.fromAngleAxis(vecAngle - PI / 2, vector3df(0, 1, 0));
-            camLeft = rotQuat * vector3df(0, 0, 1);
-        }
-        vector3df forwVec = quaternion(0, 0, 0, 0).fromAngleAxis(PI / 2, vector3df(0, 1, 0)) * camLeft;
-        camUp = quaternion(0, 0, 0, 0).fromAngleAxis(PI / 2, camLeft.normalize()) * camDir;
-        if (cursorPos.X == 0 && cursorPos.Y < gm->getHeight() && cursorPos.Y > 0) {
+        if (cursorPos.x <= 0 && 0 < cursorPos.y && cursorPos.y < height) 
             cam->setPosition(cam->getPosition() + camLeft * camPanSpeed);
-            cam->setTarget(cam->getPosition() + camDir);
-        }//<-
-        if (cursorPos.X >= gm->getWidth() - 1 && cursorPos.Y < gm->getHeight() && cursorPos.Y > 0) {
+
+        if (cursorPos.x >= width && 0 < cursorPos.y && cursorPos.y < height) 
             cam->setPosition(cam->getPosition() - camLeft * camPanSpeed);
-            cam->setTarget(cam->getPosition() + camDir);
-        }//->
-        if (cursorPos.X > 0 && cursorPos.X < gm->getWidth() && cursorPos.Y == 0) {
-            cam->setPosition(cam->getPosition() + (forwVec.normalize()) * camPanSpeed);
-            cam->setTarget(cam->getPosition() + camDir);
-        }//^
-        if (cursorPos.X > 0 && cursorPos.X < gm->getWidth() && cursorPos.Y >= gm->getHeight() - 1) {
-            cam->setPosition(cam->getPosition() - (forwVec.normalize()) * camPanSpeed);
-            cam->setTarget(cam->getPosition() + camDir);
-        }
-				*/
+
+        if (cursorPos.y <= 0 && 0 < cursorPos.x && cursorPos.x < width) 
+            cam->setPosition(cam->getPosition() + (forwVec.norm()) * camPanSpeed);
+				
+        if (cursorPos.y > height && 0 < cursorPos.x && cursorPos.x < width) 
+            cam->setPosition(cam->getPosition() - (forwVec.norm()) * camPanSpeed);
     }
 
     void ActiveGameState::issueOrder(Order::TYPE type, vector<Vector3*> pos, bool addOrder) {
@@ -527,10 +530,6 @@ namespace battleship{
                 }
                 break;
 						case Mapping::LOOK_AROUND:
-								/*
-                cam->setInputReceiverEnabled(isPressed);
-                gm->getDevice()->getCursorControl()->setVisible(!isPressed);
-								*/
                 lookingAround = isPressed;
                 break;
 						case Mapping::HALT: 
@@ -589,5 +588,32 @@ namespace battleship{
         }
     }
 
-    void ActiveGameState::onAnalog(Mapping::Bind bind, double strength) {}
+		void ActiveGameState::orientCamera(Vector3 rotAxis, double str){
+				float minStr = .001;
+				Quaternion rotQuat = Quaternion(.35 * (fabs(str) > minStr ? str : 0), rotAxis);
+				Camera *cam = Root::getSingleton()->getCamera();
+				Vector3 dir = rotQuat * cam->getDirection();
+				Vector3 up = rotQuat * cam->getUp();
+				cam->lookAt(dir, up);
+		}
+
+    void ActiveGameState::onAnalog(Mapping::Bind bind, double strength) {
+				switch(bind){
+						{
+						case Mapping::LOOK_UP: 
+						case Mapping::LOOK_DOWN: 
+								if(lookingAround) {
+									Vector3 dirProj = Root::getSingleton()->getCamera()->getDirection();
+									dirProj = Vector3(dirProj.x, 0, dirProj.z).norm();
+									orientCamera(Vector3(0, 1, 0).cross(dirProj), strength);
+								}
+								break;
+						}
+						case Mapping::LOOK_LEFT: 
+						case Mapping::LOOK_RIGHT: 
+								if(lookingAround)
+									orientCamera(Vector3(0, 1, 0), strength);
+								break;
+				}
+		}
 }
