@@ -47,7 +47,7 @@ namespace battleship{
 				Node *water = new Node();
 				water->attachMesh(quad);
 				root->getRootNode()->attachChild(water);
-				water->setOrientation(Quaternion(-1.37, Vector3::VEC_I));
+				water->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 
 				Camera *cam = root->getCamera();
 				cam->setPosition(Vector3(1, 1, 1) * 10);
