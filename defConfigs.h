@@ -114,61 +114,6 @@ namespace battleship{
         {0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0}
     };
-		/*
-       const int guiBindsNumber = 3;
-       const std::string guiAppStateBinds[guiBindsNumber]{"leftClick", "upScroll", "downScroll"};
-       const int guiAppStateTriggers[guiBindsNumber]{0, 1, 1};
-       const bool guiAppStateIsKey[guiBindsNumber]{0, 0, 0};
-       const bool guiAppStateIsAnalog[guiBindsNumber]{0, 0, 0};
-       const std::string guiAppStateKeys[guiBindsNumber]{"LeftMouse", "UpScroll", "DownScroll"};
-
-       const int inGameAppStateBindsNumber = 1;
-       const std::string inGameAppStateBinds[inGameAppStateBindsNumber]{"toggleMainMenu"};
-       const int inGameAppStateTriggers[inGameAppStateBindsNumber]{irr::KEY_ESCAPE};
-       const bool inGameAppStateIsKey[inGameAppStateBindsNumber]{1};
-       const bool inGameAppStateIsAnalog[inGameAppStateBindsNumber]{0};
-       const std::string inGameAppStateKeys[inGameAppStateBindsNumber]{"Esc"};
-
-       const int activeGameStateBindsNumber = 10;
-       const std::string activeGameStateBinds[activeGameStateBindsNumber]{
-           "halt", 
-           "zoomIn", 
-           "zoomOut", 
-           "lookAround", 
-           "dragBox", 
-           "deselect", 
-           "leftControl", 
-           "selectingPatrolPoints", 
-           "launch", 
-           "toggleSub"
-       };
-       const int activeGameStateTriggers[activeGameStateBindsNumber]{
-           irr::KEY_KEY_H, 
-           3, 
-           4, 
-           1, 
-           0, 
-           2, 
-           irr::KEY_LCONTROL, 
-           irr::KEY_KEY_P, 
-           irr::KEY_KEY_C, 
-           irr::KEY_KEY_S
-       };
-       const bool activeGameStateIsKey[activeGameStateBindsNumber]{1, 0, 0, 0, 0, 0, 1, 1, 1, 1};
-       const bool activeGameStateIsAnalog[activeGameStateBindsNumber]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-       const std::string activeGameStateKeys[activeGameStateBindsNumber]{
-           "H", 
-           "UpScroll", 
-           "DownScroll", 
-           "MiddleMouse", 
-           "LeftMouse", 
-           "RightMouse", 
-           "leftControl", 
-           "P",
-           "C", 
-           "S"
-       };
-			 */
 		}
 }
 

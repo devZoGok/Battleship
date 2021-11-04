@@ -53,7 +53,7 @@ namespace battleship{
         void renderGUIBorders();
         void renderActionButtons();
         void renderUnits(std::vector<Unit*>);
-        void updateVectors();
+        void updateCameraPosition();
         void updateSelectionBox();
         void addPos();
         void issueOrder(Order::TYPE, std::vector<vb01::Vector3*>, bool);
@@ -64,8 +64,6 @@ namespace battleship{
         Map *map;
         std::vector<Player*> players;
         Player *mainPlayer;
-        vb01::Camera *cam;
-        vb01::Vector3 camDir = vb01::Vector3(0, 0, 1), camLeft = vb01::Vector3(1, 0, 0), camUp = vb01::Vector3(0, 1, 0);
         vb01::Vector2 clickPoint, selectionBoxOrigin, selectionBoxEnd;
         std::vector<vb01::Vector2> unitScreenPosVec;
         std::vector<vb01::Vector3*> orderPos;

@@ -1,4 +1,7 @@
 #include <root.h>
+#include <quad.h>
+#include <node.h>
+#include <material.h>
 
 #include "map.h"
 #include "gameManager.h"
@@ -26,19 +29,29 @@ namespace battleship{
 					PATH + "Textures/left.jpg",
 					PATH + "Textures/right.jpg",
 					PATH + "Textures/front.jpg",
+					PATH + "Textures/back.jpg",
 					PATH + "Textures/back.jpg"
 				};
 
-				Root::getSingleton()->createSkybox(path);
+				Root *root = Root::getSingleton();
+				root->createSkybox(path);
 
-				/*
-        waterMesh = smgr->addHillPlaneMesh("", dimension2d<float>(1, 1), dimension2d<u32>(30, 30), 0, .1, dimension2d<float>(2., 2.), dimension2d<float>(10, 10));
-        waterNode = smgr->addWaterSurfaceSceneNode(waterMesh, .1, 900, 3);
-        waterNode->setPosition(vector3df(0, 0, 0));
-        waterNode->setMaterialTexture(0, driver->getTexture(PATH + "Textures/water-texture.png"));
-        waterNode->setMaterialFlag(EMF_LIGHTING, true);
-        waterNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
-				*/
+				Quad *quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
+				Material *mat = new Material();
+				mat->setTexturingEnabled(true);
+				mat->setLightingEnabled(false);
+				string fr[]{PATH + "Textures/water.jpg"};
+				Texture *t = new Texture(fr, 1);
+				mat->addDiffuseMap(t);
+				quad->setMaterial(mat);
+				Node *water = new Node();
+				water->attachMesh(quad);
+				root->getRootNode()->attachChild(water);
+				water->setOrientation(Quaternion(-1.37, Vector3::VEC_I));
+
+				Camera *cam = root->getCamera();
+				cam->setPosition(Vector3(1, 1, 1) * 10);
+				cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
     }
 
     void Map::unload() {}

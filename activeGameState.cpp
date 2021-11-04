@@ -179,30 +179,36 @@ namespace battleship{
 
     void ActiveGameState::update() {
         vector<Unit*> units;
+
         for (Player *p : players)
             for (Unit *u : p->getUnits())
                 units.push_back(u);
+
         if (isSelectionBox)
             updateSelectionBox();
+
         for (Unit *u : units) {
             //u->updateUnitGUIInfo(cam, camDir, camLeft, camUp);
             Vector2 pos = u->getScreenPos();
 
             if (mainPlayer->isThisPlayersUnit(u)){
-                bool selected=false;
-                for(int i=0;i<selectedUnits.size()&&!selected;i++)
-                    if(u==selectedUnits[i])
-                        selected=true;
-                if(!u->isSelected()&&selected)
+                bool selected = false;
+
+                for(int i = 0; i < selectedUnits.size() && !selected; i++)
+                    if(u == selectedUnits[i])
+                        selected = true;
+
+                if(!u->isSelected() && selected)
                     u->toggleSelection(true);
                 else if(!selected)
                     u->toggleSelection(false);
+
                 if(isSelectionBox && u->isSelectable() && 
                     pos.x >= selectionBoxOrigin.x && pos.x <= selectionBoxEnd.x &&
                     pos.y >= selectionBoxOrigin.y && pos.y <= selectionBoxEnd.y){
 
                     if(!selected){
-                        if(!shiftPressed&&u==mainPlayer->getUnit(0))
+                        if(!shiftPressed && u == mainPlayer->getUnit(0))
                             while(!selectedUnits.empty())
                                 selectedUnits.pop_back();
 
@@ -210,29 +216,17 @@ namespace battleship{
                     }
                 }
             }
+
             if (u->isDebuggable())
                 u->debug();
         }
 
-        updateVectors();
         renderUnits(units);
-
-        if (cam->getPosition().x > map->getSize().x / 2)
-            cam->setPosition(Vector3(map->getSize().x / 2, cam->getPosition().y, cam->getPosition().z));
-        else if (cam->getPosition().x < -map->getSize().x / 2)
-            cam->setPosition(Vector3(-map->getSize().x / 2, cam->getPosition().y, cam->getPosition().z));
-
-        if (cam->getPosition().z > map->getSize().y / 2)
-            cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, map->getSize().y / 2));
-        else if (cam->getPosition().z < -map->getSize().y / 2)
-            cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, -map->getSize().y / 2));
-
-        //cam->setTarget(cam->getPosition() + camDir);
         renderGUIBorders();
         renderActionButtons();
 
 				if(!lookingAround)
-					updateVectors();
+					updateCameraPosition();
     }
 
     void ActiveGameState::renderUnits(vector<Unit*> units) {
@@ -386,26 +380,40 @@ namespace battleship{
         //driver->draw2DRectangle(SColor(10, 255, 255, 255), rect<s32>(selectionBoxOrigin.X, selectionBoxOrigin.Y, selectionBoxEnd.X, selectionBoxEnd.Y), nullptr);
     }
 
-    void ActiveGameState::updateVectors() {
+    void ActiveGameState::updateCameraPosition() {
 				GameManager *gm = GameManager::getSingleton();
         Vector2 cursorPos = getCursorPos();
+
 				Camera *cam = Root::getSingleton()->getCamera();
 				Vector3 camDir = cam->getDirection();
         Vector3 forwVec = Vector3(camDir.x, 0, camDir.z).norm();
+				Vector3 camLeft = cam->getLeft();
+				camLeft = Vector3(camLeft.x, 0, camLeft.z).norm();
+
 				int width, height;
 				glfwGetWindowSize(Root::getSingleton()->getWindow(), &width, &height);
 
         if (cursorPos.x <= 0 && 0 < cursorPos.y && cursorPos.y < height) 
-            cam->setPosition(cam->getPosition() + camLeft * camPanSpeed);
-
-        if (cursorPos.x >= width && 0 < cursorPos.y && cursorPos.y < height) 
             cam->setPosition(cam->getPosition() - camLeft * camPanSpeed);
 
+        if (cursorPos.x >= width && 0 < cursorPos.y && cursorPos.y < height) 
+            cam->setPosition(cam->getPosition() + camLeft * camPanSpeed);
+
         if (cursorPos.y <= 0 && 0 < cursorPos.x && cursorPos.x < width) 
-            cam->setPosition(cam->getPosition() + (forwVec.norm()) * camPanSpeed);
+            cam->setPosition(cam->getPosition() + forwVec * camPanSpeed);
 				
         if (cursorPos.y >= height && 0 < cursorPos.x && cursorPos.x < width) 
-            cam->setPosition(cam->getPosition() - (forwVec.norm()) * camPanSpeed);
+            cam->setPosition(cam->getPosition() - forwVec * camPanSpeed);
+
+        if (cam->getPosition().x > map->getSize().x / 2)
+            cam->setPosition(Vector3(map->getSize().x / 2, cam->getPosition().y, cam->getPosition().z));
+        else if (cam->getPosition().x < -map->getSize().x / 2)
+            cam->setPosition(Vector3(-map->getSize().x / 2, cam->getPosition().y, cam->getPosition().z));
+
+        if (cam->getPosition().z > map->getSize().y / 2)
+            cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, map->getSize().y / 2));
+        else if (cam->getPosition().z < -map->getSize().y / 2)
+            cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, -map->getSize().y / 2));
     }
 
     void ActiveGameState::issueOrder(Order::TYPE type, vector<Vector3*> pos, bool addOrder) {
@@ -517,15 +525,15 @@ namespace battleship{
                 break;
 						case Mapping::ZOOM_IN:
                 if (zooms > -10) {
-                    cam->setPosition(cam->getPosition() + camDir.norm() * .5f);
-                    //cam->setTarget(cam->getPosition() + camDir);
+										Camera *cam = Root::getSingleton()->getCamera();
+                    cam->setPosition(cam->getPosition() + cam->getDirection().norm() * .5f);
                     zooms--;
                 }
                 break;
 						case Mapping::ZOOM_OUT:
                 if (zooms < 10) {
-                    cam->setPosition(cam->getPosition() - (camDir.norm() * .5f));
-                    //cam->setTarget(cam->getPosition() + camDir);
+										Camera *cam = Root::getSingleton()->getCamera();
+                    cam->setPosition(cam->getPosition() - (cam->getDirection().norm().norm() * .5f));
                     zooms++;
                 }
                 break;
@@ -590,7 +598,7 @@ namespace battleship{
 
 		void ActiveGameState::orientCamera(Vector3 rotAxis, double str){
 				float minStr = .001;
-				Quaternion rotQuat = Quaternion(.35 * (fabs(str) > minStr ? str : 0), rotAxis);
+				Quaternion rotQuat = Quaternion(.5 * (fabs(str) > minStr ? str : 0), rotAxis);
 				Camera *cam = Root::getSingleton()->getCamera();
 				Vector3 dir = rotQuat * cam->getDirection();
 				Vector3 up = rotQuat * cam->getUp();
