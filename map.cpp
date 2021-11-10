@@ -37,12 +37,12 @@ namespace battleship{
 				root->createSkybox(path);
 
 				Quad *quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
-				Material *mat = new Material();
-				mat->setTexturingEnabled(true);
-				mat->setLightingEnabled(false);
+				Material *mat = new Material(root->getLibPath() + "texture");
+				mat->addVariable("texturingEnabled", true);
+				mat->addVariable("lightingEnabled", false);
 				string fr[]{PATH + "Textures/water.jpg"};
 				Texture *t = new Texture(fr, 1);
-				mat->addDiffuseMap(t);
+				mat->addVariable("textures[0]", t, true);
 				quad->setMaterial(mat);
 				Node *water = new Node();
 				water->attachMesh(quad);

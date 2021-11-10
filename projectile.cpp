@@ -39,11 +39,11 @@ namespace battleship{
             this->node = smgr->addAnimatedMeshSceneNode(mesh);
 						*/
 						this->node = new Model((projectileData::meshPath[id][weaponTypeId]));
-						Material *mat = new Material();
-						mat->setLightingEnabled(false);
+						Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+						mat->addVariable("lightingEnabled", false);
 						string f[]{projectileData::diffuseMapTextPath[id][weaponTypeId]};
             Texture *diffuseTexture = new Texture(f, 1);
-						mat->addDiffuseMap(diffuseTexture);
+						mat->addVariable("textures[0]", diffuseTexture, true);
 						this->node->setMaterial(mat);
 
 						/*
