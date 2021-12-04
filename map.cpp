@@ -25,11 +25,11 @@ namespace battleship{
 
     void Map::load() {
 				string path[]{
-					PATH + "Textures/down.jpg",
 					PATH + "Textures/left.jpg",
 					PATH + "Textures/right.jpg",
+					PATH + "Textures/top.jpg",
+					PATH + "Textures/bottom.jpg",
 					PATH + "Textures/front.jpg",
-					PATH + "Textures/back.jpg",
 					PATH + "Textures/back.jpg"
 				};
 
@@ -38,11 +38,11 @@ namespace battleship{
 
 				Quad *quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
 				Material *mat = new Material(root->getLibPath() + "texture");
-				mat->addVariable("texturingEnabled", true);
-				mat->addVariable("lightingEnabled", false);
+				mat->addBoolUniform("texturingEnabled", true);
+				mat->addBoolUniform("lightingEnabled", false);
 				string fr[]{PATH + "Textures/water.jpg"};
-				Texture *t = new Texture(fr, 1);
-				mat->addVariable("textures[0]", t, true);
+				Texture *t = new Texture(fr, 1, false);
+				mat->addTexUniform("textures[0]", t, true);
 				quad->setMaterial(mat);
 				Node *water = new Node();
 				water->attachMesh(quad);

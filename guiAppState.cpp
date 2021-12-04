@@ -10,8 +10,6 @@ using namespace vb01Gui;
 using namespace std;
 
 namespace battleship{
-    Vector2 mousePos;
-
     GuiAppState::GuiAppState() {
         type = AppStateTypes::GUI_STATE;
     }
@@ -20,7 +18,7 @@ namespace battleship{
 
     void GuiAppState::update() {
 				GameManager *gm = GameManager::getSingleton();
-        mousePos = getCursorPos();
+        Vector2 mousePos = getCursorPos();
 
         for (Button *b : buttons) {
             if (b->isSeparate())
@@ -80,6 +78,7 @@ namespace battleship{
 						case Mapping::LEFT_CLICK:
                 if(isPressed)
                     for (int i = 0; i < buttons.size(); i++) {
+												Vector2 mousePos = getCursorPos();
                         Button *b = buttons[i];
                         bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
                         bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;

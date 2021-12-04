@@ -405,6 +405,7 @@ namespace battleship{
         if (cursorPos.y >= height && 0 < cursorPos.x && cursorPos.x < width) 
             cam->setPosition(cam->getPosition() - forwVec * camPanSpeed);
 
+				/*
         if (cam->getPosition().x > map->getSize().x / 2)
             cam->setPosition(Vector3(map->getSize().x / 2, cam->getPosition().y, cam->getPosition().z));
         else if (cam->getPosition().x < -map->getSize().x / 2)
@@ -414,6 +415,7 @@ namespace battleship{
             cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, map->getSize().y / 2));
         else if (cam->getPosition().z < -map->getSize().y / 2)
             cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, -map->getSize().y / 2));
+						*/
     }
 
     void ActiveGameState::issueOrder(Order::TYPE type, vector<Vector3*> pos, bool addOrder) {

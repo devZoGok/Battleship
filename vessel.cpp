@@ -29,7 +29,7 @@ namespace battleship{
         turretNode->setMaterialFlag(EMF_LIGHTING, false);
 				*/
 				string fr[]{basePath[unitId] + turretNames[unitId][turretId] + "DiffuseMap.png"};
-        Texture *turretDiffuseTexture = new Texture(fr);
+        Texture *turretDiffuseTexture = new Texture(fr, 1, false);
 
 
 				/*

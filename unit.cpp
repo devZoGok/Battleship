@@ -36,7 +36,7 @@ namespace battleship{
         tr->drop();
 				*/
 				string f[]{basePath[id] + "diffuseMap.png"};
-        Texture *diffuseTexture = new Texture(f, 1);
+        Texture *diffuseTexture = new Texture(f, 1, false);
 
 				/*
         light = smgr->addLightSceneNode(node, vector3df(0, 2, 0), SColor(255, 255, 255, 255), lineOfSight);
