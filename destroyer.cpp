@@ -1,11 +1,12 @@
 #include <algorithm>
 
+#include <stateManager.h>
+
 #include "destroyer.h"
 #include "destroyerData.h"
 #include "defConfigs.h"
 #include "depthCharge.h"
 #include "inGameAppState.h"
-#include "stateManager.h"
 #include "projectileData.h"
 #include "util.h"
 
@@ -31,7 +32,7 @@ namespace battleship{
     void Destroyer::attack(Order order){
         Vector3 t = *order.targetPos[0];
         bool sub=false;
-        InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
+        InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
         for(Player *p : inGameState->getPlayers())
             for(Unit *u : p->getUnits())

@@ -2,13 +2,14 @@
 #include <quaternion.h>
 #include <model.h>
 
+#include <stateManager.h>
+
 #include <algorithm>
 #include <ctype.h>
 #include <stdlib.h>
 
 #include "activeGameState.h"
 #include "inGameAppState.h"
-#include "stateManager.h"
 #include "util.h"
 #include "cruiser.h"
 #include "destroyer.h"
@@ -81,7 +82,7 @@ namespace battleship{
     ActiveGameState::UnitActionButton::UnitActionButton(unitData::UNIT_TYPE type, Vector2 pos, Vector2 size, string name, string path) : vb01Gui::Button(pos, size, name, "", -1, true){
         this->type=type;
 				GameManager *gm = GameManager::getSingleton();
-        activeState=((ActiveGameState*)gm->getStateManager()->getAppState(AppStateTypes::ACTIVE_STATE));
+        activeState=((ActiveGameState*)gm->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE));
 				/*
         IVideoDriver *driver = gm->getDevice()->getVideoDriver();
         setImageButton(new Image(driver->getTexture(path),pos,vector2di(50,50)));
@@ -114,7 +115,7 @@ namespace battleship{
     }
     
     ActiveGameState::ActiveGameState(GuiAppState *guiState, Map *map, vector<Player*> players, int playerId) {
-        type = AppStateTypes::ACTIVE_STATE;
+				type = AppStateType::ACTIVE_STATE;
         this->guiState = guiState;
         this->map = map;
         this->players = players;
@@ -136,8 +137,11 @@ namespace battleship{
     ActiveGameState::~ActiveGameState() {
     }
 
-    void ActiveGameState::onAttachment() {
-        AbstractAppState::onAttachment();
+    void ActiveGameState::onAttached() {
+				readFile(PATH + "../options.cfg", bindingsLines, configData::numBinds[AppStateType::IN_GAME_STATE]);
+
+        AbstractAppState::onAttached();
+
 				GameManager *gm = GameManager::getSingleton();
         int faction = mainPlayer->getFaction(), width = gm->getWidth(), height = gm->getHeight(), size = 50;
         string names[5] = {"Battleship", "Destroyer", "Cruiser", "Carrier", "Submarine"};
@@ -158,7 +162,7 @@ namespace battleship{
             guiState->addButton(button);
         }
 
-				Mapping::Bind binds[]{Mapping::LOOK_UP, Mapping::LOOK_DOWN, Mapping::LOOK_LEFT, Mapping::LOOK_RIGHT};
+				Bind binds[]{Bind::LOOK_UP, Bind::LOOK_DOWN, Bind::LOOK_LEFT, Bind::LOOK_RIGHT};
 				int triggers[]{Mapping::MOUSE_AXIS_UP, Mapping::MOUSE_AXIS_DOWN, Mapping::MOUSE_AXIS_LEFT, Mapping::MOUSE_AXIS_RIGHT};
 				int numData = sizeof(triggers) / sizeof(int);
 
@@ -169,12 +173,19 @@ namespace battleship{
 					m->action = false;
 					m->type = Mapping::MOUSE_AXIS;
 
-					AbstractAppState::attachKey(m);
+					mappings.push_back(m);
 				}
+
+				Mapping *leftClick = new Mapping;
+				leftClick->bind = Bind::LOOK_AROUND;
+				leftClick->type = Mapping::MOUSE_KEY;
+				leftClick->trigger = 0;
+				leftClick->action = true;
+				mappings.push_back(leftClick);
     }
 
-    void ActiveGameState::onDetachment() {
-        AbstractAppState::onDetachment();
+    void ActiveGameState::onDettached() {
+        AbstractAppState::onDettached();
     }
 
     void ActiveGameState::update() {
@@ -489,12 +500,12 @@ namespace battleship{
 				*/
     }
     
-    void ActiveGameState::onAction(Mapping::Bind bind, bool isPressed) {
+    void ActiveGameState::onAction(int bind, bool isPressed) {
 				GameManager *gm = GameManager::getSingleton();
-        InGameAppState *inGameState = (InGameAppState*) gm->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE);
+        InGameAppState *inGameState = (InGameAppState*) gm->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE);
 
-        switch(bind){
-						case Mapping::DRAG_BOX: 
+        switch((Bind)bind){
+						case Bind::DRAG_BOX: 
                 isSelectionBox = isPressed;
 
                 if (isPressed) {
@@ -505,13 +516,13 @@ namespace battleship{
 												*/
                 }
                 break;
-						case Mapping::DESELECT:
+						case Bind::DESELECT:
                 if (isPressed) {
                     while(!selectedUnits.empty())
                         selectedUnits.pop_back();
                 }
                 break;
-						case Mapping::TOGGLE_SUB:
+						case Bind::TOGGLE_SUB:
                 if (isPressed) {
                     for (Unit *u : selectedUnits) {
                         if (u->getPlayer() == mainPlayer && u->getType() == unitData::UNIT_TYPE::SUBMARINE) {
@@ -525,34 +536,34 @@ namespace battleship{
                     }
                 }
                 break;
-						case Mapping::ZOOM_IN:
+						case Bind::ZOOM_IN:
                 if (zooms > -10) {
 										Camera *cam = Root::getSingleton()->getCamera();
                     cam->setPosition(cam->getPosition() + cam->getDirection().norm() * .5f);
                     zooms--;
                 }
                 break;
-						case Mapping::ZOOM_OUT:
+						case Bind::ZOOM_OUT:
                 if (zooms < 10) {
 										Camera *cam = Root::getSingleton()->getCamera();
                     cam->setPosition(cam->getPosition() - (cam->getDirection().norm().norm() * .5f));
                     zooms++;
                 }
                 break;
-						case Mapping::LOOK_AROUND:
+						case Bind::LOOK_AROUND:
                 lookingAround = isPressed;
                 break;
-						case Mapping::HALT: 
+						case Bind::HALT: 
                 for (Unit *u : selectedUnits)
                     u->halt();
                 break;
-						case Mapping::LEFT_CONTROL:
+						case Bind::LEFT_CONTROL:
                 controlPressed = isPressed;
                 break;
-						case Mapping::LEFT_SHIFT:
+						case Bind::LEFT_SHIFT:
                 shiftPressed=isPressed;
                 break;
-						case Mapping::SELECT_PATROL_POINTS: 
+						case Bind::SELECT_PATROL_POINTS: 
                 selectingPatrolPoints = isPressed;
                 if (!isPressed && orderPos.size() > 0) {
                     /*
@@ -562,27 +573,27 @@ namespace battleship{
                     */
                 }
                 break;
-						case Mapping::LAUNCH: 
+						case Bind::LAUNCH: 
                 selectingGuidedMissileTarget = isPressed;
                 break;
-						case Mapping::INSTALL_AAM:
-            case Mapping::INSTALL_AWM:
+						case Bind::INSTALL_AAM:
+            case Bind::INSTALL_AWM:
                 for(Unit *u : selectedUnits)
                     if(u->getType() == unitData::UNIT_TYPE::MISSILE_JET)
-                        ((MissileJet*)u)->installMissiles(bind == Mapping::INSTALL_AAM);
+                        ((MissileJet*)u)->installMissiles(bind == Bind::INSTALL_AAM);
                 break;
-						case Mapping::GROUP_0:
-            case Mapping::GROUP_1:
-            case Mapping::GROUP_2:
-            case Mapping::GROUP_3:
-            case Mapping::GROUP_4:
-            case Mapping::GROUP_5:
-            case Mapping::GROUP_6:
-            case Mapping::GROUP_7:
-            case Mapping::GROUP_8:
-            case Mapping::GROUP_9:
+						case Bind::GROUP_0:
+            case Bind::GROUP_1:
+            case Bind::GROUP_2:
+            case Bind::GROUP_3:
+            case Bind::GROUP_4:
+            case Bind::GROUP_5:
+            case Bind::GROUP_6:
+            case Bind::GROUP_7:
+            case Bind::GROUP_8:
+            case Bind::GROUP_9:
                 if(isPressed){
-                    int group = bind - Mapping::GROUP_0;
+                    int group = bind - Bind::GROUP_0;
                     if(controlPressed){
                         unitGroups[group] = selectedUnits;
                     }
@@ -607,11 +618,11 @@ namespace battleship{
 				cam->lookAt(dir, up);
 		}
 
-    void ActiveGameState::onAnalog(Mapping::Bind bind, double strength) {
-				switch(bind){
+    void ActiveGameState::onAnalog(int bind, float strength) {
+				switch((Bind)bind){
 						{
-						case Mapping::LOOK_UP: 
-						case Mapping::LOOK_DOWN: 
+						case Bind::LOOK_UP: 
+						case Bind::LOOK_DOWN: 
 								if(lookingAround) {
 									Vector3 dirProj = Root::getSingleton()->getCamera()->getDirection();
 									dirProj = Vector3(dirProj.x, 0, dirProj.z).norm();
@@ -619,8 +630,8 @@ namespace battleship{
 								}
 								break;
 						}
-						case Mapping::LOOK_LEFT: 
-						case Mapping::LOOK_RIGHT: 
+						case Bind::LOOK_LEFT: 
+						case Bind::LOOK_RIGHT: 
 								if(lookingAround)
 									orientCamera(Vector3(0, 1, 0), strength);
 								break;

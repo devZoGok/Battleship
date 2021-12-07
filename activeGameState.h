@@ -11,15 +11,15 @@ namespace vb01{
 }
 
 namespace battleship{
-    class ActiveGameState : public AbstractAppState {
+    class ActiveGameState : public gameBase::AbstractAppState {
     public:
         ActiveGameState(GuiAppState*, Map*, std::vector<Player*> players, int);
         ~ActiveGameState();
-        void onAttachment();
-        void onDetachment();
+        void onAttached();
+        void onDettached();
         void update();
-        void onAction(Mapping::Bind, bool);
-        void onAnalog(Mapping::Bind, double);
+        void onAction(int, bool);
+        void onAnalog(int, float);
         inline void setSelectingLaunchPoint(bool s){this->selectingGuidedMissileTarget=s;}
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getSelectedUnits(){return selectedUnits;}
@@ -69,7 +69,7 @@ namespace battleship{
         std::vector<vb01::Vector3*> orderPos;
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9], selectedUnits;
-        UnitActionButton *actionButtons[4]{nullptr,nullptr,nullptr,nullptr};
+        UnitActionButton *actionButtons[4]{nullptr, nullptr, nullptr, nullptr};
         bool isSelectionBox = false, shiftPressed=false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false,lookingAround=false;
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
         int playerId, zooms = 0;

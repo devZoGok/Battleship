@@ -1,13 +1,16 @@
 #include <algorithm>
+
 #include <root.h>
+
+#include <stateManager.h>
+#include <inputManager.h>
 
 #include "gameManager.h"
 #include "guiAppState.h"
-#include "stateManager.h"
-#include "inputManager.h"
 
 using namespace std;
 using namespace vb01;
+using namespace gameBase;
 
 namespace battleship{
 		static GameManager *gameManager = nullptr;
@@ -32,12 +35,12 @@ namespace battleship{
 				root->start(width, height, "../../vb01/", "Battleship");
 
 				stateManager = new StateManager();
-        listener = new InputManager(root->getWindow());
+        inputManager = new InputManager(stateManager, root->getWindow());
 		}
 
     void GameManager::update() {
 				Root::getSingleton()->update();
-        listener->update();
+        inputManager->update();
 				stateManager->update();
     }
 }

@@ -1,7 +1,8 @@
 #include <model.h>
 
+#include <stateManager.h>
+
 #include "depthCharge.h"
-#include "stateManager.h"
 #include "inGameAppState.h"
 #include "util.h"
 
@@ -22,7 +23,7 @@ namespace battleship{
         checkForCollision();
     }
     void DepthCharge::checkForCollision() {
-        InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
+        InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
         Node *collNode = nullptr;
         bool detonated = false;
 

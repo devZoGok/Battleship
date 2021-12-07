@@ -1,8 +1,9 @@
 #include <quaternion.h>
 
+#include <stateManager.h>
+
 #include "demoJet.h"
 #include "inGameAppState.h"
-#include "stateManager.h"
 #include "util.h"
 
 using namespace vb01;

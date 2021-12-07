@@ -2,16 +2,18 @@
 #include <vector.h>
 #include <util.h>
 
+#include "util.h"
 #include "gameManager.h"
 #include "guiAppState.h"
 
+using namespace gameBase;
 using namespace vb01;
 using namespace vb01Gui;
 using namespace std;
 
 namespace battleship{
     GuiAppState::GuiAppState() {
-        type = AppStateTypes::GUI_STATE;
+				type = AppStateType::GUI_STATE;
     }
 
     GuiAppState::~GuiAppState() {}
@@ -49,16 +51,21 @@ namespace battleship{
             t->update();
     }
 
-    void GuiAppState::onAttachment() {
-        AbstractAppState::onAttachment();
-				//GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(true);
+    void GuiAppState::onAttached() {
+        AbstractAppState::onAttached();
+
+				Mapping *leftClick = new Mapping;
+				leftClick->bind = Bind::LEFT_CLICK;
+				leftClick->type = Mapping::MOUSE_KEY;
+				leftClick->trigger = 0;
+				leftClick->action = true;
+				mappings.push_back(leftClick);
+
         attachKeyboardKeys();
     }
 
-    void GuiAppState::onDetachment() {
-        AbstractAppState::onDetachment();
-        AbstractAppState::detachAllKeys();
-        //GameManager::getSingleton()->getDevice()->getCursorControl()->setVisible(false);
+    void GuiAppState::onDettached() {
+        AbstractAppState::onDettached();
     }
     
     void GuiAppState::attachKeyboardKeys() {
@@ -73,9 +80,9 @@ namespace battleship{
 				*/
     }
 
-    void GuiAppState::onAction(Mapping::Bind bind, bool isPressed) {
-        switch(bind){
-						case Mapping::LEFT_CLICK:
+    void GuiAppState::onAction(int bind, bool isPressed) {
+        switch((Bind)bind){
+						case Bind::LEFT_CLICK:
                 if(isPressed)
                     for (int i = 0; i < buttons.size(); i++) {
 												Vector2 mousePos = getCursorPos();
@@ -87,61 +94,62 @@ namespace battleship{
                             b->onClick();
                     }
                 break;
-						case Mapping::SCROLLING_UP:
+						case Bind::SCROLLING_UP:
                 for (Listbox *l : listboxes) 
                     if (l->isOpen())
                         l->scrollUp();
                 break;
-						case Mapping::SCROLLING_DOWN: 
+						case Bind::SCROLLING_DOWN: 
                 for (Listbox *l : listboxes) 
                     if (l->isOpen())
                         l->scrollDown();
                 break;
         }
+
         Textbox *t = getOpenTextbox();
             if (t) 
-                switch(bind){
-										case Mapping::SHIFT_CAPS:
+                switch((Bind)bind){
+										case Bind::SHIFT_CAPS:
                         shiftPressed = !shiftPressed;
                         //t->setIsCapitalLeters(isPressed);
                         break;
-										case Mapping::LEFT:
+										case Bind::LEFT:
                         //if(isPressed)t->moveCursor(true);
                         break;
-										case Mapping::RIGHT:
+										case Bind::RIGHT:
                         //if(isPressed)t->moveCursor(false);
                         break;
-										case Mapping::CAPS_LOCK: 
+										case Bind::CAPS_LOCK: 
                         //if(isPressed)t->setIsCapitalLeters(!t->isCapitalLeters());
                         break;
-										case Mapping::SPACE:
+										case Bind::SPACE:
                         if(isPressed)t->type(' ');
                         break;
-										case Mapping::DELETE_CHAR:
+										case Bind::DELETE_CHAR:
                         if(isPressed)t->deleteCharacter();
                         break;
-										case Mapping::PLUS:
-                        if(isPressed) t->type(shiftPressed?'+':'=');
+										case Bind::PLUS:
+                        if(isPressed) t->type(shiftPressed ? '+' : '=');
                         break;
-										case Mapping::MINUS:
-                        if(isPressed) t->type(shiftPressed?'_':'-');
+										case Bind::MINUS:
+                        if(isPressed) t->type(shiftPressed ? '_' : '-');
                         break;
-										case Mapping::DEVSTERISK:
-                        if(isPressed) t->type(shiftPressed?'~':'`');
+										case Bind::DEVSTERISK:
+                        if(isPressed) t->type(shiftPressed ? '~' : '`');
                         break;
                     default:
-                        if(bind>Mapping::LAST_BIND)checkKeyboard(t, bind, isPressed);
+                        if(bind > Bind::LAST_BIND)checkKeyboard(t, (Bind)bind, isPressed);
                 }
     }
 
-    void GuiAppState::checkKeyboard(Textbox *t, Mapping::Bind bind, bool isPressed) {
-        int firstId = Mapping::Bind::LAST_BIND+1,lastId=firstId+numKeys;
+    void GuiAppState::checkKeyboard(Textbox *t, Bind bind, bool isPressed) {
+        int firstId = Bind::LAST_BIND + 1, lastId = firstId + numKeys;
 
         for (int i = firstId; i <= lastId; i++) {
-            int offset=i-firstId;
+            int offset = i - firstId;
             char c = keyChars[offset];
 
-            if (bind==i&&isPressed) {
+            if (bind == i && isPressed) {
                 if (shiftPressed) {
                     switch(offset){
                         case 1:
@@ -204,7 +212,7 @@ namespace battleship{
         }
     }
     
-    void GuiAppState::onRawKeyPress(u8 trigger){
+    void GuiAppState::onRawKeyPress(int trigger){
 				Button *button = nullptr;
 
 				for(Button *b : buttons)
@@ -217,7 +225,7 @@ namespace battleship{
 						button->onClick();
     }
     
-    void GuiAppState::onRawMousePress(u8 trigger){
+    void GuiAppState::onRawMousePress(int trigger){
         updateControlsListbox(trigger);
     }
     
@@ -243,7 +251,7 @@ namespace battleship{
             return nullptr;
     }
 
-    void GuiAppState::onAnalog(Mapping::Bind bind, double strength) {}
+    void GuiAppState::onAnalog(int bind, float strength) {}
 
     void GuiAppState::addButton(Button* b) {
         buttons.push_back(b);

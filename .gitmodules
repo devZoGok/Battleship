@@ -1,9 +1,3 @@
-[submodule "gameBase"]
-	path = gameBase
-	url = https://github.com/devZoGok/gameBase
-[submodule "external/gameBase"]
-	path = external/gameBase
-	url = https://github.com/devZoGok/gameBase
 [submodule "external/glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw
@@ -13,3 +7,6 @@
 [submodule "external/vb01Gui"]
 	path = external/vb01Gui
 	url = https://github.com/devZoGok/vb01Gui
+[submodule "gameBase2"]
+	path = external/gameBase
+	url = https://github.com/devZoGok/gameBase

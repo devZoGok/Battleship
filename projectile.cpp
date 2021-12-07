@@ -5,8 +5,9 @@
 #include <quaternion.h>
 #include <ray.h>
 
+#include <stateManager.h>
+
 #include "projectile.h"
-#include "stateManager.h"
 #include "projectileData.h"
 #include "inGameAppState.h"
 #include "unit.h"
@@ -103,7 +104,7 @@ namespace battleship{
     void Projectile::explode(Node *collNode) {
         exploded = true;
 				StateManager *stateManager = GameManager::getSingleton()->getStateManager();
-        vector<Player*> players = ((InGameAppState*) stateManager->getAppState(AppStateTypes::IN_GAME_STATE))->getPlayers();
+        vector<Player*> players = ((InGameAppState*) stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE))->getPlayers();
 
         for (Player *p : players) {
             for (Unit *u : p->getUnits())
@@ -111,7 +112,7 @@ namespace battleship{
                     u->takeDamage(damage);
         }
 
-        InGameAppState *inGameState=((InGameAppState*)stateManager->getAppState(AppStateTypes::IN_GAME_STATE));
+        InGameAppState *inGameState=((InGameAppState*)stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
         if(id == 8)
             detonateTorpedo(inGameState,pos);

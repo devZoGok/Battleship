@@ -1,7 +1,8 @@
 #include <algorithm>
 #include <button.h>
 
-#include "stateManager.h"
+#include <stateManager.h>
+
 #include "inGameAppState.h"
 #include "consoleCommand.h"
 #include "aircraftCarrier.h"
@@ -202,7 +203,7 @@ namespace battleship{
     }
 
     InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions) {
-        type = AppStateTypes::IN_GAME_STATE;
+				type = AppStateType::IN_GAME_STATE;
         this->playerId = 0;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;
@@ -211,8 +212,11 @@ namespace battleship{
     InGameAppState::~InGameAppState() {
     }
 
-    void InGameAppState::onAttachment() {
-        AbstractAppState::onAttachment();
+    void InGameAppState::onAttached() {
+				readFile(PATH + "../options.cfg", bindingsLines, 0, configData::numBinds[AppStateType::IN_GAME_STATE]);
+
+        AbstractAppState::onAttached();
+
         map = new Map();
         map->load();
 
@@ -239,12 +243,12 @@ namespace battleship{
 
         mainPlayer = players[playerId];
 				StateManager *stateManager = GameManager::getSingleton()->getStateManager();
-        guiState = ((GuiAppState*)stateManager->getAppState(AppStateTypes::GUI_STATE));
+        guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
         activeState = new ActiveGameState(guiState, map, players, playerId);
-        stateManager->attachState(activeState);
+        stateManager->attachAppState(activeState);
     }
 
-    void InGameAppState::onDetachment() {
+    void InGameAppState::onDettached() {
 
     }
 
@@ -391,7 +395,7 @@ namespace battleship{
 
         if (!isMainMenuActive) {
             isMainMenuActive = true;
-            gm->getStateManager()->dettachState(activeState);
+            gm->getStateManager()->dettachAppState(activeState);
             Vector2 pos = Vector2(100, 100);
             //detachGui();
             resumeButton = new ResumeButton(guiState, this, Vector2(pos.x, pos.y), Vector2(150, 50), "Resume", true);
@@ -408,7 +412,7 @@ namespace battleship{
         } 
         else {
             isMainMenuActive = false;
-            gm->getStateManager()->attachState(activeState);
+            gm->getStateManager()->attachAppState(activeState);
             //attachGui();
             guiState->removeAllCheckboxes();
             guiState->removeAllListboxes();
@@ -424,13 +428,13 @@ namespace battleship{
         }
     }
 
-    void InGameAppState::onAction(Mapping::Bind bind, bool isPressed) {
-        switch(bind){
-						case Mapping::TOGGLE_MAIN_MENU: 
+    void InGameAppState::onAction(int bind, bool isPressed) {
+        switch((Bind)bind){
+						case Bind::TOGGLE_MAIN_MENU: 
                 if(isPressed)toggleMainMenu();
                 break;
         }
     }
 
-    void InGameAppState::onAnalog(Mapping::Bind bind, double str) {}
+    void InGameAppState::onAnalog(int bind, float str) {}
 }

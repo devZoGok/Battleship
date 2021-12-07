@@ -4,10 +4,14 @@
 #include <string>
 #include <glfw3.h>
 
-#include "key.h"
+#include <mapping.h>
+
+#include "binds.h"
 
 namespace battleship{
 		namespace configData{
+				using namespace gameBase;
+
     const std::string PATH = "/home/dominykas/c++/Battleship/Assets/";
     const std::string DEFAULT_TEXTURE = PATH + "Textures/defaultTexture.jpg";
     const double camPanSpeed = .1;
@@ -15,48 +19,49 @@ namespace battleship{
     const static int numAppStates = 3, numMaxBinds = 23;
     static const int numBinds[numAppStates]{12, 1, 23};
     static const int numConfBinds[numAppStates]{0, 1, 13};
-    const static Mapping::Bind binds[numAppStates][numMaxBinds]{
+
+    const static Bind binds[numAppStates][numMaxBinds]{
         {
-						Mapping::LEFT_CLICK,
-            Mapping::SCROLLING_UP,
-            Mapping::SCROLLING_DOWN,
-            Mapping::LEFT,
-            Mapping::RIGHT,
-            Mapping::DELETE_CHAR,
-            Mapping::CAPS_LOCK,
-            Mapping::SHIFT_CAPS,
-            Mapping::SPACE,
-            Mapping::PLUS,
-            Mapping::MINUS,
-            Mapping::DEVSTERISK
+						Bind::LEFT_CLICK,
+            Bind::SCROLLING_UP,
+            Bind::SCROLLING_DOWN,
+            Bind::LEFT,
+            Bind::RIGHT,
+            Bind::DELETE_CHAR,
+            Bind::CAPS_LOCK,
+            Bind::SHIFT_CAPS,
+            Bind::SPACE,
+            Bind::PLUS,
+            Bind::MINUS,
+            Bind::DEVSTERISK
         },
         {
-						Mapping::TOGGLE_MAIN_MENU
+						Bind::TOGGLE_MAIN_MENU
         },
         {
-						Mapping::HALT,
-            Mapping::ZOOM_IN,
-            Mapping::ZOOM_OUT,
-            Mapping::LOOK_AROUND,
-            Mapping::DRAG_BOX,
-            Mapping::DESELECT,
-            Mapping::LEFT_CONTROL,
-            Mapping::LEFT_SHIFT,
-            Mapping::SELECT_PATROL_POINTS,
-            Mapping::LAUNCH,
-            Mapping::TOGGLE_SUB,
-            Mapping::INSTALL_AAM,
-            Mapping::INSTALL_AWM,
-            Mapping::GROUP_0,
-            Mapping::GROUP_1,
-            Mapping::GROUP_2,
-            Mapping::GROUP_3,
-            Mapping::GROUP_4,
-            Mapping::GROUP_5,
-            Mapping::GROUP_6,
-            Mapping::GROUP_7,
-            Mapping::GROUP_8,
-            Mapping::GROUP_9
+						Bind::HALT,
+            Bind::ZOOM_IN,
+            Bind::ZOOM_OUT,
+            Bind::LOOK_AROUND,
+            Bind::DRAG_BOX,
+            Bind::DESELECT,
+            Bind::LEFT_CONTROL,
+            Bind::LEFT_SHIFT,
+            Bind::SELECT_PATROL_POINTS,
+            Bind::LAUNCH,
+            Bind::TOGGLE_SUB,
+            Bind::INSTALL_AAM,
+            Bind::INSTALL_AWM,
+            Bind::GROUP_0,
+            Bind::GROUP_1,
+            Bind::GROUP_2,
+            Bind::GROUP_3,
+            Bind::GROUP_4,
+            Bind::GROUP_5,
+            Bind::GROUP_6,
+            Bind::GROUP_7,
+            Bind::GROUP_8,
+            Bind::GROUP_9
         }
     };
     const static int triggers[numAppStates][numMaxBinds]{
@@ -76,7 +81,6 @@ namespace battleship{
         },
         {
             GLFW_KEY_ESCAPE
-            
         },
         {
             GLFW_KEY_H, 

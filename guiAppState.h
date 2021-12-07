@@ -9,17 +9,18 @@
 #include <slider.h>
 #include <vector>
 
-#include "abstractAppState.h"
+#include <abstractAppState.h>
+
+#include "binds.h"
 #include "tooltip.h"
-#include "key.h"
 
 namespace battleship{
-    class GuiAppState : public AbstractAppState {
+    class GuiAppState : public gameBase::AbstractAppState {
     public:
         GuiAppState();
         ~GuiAppState();
-        void onAttachment();
-        void onDetachment();
+        void onAttached();
+        void onDettached();
         void update();
         void addButton(vb01Gui::Button*);
         void removeButton(vb01Gui::Button*);
@@ -43,15 +44,15 @@ namespace battleship{
         void removeAllTooltips();
         inline bool isLeftMousePressed(){return leftMousePressed;}
     private:
-        virtual void onAction(Mapping::Bind, bool);
-        virtual void onAnalog(Mapping::Bind, double);
-        virtual void onRawKeyPress(vb01::u8);
-        virtual void onRawMousePress(vb01::u8);
+        virtual void onAction(int, bool);
+        virtual void onAnalog(int, float);
+        virtual void onRawKeyPress(int);
+        virtual void onRawMousePress(int);
         vb01Gui::Textbox* getOpenTextbox();
         vb01Gui::Listbox* getOpenListbox();
         void attachBindKeys();
         void attachKeyboardKeys();
-        void checkKeyboard(vb01Gui::Textbox*, Mapping::Bind, bool);
+        void checkKeyboard(vb01Gui::Textbox*, Bind, bool);
         void updateControlsListbox(int);
         
         std::vector<vb01Gui::Button*> buttons;

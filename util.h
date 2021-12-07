@@ -17,8 +17,9 @@ namespace battleship{
     typedef short s16;
     typedef int s32;
     typedef long long s64;
+
+		enum AppStateType{GUI_STATE, IN_GAME_STATE, ACTIVE_STATE};
     
-    class GameManager;
     class GuiAppState;
     
     void makeTitlescreenButtons(GuiAppState*);

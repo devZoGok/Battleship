@@ -9,6 +9,7 @@
 #include "guiAppState.h"
 #include "exitButton.h"
 #include "optionsButton.h"
+
 #include <vector>
 
 namespace battleship{
@@ -18,15 +19,15 @@ namespace battleship{
         sf::Sound *sfx = nullptr;
     };
     
-    class InGameAppState : public AbstractAppState {
+    class InGameAppState : public gameBase::AbstractAppState {
     public:
         InGameAppState(std::vector<std::string>, std::vector<std::string>);
         ~InGameAppState();
-        void onAttachment();
-        void onDetachment();
+        void onAttached();
+        void onDettached();
         void update();
-        void onAction(Mapping::Bind, bool);
-        void onAnalog(Mapping::Bind, double);
+        void onAction(int, bool);
+        void onAnalog(int, float);
         std::vector<Unit*> getSelectedUnits(Player*);
         inline std::vector<Player*> getPlayers() {return players;}
         inline std::vector<Projectile*>& getProjectiles(){return projectiles;}

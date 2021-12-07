@@ -2,9 +2,10 @@
 #include <vector.h>
 #include <util.h>
 
+#include <stateManager.h>
+
 #include "util.h"
 #include "gameManager.h"
-#include "stateManager.h"
 #include "guiAppState.h"
 #include "inGameAppState.h"
 
@@ -37,7 +38,7 @@ namespace battleship{
                 class PlayButton : public Button {
                 public:
                     PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
-                        this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
+                        this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::GUI_STATE));
                         this->lengths[0]=lengths[0];
                         this->lengths[1]=lengths[1];
 
@@ -47,21 +48,22 @@ namespace battleship{
 
                     void onClick() {
 												GameManager *gm = GameManager::getSingleton();
-                        //gm->detachAllBitmapTexts();
-                        state->removeButton("Back");
-                        gm->getStateManager()->dettachState(state);
                         std::vector<string> difficulties, factions;
 
-                        for(int i=0;i<lengths[0];i++)
+                        for(int i = 0; i < lengths[0]; i++)
                             difficulties.push_back(wstringToString(difficultiesListboxes[i]->getContents()[difficultiesListboxes[i]->getSelectedOption()]));
 
-                        for(int i=0;i<lengths[1];i++)
+                        for(int i = 0; i < lengths[1]; i++)
                             factions.push_back(to_string(factionsListboxes[i]->getSelectedOption()));
 
-                        gm->getStateManager()->attachState(new InGameAppState(difficulties, factions));
-                        state->removeAllListboxes();
                         delete[] difficultiesListboxes;
                         delete[] factionsListboxes;
+
+												StateManager *stateManager = gm->getStateManager();
+                        stateManager->attachAppState(new InGameAppState(difficulties, factions));
+                        stateManager->dettachAppState(state);
+                        state->removeAllListboxes();
+                        state->removeButton("Back");
                         state->removeButton("Play");
                     }
                 private:

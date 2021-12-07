@@ -1,9 +1,10 @@
 #include <model.h>
 
+#include <stateManager.h>
+
 #include "missileJet.h"
 #include "projectileData.h"
 #include "inGameAppState.h"
-#include "stateManager.h"
 
 using namespace vb01;
 
@@ -19,7 +20,7 @@ namespace battleship{
 
             if(distance <= range){
                 Vector3 *targetPtr = nullptr;
-                InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
+                InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
                 for(Player *p : inGameState->getPlayers())
                     for(Unit *u : p->getUnits()){

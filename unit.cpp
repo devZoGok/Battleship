@@ -1,10 +1,11 @@
 #include <model.h>
 #include <texture.h>
 
+#include <stateManager.h>
+
 #include "unit.h"
-#include "inGameAppState.h"
-#include "stateManager.h"
 #include "util.h"
+#include "inGameAppState.h"
 #include "unitData.h"
 
 using namespace vb01;
@@ -218,7 +219,7 @@ namespace battleship{
 
         if (pos.getDistanceFrom(target) >= range)
             move(order, range);
-           InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
+           InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
            for(Player *p : inGameState->getPlayers())
                for(Unit *u : p->getUnits())
@@ -333,7 +334,7 @@ namespace battleship{
 
     std::vector<Projectile*> Unit::getProjectiles(){
         std::vector<Projectile*> projectiles;
-        InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE));
+        InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
         for(Projectile *p: inGameState->getProjectiles())
             if(p->getUnit()==this)
@@ -345,7 +346,7 @@ namespace battleship{
     void Unit::removeOrder(int id) {
         for (Vector3 *v : orders[id].targetPos) {
             bool isUnitPos = false;
-            InGameAppState *state = (InGameAppState*) GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE);
+            InGameAppState *state = (InGameAppState*) GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE);
 
             for (Player *p : state->getPlayers())
                 for (Unit *u : p->getUnits())
@@ -376,5 +377,5 @@ namespace battleship{
     }
 		*/
 
-    void Unit::addProjectile(Projectile *p) {((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE))->addProjectile(p);}
+    void Unit::addProjectile(Projectile *p) {((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE))->addProjectile(p);}
 }

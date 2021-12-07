@@ -3,15 +3,19 @@
 #define GAME_MANAGER_H
 
 #include "defConfigs.h"
-#include "abstractAppState.h"
-#include "key.h"
 #include "util.h"
+
+#include <mapping.h>
+
 #include <vector>
 #include <string>
 
-namespace battleship{
+namespace gameBase{
     class InputManager;
     class StateManager;
+}
+
+namespace battleship{
     
     class GameManager {
     public:
@@ -20,17 +24,16 @@ namespace battleship{
         void update();
         inline int getWidth(){return width;}
         inline int getHeight(){return height;}
-        inline InputManager* getListener(){return listener;}
+        inline gameBase::InputManager* getInputManager(){return inputManager;}
         inline bool isServerSide(){return serverSide;}
-				inline StateManager* getStateManager(){return stateManager;}
+				inline gameBase::StateManager* getStateManager(){return stateManager;}
     private:
         GameManager();
         ~GameManager();
 
-				StateManager *stateManager = nullptr;
-        std::vector<AbstractAppState*> appStates;
+				gameBase::StateManager *stateManager = nullptr;
+				gameBase::InputManager *inputManager = nullptr;
         int width, height;
-        InputManager *listener = nullptr;
         bool serverSide;
     };
     
