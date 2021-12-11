@@ -1,4 +1,5 @@
 #include <model.h>
+#include <material.h>
 #include <texture.h>
 
 #include <stateManager.h>
@@ -28,24 +29,28 @@ namespace battleship{
         length = unitData::unitCornerPoints[id][3].z - unitData::unitCornerPoints[id][0].z;
 
 				GameManager *gm = GameManager::getSingleton();
-				node = new Model(basePath[id] + meshPath[id]);
-        placeUnit(pos);
-				/*
-        node->setMaterialFlag(EMF_LIGHTING, false);
-        ITriangleSelector *tr = smgr->createTriangleSelector((IAnimatedMeshSceneNode*)node);
-        node->setTriangleSelector(tr);
-        tr->drop();
-				*/
-				string f[]{basePath[id] + "diffuseMap.png"};
+				model = new Model(basePath[id] + meshPath[id]);
+				Root *root = Root::getSingleton();
+
+				Material *mat = new Material(root->getLibPath() + "texture");
+				string f[]{DEFAULT_TEXTURE};
         Texture *diffuseTexture = new Texture(f, 1, false);
+				mat->addBoolUniform("texturingEnabled", true);
+				mat->addBoolUniform("lightingEnabled", false);
+				mat->addTexUniform("textures[0]", diffuseTexture, true);
+
+				model->setMaterial(mat);
+				root->getRootNode()->attachChild(model);
+        placeUnit(pos);
 
 				/*
         light = smgr->addLightSceneNode(node, vector3df(0, 2, 0), SColor(255, 255, 255, 255), lineOfSight);
         light->setVisible(false);
-        node->setVisible(false);
+        model->setVisible(false);
 				*/
+
         selectionSfxBuffer = new sf::SoundBuffer();
-        string p = PATH+"Sounds/"+unitData::name[id]+"s/selection.ogg";
+        string p = PATH + "Sounds/" + unitData::name[id] + "s/selection.ogg";
 
         if(selectionSfxBuffer->loadFromFile(p.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
@@ -62,20 +67,20 @@ namespace battleship{
 
     void Unit::update() {
         if (orders.size() > 0){
-            if(selected&&canDisplayOrderLine()){
-                int r=0,g=0,b=0;
+            if(selected && canDisplayOrderLine()){
+                int r = 0, g = 0, b = 0;
 
                 switch(orders[0].type){
                     case Order::TYPE::MOVE:
-                        g=255;
+                        g = 255;
                         break;
                     case Order::TYPE::ATTACK:
-                        r=255;
+                        r = 255;
                         break;
                     case Order::TYPE::PATROL:
-                        b=255;
+                        b = 255;
                     case Order::TYPE::LAUNCH:
-                        r=255,g=255;
+                        r = 255, g = 255;
                         break;
                 }
 
@@ -283,7 +288,7 @@ namespace battleship{
 
     void Unit::advance(float speed) {
         pos = pos + dirVec * speed;
-        node->setPosition(pos);
+        model->setPosition(pos);
     }
 
     void Unit::turn(float angle) {// rad
@@ -301,13 +306,15 @@ namespace battleship{
 
     float Unit::getCircleRadius() {
         float radius = 0.;
+
         for (int i = 0; i <= 90 / maxTurnAngle; i++)
             radius += cos(i * (maxTurnAngle / 180 * PI)) * speed;
+
         return radius;
     }
 
     void Unit::placeUnit(Vector3 p) {
-        node->setPosition(p);
+        model->setPosition(p);
         pos = p;
     }
 
@@ -334,10 +341,10 @@ namespace battleship{
 
     std::vector<Projectile*> Unit::getProjectiles(){
         std::vector<Projectile*> projectiles;
-        InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
+        InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
         for(Projectile *p: inGameState->getProjectiles())
-            if(p->getUnit()==this)
+            if(p->getUnit() == this)
                 projectiles.push_back(p);
 
         return projectiles;
@@ -366,7 +373,7 @@ namespace battleship{
         if(selection && selectionSfx)
             selectionSfx->play();
 
-        orderLineDispTime=getTime();
+        orderLineDispTime = getTime();
     }
 
 		/*

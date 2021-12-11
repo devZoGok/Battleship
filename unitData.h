@@ -272,11 +272,11 @@ namespace battleship {
             "Jet", "Jet"
         };
         const std::string meshPath[numberOfUnits]{
-            "hull00.x", "hull01.x",
-            "hull00.x", "hull01.x", 
-            "hull00.x", "hull01.x", 
-            "hull00.x", "hull01.x",
-            "hull.x",
+            "battleship00.vb", "battleship01.vb",
+            "destroyer00.vb", "destroyer01.vb", 
+            "cruiser00.vb", "cruiser01.vb", 
+            "aircraftCarrier00.vb", "aircraftCarrier01.vb",
+            "submarine.vb",
             "jet00.x", "jet01.x"
         };
         const std::string basePath[numberOfUnits]{

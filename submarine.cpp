@@ -1,5 +1,5 @@
 #include <time.h>
-#include <node.h>
+#include <model.h>
 
 #include "submarine.h"
 #include "defConfigs.h"
@@ -9,7 +9,7 @@
 using namespace vb01;
 
 namespace battleship{
-    Submarine::Submarine(Player *player, Vector3 pos, int id) : Unit(player,pos, id) {}
+    Submarine::Submarine(Player *player, Vector3 pos, int id) : Unit(player, pos, id) {}
 
     void Submarine::attack(Order order) {
         float angle = dirVec.getAngleBetween(*(order.targetPos[0]) - pos);
@@ -20,19 +20,19 @@ namespace battleship{
         if (canFire()) {
             Vector3 p = pos + leftVec * projectileData::pos[id][0][0].x + upVec * projectileData::pos[id][0][0].y - dirVec * projectileData::pos[id][0][0].z;
             addProjectile(new Torpedo(this, p, dirVec, leftVec, upVec, getId(), 0, 0));
-            lastShotTime=getTime();
+            lastShotTime = getTime();
         }
     }
     
     void Submarine::emerge() {
         submerged = false;
         pos.y += 5;
-        node->setPosition(pos);
+        model->setPosition(pos);
     }
     
     void Submarine::submerge() {
         submerged = true;
         pos.y -= 5;
-        node->setPosition(pos);
+        model->setPosition(pos);
     }
 }

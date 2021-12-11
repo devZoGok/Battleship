@@ -59,7 +59,7 @@ namespace battleship{
         inline float getWidth() {return width;}
         inline float getHeight() {return height;}
         inline float getLength() {return length;}
-        inline vb01::Node* getNode() {return node;}
+        inline vb01::Model* getNode() {return model;}
         inline Player* getPlayer(){return player;}
         inline unitData::UNIT_TYPE getType() {return type;}
         inline void toggleDebugging(bool d){this->debugging=d;}
@@ -75,9 +75,9 @@ namespace battleship{
         inline int getNextPatrolPointId() {return patrolPointId == patrolPoints.size() - 1 ? 0 : patrolPointId + 1;}
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
         //ILightSceneNode *light;
-        const int orderVecDispLength=2000;
+        const int orderVecDispLength = 2000;
         sf::SoundBuffer *selectionSfxBuffer;
-        sf::Sound *selectionSfx=nullptr;
+        sf::Sound *selectionSfx = nullptr;
     protected:
         Player *player;
         MoveDir moveDir = MoveDir::FORWARD;
@@ -89,11 +89,11 @@ namespace battleship{
         std::vector<vb01::Vector3> patrolPoints;
 				vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), leftVec = vb01::Vector3(1, 0, 0);
         int health, cost, id, patrolPointId = 0, playerId;
-        s64 orderLineDispTime=0;
-				vb01::Mesh *mesh;
-				vb01::Node *node;
-        bool selected = false, selectable, debugging = false, working=true;
+        s64 orderLineDispTime = 0;
+				vb01::Model *model;
+        bool selected = false, selectable, debugging = false, working = true;
         float lineOfSight, speed, maxTurnAngle, range, width, height, length;
+
         void removeOrder(int);
         virtual void executeOrders();
         virtual void attack(Order);

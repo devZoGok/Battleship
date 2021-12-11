@@ -138,9 +138,9 @@ namespace battleship{
 
     void Jet::pitch(float angle) {
         Quaternion rotQuat = Quaternion(-angle / 180 * PI, leftVec);
-        dirVec = rotQuat*dirVec, upVec = rotQuat*upVec;
+        dirVec = rotQuat * dirVec, upVec = rotQuat * upVec;
         horAngle = angle;
-        float yAngle = node->getOrientation().y;
+        float yAngle = model->getOrientation().y;
 				/*
         node->setOrientation(vector3df(angle, 0, 0));
         node->setOrientation(vector3df(angle, yAngle, 0));
