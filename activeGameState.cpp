@@ -1,6 +1,8 @@
 #include <root.h>
 #include <quaternion.h>
 #include <model.h>
+#include <material.h>
+#include <quad.h>
 
 #include <stateManager.h>
 
@@ -121,17 +123,23 @@ namespace battleship{
         this->players = players;
 
 				GameManager *gm = GameManager::getSingleton();
-        Camera *cam = Root::getSingleton()->getCamera();
-				/*
-        cam->setInputReceiverEnabled(false);
-        gm->getDevice()->getCursorControl()->setVisible(true);
-				*/
+				Root *root = Root::getSingleton();
+        Camera *cam = root->getCamera();
 
         this->playerId = playerId;
         mainPlayer = players[playerId];
         cam->setPosition(Vector3(0, 5, 0));
         Quaternion rotQuat = Quaternion(4 * atan(1) / 6, Vector3(1, 0, 0));
-        //cam->setTarget(vector3df(0, 5, 0) + rotQuat * vector3df(0, 0, 1));
+				
+				Material *mat = new Material(root->getLibPath() + "gui");
+				mat->addBoolUniform("texturingEnabled", false);
+				mat->addBoolUniform("diffuseColorEnabled", false);
+				mat->addVec4Uniform("diffuseColor", Vector4(.5, .5, .5, .5));
+				dragbox = new Quad(Vector3::VEC_ZERO, false);
+				dragbox->setMaterial(mat);
+				dragboxNode = new Node();
+				dragboxNode->attachMesh(dragbox);
+				root->getGuiNode()->attachChild(dragboxNode);
     }
 
     ActiveGameState::~ActiveGameState() {
@@ -146,21 +154,21 @@ namespace battleship{
         int faction = mainPlayer->getFaction(), width = gm->getWidth(), height = gm->getHeight(), size = 50;
         string names[5] = {"Battleship", "Destroyer", "Cruiser", "Carrier", "Submarine"};
 
+				/*
         for(int i = 0; i < 5; i++){
             int id = 2 * i + (i == 4 && faction == 1 ? 0 : faction);
             Vector2 pos = Vector2(width - size - 1, 1 + i * size), sizeVec = Vector2(size, size);
             UnitButton *button = new UnitButton(this, pos, sizeVec, names[i], faction, id);
 
-						/*
             if(i == 3)
                 names[i] = "aircraftCarrier";
             else
 								transform(names[i].begin(), names[i].end(), names[i], names[i]);
-								*/
 
             //button->setImageButton(new Image(driver->getTexture(PATH+"Textures/Icons/"+names[i]+"0"+stringw(faction)+".png"),pos,sizeVec));
             guiState->addButton(button);
         }
+				*/
 
 				Bind binds[]{Bind::LOOK_UP, Bind::LOOK_DOWN, Bind::LOOK_LEFT, Bind::LOOK_RIGHT};
 				int triggers[]{Mapping::MOUSE_AXIS_UP, Mapping::MOUSE_AXIS_DOWN, Mapping::MOUSE_AXIS_LEFT, Mapping::MOUSE_AXIS_RIGHT};
@@ -176,11 +184,19 @@ namespace battleship{
 					mappings.push_back(m);
 				}
 
+				Mapping *rightClick = new Mapping;
+				rightClick->bind = Bind::LOOK_AROUND;
+				rightClick->type = Mapping::MOUSE_KEY;
+				rightClick->trigger = 1;
+				rightClick->action = true;
+
 				Mapping *leftClick = new Mapping;
-				leftClick->bind = Bind::LOOK_AROUND;
+				leftClick->bind = Bind::DRAG_BOX;
 				leftClick->type = Mapping::MOUSE_KEY;
 				leftClick->trigger = 0;
 				leftClick->action = true;
+
+				mappings.push_back(rightClick);
 				mappings.push_back(leftClick);
     }
 
@@ -198,6 +214,8 @@ namespace battleship{
         if (isSelectionBox)
             updateSelectionBox();
 
+				dragboxNode->setVisible(isSelectionBox);
+
         for (Unit *u : units) {
             //u->updateUnitGUIInfo(cam, camDir, camLeft, camUp);
             Vector2 pos = u->getScreenPos();
@@ -214,6 +232,7 @@ namespace battleship{
                 else if(!selected)
                     u->toggleSelection(false);
 
+								/*
                 if(isSelectionBox && u->isSelectable() && 
                     pos.x >= selectionBoxOrigin.x && pos.x <= selectionBoxEnd.x &&
                     pos.y >= selectionBoxOrigin.y && pos.y <= selectionBoxEnd.y){
@@ -226,6 +245,7 @@ namespace battleship{
                         selectedUnits.push_back(u);
                     }
                 }
+								*/
             }
 
             if (u->isDebuggable())
@@ -367,28 +387,28 @@ namespace battleship{
     }
 
     void ActiveGameState::updateSelectionBox() {
-				GameManager *gm = GameManager::getSingleton();
-				/*
-        vector2d<s32> mousePos = gm->getDevice()->getCursorControl()->getPosition();
-        IVideoDriver *driver = gm->getDevice()->getVideoDriver();
+        Vector2 mousePos = getCursorPos(), selectionBoxOrigin, selectionBoxEnd;
 
         if (mousePos.x >= clickPoint.x && mousePos.y >= clickPoint.y) {
             selectionBoxOrigin = Vector2(clickPoint.x, clickPoint.y);
             selectionBoxEnd = Vector2(mousePos.x, mousePos.y);
-        } else if (mousePos.x < clickPoint.x && mousePos.y > clickPoint.y) {
+        }
+				else if (mousePos.x < clickPoint.x && mousePos.y > clickPoint.y) {
             selectionBoxOrigin = Vector2(mousePos.x, clickPoint.y);
             selectionBoxEnd = Vector2(clickPoint.x, mousePos.y);
-        } else if (mousePos.x >= clickPoint.x && mousePos.y < clickPoint.y) {
+        }
+				else if (mousePos.x >= clickPoint.x && mousePos.y < clickPoint.y) {
             selectionBoxOrigin = Vector2(clickPoint.x, mousePos.y);
             selectionBoxEnd = Vector2(mousePos.x, clickPoint.y);
-        } else {
+        }
+				else {
             selectionBoxOrigin = Vector2(mousePos.x, mousePos.y);
             selectionBoxEnd = Vector2(clickPoint.x, clickPoint.y);
         }
-				*/
 
-
-        //driver->draw2DRectangle(SColor(10, 255, 255, 255), rect<s32>(selectionBoxOrigin.X, selectionBoxOrigin.Y, selectionBoxEnd.X, selectionBoxEnd.Y), nullptr);
+				Vector3 size = Vector3(selectionBoxEnd.x - selectionBoxOrigin.x, selectionBoxEnd.y - selectionBoxOrigin.y, 0);
+				dragbox->setSize(size);
+				dragboxNode->setPosition(Vector3(selectionBoxOrigin.x, selectionBoxOrigin.y, 0));
     }
 
     void ActiveGameState::updateCameraPosition() {
@@ -415,18 +435,6 @@ namespace battleship{
 				
         if (cursorPos.y >= height && 0 < cursorPos.x && cursorPos.x < width) 
             cam->setPosition(cam->getPosition() - forwVec * camPanSpeed);
-
-				/*
-        if (cam->getPosition().x > map->getSize().x / 2)
-            cam->setPosition(Vector3(map->getSize().x / 2, cam->getPosition().y, cam->getPosition().z));
-        else if (cam->getPosition().x < -map->getSize().x / 2)
-            cam->setPosition(Vector3(-map->getSize().x / 2, cam->getPosition().y, cam->getPosition().z));
-
-        if (cam->getPosition().z > map->getSize().y / 2)
-            cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, map->getSize().y / 2));
-        else if (cam->getPosition().z < -map->getSize().y / 2)
-            cam->setPosition(Vector3(cam->getPosition().x, cam->getPosition().y, -map->getSize().y / 2));
-						*/
     }
 
     void ActiveGameState::issueOrder(Order::TYPE type, vector<Vector3*> pos, bool addOrder) {
@@ -509,11 +517,10 @@ namespace battleship{
                 isSelectionBox = isPressed;
 
                 if (isPressed) {
-										/*
-                    clickPoint = gm->getDevice()->getCursorControl()->getPosition();
+										clickPoint = getCursorPos();
+
                     if (!selectedUnits.empty())
                         addPos();
-												*/
                 }
                 break;
 						case Bind::DESELECT:

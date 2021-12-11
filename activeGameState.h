@@ -64,7 +64,9 @@ namespace battleship{
         Map *map;
         std::vector<Player*> players;
         Player *mainPlayer;
-        vb01::Vector2 clickPoint, selectionBoxOrigin, selectionBoxEnd;
+				vb01::Quad *dragbox = nullptr;
+				vb01::Node *dragboxNode = nullptr;
+				vb01::Vector2 clickPoint;
         std::vector<vb01::Vector2> unitScreenPosVec;
         std::vector<vb01::Vector3*> orderPos;
         std::vector<vb01::Node*> unitLightNodes;
