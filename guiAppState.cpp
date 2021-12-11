@@ -59,7 +59,15 @@ namespace battleship{
 				leftClick->type = Mapping::MOUSE_KEY;
 				leftClick->trigger = 0;
 				leftClick->action = true;
+
+				Mapping *leftShift = new Mapping;
+				leftShift->bind = Bind::SHIFT_CAPS;
+				leftShift->type = Mapping::KEYBOARD;
+				leftShift->trigger = GLFW_KEY_LEFT_SHIFT;
+				leftShift->action = true;
+
 				mappings.push_back(leftClick);
+				mappings.push_back(leftShift);
 
         attachKeyboardKeys();
     }
@@ -73,9 +81,16 @@ namespace battleship{
         int firstId = Bind::LAST_BIND + 1, lastId = firstId + numKeys;
 
         for (int i = firstId; i <= lastId; i++){
-            int offset=i-firstId;
-            int trigger = offset < 10 ? int(irr::KEY_KEY_0)+offset:int(irr::KEY_KEY_A)+offset-10;
-            AbstractAppState::attachKey(new Key((Bind)i, trigger, true, false));
+            int offset = i - firstId;
+            int trigger = (offset < 10 ? int(irr::KEY_KEY_0) + offset : int(irr::KEY_KEY_A) + offset - 10);
+
+						Mapping *mapping = new Mapping;
+						mapping->bind = i;
+						mapping->type = Mapping::KEYBOARD;
+						mapping->trigger = trigger;
+						mapping->action = true;
+
+            mappings.push_back(mapping);
         } 
 				*/
     }
@@ -212,17 +227,98 @@ namespace battleship{
         }
     }
     
-    void GuiAppState::onRawKeyPress(int trigger){
+    void GuiAppState::onRawKeyPress(int ch){
 				Button *button = nullptr;
-
+				
 				for(Button *b : buttons)
-						if(b->getTrigger() == trigger){
+						if(b->getTrigger() == ch){
 								button = b;
 								break;
 						}
-
+				
 				if(button)
 						button->onClick();
+				
+				Textbox *t = nullptr;
+				
+				for(int i = 0; i < textboxes.size() && !t; i++)
+					if(textboxes[i]->isEnabled())
+						t = textboxes[i];
+				
+				if(t && canType()){
+					switch(ch){
+						case '/':
+							if(shiftPressed)ch = '?';
+							break;
+						case '.':
+							if(shiftPressed)ch = '>';
+							break;
+						case ',':
+							if(shiftPressed)ch = '<';
+							break;
+						case ';':
+							if(shiftPressed)ch = ':';
+							break;
+						case 39:
+							if(shiftPressed)ch = '"';
+							break;
+						case '-':
+							if(shiftPressed)ch = '_';
+							break;
+						case '=':
+							if(shiftPressed)ch = '+';
+							break;
+						case 92:
+							if(shiftPressed)ch = '|';
+							break;
+						case '`':
+							if(shiftPressed)ch = '~';
+							break;
+						case '[':
+							if(shiftPressed)ch = '{';
+							break;
+						case ']':
+							if(shiftPressed)ch = '}';
+							break;
+						case '1':
+							if(shiftPressed)ch = '!';
+							break;
+						case '2':
+							if(shiftPressed)ch = '@';
+							break;
+						case '3':
+							if(shiftPressed)ch = '#';
+							break;
+						case '4':
+							if(shiftPressed)ch = '$';
+							break;
+						case '5':
+							if(shiftPressed)ch = '%';
+							break;
+						case '6':
+							if(shiftPressed)ch = '^';
+							break;
+						case '7':
+							if(shiftPressed)ch = '&';
+							break;
+						case '8':
+							if(shiftPressed)ch = '*';
+							break;
+						case '9':
+							if(shiftPressed)ch = '(';
+							break;
+						case '0':
+							if(shiftPressed)ch = ')';
+							break;
+					}
+				
+					if(ch != GLFW_KEY_BACKSPACE)
+						t->type(ch, shiftPressed);
+					else 
+						t->deleteCharacter();
+				
+					lastTypeTime = getTime();
+				}
     }
     
     void GuiAppState::onRawMousePress(int trigger){

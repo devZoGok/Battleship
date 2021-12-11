@@ -61,7 +61,6 @@ namespace battleship{
 
 												StateManager *stateManager = gm->getStateManager();
                         stateManager->attachAppState(new InGameAppState(difficulties, factions));
-                        stateManager->dettachAppState(state);
                         state->removeAllListboxes();
                         state->removeButton("Back");
                         state->removeButton("Play");

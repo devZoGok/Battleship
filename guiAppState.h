@@ -54,6 +54,7 @@ namespace battleship{
         void attachKeyboardKeys();
         void checkKeyboard(vb01Gui::Textbox*, Bind, bool);
         void updateControlsListbox(int);
+				bool canType(){return vb01::getTime() - lastTypeTime > 100;}
         
         std::vector<vb01Gui::Button*> buttons;
         std::vector<vb01Gui::Listbox*> listboxes;
@@ -61,8 +62,9 @@ namespace battleship{
         std::vector<vb01Gui::Textbox*> textboxes;
         std::vector<vb01Gui::Slider*> sliders;
         std::vector<Tooltip*> tooltips;
+				vb01::s64 lastTypeTime = 0;
         bool leftMousePressed = false, shiftPressed = false;
-        const static int numKeys=36;
+        const static int numKeys = 36;
         const char keyChars[numKeys]{
             '0',
             '1',

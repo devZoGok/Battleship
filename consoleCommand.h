@@ -11,20 +11,17 @@
 namespace battleship{
     class ConsoleCommand{
     public:
-        ConsoleCommand(vb01Gui::Listbox*, std::vector<Player*>, std::string, std::vector<std::string>);
-        ~ConsoleCommand();
-        void execute();
+      static void execute(std::string);
     private:
-				vb01Gui::Listbox *listbox;
-        void printConsoleMessage(std::string);
-        std::vector<Player*> players;
-        std::string name;
-        std::vector<std::string> arguments;
-        std::string commandList[2] = {"addUnit","debugUnits"};
-        // #0
-        void addUnit();
-        // #1
-        void debugUnits();
+			static void parse(std::string, std::vector<std::string>&);
+
+			static void validateAddUnitArguments(std::vector<std::string>&);
+      static void executeAddUnit(int, int);
+
+			static void validateDebugUnitsArguments();
+      static void debugUnits();
+
+      static void printConsoleMessage(std::string);
     };
 }
 

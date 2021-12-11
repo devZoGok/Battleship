@@ -128,7 +128,6 @@ namespace battleship{
         CruiserCreationButton *crcb;
         CarrierCreationButton *ccb;
         SubmarineCreationButton *scb;
-        inline std::vector<Player*> getPlayerList(){return players;}
         bool isMainMenuActive = false;
         void toggleMainMenu();
         void attachGui();

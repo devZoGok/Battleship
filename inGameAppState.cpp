@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <button.h>
 
+#include <util.h>
+
 #include <stateManager.h>
 
 #include "inGameAppState.h"
@@ -45,36 +47,7 @@ namespace battleship{
             }
 
             void onClick() {
-                wstring name;
-                vector<string> args;
-                vector<int> spaceIds;
-
-                for (int i = 0; i < textbox->getText().size(); i++) {
-                    if (textbox->getText()[i] == ' ') {
-                        spaceIds.push_back(i);
-                    }
-                }
-
-                if (spaceIds.size() > 0) {
-                    for (int i = 0; i < spaceIds[0]; i++)
-                        name += textbox->getText()[i];
-
-                    for (int i = 0; i < spaceIds.size() - 1; i++) {
-                        string w;
-                        for (int i2 = spaceIds[i]; i2 < spaceIds[i + 1]; i2++)
-                            w += textbox->getText()[i2];
-                        args.push_back(w);
-                    }
-
-                    args.push_back("");
-
-                    for (int i = spaceIds[spaceIds.size() - 1]; i < textbox->getText().size(); i++) {
-                        args[args.size() - 1] += textbox->getText()[i];
-                    }
-                } else
-                    name = textbox->getText();
-
-                //ConsoleCommand c(listbox, inGameState->getPlayerList(), name, args);
+								ConsoleCommand::execute(wstringToString(textbox->getText()));
             }
         private:
             InGameAppState *inGameState;
@@ -396,8 +369,9 @@ namespace battleship{
         if (!isMainMenuActive) {
             isMainMenuActive = true;
             gm->getStateManager()->dettachAppState(activeState);
-            Vector2 pos = Vector2(100, 100);
+						
             //detachGui();
+            Vector2 pos = Vector2(100, 100);
             resumeButton = new ResumeButton(guiState, this, Vector2(pos.x, pos.y), Vector2(150, 50), "Resume", true);
             consoleButton = new ConsoleButton(guiState, this, Vector2(pos.x, pos.y + 60), Vector2(150, 50), "Console", true);
             optionsButton = new InGameOptionsButton(guiState, this, Vector2(pos.x, pos.y + 120), Vector2(150, 50), "Options", true);
@@ -413,6 +387,7 @@ namespace battleship{
         else {
             isMainMenuActive = false;
             gm->getStateManager()->attachAppState(activeState);
+						
             //attachGui();
             guiState->removeAllCheckboxes();
             guiState->removeAllListboxes();
