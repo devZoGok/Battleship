@@ -1,14 +1,19 @@
 #include <model.h>
+#include <quad.h>
 #include <material.h>
 #include <texture.h>
 
 #include <stateManager.h>
+
+#include <glm.hpp>
+#include <ext.hpp>
 
 #include "unit.h"
 #include "util.h"
 #include "inGameAppState.h"
 #include "unitData.h"
 
+using namespace glm;
 using namespace vb01;
 using namespace std;
 
@@ -31,8 +36,9 @@ namespace battleship{
 				GameManager *gm = GameManager::getSingleton();
 				model = new Model(basePath[id] + meshPath[id]);
 				Root *root = Root::getSingleton();
+				string libPath = root->getLibPath();
 
-				Material *mat = new Material(root->getLibPath() + "texture");
+				Material *mat = new Material(libPath + "texture");
 				string f[]{DEFAULT_TEXTURE};
         Texture *diffuseTexture = new Texture(f, 1, false);
 				mat->addBoolUniform("texturingEnabled", true);
@@ -54,6 +60,26 @@ namespace battleship{
 
         if(selectionSfxBuffer->loadFromFile(p.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
+
+				Node *guiNode = root->getGuiNode();
+
+				hpBackground = new Quad(Vector3(lenHpBar, 10, 0), false);
+				Material *hpBackgroundMat = new Material(libPath + "gui");
+				hpBackgroundMat->addBoolUniform("texturingEnabled", false);
+				hpBackgroundMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
+				hpBackground->setMaterial(hpBackgroundMat);
+				hpBackgroundNode = new Node();
+				hpBackgroundNode->attachMesh(hpBackground);
+				guiNode->attachChild(hpBackgroundNode);
+
+				hpForeground = new Quad(Vector3(lenHpBar, 10, 0), false);
+				Material *hpForegroundMat = new Material(libPath + "gui");
+				hpForegroundMat->addBoolUniform("texturingEnabled", false);
+				hpForegroundMat->addVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
+				hpForeground->setMaterial(hpForegroundMat);
+				hpForegroundNode = new Node();
+				hpForegroundNode->attachMesh(hpForeground);
+				guiNode->attachChild(hpForegroundNode);
     }
 
     Unit::~Unit() {
@@ -99,66 +125,56 @@ namespace battleship{
             blowUp();
     }
 
-		/*
-    void Unit::updateScreenCoordinates(ICameraSceneNode *cam, vector3df camDir, vector3df camLeft, vector3df camUp) {
-        vector3df camPos = cam->getPosition();
-        vector3df farLeftUpPoint = cam->getViewFrustum()->getFarLeftUp();
-        vector3df farRightUpPoint = cam->getViewFrustum()->getFarRightUp();
-        vector3df farLeftDownPoint = cam->getViewFrustum()->getFarLeftDown();
-        float camH = camPos.getDistanceFrom(farLeftUpPoint) * cos(getAngleBetween(farLeftUpPoint - camPos, camDir));
-        float unitH = camPos.getDistanceFrom(pos) * cos(getAngleBetween(pos - camPos, camDir));
-        float ratio = unitH / camH;
-        float minRatio = ((cam->getViewFrustum()->getNearLeftUp() - camPos) / (farLeftUpPoint - camPos)).getLength();
+    void Unit::updateScreenCoordinates() {
+			Vector3 rotAxis = rot.getAxis();
 
-        if (minRatio <= ratio && ratio <= 1.) {
-            float width = farRightUpPoint.getDistanceFrom(farLeftUpPoint) * ratio;
-            float height = farLeftUpPoint.getDistanceFrom(farLeftDownPoint) * ratio;
-            vector3df edgePoint = (farLeftUpPoint - camPos) * ratio + camPos;
-            float angle = getAngleBetween(pos - edgePoint, -camLeft);
-            float x = pos.getDistanceFrom(edgePoint) * cos(angle), y = pos.getDistanceFrom(edgePoint) * cos(PI / 2 - angle);
+			if(rotAxis == Vector3::VEC_ZERO)
+				rotAxis = Vector3::VEC_I;
 
-            if (x <= width && y <= height) {
-                selectable = true;
-								GameManager *gm = GameManager::getSingleton();
-                screenPos = vector2d<s32>(gm->getWidth() * x / width, gm->getHeight() * y / height);
-            } else
-                selectable = false;
-        } else
-            selectable = false;
+			mat4 model = mat4(1.);
+			model = translate(model, vec3(pos.x, pos.y, pos.z));
+			model = rotate(model, rot.getAngle(), vec3(rotAxis.x, rotAxis.y, rotAxis.z));
+			
+			Root *root = Root::getSingleton();
+			Camera *cam = root->getCamera();
+			Vector3 dir = cam->getDirection(), up = cam->getUp();
+			Vector3 camPos = cam->getPosition();
+			mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
+			
+			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
+			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
+
+			vec4 ndcPos = proj * view * model * vec4(0, 0, 0, 1);
+			ndcPos.x /= ndcPos.w;
+			ndcPos.y /= ndcPos.w;
+			screenPos = Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
     }
-		*/
 
     void Unit::blowUp(){
         working = false;
     }
 
-		/*
-    void Unit::updateUnitGUIInfo(ICameraSceneNode* cam, vector3df camDir, vector3df camLeft, vector3df camUp) {
-        updateScreenCoordinates(cam, camDir, camLeft, camUp);
+    void Unit::updateUnitGUIInfo() {
+        updateScreenCoordinates();
+
         if (selected) {
             displayUnitStats();
             drawCuboid();
         }
     }
-		*/
 
-		/*
     void Unit::displayUnitStats() {
-        IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
-        SColor white = SColor(255, 255, 255, 255);
-        driver->draw2DLine(screenPos + vector2d<s32>(-51, 0), screenPos + vector2d<s32>(50, 0), white);
-        driver->draw2DLine(screenPos + vector2d<s32>(-51, 0), screenPos + vector2d<s32>(-51, -20), white);
-        driver->draw2DLine(screenPos + vector2d<s32>(-50, -20), screenPos + vector2d<s32>(50, -20), white);
-        driver->draw2DLine(screenPos + vector2d<s32>(50, 0), screenPos + vector2d<s32>(50, -20), white);
-        driver->draw2DRectangle(SColor(255, 0, 200, 0), rect<s32>(screenPos.X - 50, screenPos.Y - 19, screenPos.X - 50 + ((float)health / unitData::health[id]) * 100, screenPos.Y));
-
+				float shiftedX = screenPos.x - 0.5 * lenHpBar;
+				hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
+				hpForeground->setSize(Vector3(health / unitData::health[id] * lenHpBar, 10, 0));
+				hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
     }
-		*/
 
-		/*
     void Unit::drawCuboid() {
+				/*
         IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
         driver->setTransform(ETS_WORLD, IdentityMatrix);
+
         for (int i = 0; i < 8; i++) {
             vector3df vec = unitCornerPoints[id][i];
             vector3df yVec;
@@ -173,8 +189,8 @@ namespace battleship{
             driver->draw3DLine(pos + vec, pos + vec + vec2);
             driver->draw3DLine(pos + vec, pos + vec + yVec);
         }
+				*/
     }
-		*/
 
     void Unit::debug() {
 		/*

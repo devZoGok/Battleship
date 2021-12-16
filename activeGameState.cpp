@@ -205,22 +205,29 @@ namespace battleship{
     }
 
     void ActiveGameState::update() {
-        vector<Unit*> units;
-
-        for (Player *p : players)
-            for (Unit *u : p->getUnits())
-                units.push_back(u);
-
         if (isSelectionBox)
             updateSelectionBox();
 
 				dragboxNode->setVisible(isSelectionBox);
 
-        for (Unit *u : units) {
-            //u->updateUnitGUIInfo(cam, camDir, camLeft, camUp);
-            Vector2 pos = u->getScreenPos();
+        renderUnits();
+        renderGUIBorders();
+        renderActionButtons();
 
+				if(!lookingAround)
+					updateCameraPosition();
+    }
+
+    void ActiveGameState::renderUnits() {
+				vector<Unit*> units;
+
+        for (Player *p : players)
+            for (Unit *u : p->getUnits())
+                units.push_back(u);
+
+        for (Unit *u : units) {
             if (mainPlayer->isThisPlayersUnit(u)){
+            		u->updateUnitGUIInfo();
                 bool selected = false;
 
                 for(int i = 0; i < selectedUnits.size() && !selected; i++)
@@ -232,8 +239,11 @@ namespace battleship{
                 else if(!selected)
                     u->toggleSelection(false);
 
-								/*
-                if(isSelectionBox && u->isSelectable() && 
+								Vector3 selectionBoxOrigin = dragboxNode->getPosition();
+								Vector3 selectionBoxEnd = selectionBoxOrigin + dragbox->getSize();
+            		Vector2 pos = u->getScreenPos();
+
+                if(isSelectionBox && 
                     pos.x >= selectionBoxOrigin.x && pos.x <= selectionBoxEnd.x &&
                     pos.y >= selectionBoxOrigin.y && pos.y <= selectionBoxEnd.y){
 
@@ -245,37 +255,24 @@ namespace battleship{
                         selectedUnits.push_back(u);
                     }
                 }
-								*/
             }
 
             if (u->isDebuggable())
                 u->debug();
-        }
 
-        renderUnits(units);
-        renderGUIBorders();
-        renderActionButtons();
-
-				if(!lookingAround)
-					updateCameraPosition();
-    }
-
-    void ActiveGameState::renderUnits(vector<Unit*> units) {
-        //ISceneManager *smgr = GameManager::getSingleton()->getDevice()->getSceneManager();
-        for (Unit *rendUn : units) {
-            Vector3 rendUnPos = rendUn->getPos();
+            Vector3 rendUnPos = u->getPos();
             rendUnPos.y = 0;
 
-            if (mainPlayer == rendUn->getPlayer()) {
-                rendUn->getNode()->setVisible(true);
+            if (mainPlayer == u->getPlayer()) {
+                u->getNode()->setVisible(true);
                 //rendUn->getLight()->setVisible(true);
             } else
-                for (int i = 0; i < units.size() && units[i] != rendUn && units[i]->getPlayer() == mainPlayer; i++) {
+                for (int i = 0; i < units.size() && units[i] != u && units[i]->getPlayer() == mainPlayer; i++) {
                     Unit *compUn = units[i];
                     Vector3 compUnPos = compUn->getPos();
                     compUnPos.y = 0;
                     float dist = compUnPos.getDistanceFrom(rendUnPos);
-                    rendUn->getNode()->setVisible(dist <= compUn->getLineOfSight() || isInLineOfSight(compUnPos, compUn->getLineOfSight(), rendUn) ? true : false);
+                    u->getNode()->setVisible(dist <= compUn->getLineOfSight() || isInLineOfSight(compUnPos, compUn->getLineOfSight(), u) ? true : false);
                 }
         }
     }

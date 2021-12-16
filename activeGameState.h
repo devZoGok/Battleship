@@ -52,7 +52,7 @@ namespace battleship{
 
         void renderGUIBorders();
         void renderActionButtons();
-        void renderUnits(std::vector<Unit*>);
+        void renderUnits();
         void updateCameraPosition();
         void updateSelectionBox();
         void addPos();

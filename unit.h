@@ -4,6 +4,8 @@
 
 #include <vector>
 #include <util.h>
+#include <quaternion.h>
+
 #include <SFML/Audio.hpp>
 
 #include "unitData.h"
@@ -12,6 +14,7 @@
 
 namespace vb01{
 		class Mesh;
+		class Quad;
 		class Node;
 		class Camera;
 }
@@ -35,7 +38,7 @@ namespace battleship{
         ~Unit();
         virtual void update();
         virtual void blowUp();
-        //virtual void updateUnitGUIInfo(ICameraSceneNode*, vector3df, vector3df, vector3df);
+        virtual void updateUnitGUIInfo();
         virtual void debug();
         virtual void halt();
         void toggleSelection(bool);
@@ -70,24 +73,28 @@ namespace battleship{
         inline vb01::Vector3 getLeftVec() {return leftVec;}
         inline vb01::Vector3 getUpVec() {return upVec;}
     private:
-        //void updateScreenCoordinates(ICameraSceneNode*, vector3df, vector3df, vector3df);
+        void updateScreenCoordinates();
         void displayUnitStats();
         inline int getNextPatrolPointId() {return patrolPointId == patrolPoints.size() - 1 ? 0 : patrolPointId + 1;}
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
+
         //ILightSceneNode *light;
         const int orderVecDispLength = 2000;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
+				vb01::Quad *hpBackground = nullptr, *hpForeground = nullptr;
+				vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
+				int lenHpBar = 200;
     protected:
         Player *player;
         MoveDir moveDir = MoveDir::FORWARD;
         //vb01::Material createLineMaterial();
         unitData::UNIT_TYPE type;
-				vb01::Camera *cam = nullptr;
 				vb01::Vector2 screenPos;
         std::vector<Order> orders;
         std::vector<vb01::Vector3> patrolPoints;
 				vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), leftVec = vb01::Vector3(1, 0, 0);
+				vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
         int health, cost, id, patrolPointId = 0, playerId;
         s64 orderLineDispTime = 0;
 				vb01::Model *model;
