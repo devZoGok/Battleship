@@ -47,14 +47,11 @@ namespace battleship{
         virtual void onAction(int, bool);
         virtual void onAnalog(int, float);
         virtual void onRawKeyPress(int);
+				virtual void onRawCharPress(vb01::u32);
         virtual void onRawMousePress(int);
         vb01Gui::Textbox* getOpenTextbox();
         vb01Gui::Listbox* getOpenListbox();
-        void attachBindKeys();
-        void attachKeyboardKeys();
-        void checkKeyboard(vb01Gui::Textbox*, Bind, bool);
         void updateControlsListbox(int);
-				bool canType(){return vb01::getTime() - lastTypeTime > 100;}
         
         std::vector<vb01Gui::Button*> buttons;
         std::vector<vb01Gui::Listbox*> listboxes;
@@ -62,47 +59,7 @@ namespace battleship{
         std::vector<vb01Gui::Textbox*> textboxes;
         std::vector<vb01Gui::Slider*> sliders;
         std::vector<Tooltip*> tooltips;
-				vb01::s64 lastTypeTime = 0;
-        bool leftMousePressed = false, shiftPressed = false;
-        const static int numKeys = 36;
-        const char keyChars[numKeys]{
-            '0',
-            '1',
-            '2',
-            '3',
-            '4',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9',
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            'f',
-            'g',
-            'h',
-            'i',
-            'j',
-            'k',
-            'l',
-            'm',
-            'n',
-            'o',
-            'p',
-            'q',
-            'r',
-            's',
-            't',
-            'u',
-            'v',
-            'w',
-            'x',
-            'y',
-            'z'
-        };
+        bool leftMousePressed = false, backspacePressed = false;
     protected:
     };
 }

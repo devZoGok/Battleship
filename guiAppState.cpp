@@ -44,8 +44,12 @@ namespace battleship{
         for (Slider *s : sliders)
             s->update();
 
-        for (Textbox *t : textboxes)
+        for (Textbox *t : textboxes){
             t->update();
+
+						if(t->isEnabled() && backspacePressed)
+								t->deleteCharacter();
+				}
 
         for (Tooltip *t : tooltips)
             t->update();
@@ -66,33 +70,19 @@ namespace battleship{
 				leftShift->trigger = GLFW_KEY_LEFT_SHIFT;
 				leftShift->action = true;
 
+				Mapping *deleteCharacter = new Mapping;
+				deleteCharacter->bind = Bind::DELETE_CHAR;
+				deleteCharacter->type = Mapping::KEYBOARD;
+				deleteCharacter->trigger = GLFW_KEY_BACKSPACE;
+				deleteCharacter->action = true;
+
 				mappings.push_back(leftClick);
 				mappings.push_back(leftShift);
-
-        attachKeyboardKeys();
+				mappings.push_back(deleteCharacter);
     }
 
     void GuiAppState::onDettached() {
         AbstractAppState::onDettached();
-    }
-    
-    void GuiAppState::attachKeyboardKeys() {
-				/*
-        int firstId = Bind::LAST_BIND + 1, lastId = firstId + numKeys;
-
-        for (int i = firstId; i <= lastId; i++){
-            int offset = i - firstId;
-            int trigger = (offset < 10 ? int(irr::KEY_KEY_0) + offset : int(irr::KEY_KEY_A) + offset - 10);
-
-						Mapping *mapping = new Mapping;
-						mapping->bind = i;
-						mapping->type = Mapping::KEYBOARD;
-						mapping->trigger = trigger;
-						mapping->action = true;
-
-            mappings.push_back(mapping);
-        } 
-				*/
     }
 
     void GuiAppState::onAction(int bind, bool isPressed) {
@@ -119,89 +109,9 @@ namespace battleship{
                     if (l->isOpen())
                         l->scrollDown();
                 break;
-        }
-
-        Textbox *t = getOpenTextbox();
-            if (t) 
-                switch((Bind)bind){
-										case Bind::SHIFT_CAPS:
-                        shiftPressed = !shiftPressed;
-                        //t->setIsCapitalLeters(isPressed);
-                        break;
-										case Bind::LEFT:
-                        //if(isPressed)t->moveCursor(true);
-                        break;
-										case Bind::RIGHT:
-                        //if(isPressed)t->moveCursor(false);
-                        break;
-										case Bind::CAPS_LOCK: 
-                        //if(isPressed)t->setIsCapitalLeters(!t->isCapitalLeters());
-                        break;
-										case Bind::SPACE:
-                        if(isPressed)t->type(' ');
-                        break;
-										case Bind::DELETE_CHAR:
-                        if(isPressed)t->deleteCharacter();
-                        break;
-										case Bind::PLUS:
-                        if(isPressed) t->type(shiftPressed ? '+' : '=');
-                        break;
-										case Bind::MINUS:
-                        if(isPressed) t->type(shiftPressed ? '_' : '-');
-                        break;
-										case Bind::DEVSTERISK:
-                        if(isPressed) t->type(shiftPressed ? '~' : '`');
-                        break;
-                    default:
-                        if(bind > Bind::LAST_BIND)checkKeyboard(t, (Bind)bind, isPressed);
-                }
-    }
-
-    void GuiAppState::checkKeyboard(Textbox *t, Bind bind, bool isPressed) {
-        int firstId = Bind::LAST_BIND + 1, lastId = firstId + numKeys;
-
-        for (int i = firstId; i <= lastId; i++) {
-            int offset = i - firstId;
-            char c = keyChars[offset];
-
-            if (bind == i && isPressed) {
-                if (shiftPressed) {
-                    switch(offset){
-                        case 1:
-                            c = '!';
-                            break;
-                        case 2:
-                            c = '@';
-                            break;
-                        case 3:
-                            c = '#';
-                            break;
-                        case 4:
-                            c = '$';
-                            break;
-                        case 5:
-                            c = '%';
-                            break;
-                        case 6:
-                            c = '^';
-                            break;
-                        case 7:
-                            c = '&';
-                            break;
-                        case 8:
-                            c = '*';
-                            break;
-                        case 9:
-                            c = '(';
-                            break;
-                        case 0:
-                            c = ')';
-                            break;
-                    }
-                }
-
-                t->type(c);
-            }
+						case Bind::DELETE_CHAR:
+								backspacePressed = isPressed;
+								break;
         }
     }
 
@@ -228,123 +138,34 @@ namespace battleship{
     }
     
     void GuiAppState::onRawKeyPress(int ch){
-				Button *button = nullptr;
-				
 				for(Button *b : buttons)
 						if(b->getTrigger() == ch){
-								button = b;
+								b->onClick();
 								break;
 						}
-				
-				if(button)
-						button->onClick();
-				
-				Textbox *t = nullptr;
-				
-				for(int i = 0; i < textboxes.size() && !t; i++)
-					if(textboxes[i]->isEnabled())
-						t = textboxes[i];
-				
-				if(t && canType()){
-					switch(ch){
-						case '/':
-							if(shiftPressed)ch = '?';
-							break;
-						case '.':
-							if(shiftPressed)ch = '>';
-							break;
-						case ',':
-							if(shiftPressed)ch = '<';
-							break;
-						case ';':
-							if(shiftPressed)ch = ':';
-							break;
-						case 39:
-							if(shiftPressed)ch = '"';
-							break;
-						case '-':
-							if(shiftPressed)ch = '_';
-							break;
-						case '=':
-							if(shiftPressed)ch = '+';
-							break;
-						case 92:
-							if(shiftPressed)ch = '|';
-							break;
-						case '`':
-							if(shiftPressed)ch = '~';
-							break;
-						case '[':
-							if(shiftPressed)ch = '{';
-							break;
-						case ']':
-							if(shiftPressed)ch = '}';
-							break;
-						case '1':
-							if(shiftPressed)ch = '!';
-							break;
-						case '2':
-							if(shiftPressed)ch = '@';
-							break;
-						case '3':
-							if(shiftPressed)ch = '#';
-							break;
-						case '4':
-							if(shiftPressed)ch = '$';
-							break;
-						case '5':
-							if(shiftPressed)ch = '%';
-							break;
-						case '6':
-							if(shiftPressed)ch = '^';
-							break;
-						case '7':
-							if(shiftPressed)ch = '&';
-							break;
-						case '8':
-							if(shiftPressed)ch = '*';
-							break;
-						case '9':
-							if(shiftPressed)ch = '(';
-							break;
-						case '0':
-							if(shiftPressed)ch = ')';
-							break;
-					}
-				
-					if(ch != GLFW_KEY_BACKSPACE)
-						t->type(ch, shiftPressed);
-					else 
-						t->deleteCharacter();
-				
-					lastTypeTime = getTime();
-				}
     }
+
+		void GuiAppState::onRawCharPress(u32 codepoint){
+				Textbox *t = getOpenTextbox();
+
+				if(t)
+					t->type(codepoint);
+		}
     
     void GuiAppState::onRawMousePress(int trigger){
         updateControlsListbox(trigger);
     }
     
     Textbox* GuiAppState::getOpenTextbox() {
-        Textbox* t = nullptr;
         for (int i = 0; i < textboxes.size(); i++)
             if (textboxes[i]->isEnabled())
-                t = textboxes[i];
-        if (t)
-            return t;
-        else
-            return nullptr;
+                return textboxes[i];
     }
 
     Listbox* GuiAppState::getOpenListbox() {
-        Listbox *l = nullptr;
         for (int i = 0; i < listboxes.size(); i++)
             if (listboxes[i]->isOpen())
-                l = listboxes[i];
-        if (l)
-            return l;
-        else
-            return nullptr;
+								return listboxes[i];
     }
 
     void GuiAppState::onAnalog(int bind, float strength) {}
