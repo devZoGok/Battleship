@@ -96,7 +96,7 @@ namespace battleship{
         string font = PATH + "Fonts/batang.ttf";
         Slider *mouseSensitivitySlider = new Slider(Vector2(pos.x, pos.y), Vector2(300, 10), .1, 3.);
         Textbox *mouseSensitivityTextbox = new Textbox(Vector2(pos.x + 320, pos.y - 10), Vector2(100, 20), font);
-        Checkbox *reverseMouseCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50));
+        Checkbox *reverseMouseCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50), font);
 
 				/*
         gm->attachBitmapText(new BitmapText("MouseSensitivity", vector2d<s32>(gm->getWidth() / 3 - 90, gm->getHeight() / 4 - 5), font));
@@ -129,11 +129,11 @@ namespace battleship{
         Vector2 pos = Vector2(gm->getWidth() / 3, gm->getHeight() / 8);
         Listbox *resolutionsListbox = new Listbox(Vector2(pos.x, pos.y), Vector2(100, 20), lines, 5, font);
 
-        Checkbox *fullscreenCheckbox = new Checkbox(Vector2(pos.x, pos.y + 30));
-        Checkbox *vsyncCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50));
-        Checkbox *normalMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 70));
-        Checkbox *parallaxMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 90));
-        Checkbox *specularMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 110));
+        Checkbox *fullscreenCheckbox = new Checkbox(Vector2(pos.x, pos.y + 30), font);
+        Checkbox *vsyncCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50), font);
+        Checkbox *normalMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 70), font);
+        Checkbox *parallaxMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 90), font);
+        Checkbox *specularMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 110), font);
 
 				/*
         gm->attachBitmapText(new BitmapText("Fullscreen", vector2d<s32>(pos.X + 20, pos.Y + 30), font));
