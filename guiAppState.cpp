@@ -44,6 +44,11 @@ namespace battleship{
         for (Slider *s : sliders)
             s->update();
 
+				if(currentSlider){
+						float percentage = (mousePos.x - currentSlider->getPos().x) / currentSlider->getSize().x;
+						currentSlider->setValue(percentage * currentSlider->getMaxValue());
+				}
+
         for (Textbox *t : textboxes){
             t->update();
 
@@ -57,6 +62,12 @@ namespace battleship{
 
     void GuiAppState::onAttached() {
         AbstractAppState::onAttached();
+
+				Mapping *drag = new Mapping;
+				drag->bind = Bind::DRAG;
+				drag->type = Mapping::MOUSE_KEY;
+				drag->trigger = 0;
+				drag->action = false;
 
 				Mapping *leftClick = new Mapping;
 				leftClick->bind = Bind::LEFT_CLICK;
@@ -76,6 +87,7 @@ namespace battleship{
 				deleteCharacter->trigger = GLFW_KEY_BACKSPACE;
 				deleteCharacter->action = true;
 
+				mappings.push_back(drag);
 				mappings.push_back(leftClick);
 				mappings.push_back(leftShift);
 				mappings.push_back(deleteCharacter);
@@ -88,6 +100,8 @@ namespace battleship{
     void GuiAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
 						case Bind::LEFT_CLICK:
+								currentSlider = nullptr;
+
                 if(isPressed)
                     for (int i = 0; i < buttons.size(); i++) {
 												Vector2 mousePos = getCursorPos();
@@ -95,8 +109,15 @@ namespace battleship{
                         bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
                         bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
 
-                        if (withinX && withinY) 
+                        if (withinX && withinY){
                             b->onClick();
+
+														for(Slider *s : sliders)
+															if(b == s->getMovableSliderButton()){
+																	currentSlider = s;
+																	break;
+															}
+												}
                     }
                 break;
 						case Bind::SCROLLING_UP:

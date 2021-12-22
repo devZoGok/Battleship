@@ -59,6 +59,7 @@ namespace battleship{
         std::vector<vb01Gui::Textbox*> textboxes;
         std::vector<vb01Gui::Slider*> sliders;
         std::vector<Tooltip*> tooltips;
+				vb01Gui::Slider *currentSlider;
         bool leftMousePressed = false, backspacePressed = false;
     protected:
     };
