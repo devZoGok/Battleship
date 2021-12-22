@@ -63,12 +63,6 @@ namespace battleship{
     void GuiAppState::onAttached() {
         AbstractAppState::onAttached();
 
-				Mapping *drag = new Mapping;
-				drag->bind = Bind::DRAG;
-				drag->type = Mapping::MOUSE_KEY;
-				drag->trigger = 0;
-				drag->action = false;
-
 				Mapping *leftClick = new Mapping;
 				leftClick->bind = Bind::LEFT_CLICK;
 				leftClick->type = Mapping::MOUSE_KEY;
@@ -87,7 +81,6 @@ namespace battleship{
 				deleteCharacter->trigger = GLFW_KEY_BACKSPACE;
 				deleteCharacter->action = true;
 
-				mappings.push_back(drag);
 				mappings.push_back(leftClick);
 				mappings.push_back(leftShift);
 				mappings.push_back(deleteCharacter);
@@ -102,23 +95,46 @@ namespace battleship{
 						case Bind::LEFT_CLICK:
 								currentSlider = nullptr;
 
-                if(isPressed)
-                    for (int i = 0; i < buttons.size(); i++) {
-												Vector2 mousePos = getCursorPos();
-                        Button *b = buttons[i];
-                        bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
-                        bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
+                if(isPressed){
+									Textbox *pastTextbox = currentTextbox;
+									bool textboxClicked = false;
 
-                        if (withinX && withinY){
-                            b->onClick();
+                  for (int i = 0; i < buttons.size(); i++) {
+											Vector2 mousePos = getCursorPos();
+                      Button *b = buttons[i];
+                      bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
+                      bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
 
-														for(Slider *s : sliders)
-															if(b == s->getMovableSliderButton()){
-																	currentSlider = s;
+                      if (withinX && withinY){
+                          b->onClick();
+
+													for(Slider *s : sliders)
+														if(b == s->getMovableSliderButton()){
+																currentSlider = s;
+																break;
+														}
+
+													for(Textbox *t : textboxes)
+															if(b == t->getTextboxButton()){
+																	currentTextbox = t;
+																	textboxClicked = true;
+
+																	if(pastTextbox && currentTextbox != pastTextbox)
+																			pastTextbox->disable();
+																	else{
+																			currentTextbox = (t->isEnabled() ? t : nullptr);
+																	}
+
 																	break;
 															}
-												}
-                    }
+											}
+                  }
+
+									if(!textboxClicked && currentTextbox){
+											currentTextbox->disable();
+											currentTextbox = nullptr;
+									}
+								}
                 break;
 						case Bind::SCROLLING_UP:
                 for (Listbox *l : listboxes) 
@@ -167,10 +183,8 @@ namespace battleship{
     }
 
 		void GuiAppState::onRawCharPress(u32 codepoint){
-				Textbox *t = getOpenTextbox();
-
-				if(t)
-					t->type(codepoint);
+				if(currentTextbox)
+					currentTextbox->type(codepoint);
 		}
     
     void GuiAppState::onRawMousePress(int trigger){
