@@ -38,6 +38,9 @@ namespace battleship{
         for (Listbox *l : listboxes)
             l->update();
 
+				if(currentListbox && (currentListbox->getScrollingButton()->getPos().x < mousePos.x && mousePos.x < currentListbox->getPos().x + currentListbox->getSize().x))
+						currentListbox->scrollToHeight(mousePos.y);
+
         for (Checkbox *c : checkboxes)
             c->update();
 
@@ -81,9 +84,23 @@ namespace battleship{
 				deleteCharacter->trigger = GLFW_KEY_BACKSPACE;
 				deleteCharacter->action = true;
 
+				Mapping *up = new Mapping;
+				up->bind = Bind::SCROLLING_UP;
+				up->type = Mapping::KEYBOARD;
+				up->trigger = GLFW_KEY_W;
+				up->action = true;
+
+				Mapping *down = new Mapping;
+				down->bind = Bind::SCROLLING_DOWN;
+				down->type = Mapping::KEYBOARD;
+				down->trigger = GLFW_KEY_S;
+				down->action = true;
+
 				mappings.push_back(leftClick);
 				mappings.push_back(leftShift);
 				mappings.push_back(deleteCharacter);
+				mappings.push_back(up);
+				mappings.push_back(down);
     }
 
     void GuiAppState::onDettached() {
@@ -94,6 +111,7 @@ namespace battleship{
         switch((Bind)bind){
 						case Bind::LEFT_CLICK:
 								currentSlider = nullptr;
+								currentListbox = nullptr;
 
                 if(isPressed){
 									Textbox *pastTextbox = currentTextbox;
@@ -105,8 +123,15 @@ namespace battleship{
                       bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
                       bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
 
-                      if (withinX && withinY){
+                      if (b->isActive() && withinX && withinY){
                           b->onClick();
+
+													for(Listbox *l : listboxes){
+															if(b == l->getListboxButton() || b == l->getScrollingButton()){
+																	currentListbox = l;
+																	break;
+															}
+													}
 
 													for(Slider *s : sliders)
 														if(b == s->getMovableSliderButton()){
@@ -136,16 +161,16 @@ namespace battleship{
 									}
 								}
                 break;
-						case Bind::SCROLLING_UP:
-                for (Listbox *l : listboxes) 
-                    if (l->isOpen())
-                        l->scrollUp();
+						case Bind::SCROLLING_UP:{
+								Listbox *l = getOpenListbox();
+								if(l) l->scrollUp();
                 break;
-						case Bind::SCROLLING_DOWN: 
-                for (Listbox *l : listboxes) 
-                    if (l->isOpen())
-                        l->scrollDown();
+						}
+						case Bind::SCROLLING_DOWN:{
+								Listbox *l = getOpenListbox();
+								if(l) l->scrollDown();
                 break;
+						}
 						case Bind::DELETE_CHAR:
 								backspacePressed = isPressed;
 								break;
@@ -156,7 +181,7 @@ namespace battleship{
         Listbox *controlsListbox=nullptr;
 
         for(Listbox *l : listboxes)
-            if(l->isOpen() /*&& l->isControlsListbox()*/)
+            if(l->isOpen())
                 controlsListbox=l;
 
         if(controlsListbox){
@@ -188,7 +213,7 @@ namespace battleship{
 		}
     
     void GuiAppState::onRawMousePress(int trigger){
-        updateControlsListbox(trigger);
+        //updateControlsListbox(trigger);
     }
     
     Textbox* GuiAppState::getOpenTextbox() {
@@ -212,6 +237,7 @@ namespace battleship{
     void GuiAppState::addListbox(Listbox* l) {
         listboxes.push_back(l);
         buttons.push_back(l->getListboxButton());
+        buttons.push_back(l->getScrollingButton());
     }
 
     void GuiAppState::addCheckbox(Checkbox* c) {

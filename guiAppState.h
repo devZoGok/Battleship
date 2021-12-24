@@ -61,6 +61,7 @@ namespace battleship{
         std::vector<Tooltip*> tooltips;
 				vb01Gui::Slider *currentSlider = nullptr;
 				vb01Gui::Textbox *currentTextbox = nullptr;
+				vb01Gui::Listbox *currentListbox = nullptr;
         bool leftMousePressed = false, backspacePressed = false;
     protected:
     };
