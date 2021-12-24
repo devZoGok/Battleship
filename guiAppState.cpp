@@ -38,8 +38,13 @@ namespace battleship{
         for (Listbox *l : listboxes)
             l->update();
 
-				if(currentListbox && (currentListbox->getScrollingButton()->getPos().x < mousePos.x && mousePos.x < currentListbox->getPos().x + currentListbox->getSize().x))
+				if(currentListbox &&
+							 	leftMousePressed && (
+										currentListbox->getScrollingButton()->getPos().x < mousePos.x &&
+									 	mousePos.x < currentListbox->getPos().x + currentListbox->getSize().x))
+				{
 						currentListbox->scrollToHeight(mousePos.y);
+				}
 
         for (Checkbox *c : checkboxes)
             c->update();
@@ -110,12 +115,14 @@ namespace battleship{
     void GuiAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
 						case Bind::LEFT_CLICK:
+								leftMousePressed = isPressed;
 								currentSlider = nullptr;
-								currentListbox = nullptr;
 
                 if(isPressed){
 									Textbox *pastTextbox = currentTextbox;
+									Listbox *pastListbox = currentListbox;
 									bool textboxClicked = false;
+									bool listboxClicked = false;
 
                   for (int i = 0; i < buttons.size(); i++) {
 											Vector2 mousePos = getCursorPos();
@@ -129,6 +136,15 @@ namespace battleship{
 													for(Listbox *l : listboxes){
 															if(b == l->getListboxButton() || b == l->getScrollingButton()){
 																	currentListbox = l;
+																	listboxClicked = true;
+
+																	if(pastListbox && currentListbox != pastListbox){
+																			if(pastListbox->isCloseable())
+																				pastListbox->close();
+																	}
+																	else
+																			currentListbox = (l->isOpen() ? l : nullptr);
+
 																	break;
 															}
 													}
@@ -159,7 +175,13 @@ namespace battleship{
 											currentTextbox->disable();
 											currentTextbox = nullptr;
 									}
+
+									if(!listboxClicked && currentListbox && currentListbox->isCloseable()){
+											currentListbox->close();
+											currentListbox = nullptr;
+									}
 								}
+								
                 break;
 						case Bind::SCROLLING_UP:{
 								Listbox *l = getOpenListbox();
