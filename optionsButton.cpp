@@ -70,8 +70,7 @@ namespace battleship{
         readFile(PATH + "../options.cfg", lines);
 
 				GameManager *gm = GameManager::getSingleton();
-        Listbox *listbox = new Listbox(Vector2(gm->getWidth() / 4, gm->getHeight() / 10), Vector2(360, 20), lines, lines.size() < 5 ? lines.size() : 5, PATH + "Fonts/batang.ttf", Listbox::CONTROLS);
-        listbox->openUp();
+        Listbox *listbox = new Listbox(Vector2(gm->getWidth() / 4, gm->getHeight() / 10), Vector2(360, 20), lines, lines.size() < 5 ? lines.size() : 5, PATH + "Fonts/batang.ttf");
 
         state->addListbox(listbox);
         state->removeButton("Mouse");
@@ -120,7 +119,7 @@ namespace battleship{
 
         for (int i = 0; i < 10; i++) {
             string s;
-            s += i;
+            s += to_string(i);
             lines.push_back(s);
         }
 
@@ -164,6 +163,8 @@ namespace battleship{
         Vector2 pos(gm->getWidth() / 3, gm->getHeight() / 8);
         Slider *volumeSlider = new Slider(Vector2(pos.x, pos.y), Vector2(300, 10), 0., 2.);
         Textbox *volumeTextbox = new Textbox(Vector2(pos.x + 320, pos.y), Vector2(100, 20), PATH + "Fonts/batang.ttf");
+				volumeSlider->setTextbox(volumeTextbox);
+				volumeTextbox->setSlider(volumeSlider);
         state->addTextbox(volumeTextbox);
         state->addSlider(volumeSlider);
         state->removeButton("Controls");
