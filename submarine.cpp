@@ -12,7 +12,7 @@ namespace battleship{
     Submarine::Submarine(Player *player, Vector3 pos, int id) : Unit(player, pos, id) {}
 
     void Submarine::attack(Order order) {
-        float angle = dirVec.getAngleBetween(*(order.targetPos[0]) - pos);
+        float angle = dirVec.getAngleBetween(*(order.targets[0].pos) - pos);
 
         if(angle / PI * 180 > 50)
             Unit::move(order, range);

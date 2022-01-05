@@ -24,14 +24,17 @@ namespace battleship{
             if (orders.size() == 0) {
                 Order o;
                 o.type = Order::TYPE::MOVE;
-                o.targetPos.push_back(new Vector3(lp));
+								Order::Target t;
+								t.unit = false;
+								t.pos = new Vector3(lp);
+                o.targets.push_back(t);
                 setOrder(o);
             }
 
             if (!landing
                     &&aircraftCarrier
                     &&pos.getDistanceFrom(lp) <= unitData::destinationOffset[id]
-                    &&*orders[0].targetPos[0] == lp){
+                    &&*orders[0].targets[0].pos == lp){
                 float angle = dirVec.getAngleBetween(aircraftCarrier->getDirVec()), maxAngle = PI - anglePrecision[id] / 180 * PI;
 
                 if(!toTurnPoint && anglePrecision[id] / 180 * PI < angle && angle < maxAngle){
@@ -84,7 +87,7 @@ namespace battleship{
         Vector3 offsetDir = Quaternion(PI / 2, upVec) * destDir;
         Vector3 destDirPos = Quaternion(angle, upVec) * dirVec;
         Vector3 offsetDirPos = Quaternion(angle + PI / 2, upVec) * dirVec;
-        Vector3 hypVec = *orders[0].targetPos[0] - destDirPos;
+        Vector3 hypVec = *orders[0].targets[0].pos - destDirPos;
         float triAngle = hypVec.getAngleBetween(offsetDir);
         float distance = cos(triAngle) * hypVec.getLength();
         Vector3 destPoint = offsetDirPos + offsetDirPos.norm() * distance;

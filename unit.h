@@ -5,6 +5,7 @@
 #include <vector>
 #include <util.h>
 #include <quaternion.h>
+#include <lineRenderer.h>
 
 #include <SFML/Audio.hpp>
 
@@ -24,8 +25,10 @@ namespace battleship{
     
     struct Order {
         enum class TYPE {ATTACK, MOVE, PATROL, LAUNCH};
+				struct Target{bool unit; vb01::Vector3 *pos = nullptr;};
         TYPE type;
-        std::vector<vb01::Vector3*> targetPos;
+				vb01::LineRenderer::Line line;
+        std::vector<Target> targets;
     };
     
     enum class MoveDir {FORWARD, LEFT, RIGHT};
@@ -49,12 +52,12 @@ namespace battleship{
         float getCircleRadius();
 				vb01::Vector3 getCorner(int);
         std::vector<Projectile*> getProjectiles();
+        inline void addOrder(Order o){orders.push_back(o);}
         inline bool isSelected(){return selected;}
         inline bool isSelectable(){return selectable;}
         inline bool isDebuggable(){return debugging;}
         inline bool isWorking(){return working;}
         inline vb01::Vector2 getScreenPos(){return screenPos;}
-        inline void addOrder(Order o){orders.push_back(o);}
         inline vb01::Vector3 getPos() {return pos;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
         //inline ILightSceneNode* getLight() {return light;}

@@ -56,7 +56,7 @@ namespace battleship{
         void updateCameraPosition();
         void updateSelectionBox();
         void addPos();
-        void issueOrder(Order::TYPE, std::vector<vb01::Vector3*>, bool);
+        void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);
         void lookAround(bool);
 				void orientCamera(vb01::Vector3, double);
 

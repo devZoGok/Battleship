@@ -15,7 +15,7 @@ namespace battleship{
 
     void MissileJet::attack(Order order) {
         if(!onBoard && canFire() && missilesInstalled){
-            Vector3 target = *order.targetPos[0];
+            Vector3 target = *order.targets[0].pos;
             float distance=pos.getDistanceFrom(target);
 
             if(distance <= range){
@@ -25,7 +25,7 @@ namespace battleship{
                 for(Player *p : inGameState->getPlayers())
                     for(Unit *u : p->getUnits()){
                         bool jet = (u->getType() == UNIT_TYPE::MISSILE_JET || u->getType() == UNIT_TYPE::DEMO_JET);
-                        if((jet && type == AAM) && (!jet && type == AWM) && u->getPosPtr() == order.targetPos[0])
+                        if((jet && type == AAM) && (!jet && type == AWM) && u->getPosPtr() == order.targets[0].pos)
                             targetPtr = u->getPosPtr();
                     }
 								

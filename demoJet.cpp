@@ -14,7 +14,7 @@ namespace battleship{
     void DemoJet::attack(Order order){
         if(!onBoard){
             Unit::attack(order);
-            Vector3 target = *order.targetPos[0];
+            Vector3 target = *order.targets[0].pos;
             float angle = dirVec.getAngleBetween(target - pos);
             Vector3 axis = dirVec.cross(target - pos);
 

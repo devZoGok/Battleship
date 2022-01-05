@@ -168,7 +168,7 @@ namespace battleship{
     }
 
     void Vessel::attack(Order order) {
-        Vector3 target = *order.targetPos[0];
+        Vector3 target = *order.targets[0].pos;
         Unit::attack(order);
 
         for (Turret *t : turrets) {

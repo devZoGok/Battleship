@@ -434,12 +434,34 @@ namespace battleship{
             cam->setPosition(cam->getPosition() - forwVec * camPanSpeed);
     }
 
-    void ActiveGameState::issueOrder(Order::TYPE type, vector<Vector3*> pos, bool addOrder) {
+    void ActiveGameState::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool addOrder) {
         Order o;
         o.type = type;
-        o.targetPos = pos;
+        o.targets = targets;
 
-        for (Unit *u : selectedUnits) {
+				LineRenderer *lineRenderer = LineRenderer::getSingleton();
+				Vector3 color;
+
+      	switch(o.type){
+      	    case Order::TYPE::MOVE:
+								color = Vector3::VEC_J;
+      	        break;
+      	    case Order::TYPE::ATTACK:
+								color = Vector3::VEC_I;
+      	        break;
+      	    case Order::TYPE::PATROL:
+								color = Vector3::VEC_K;
+      	    case Order::TYPE::LAUNCH:
+								color = Vector3(1, 1, 0);
+      	        break;
+      	}
+
+        for (int i = 0; i < selectedUnits.size(); ++i) {
+						Unit *u = selectedUnits[i];
+						lineRenderer->addLine(u->getPos(), *targets[i].pos, color);
+						vector<LineRenderer::Line> lines = lineRenderer->getLines();
+						o.line = lines[lines.size() - 1];
+
             if (type != Order::TYPE::LAUNCH || (u->getId() == 4 || u->getId() == 5)) {
                 if (addOrder)
                     u->addOrder(o);
@@ -516,9 +538,20 @@ namespace battleship{
                 if (isPressed) {
 										clickPoint = getCursorPos();
 
-                    if (!selectedUnits.empty())
+                    if (!selectedUnits.empty()){
+											Vector3 *p = new Vector3;
+											*p = Vector3(10, 0, 10);
+
+											Order::Target t;
+											t.unit = false;
+											t.pos = p;
+
+											issueOrder(Order::TYPE::MOVE, vector<Order::Target>{t}, false);
+
                         addPos();
+										}
                 }
+
                 break;
 						case Bind::DESELECT:
                 if (isPressed) {

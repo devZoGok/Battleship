@@ -8,6 +8,8 @@
 #include <string>
 #include <chrono>
 
+#include <vector.h>
+
 namespace battleship{
     typedef unsigned char u8;
     typedef unsigned short u16;
@@ -23,6 +25,8 @@ namespace battleship{
     class GuiAppState;
     
     void makeTitlescreenButtons(GuiAppState*);
+		vb01::Vector2 spaceToScreen(vb01::Vector3);
+		vb01::Vector3 screenToSpace(vb01::Vector2);
 		/*
     bool isWithinRect(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
     bool isWithinCuboid(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);

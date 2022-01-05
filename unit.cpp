@@ -92,26 +92,10 @@ namespace battleship{
     }
 
     void Unit::update() {
-        if (orders.size() > 0){
-            if(selected && canDisplayOrderLine()){
-                int r = 0, g = 0, b = 0;
-
-                switch(orders[0].type){
-                    case Order::TYPE::MOVE:
-                        g = 255;
-                        break;
-                    case Order::TYPE::ATTACK:
-                        r = 255;
-                        break;
-                    case Order::TYPE::PATROL:
-                        b = 255;
-                    case Order::TYPE::LAUNCH:
-                        r = 255, g = 255;
-                        break;
-                }
-
-								//GameManager::getSingleton()->getDevice()->getVideoDriver()->draw3DLine(pos,*(orders[0].targetPos[0]),SColor(255,r,g,b));
-            }
+        if (!orders.empty()){
+						LineRenderer *lineRenderer = LineRenderer::getSingleton();
+						lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
+						lineRenderer->changeLineField(orders[0].line.id, pos, LineRenderer::START);
 
             while (patrolPoints.size() > 0 && orders[0].type != Order::TYPE::PATROL) {
                 patrolPoints.pop_back();
@@ -125,37 +109,12 @@ namespace battleship{
             blowUp();
     }
 
-    void Unit::updateScreenCoordinates() {
-			Vector3 rotAxis = rot.getAxis();
-
-			if(rotAxis == Vector3::VEC_ZERO)
-				rotAxis = Vector3::VEC_I;
-
-			mat4 model = mat4(1.);
-			model = translate(model, vec3(pos.x, pos.y, pos.z));
-			model = rotate(model, rot.getAngle(), vec3(rotAxis.x, rotAxis.y, rotAxis.z));
-			
-			Root *root = Root::getSingleton();
-			Camera *cam = root->getCamera();
-			Vector3 dir = cam->getDirection(), up = cam->getUp();
-			Vector3 camPos = cam->getPosition();
-			mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
-			
-			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
-			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
-
-			vec4 ndcPos = proj * view * model * vec4(0, 0, 0, 1);
-			ndcPos.x /= ndcPos.w;
-			ndcPos.y /= ndcPos.w;
-			screenPos = Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
-    }
-
     void Unit::blowUp(){
         working = false;
     }
 
     void Unit::updateUnitGUIInfo() {
-        updateScreenCoordinates();
+				screenPos = spaceToScreen(pos);
 
         if (selected) {
             displayUnitStats();
@@ -228,15 +187,15 @@ namespace battleship{
     }
 
     void Unit::setOrder(Order order) {
-        while (orders.size() > 0)
-            orders.pop_back();
+        while (!orders.empty())
+						removeOrder(0);
 
         addOrder(order);
         orderLineDispTime = getTime();
     }
 
     void Unit::attack(Order order) {
-        Vector3 target = *order.targetPos[0];
+        Vector3 target = *order.targets[0].pos;
 
         if (pos.getDistanceFrom(target) >= range)
             move(order, range);
@@ -244,12 +203,12 @@ namespace battleship{
 
            for(Player *p : inGameState->getPlayers())
                for(Unit *u : p->getUnits())
-                   if(u->getPosPtr()==order.targetPos[0]){}
+                   if(u->getPosPtr() == order.targets[0].pos){}
     }
 
     void Unit::move(Order order, float destOffset) {
         float movementAmmount, radius = getCircleRadius(), angle = 0.;
-        Vector3 dest = *order.targetPos[0];
+        Vector3 dest = *order.targets[0].pos;
         dest.y = pos.y;
         Vector3 center;
 
@@ -307,12 +266,10 @@ namespace battleship{
         model->setPosition(pos);
     }
 
-    void Unit::turn(float angle) {// rad
-				/*
+    void Unit::turn(float angle) {
         Quaternion rotQuat = Quaternion(PI / 180 * angle, Vector3(0, 1, 0));
-        node->setOrientation(Vector3(node->getOrientation().x, node->getRotation().Y + angle, 0));
-        dirVec = rotQuat*dirVec, leftVec = rotQuat*leftVec;
-				*/
+        model->setOrientation(rotQuat * model->getOrientation());
+        dirVec = rotQuat * dirVec, leftVec = rotQuat * leftVec;
     }
 
     void Unit::halt() {
@@ -367,18 +324,11 @@ namespace battleship{
     }
     
     void Unit::removeOrder(int id) {
-        for (Vector3 *v : orders[id].targetPos) {
-            bool isUnitPos = false;
-            InGameAppState *state = (InGameAppState*) GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE);
+				LineRenderer::getSingleton()->removeLine(orders[id].line.id);
 
-            for (Player *p : state->getPlayers())
-                for (Unit *u : p->getUnits())
-                    if (v == u->getPosPtr())
-                        isUnitPos = true;
-
-            if(!isUnitPos)    
-                delete v;
-        }
+				for(Order::Target t : orders[id].targets)
+						if(t.unit)
+								delete t.pos;
 
         orders.erase(orders.begin() + id);
     }

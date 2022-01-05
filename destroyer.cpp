@@ -30,13 +30,13 @@ namespace battleship{
     }
 
     void Destroyer::attack(Order order){
-        Vector3 t = *order.targetPos[0];
+        Vector3 t = *order.targets[0].pos;
         bool sub=false;
         InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
         for(Player *p : inGameState->getPlayers())
             for(Unit *u : p->getUnits())
-                if(u->getType() == UNIT_TYPE::SUBMARINE&&order.targetPos[0] == u->getPosPtr())
+                if(u->getType() == UNIT_TYPE::SUBMARINE&&order.targets[0].pos == u->getPosPtr())
                     sub = true;
 
         if(sub)

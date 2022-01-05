@@ -15,10 +15,10 @@ namespace battleship{
 
     void Cruiser::launch(Order order) {
         if (guidedMissiles > 0) {
-            float angle = order.targetPos[0]->getAngleBetween(dirVec);
+            float angle = order.targets[0].pos->getAngleBetween(dirVec);
             Quaternion rotQuat = Quaternion(dirVec.x < 0 ? angle : -angle, Vector3(0, 1, 0));
             Vector3 basePos = leftVec * projectileData::pos[getId()][1][guidedMissiles - 1].x + upVec * projectileData::pos[getId()][1][guidedMissiles - 1].y - dirVec * projectileData::pos[getId()][1][guidedMissiles - 1].z;
-            addProjectile(new GuidedMissile(this, pos + basePos, *order.targetPos[0], rotQuat * Vector3(0, 1, 0), rotQuat * Vector3(1, 0, 0), rotQuat * Vector3(0, 0, -1), getId(), 1, 0));
+            addProjectile(new GuidedMissile(this, pos + basePos, *order.targets[0].pos, rotQuat * Vector3(0, 1, 0), rotQuat * Vector3(1, 0, 0), rotQuat * Vector3(0, 0, -1), getId(), 1, 0));
             removeOrder(0);
                guidedMissiles--;
         }

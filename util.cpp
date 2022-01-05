@@ -1,8 +1,14 @@
 #include <cmath>
+
+#include <camera.h>
+#include <root.h>
 #include <vector.h>
 #include <util.h>
 
 #include <stateManager.h>
+
+#include <glm.hpp>
+#include <ext.hpp>
 
 #include "util.h"
 #include "gameManager.h"
@@ -10,6 +16,7 @@
 #include "inGameAppState.h"
 
 using namespace std;
+using namespace glm;
 using namespace vb01;
 using namespace vb01Gui;
 
@@ -197,6 +204,43 @@ namespace battleship{
         state->addButton(optionsButton);
         state->addButton(exitButton);
     }
+
+		Vector2 spaceToScreen(Vector3 pos){
+			mat4 model = translate(mat4(1.f), vec3(pos.x, pos.y, pos.z));
+			
+			Root *root = Root::getSingleton();
+			Camera *cam = root->getCamera();
+			Vector3 dir = cam->getDirection(), up = cam->getUp();
+			Vector3 camPos = cam->getPosition();
+			mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
+			
+			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
+			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
+
+			vec4 ndcPos = proj * view * model * vec4(0, 0, 0, 1);
+			ndcPos.x /= ndcPos.w;
+			ndcPos.y /= ndcPos.w;
+			return Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
+		}
+
+		Vector3 screenToSpace(Vector2 pos){
+				/*
+			Root *root = Root::getSingleton();
+			Camera *cam = root->getCamera();
+			Vector3 dir = cam->getDirection(), up = cam->getUp();
+			Vector3 camPos = cam->getPosition();
+			mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
+			
+			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
+			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
+
+			vec4 ndcPos = proj * view * model * vec4(0, 0, 0, 1);
+			ndcPos.x /= ndcPos.w;
+			ndcPos.y /= ndcPos.w;
+			screenPos = Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
+			return screenPos;
+			*/
+		}
 
 		/*
     bool isWithinRect(vector3df c1,vector3df c2, vector3df p, vector3df dir){
