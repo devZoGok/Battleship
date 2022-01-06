@@ -105,21 +105,21 @@ namespace battleship{
 
         executeOrders();
 
+				screenPos = spaceToScreen(pos);
+				hpBackgroundNode->setVisible(selected);
+				hpForegroundNode->setVisible(selected);
+
+        if (selected) {
+            displayUnitStats();
+            drawCuboid();
+        }
+
         if (health <= 0) 
             blowUp();
     }
 
     void Unit::blowUp(){
         working = false;
-    }
-
-    void Unit::updateUnitGUIInfo() {
-				screenPos = spaceToScreen(pos);
-
-        if (selected) {
-            displayUnitStats();
-            drawCuboid();
-        }
     }
 
     void Unit::displayUnitStats() {

@@ -50,7 +50,6 @@ namespace battleship{
         ~Unit();
         virtual void update();
         virtual void blowUp();
-        virtual void updateUnitGUIInfo();
         virtual void debug();
         virtual void halt();
         void toggleSelection(bool);

@@ -191,6 +191,12 @@ namespace battleship{
 				rightClick->trigger = 1;
 				rightClick->action = true;
 
+				Mapping *deselect = new Mapping;
+				deselect->bind = Bind::DESELECT;
+				deselect->type = Mapping::MOUSE_KEY;
+				deselect->trigger = 1;
+				deselect->action = true;
+
 				Mapping *leftClick = new Mapping;
 				leftClick->bind = Bind::DRAG_BOX;
 				leftClick->type = Mapping::MOUSE_KEY;
@@ -199,6 +205,7 @@ namespace battleship{
 
 				mappings.push_back(rightClick);
 				mappings.push_back(leftClick);
+				mappings.push_back(deselect);
     }
 
     void ActiveGameState::onDettached() {
@@ -219,6 +226,13 @@ namespace battleship{
 					updateCameraPosition();
     }
 
+		void ActiveGameState::deselectUnits(){
+				while(!selectedUnits.empty()){
+						selectedUnits[0]->toggleSelection(false);
+						selectedUnits.pop_back();
+				}
+		}
+
     void ActiveGameState::renderUnits() {
 				vector<Unit*> units;
 
@@ -227,19 +241,7 @@ namespace battleship{
                 units.push_back(u);
 
         for (Unit *u : units) {
-            if (mainPlayer->isThisPlayersUnit(u)){
-            		u->updateUnitGUIInfo();
-                bool selected = false;
-
-                for(int i = 0; i < selectedUnits.size() && !selected; i++)
-                    if(u == selectedUnits[i])
-                        selected = true;
-
-                if(!u->isSelected() && selected)
-                    u->toggleSelection(true);
-                else if(!selected)
-                    u->toggleSelection(false);
-
+            if (u->getPlayer() == mainPlayer){
 								Vector3 selectionBoxOrigin = dragboxNode->getPosition();
 								Vector3 selectionBoxEnd = selectionBoxOrigin + dragbox->getSize();
             		Vector2 pos = u->getScreenPos();
@@ -248,33 +250,32 @@ namespace battleship{
                     pos.x >= selectionBoxOrigin.x && pos.x <= selectionBoxEnd.x &&
                     pos.y >= selectionBoxOrigin.y && pos.y <= selectionBoxEnd.y){
 
-                    if(!selected){
-                        if(!shiftPressed && u == mainPlayer->getUnit(0))
-                            while(!selectedUnits.empty())
-                                selectedUnits.pop_back();
+                    if(!u->isSelected()){
+                        if(!shiftPressed)
+														deselectUnits();
 
                         selectedUnits.push_back(u);
+                				u->toggleSelection(true);
                     }
                 }
+
+                //rendUn->getLight()->setVisible(true);
+                u->getNode()->setVisible(true);
             }
+						else{
+            		Vector3 rendUnPos = u->getPos();
+            		rendUnPos.y = 0;
+
+                for (int i = 0; i < units.size() && units[i] != u && units[i]->getPlayer() == mainPlayer; i++) {
+                    Vector3 compUnPos = units[i]->getPos();
+                    compUnPos.y = 0;
+                    float dist = compUnPos.getDistanceFrom(rendUnPos);
+                    u->getNode()->setVisible(dist <= units[i]->getLineOfSight() || isInLineOfSight(compUnPos, units[i]->getLineOfSight(), u) ? true : false);
+                }
+						}
 
             if (u->isDebuggable())
                 u->debug();
-
-            Vector3 rendUnPos = u->getPos();
-            rendUnPos.y = 0;
-
-            if (mainPlayer == u->getPlayer()) {
-                u->getNode()->setVisible(true);
-                //rendUn->getLight()->setVisible(true);
-            } else
-                for (int i = 0; i < units.size() && units[i] != u && units[i]->getPlayer() == mainPlayer; i++) {
-                    Unit *compUn = units[i];
-                    Vector3 compUnPos = compUn->getPos();
-                    compUnPos.y = 0;
-                    float dist = compUnPos.getDistanceFrom(rendUnPos);
-                    u->getNode()->setVisible(dist <= compUn->getLineOfSight() || isInLineOfSight(compUnPos, compUn->getLineOfSight(), u) ? true : false);
-                }
         }
     }
 
@@ -505,9 +506,9 @@ namespace battleship{
 
                 break;
 						case Bind::DESELECT:
-                if (isPressed)
-                    while(!selectedUnits.empty())
-                        selectedUnits.pop_back();
+                if (!isPressed)
+										deselectUnits();
+
                 break;
 						case Bind::TOGGLE_SUB:
                 if (isPressed) {

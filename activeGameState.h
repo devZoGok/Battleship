@@ -50,6 +50,7 @@ namespace battleship{
             ActiveGameState *activeState;
         };
 
+				void deselectUnits();
         void renderGUIBorders();
         void renderActionButtons();
         void renderUnits();
