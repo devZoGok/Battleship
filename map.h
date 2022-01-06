@@ -13,13 +13,10 @@ namespace battleship{
         void load();
         void unload();
         inline vb01::Vector2 getSize(){return size;}
+				inline vb01::Node* getWaterNode(){return waterNode;}
     private:
         vb01::Vector2 size;
-				/*
-        irr::scene::ILightSceneNode *sunLight;
-        irr::scene::IAnimatedMesh *waterMesh;
-        irr::scene::ISceneNode *waterNode;
-				*/
+				vb01::Node *waterNode = nullptr;
     };
 }
 

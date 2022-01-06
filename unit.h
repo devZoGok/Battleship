@@ -25,7 +25,16 @@ namespace battleship{
     
     struct Order {
         enum class TYPE {ATTACK, MOVE, PATROL, LAUNCH};
-				struct Target{bool unit; vb01::Vector3 *pos = nullptr;};
+				struct Target{
+						bool unit;
+						vb01::Vector3 *pos = nullptr;
+
+						Target(bool unit, vb01::Vector3 *pos){
+								this->unit = unit;
+								this->pos = pos;
+						}
+				};
+
         TYPE type;
 				vb01::LineRenderer::Line line;
         std::vector<Target> targets;

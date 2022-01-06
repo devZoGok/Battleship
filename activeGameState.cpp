@@ -3,6 +3,7 @@
 #include <model.h>
 #include <material.h>
 #include <quad.h>
+#include <ray.h>
 
 #include <stateManager.h>
 
@@ -475,56 +476,16 @@ namespace battleship{
     }
     
     void ActiveGameState::addPos() {
-				/*
-        Vector3 camPos = cam->getPosition();
-        Vector3 topLeft=cam->getViewFrustum()->getNearLeftUp();
-        Vector3 topRight=cam->getViewFrustum()->getNearRightUp();
-        Vector3 bottomLeft=cam->getViewFrustum()->getNearLeftDown();
+				Camera *cam = Root::getSingleton()->getCamera();
+				Vector3 camPos = cam->getPosition();
+				Vector3 endPos = screenToSpace(getCursorPos());
 
-				GameManager *gm = GameManager::getSingleton();
-        Vector2 mousePos = gm->getDevice()->getCursorControl()->getPosition();
-        Vector3 p = topLeft;
-        p+=(topRight-topLeft)*((float)mousePos.X / gm->getWidth());
-        p+=(bottomLeft-topLeft)*((float)mousePos.Y / gm->getHeight());
-        vector3df orderDir=(p-camPos).normalize();
-        
-        ISceneManager *smgr = gm->getDevice()->getSceneManager();
-        ISceneCollisionManager *collMan = smgr->getSceneCollisionManager();
-        line3d<float> ray;
-        ray.start = camPos;
-        ray.end = camPos + orderDir * map->getSize().X * 1000;
-        triangle3df t;
-        vector3df collPoint;
-        ISceneNode *collNode = collMan->getSceneNodeAndCollisionPointFromRay(ray, collPoint, t, 0, 0);
+				vector<Ray::CollisionResult> results;
+				Ray::retrieveCollisions(camPos, (endPos - camPos).norm(), map->getWaterNode(), results);
+				Ray::sortResults(results);
 
-        if (collNode) {
-            for (Player *p : players)
-                for (int i = 0; i < p->getNumberOfUnits(); i++)
-                    if (collNode == p->getUnit(i)->getNode()) {
-                        orderPos.push_back(p->getUnit(i)->getPosPtr());
-                    }
-        } 
-        else {
-            if(orderDir.Y>0)
-                orderDir.Y*=-1;
-
-            float angle = getAngleBetween(vector3df(0, -1, 0), orderDir);
-            float hyp = camPos.Y / cos(angle);
-            vector3df *v=new vector3df(orderDir * hyp + camPos);
-            (*v).Y=0;
-            orderPos.push_back(v);
-        }
-        if (!selectingPatrolPoints) {
-            Order::TYPE t = Order::TYPE::MOVE;
-
-            if (selectingGuidedMissileTarget)
-                t = Order::TYPE::LAUNCH;
-            else if (controlPressed)
-                t = Order::TYPE::ATTACK;
-
-            issueOrder(t, orderPos, false);
-        }
-				*/
+				if(!results.empty())
+						issueOrder(Order::TYPE::MOVE, vector<Order::Target>{Order::Target(false, new Vector3(results[0].pos))}, false);
     }
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
@@ -538,26 +499,15 @@ namespace battleship{
                 if (isPressed) {
 										clickPoint = getCursorPos();
 
-                    if (!selectedUnits.empty()){
-											Vector3 *p = new Vector3;
-											*p = Vector3(10, 0, 10);
-
-											Order::Target t;
-											t.unit = false;
-											t.pos = p;
-
-											issueOrder(Order::TYPE::MOVE, vector<Order::Target>{t}, false);
-
-                        addPos();
-										}
+                    if (!selectedUnits.empty())
+                      addPos();
                 }
 
                 break;
 						case Bind::DESELECT:
-                if (isPressed) {
+                if (isPressed)
                     while(!selectedUnits.empty())
                         selectedUnits.pop_back();
-                }
                 break;
 						case Bind::TOGGLE_SUB:
                 if (isPressed) {

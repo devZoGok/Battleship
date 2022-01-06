@@ -44,10 +44,10 @@ namespace battleship{
 				Texture *t = new Texture(fr, 1, false);
 				mat->addTexUniform("textures[0]", t, true);
 				quad->setMaterial(mat);
-				Node *water = new Node();
-				water->attachMesh(quad);
-				root->getRootNode()->attachChild(water);
-				water->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
+				waterNode = new Node();
+				waterNode->attachMesh(quad);
+				root->getRootNode()->attachChild(waterNode);
+				waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 
 				Camera *cam = root->getCamera();
 				cam->setPosition(Vector3(1, 1, 1) * 10);

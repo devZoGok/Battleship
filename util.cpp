@@ -206,8 +206,6 @@ namespace battleship{
     }
 
 		Vector2 spaceToScreen(Vector3 pos){
-			mat4 model = translate(mat4(1.f), vec3(pos.x, pos.y, pos.z));
-			
 			Root *root = Root::getSingleton();
 			Camera *cam = root->getCamera();
 			Vector3 dir = cam->getDirection(), up = cam->getUp();
@@ -217,14 +215,13 @@ namespace battleship{
 			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
 			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
 
-			vec4 ndcPos = proj * view * model * vec4(0, 0, 0, 1);
+			vec4 ndcPos = proj * view * vec4(pos.x, pos.y, pos.z, 1);
 			ndcPos.x /= ndcPos.w;
 			ndcPos.y /= ndcPos.w;
 			return Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
 		}
 
 		Vector3 screenToSpace(Vector2 pos){
-				/*
 			Root *root = Root::getSingleton();
 			Camera *cam = root->getCamera();
 			Vector3 dir = cam->getDirection(), up = cam->getUp();
@@ -234,12 +231,12 @@ namespace battleship{
 			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
 			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
 
-			vec4 ndcPos = proj * view * model * vec4(0, 0, 0, 1);
-			ndcPos.x /= ndcPos.w;
-			ndcPos.y /= ndcPos.w;
-			screenPos = Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
-			return screenPos;
-			*/
+			mat4 mat = proj * view;
+			float w = (mat * vec4(0, 0, 0, 1)).w;
+			vec4 ndcPos = vec4(pos.x * 2.0 / width - 1.0, pos.y * -(2.0 / height) + 1.0, -1, 1);
+			vec4 spacePos = inverse(mat) * ndcPos;
+			spacePos = vec4(spacePos.x / spacePos.w, spacePos.y / spacePos.w, spacePos.z / spacePos.w, spacePos.w);
+			return Vector3(spacePos.x, spacePos.y, spacePos.z);
 		}
 
 		/*
