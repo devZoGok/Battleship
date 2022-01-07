@@ -34,25 +34,26 @@ namespace battleship {
             void fire();
             void rotate(double);
             void debug();
-						vb01::Vector3* getInitDirs();
+						vb01::Vector3 getInitDir(int);
             inline vb01::Vector3 getDirVec(){return dirVec;}
             inline vb01::Vector3 getLeftVec(){return leftVec;}
             inline vb01::Vector3 getUpVec(){return upVec;}
-						inline vb01::Node* getNode(){return turret;}
             inline float getMaxAngle(){return maxAngle;}
             inline float getRotationSpeed(){return rotationSpeed;}
             inline float getAngle(){return angle;}
             inline bool canFire(){return vb01::getTime() - lastShotTime > rateOfFire;}
+						inline vb01::Node* getNode(){return node;}
         private:
             inline std::string getExplosionSfxPath(){return configData::PATH + "Sounds/Explosions/explosion0" + std::to_string(rand() % 4) + ".ogg";}
 
             vb01::Node *fxNode;
             vb01::ParticleEmitter *emitter;
-            Unit *vessel;
-            vb01::Node *turret = nullptr, *hull = nullptr;
-            std::vector<Mantlet> mantlets;
+						vb01::Node *node;
             vb01::Vector3 upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), initDir, leftVec = vb01::Vector3(1, 0, 0);
-            float angle = 0., barrelAngle = 0., maxAngle, rotationSpeed,maxBarrelAngle;
+						vb01::Quaternion initNodeRot;
+            Unit *vessel;
+            std::vector<Mantlet> mantlets;
+            float angle = 0., barrelAngle = 0., maxAngle, rotationSpeed, maxBarrelAngle;
             int rateOfFire, damage, unitId, turretId;
             s64 lastShotTime;
             sf::SoundBuffer *sfxBuffer;

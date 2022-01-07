@@ -77,12 +77,6 @@ namespace battleship{
 				leftClick->trigger = 0;
 				leftClick->action = true;
 
-				Mapping *leftShift = new Mapping;
-				leftShift->bind = Bind::SHIFT_CAPS;
-				leftShift->type = Mapping::KEYBOARD;
-				leftShift->trigger = GLFW_KEY_LEFT_SHIFT;
-				leftShift->action = true;
-
 				Mapping *deleteCharacter = new Mapping;
 				deleteCharacter->bind = Bind::DELETE_CHAR;
 				deleteCharacter->type = Mapping::KEYBOARD;
@@ -102,7 +96,6 @@ namespace battleship{
 				down->action = true;
 
 				mappings.push_back(leftClick);
-				mappings.push_back(leftShift);
 				mappings.push_back(deleteCharacter);
 				mappings.push_back(up);
 				mappings.push_back(down);

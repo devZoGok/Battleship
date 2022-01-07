@@ -92,6 +92,10 @@ namespace battleship{
     }
 
     void Unit::update() {
+				leftVec = model->getGlobalAxis(0);
+				upVec = model->getGlobalAxis(1);
+				dirVec = model->getGlobalAxis(2);
+
         if (!orders.empty()){
 						LineRenderer *lineRenderer = LineRenderer::getSingleton();
 						lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
@@ -195,15 +199,6 @@ namespace battleship{
     }
 
     void Unit::attack(Order order) {
-        Vector3 target = *order.targets[0].pos;
-
-        if (pos.getDistanceFrom(target) >= range)
-            move(order, range);
-           InGameAppState *inGameState=((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-
-           for(Player *p : inGameState->getPlayers())
-               for(Unit *u : p->getUnits())
-                   if(u->getPosPtr() == order.targets[0].pos){}
     }
 
     void Unit::move(Order order, float destOffset) {
@@ -233,7 +228,7 @@ namespace battleship{
             if (angle > anglePrecision[id]) {
                 float rotAngle = maxTurnAngle > angle ? angle : maxTurnAngle;
                 angle -= rotAngle;
-                turn(moveDir == MoveDir::RIGHT ? rotAngle : -rotAngle);
+                turn(moveDir == MoveDir::RIGHT ? -rotAngle : rotAngle);
             }
         }
 
@@ -269,7 +264,6 @@ namespace battleship{
     void Unit::turn(float angle) {
         Quaternion rotQuat = Quaternion(PI / 180 * angle, Vector3(0, 1, 0));
         model->setOrientation(rotQuat * model->getOrientation());
-        dirVec = rotQuat * dirVec, leftVec = rotQuat * leftVec;
     }
 
     void Unit::halt() {

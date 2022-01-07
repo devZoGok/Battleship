@@ -147,7 +147,7 @@ namespace battleship{
     }
 
     void ActiveGameState::onAttached() {
-				readFile(PATH + "../options.cfg", bindingsLines, configData::numBinds[AppStateType::IN_GAME_STATE]);
+				readFile(PATH + "../options.cfg", bindingsLines, configData::numConfBinds[AppStateType::IN_GAME_STATE], configData::numConfBinds[AppStateType::ACTIVE_STATE]);
 
         AbstractAppState::onAttached();
 
@@ -184,28 +184,6 @@ namespace battleship{
 
 					mappings.push_back(m);
 				}
-
-				Mapping *rightClick = new Mapping;
-				rightClick->bind = Bind::LOOK_AROUND;
-				rightClick->type = Mapping::MOUSE_KEY;
-				rightClick->trigger = 1;
-				rightClick->action = true;
-
-				Mapping *deselect = new Mapping;
-				deselect->bind = Bind::DESELECT;
-				deselect->type = Mapping::MOUSE_KEY;
-				deselect->trigger = 1;
-				deselect->action = true;
-
-				Mapping *leftClick = new Mapping;
-				leftClick->bind = Bind::DRAG_BOX;
-				leftClick->type = Mapping::MOUSE_KEY;
-				leftClick->trigger = 0;
-				leftClick->action = true;
-
-				mappings.push_back(rightClick);
-				mappings.push_back(leftClick);
-				mappings.push_back(deselect);
     }
 
     void ActiveGameState::onDettached() {
@@ -485,8 +463,14 @@ namespace battleship{
 				Ray::retrieveCollisions(camPos, (endPos - camPos).norm(), map->getWaterNode(), results);
 				Ray::sortResults(results);
 
-				if(!results.empty())
-						issueOrder(Order::TYPE::MOVE, vector<Order::Target>{Order::Target(false, new Vector3(results[0].pos))}, false);
+				if(!results.empty()){
+						Order::TYPE type = Order::TYPE::MOVE;
+
+						if(controlPressed)
+								type = type = Order::TYPE::ATTACK;
+
+						issueOrder(type, vector<Order::Target>{Order::Target(false, new Vector3(results[0].pos))}, false);
+				}
     }
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
@@ -549,7 +533,7 @@ namespace battleship{
                 controlPressed = isPressed;
                 break;
 						case Bind::LEFT_SHIFT:
-                shiftPressed=isPressed;
+                shiftPressed = isPressed;
                 break;
 						case Bind::SELECT_PATROL_POINTS: 
                 selectingPatrolPoints = isPressed;

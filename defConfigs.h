@@ -28,23 +28,17 @@ namespace battleship{
             Bind::LEFT,
             Bind::RIGHT,
             Bind::DELETE_CHAR,
-            Bind::CAPS_LOCK,
-            Bind::SHIFT_CAPS,
-            Bind::SPACE,
-            Bind::PLUS,
-            Bind::MINUS,
-            Bind::DEVSTERISK
         },
         {
 						Bind::TOGGLE_MAIN_MENU
         },
         {
-						Bind::HALT,
-            Bind::ZOOM_IN,
-            Bind::ZOOM_OUT,
             Bind::LOOK_AROUND,
             Bind::DRAG_BOX,
             Bind::DESELECT,
+						Bind::HALT,
+            Bind::ZOOM_IN,
+            Bind::ZOOM_OUT,
             Bind::LEFT_CONTROL,
             Bind::LEFT_SHIFT,
             Bind::SELECT_PATROL_POINTS,
@@ -83,12 +77,12 @@ namespace battleship{
             GLFW_KEY_ESCAPE
         },
         {
+            1, 
+            0, 
+            1, 
             GLFW_KEY_H, 
             3, 
             4, 
-            1, 
-            0, 
-            2, 
             GLFW_KEY_LEFT_CONTROL, 
             GLFW_KEY_LEFT_SHIFT, 
             GLFW_KEY_P, 
@@ -111,12 +105,12 @@ namespace battleship{
     const static bool isKey[numAppStates][numMaxBinds]{
         {0,0,0,1,1,1,1,1,1,1,1,1},
         {1},
-        {1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,1,1,1,1,1,1,1,1,1,1,1}
+        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,1,1,1,1,1,1,1,1,1,1,1}
     };
     const static bool isAnalog[numAppStates][numMaxBinds]{
         {0,0,0,0,0,0,0,0,0,0,0,0},
         {0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0}
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0}
     };
 		}
 }
