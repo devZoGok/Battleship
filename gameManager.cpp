@@ -28,8 +28,8 @@ namespace battleship{
     GameManager::~GameManager() {}
 
 		void GameManager::start(int width, int height) {
-				this->width = 800;
-				this->height = 600;
+				this->width = width;
+				this->height = height;
 
 				Root *root = Root::getSingleton();
 				root->start(width, height, "../../vb01/", "Battleship");

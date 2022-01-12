@@ -24,7 +24,7 @@ namespace battleship{
             if (orders.size() == 0) {
                 Order o;
                 o.type = Order::TYPE::MOVE;
-                o.targets.push_back(Order::Target(false, new Vector3(lp)));
+                o.targets.push_back(Order::Target(nullptr, new Vector3(lp)));
                 setOrder(o);
             }
 

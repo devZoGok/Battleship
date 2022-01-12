@@ -22,14 +22,17 @@ namespace vb01{
 
 namespace battleship{
     class Player;
+		class Unit;
     
     struct Order {
         enum class TYPE {ATTACK, MOVE, PATROL, LAUNCH};
 				struct Target{
-						bool unit;
+						Unit *unit = nullptr;
 						vb01::Vector3 *pos = nullptr;
 
-						Target(bool unit, vb01::Vector3 *pos){
+						Target(){}
+
+						Target(Unit *unit, vb01::Vector3 *pos){
 								this->unit = unit;
 								this->pos = pos;
 						}
@@ -86,7 +89,7 @@ namespace battleship{
     private:
         void updateScreenCoordinates();
         void displayUnitStats();
-        inline int getNextPatrolPointId() {return patrolPointId == patrolPoints.size() - 1 ? 0 : patrolPointId + 1;}
+        inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         //ILightSceneNode *light;
@@ -103,7 +106,6 @@ namespace battleship{
         unitData::UNIT_TYPE type;
 				vb01::Vector2 screenPos;
         std::vector<Order> orders;
-        std::vector<vb01::Vector3> patrolPoints;
 				vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), leftVec = vb01::Vector3(1, 0, 0);
 				vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
         int health, cost, id, patrolPointId = 0, playerId;

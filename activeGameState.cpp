@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <ctype.h>
 #include <stdlib.h>
+#include <map>
 
 #include "activeGameState.h"
 #include "inGameAppState.h"
@@ -414,15 +415,14 @@ namespace battleship{
             cam->setPosition(cam->getPosition() - forwVec * camPanSpeed);
     }
 
-    void ActiveGameState::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool addOrder) {
+    void ActiveGameState::issueOrder(Order::TYPE type, bool addOrder) {
         Order o;
         o.type = type;
         o.targets = targets;
 
-				LineRenderer *lineRenderer = LineRenderer::getSingleton();
 				Vector3 color;
 
-      	switch(o.type){
+      	switch(type){
       	    case Order::TYPE::MOVE:
 								color = Vector3::VEC_J;
       	        break;
@@ -431,10 +431,18 @@ namespace battleship{
       	        break;
       	    case Order::TYPE::PATROL:
 								color = Vector3::VEC_K;
+								break;
       	    case Order::TYPE::LAUNCH:
 								color = Vector3(1, 1, 0);
       	        break;
       	}
+
+				LineRenderer *lineRenderer = LineRenderer::getSingleton();
+				targets.push_back(Order::Target());
+
+				if(o.type == Order::TYPE::PATROL)
+					for(int i = targets.size() - 2; i >= 0; i--)
+							targets[i + 1] = targets[i];
 
         for (int i = 0; i < selectedUnits.size(); ++i) {
 						Unit *u = selectedUnits[i];
@@ -442,7 +450,13 @@ namespace battleship{
 						vector<LineRenderer::Line> lines = lineRenderer->getLines();
 						o.line = lines[lines.size() - 1];
 
+
             if (type != Order::TYPE::LAUNCH || (u->getId() == 4 || u->getId() == 5)) {
+								if(type == Order::TYPE::PATROL){
+										Vector3 p = u->getPos();
+										targets[0] = Order::Target(nullptr, new Vector3(p));
+								}
+
                 if (addOrder)
                     u->addOrder(o);
                 else
@@ -450,26 +464,34 @@ namespace battleship{
             }
         }
 
-        for (Vector3 *v : orderPos)
-            orderPos.pop_back();
+				targets.clear();
     }
     
-    void ActiveGameState::addPos() {
+    void ActiveGameState::addTarget() {
 				Camera *cam = Root::getSingleton()->getCamera();
 				Vector3 camPos = cam->getPosition();
 				Vector3 endPos = screenToSpace(getCursorPos());
 
 				vector<Ray::CollisionResult> results;
-				Ray::retrieveCollisions(camPos, (endPos - camPos).norm(), map->getWaterNode(), results);
+				Vector3 rayDir = (endPos - camPos).norm();
+				Ray::retrieveCollisions(camPos, rayDir, map->getWaterNode(), results);
+				std::map<Node*, Unit*> unitData;
+
+				/*
+        for (Player *p : players)
+            for (Unit *u : p->getUnits()){
+							Ray::retrieveCollisions(camPos, rayDir, u->getNode(), results);
+							unitData.emplace(u->getNode(), u);
+						}
+				*/
+
 				Ray::sortResults(results);
 
 				if(!results.empty()){
-						Order::TYPE type = Order::TYPE::MOVE;
-
-						if(controlPressed)
-								type = type = Order::TYPE::ATTACK;
-
-						issueOrder(type, vector<Order::Target>{Order::Target(false, new Vector3(results[0].pos))}, false);
+						vector<Node*> ancestors = results[0].mesh->getNode()->getAncestors();
+						Node *node = ancestors[ancestors.size() - 2];
+						std::map<Node*, Unit*>::iterator it = unitData.find(node);
+						targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : nullptr), new Vector3(results[0].pos)));
 				}
     }
     
@@ -484,8 +506,18 @@ namespace battleship{
                 if (isPressed) {
 										clickPoint = getCursorPos();
 
-                    if (!selectedUnits.empty())
-                      addPos();
+                    if (!selectedUnits.empty()){
+                    	addTarget();
+
+											if(!(targets.empty() || selectingPatrolPoints)){
+												Order::TYPE type = Order::TYPE::MOVE;
+
+												if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getSide() != mainPlayer->getSide()))
+														type = Order::TYPE::ATTACK;
+
+												issueOrder(type, shiftPressed);
+											}
+										}
                 }
 
                 break;
@@ -537,13 +569,10 @@ namespace battleship{
                 break;
 						case Bind::SELECT_PATROL_POINTS: 
                 selectingPatrolPoints = isPressed;
-                if (!isPressed && orderPos.size() > 0) {
-                    /*
-                    orderPos.push_back(vector3df(0, 0, 0));
-                    swap(orderPos[0], orderPos[orderPos.size() - 1]);
-                    issueOrder(Order::TYPE::PATROL, orderPos, false);
-                    */
-                }
+
+								if(!selectingPatrolPoints)
+										issueOrder(Order::TYPE::PATROL, shiftPressed);
+								
                 break;
 						case Bind::LAUNCH: 
                 selectingGuidedMissileTarget = isPressed;

@@ -56,8 +56,8 @@ namespace battleship{
         void renderUnits();
         void updateCameraPosition();
         void updateSelectionBox();
-        void addPos();
-        void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);
+        void addTarget();
+        void issueOrder(Order::TYPE, bool);
         void lookAround(bool);
 				void orientCamera(vb01::Vector3, double);
 
@@ -69,11 +69,11 @@ namespace battleship{
 				vb01::Node *dragboxNode = nullptr;
 				vb01::Vector2 clickPoint;
         std::vector<vb01::Vector2> unitScreenPosVec;
-        std::vector<vb01::Vector3*> orderPos;
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9], selectedUnits;
+				std::vector<Order::Target> targets;
         UnitActionButton *actionButtons[4]{nullptr, nullptr, nullptr, nullptr};
-        bool isSelectionBox = false, shiftPressed=false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false,lookingAround=false;
+        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false,lookingAround=false;
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
         int playerId, zooms = 0;
     };

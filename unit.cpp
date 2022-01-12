@@ -100,11 +100,6 @@ namespace battleship{
 						LineRenderer *lineRenderer = LineRenderer::getSingleton();
 						lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
 						lineRenderer->changeLineField(orders[0].line.id, pos, LineRenderer::START);
-
-            while (patrolPoints.size() > 0 && orders[0].type != Order::TYPE::PATROL) {
-                patrolPoints.pop_back();
-                patrolPointId = 0;
-            }
         }
 
         executeOrders();
@@ -203,7 +198,8 @@ namespace battleship{
 
     void Unit::move(Order order, float destOffset) {
         float movementAmmount, radius = getCircleRadius(), angle = 0.;
-        Vector3 dest = *order.targets[0].pos;
+				int targetId = (order.type == Order::TYPE::PATROL ? getNextPatrolPointId(order.targets.size()) : 0);
+        Vector3 dest = *order.targets[targetId].pos;
         dest.y = pos.y;
         Vector3 center;
 
@@ -244,9 +240,13 @@ namespace battleship{
 
         advance(movementAmmount);
 
-        if (pos.getDistanceFrom(dest) <= destOffset && orders[0].type == Order::TYPE::MOVE) {
+        if (pos.getDistanceFrom(dest) <= destOffset && orders[0].type != Order::TYPE::ATTACK) {
             moveDir = MoveDir::FORWARD;
-            removeOrder(0);
+
+						if(orders[0].type == Order::TYPE::MOVE)
+            	removeOrder(0);
+						else if(orders[0].type == Order::TYPE::PATROL)
+							patrolPointId = targetId;
         }
     }
 
@@ -269,6 +269,8 @@ namespace battleship{
     void Unit::halt() {
         while (orders.size() > 0)
             removeOrder(orders.size() - 1);
+
+				patrolPointId = 0;
     }
 
     float Unit::getCircleRadius() {
