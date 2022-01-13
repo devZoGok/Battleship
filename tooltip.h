@@ -11,7 +11,6 @@ namespace battleship{
         void update();
     private:
         vb01::Vector2 pos;
-        //BitmapText *text;
     };
 }
 

@@ -129,9 +129,7 @@ namespace battleship{
 
     }
 
-    InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
-        //setImageButton(new Image(icon, pos, size));
-    }
+    InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {}
 
     void InGameAppState::UnitCreationButton::onClick() {
     }
@@ -229,14 +227,6 @@ namespace battleship{
         if (map)
             map->update();
 
-        if (isMainMenuActive) {
-						GameManager *gm = GameManager::getSingleton();
-						/*
-            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
-            driver->draw2DRectangle(SColor(100, 0, 0, 0), rect<s32>(0, 0, gm->getWidth(), gm->getHeight()));
-						*/
-        }
-
         for (Player *p : players)
             if (p) {
                 p->update();
@@ -312,26 +302,6 @@ namespace battleship{
                 projectiles.erase(projectiles.begin()+i);
             }
         }
-
-        for(int i=0;i<fx.size();i++){
-            if(getTime()-fx[i].initTime>fx[i].time){
-								/*
-                IParticleSystemSceneNode *node=fx[i].node;
-
-                if(node){
-                    node->removeAllAffectors();
-                    node->setVisible(false);
-                }
-
-                if(fx[i].sfx){
-                    delete fx[i].sfx->getBuffer();
-                    delete fx[i].sfx;
-                }
-
-                fx.erase(fx.begin()+i);
-								*/
-            }
-        }
     }
 
     void InGameAppState::attachGui() {
@@ -340,14 +310,6 @@ namespace battleship{
         if (mainPlayer->getFaction() == 1)
             idOffset += 7;
 
-        /*
-        IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
-        bcb = new BattleshipCreationButton(gameManager, driver->getTexture(iconPath[idOffset]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 540), vector2d<s32>(100, 100), "battleships", true);
-        dcb = new DestroyerCreationButton(gameManager, driver->getTexture(iconPath[idOffset + 1]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 430), vector2d<s32>(100, 100), "destroyers", true);
-        crcb = new CruiserCreationButton(gameManager, driver->getTexture(iconPath[idOffset + 2]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 320), vector2d<s32>(100, 100), "cruisers", true);
-        ccb = new CarrierCreationButton(gameManager, driver->getTexture(iconPath[idOffset + 3]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 210), vector2d<s32>(100, 100), "carriers", true);
-        scb = new SubmarineCreationButton(gameManager, driver->getTexture(iconPath[idOffset + 4]), vector2d<s32>(gameManager->getWidth() - 100, gameManager->getHeight() - 100), vector2d<s32>(100, 100), "submarines", true);
-        */
         guiState->addButton(bcb);
         guiState->addButton(dcb);
         guiState->addButton(crcb);
@@ -370,7 +332,6 @@ namespace battleship{
             isMainMenuActive = true;
             gm->getStateManager()->dettachAppState(activeState);
 						
-            //detachGui();
             Vector2 pos = Vector2(100, 100);
             resumeButton = new ResumeButton(guiState, this, Vector2(pos.x, pos.y), Vector2(150, 50), "Resume", true);
             consoleButton = new ConsoleButton(guiState, this, Vector2(pos.x, pos.y + 60), Vector2(150, 50), "Console", true);
@@ -382,13 +343,11 @@ namespace battleship{
             guiState->addButton(optionsButton);
             guiState->addButton(mainMenuButton);
             guiState->addButton(exitButton);
-            //gameManager->getDevice()->getSceneManager()->getActiveCamera()->setVisible(false);
         } 
         else {
             isMainMenuActive = false;
             gm->getStateManager()->attachAppState(activeState);
 						
-            //attachGui();
             guiState->removeAllCheckboxes();
             guiState->removeAllListboxes();
             guiState->removeAllSliders();
@@ -399,7 +358,6 @@ namespace battleship{
             guiState->removeButton("Options");
             guiState->removeButton("Exit");
             guiState->removeButton("Resume");
-            //gameManager->getDevice()->getSceneManager()->getActiveCamera()->setVisible(true);
         }
     }
 

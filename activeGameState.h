@@ -25,34 +25,7 @@ namespace battleship{
         inline std::vector<Unit*>& getSelectedUnits(){return selectedUnits;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
-        class UnitButton : public vb01Gui::Button{
-        public:
-            UnitButton(ActiveGameState*, vb01::Vector2, vb01::Vector2, std::string, int, int);
-            ~UnitButton(){}
-            virtual void onClick();
-            virtual void onMouseOver();
-            virtual void onMouseAway();
-        private:
-            ActiveGameState *activeState;
-            int faction, unitId;
-        };
-
-        class UnitActionButton : public vb01Gui::Button{
-        public:
-            UnitActionButton(unitData::UNIT_TYPE, vb01::Vector2, vb01::Vector2, std::string, std::string);
-            ~UnitActionButton(){}
-            virtual void onClick();
-            virtual void onMouseOver();
-            virtual void onMouseAway();
-        protected:
-            unitData::UNIT_TYPE type;
-            std::vector<Unit*> units;
-            ActiveGameState *activeState;
-        };
-
 				void deselectUnits();
-        void renderGUIBorders();
-        void renderActionButtons();
         void renderUnits();
         void updateCameraPosition();
         void updateSelectionBox();
@@ -72,7 +45,6 @@ namespace battleship{
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9], selectedUnits;
 				std::vector<Order::Target> targets;
-        UnitActionButton *actionButtons[4]{nullptr, nullptr, nullptr, nullptr};
         bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false,lookingAround=false;
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
         int playerId, zooms = 0;

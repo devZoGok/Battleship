@@ -14,7 +14,6 @@ namespace battleship{
     class Jet : public Unit {
     public:
         Jet(Player*, vb01::Vector3, int, bool);
-           //virtual void attack(Order);
         virtual void update();
         inline void setJetId(int i){this->jetId = i;}
         inline void setAircraftCarrier(AircraftCarrier *a){aircraftCarrier = a;}

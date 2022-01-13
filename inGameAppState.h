@@ -15,7 +15,6 @@
 namespace battleship{
     struct Fx {
         s64 initTime, time;
-        //irr::scene::IParticleSystemSceneNode *node=nullptr;
         sf::Sound *sfx = nullptr;
     };
     

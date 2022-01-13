@@ -53,32 +53,4 @@ namespace battleship{
         missiles--;
         lastFireTime=getTime();
     }
-    
-    void MissileJet::installMissiles(bool aam){
-				/*
-        if(!missilesInstalled){
-            missiles=2;
-						GameManager *gm = GameManager::getSingleton();
-            ISceneManager *smgr = gm->getDevice()->getSceneManager();
-            IVideoDriver *driver = gm->getDevice()->getVideoDriver();
-
-            for(int i=0;i<missiles;i++){
-                IAnimatedMesh *missileMesh=smgr->getMesh(projectileData::meshPath[id][i]);
-                missileNodes[i]=smgr->addAnimatedMeshSceneNode(missileMesh);
-                ITexture *diffuseTexture = driver->getTexture(projectileData::diffuseMapTextPath[id][i]);
-
-                if (!diffuseTexture)
-                    diffuseTexture = driver->getTexture(DEFAULT_TEXTURE);
-
-                missileNodes[i]->setMaterialTexture(0, diffuseTexture);
-                missileNodes[i]->setMaterialFlag(EMF_LIGHTING, false);
-                missileNodes[i]->setPosition(projectileData::pos[id][aam][i]);
-                missileNodes[i]->setParent(node);
-            }
-            
-            type=(MissileType)aam;
-            missilesInstalled=true;
-        }
-				*/
-    }
 }

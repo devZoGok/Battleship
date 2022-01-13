@@ -228,7 +228,6 @@ namespace battleship{
 		}
     
     void GuiAppState::onRawMousePress(int trigger){
-        //updateControlsListbox(trigger);
     }
     
     Textbox* GuiAppState::getOpenTextbox() {
@@ -278,10 +277,6 @@ namespace battleship{
     void GuiAppState::removeButton(Button *b) {
         for (int i = 0; i < buttons.size(); i++) {
             if (b == buttons[i]) {
-								/*
-                if (b->isImageButton())
-                    GameManager::getSingleton()->detachImage(b->getImage());
-										*/
                 delete b;
                 buttons.erase(buttons.begin() + i);
             }
@@ -291,13 +286,7 @@ namespace battleship{
     void GuiAppState::removeButton(string name) {
         for (int i = 0; i < buttons.size(); i++) {
             if (name == buttons[i]->getName() && buttons[i]->isSeparate()) {
-								/*
-                if (buttons[i]->isImageButton())
-                    GameManager::getSingleton()->detachImage(buttons[i]->getImage());
-										*/
-
                 delete buttons[i];
-
                 buttons.erase(buttons.begin() + i);
             }
         }

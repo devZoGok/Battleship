@@ -19,9 +19,6 @@ namespace battleship{
       static void executeAddUnit(int, int);
 
 			static void validateDebugUnitsArguments();
-      static void debugUnits();
-
-      static void printConsoleMessage(std::string);
     };
 }
 

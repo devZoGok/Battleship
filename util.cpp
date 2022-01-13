@@ -90,7 +90,6 @@ namespace battleship{
                         state->removeAllListboxes();
                         state->removeAllSliders();
                         state->removeAllTextboxes();
-												//GameManager::getSingleton()->detachAllBitmapTexts();
                         makeTitlescreenButtons(state);
                         state->removeButton("Play");
                         state->removeButton("Back");
@@ -106,12 +105,7 @@ namespace battleship{
                 difficulties.push_back("Hard");
                 factions.push_back("0");
                 factions.push_back("1");
-								/*
-                gm->attachBitmapText(new BitmapText("Difficulty", vector2d<s32>(pos.X, pos.Y - 20), font));
-                gm->attachBitmapText(new BitmapText("Faction", vector2d<s32>(pos.X + 110, pos.Y - 20), font));
-                gm->attachBitmapText(new BitmapText("Player", vector2d<s32>(pos.X - 40, pos.Y), font));
-                gm->attachBitmapText(new BitmapText("CPU", vector2d<s32>(pos.X - 20, pos.Y + 30), font));
-								*/
+
 								string font = PATH + "Fonts/batang.ttf";
                 Listbox *cpuDifficulty = new Listbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), difficulties, 3, font);
                 Listbox *cpuFaction = new Listbox(Vector2(pos.x + 110, pos.y + 30), Vector2(100, 20), factions, 2, font);
@@ -238,28 +232,4 @@ namespace battleship{
 			spacePos = vec4(spacePos.x / spacePos.w, spacePos.y / spacePos.w, spacePos.z / spacePos.w, spacePos.w);
 			return Vector3(spacePos.x, spacePos.y, spacePos.z);
 		}
-
-		/*
-    bool isWithinRect(vector3df c1,vector3df c2, vector3df p, vector3df dir){
-        float mainAngle=getAngleBetween(c1-c2,dir);
-        float mainHyp=(c1-c2).getLength();
-        float mainWidth=cos(mainAngle)*mainHyp,mainLength=sin(mainAngle)*mainHyp;
-        vector3df center=(c2-c1)/2+c1;
-        float angle=getAngleBetween(center-p,dir);
-        float hyp=(center-p).getLength();
-        float width=cos(angle)*hyp,length=sin(angle)*hyp;
-        return width<=mainWidth/2&&length<=mainLength/2?true:false;
-    }
-    bool isWithinCuboid(vector3df c0, vector3df c1,vector3df c2,vector3df c3, vector3df p0){
-        vector3df aVec=c1-c0,bVec=c2-c0,cVec=c3-c0,pVec=p0-c0;
-        float a=aVec.getLength(),b=bVec.getLength(),c=cVec.getLength(),p=pVec.getLength();
-        float aAngle=getAngleBetween(pVec,aVec);
-        float bAngle=getAngleBetween(pVec,bVec);
-        float cAngle=getAngleBetween(pVec,cVec);
-        bool withinA=aAngle<=PI/2&&p*cos(aAngle)<=a;
-        bool withinB=bAngle<=PI/2&&p*cos(bAngle)<=b;
-        bool withinC=cAngle<=PI/2&&p*cos(cAngle)<=c;
-        return withinA&&withinB&&withinC;
-    }
-		*/
 }

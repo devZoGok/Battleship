@@ -32,13 +32,8 @@ namespace battleship{
         this->rayLength=projectileData::length[id][weaponTypeId][weaponId];
 
 				GameManager *gm = GameManager::getSingleton();
-        //this->node=node;
 
         if(!node){
-						/*
-            mesh = smgr->getMesh(projectileData::meshPath[id][weaponTypeId]);
-            this->node = smgr->addAnimatedMeshSceneNode(mesh);
-						*/
 						this->node = new Model((projectileData::meshPath[id][weaponTypeId]));
 						Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 						mat->addBoolUniform("lightingEnabled", false);
@@ -46,11 +41,6 @@ namespace battleship{
             Texture *diffuseTexture = new Texture(f, 1, false);
 						mat->addTexUniform("textures[0]", diffuseTexture, true);
 						this->node->setMaterial(mat);
-
-						/*
-            if (!diffuseTexture)
-                diffuseTexture = driver->getTexture(DEFAULT_TEXTURE);
-								*/
         }
 
         this->node->setPosition(pos);
@@ -61,7 +51,6 @@ namespace battleship{
         speed = projectileData::speed[id][weaponTypeId][weaponId];
         float angle = dirVec.getAngleBetween(Vector3(0, 0, -1));
         angle = Quaternion(angle, upVec) * Vector3(0, 0, -1) == dirVec ? angle : -angle;
-        //this->node->setRotation(vector3df(0, angle / PI * 180, 0));
         
         string p1 = PATH + "Sounds/" + unitData::name[id] + "s/" + projectileData::name[id][weaponTypeId] + ".ogg";
         string p2 = PATH + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
@@ -78,10 +67,6 @@ namespace battleship{
     }
 
     Projectile::~Projectile(){
-				/*
-        ISceneManager *smgr = GameManager::getSingleton()->getDevice()->getSceneManager();
-        node->getParent()->removeChild(node);
-				*/
     }
     
     void Projectile::update() {
@@ -92,13 +77,6 @@ namespace battleship{
     }
 
     void Projectile::checkForCollision() {
-        //ISceneNode *collNode = castRay(GameManager::getSingleton()->getSceneManager(),pos,pos+dirVec*rayLength);
-				/*
-				Ray::castRay(pos, pos + dirVec, );
-
-        if (pos.y < -7 || (collNode&&collNode != unit->getNode()))
-            explode(collNode);
-						*/
     }
 
     void Projectile::explode(Node *collNode) {
@@ -123,12 +101,6 @@ namespace battleship{
     }
     
     void Projectile::debug(){
-				/*
-        IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
-        driver->draw3DLine(pos,pos+dirVec,SColor(255,0,0,255));
-        driver->draw3DLine(pos,pos+leftVec,SColor(255,255,0,0));
-        driver->draw3DLine(pos,pos+upVec,SColor(255,0,255,0));
-				*/
     }
     
     void Projectile::orientProjectile(Vector3 orientVec){
@@ -143,6 +115,5 @@ namespace battleship{
         Quaternion rotQuat=Quaternion(projAngle/180*PI,leftVec);
         dirVec=rotQuat*dirVec;
         upVec=rotQuat*upVec;
-        //node->setRotation(vector3df(projAngle,rotAngle,0));
     }
 }

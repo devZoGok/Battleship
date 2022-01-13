@@ -34,10 +34,5 @@ namespace battleship{
         float tanAngle = -atan((speed * sin(angle) + g * time) / (speed * cos(angle)));
         Quaternion rotQuat = Quaternion(tanAngle, leftVec);
         dirVec = rotQuat*straightVec, upVec = rotQuat * Vector3(0, 1, 0);
-				/*
-        Vector3 rotVec = node->getOrientation();
-        rotVec=vector3df(tanAngle/PI*180,rotVec.Y,rotVec.Z);
-        node->setRotation(rotVec);
-				*/
     }
 }

@@ -29,25 +29,5 @@ namespace battleship{
     
     void DemoJet::update(){
         Jet::update();
-        if(!onBoard&&!orders.empty()&&orders[0].type==Order::TYPE::ATTACK){
-						GameManager *gm = GameManager::getSingleton();
-						/*
-            ISceneManager *smgr = gm->getDevice()->getSceneManager();
-            ISceneNode *collNode = castRay(smgr,pos,pos+dirVec*length);
-
-            if(collNode && collNode != node){
-                InGameAppState *inGameState = ((InGameAppState*)gm->getStateManager()->getAppState(AppStateTypes::IN_GAME_STATE)); 
-
-                for(Player *p : inGameState->getPlayers())
-                    for(Unit *u : p->getUnits())
-                        if(u->getNode() == collNode)
-                            u->takeDamage(damage);
-
-                blowUp();
-            }
-            else if(pos.y<0)
-                blowUp();
-								*/
-        }
     }
 }

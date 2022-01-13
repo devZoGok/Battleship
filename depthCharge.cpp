@@ -39,13 +39,6 @@ namespace battleship{
                     Vector3 p1 = u->getCorner(1);
                     Vector3 p3 = u->getCorner(3);
                     Vector3 p4 = u->getCorner(4);
-
-										/*
-                    if(isWithinCuboid(p0,p1,p3,p4,pos)){
-                        detonated=true;
-                        collNode=u->getNode();
-                    }
-										*/
                 }
 
         if(detonated)

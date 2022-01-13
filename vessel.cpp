@@ -48,28 +48,6 @@ namespace battleship{
 						mantlets.push_back(mantlet);
 				}
 
-				/*
-        fxNode=smgr->addParticleSystemSceneNode(false);
-        emitter=fxNode->createPointEmitter(dirVec,
-                                           10,10,
-                                           SColor(0,255,255,255),
-                                           SColor(0,255,255,255),
-                                           500,500,0,
-                                           dimension2df(5,5),
-                                           dimension2df(10,10));
-        fxNode->setEmitter(emitter);
-        emitter->drop();
-        affector=fxNode->createFadeOutParticleAffector();
-        fxNode->addAffector(affector);
-        affector->drop();
-        fxNode->setParent(turretMantletNodes[0]);
-        fxNode->setMaterialFlag(EMF_LIGHTING, false);
-        fxNode->setMaterialFlag(EMF_ZWRITE_ENABLE, false);
-        fxNode->setMaterialTexture(0, driver->getTexture(PATH+"Textures/Explosions/fire.bmp"));
-        fxNode->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
-        fxNode->setVisible(false);
-				*/
-
 				maxAngle = unitData::turretMaxAngle[unitId][turretId] / 180 * PI;
 				rotationSpeed = unitData::turretRotationSpeed[unitId][turretId] / 180 * PI;
         
@@ -85,30 +63,7 @@ namespace battleship{
     }
 
     void Vessel::Turret::update() {
-				/*
-				Node *rootNode = Root::getSingleton()->getRootNode();
-        Vector3 turretPosition = turret->localToGlobalPosition(Vector3::VEC_ZERO);
-        float hullAngle = PI / 180;
-        float turretAngle = PI / 180 * angle;
-        quaternion rotQuat = rotQuat.fromAngleAxis(hullAngle + turretAngle, vector3df(0, 1, 0));
-        quaternion offsetQuat = offsetQuat.fromAngleAxis(PI / 180 * unitData::turretAngleOffset[unitId][turretId], vector3df(0, 1, 0));
-        emitter->setDirection(dirVec);
-           if(getTime()-lastShotTime>30&&fxNode->isVisible())
-               fxNode->setVisible(false);
-               */
         dirVec = node->getGlobalAxis(2), leftVec = node->getGlobalAxis(0);
-    }
-
-    void Vessel::Turret::debug() {
-				/*
-        float length = turretAxisLength[unitId][turretId]*0 + 1;
-        IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
-        driver->setTransform(ETS_WORLD, IdentityMatrix);
-        driver->setMaterial(mat);
-        driver->draw3DLine(turretPosition, turretPosition + dirVec*length, SColor(255, 0, 0, 255));
-        driver->draw3DLine(turretPosition, turretPosition + leftVec*length, SColor(255, 255, 0, 0));
-        driver->draw3DLine(turretPosition, turretPosition + upVec*length, SColor(255, 0, 255, 0));
-				*/
     }
 
     Vector3 Vessel::Turret::getInitDir(int dirType){
@@ -141,17 +96,6 @@ namespace battleship{
     }
     
     void Vessel::Turret::fire() {
-				/*
-        fxNode->setVisible(true);
-        quaternion rotQuat = rotQuat.fromAngleAxis(barrelAngle / 180 * PI, leftVec);
-        int barId = 0;
-        vector3df startPos = vessel->getPos() + vessel->getLeftVec() * turretNode->getPosition().X + vessel->getUpVec() * turretNode->getPosition().Y - vessel->getDirVec() * turretNode->getPosition().Z;
-        startPos += rotQuat * (leftVec * turretMantletNodes[barId]->getPosition().X + upVec * turretMantletNodes[barId]->getPosition().Y + dirVec * turretMantletNodes[barId]->getPosition().Z);
-        startPos += rotQuat * (leftVec * turretBarrelNodes[barId]->getPosition().X + upVec * turretBarrelNodes[barId]->getPosition().Y + dirVec * turretBarrelNodes[barId]->getPosition().Z);
-        startPos += rotQuat * (leftVec * projectileData::pos[unitId][0][turretId].X + upVec * projectileData::pos[unitId][0][turretId].Y + dirVec * projectileData::pos[unitId][0][turretId].Z);
-        vessel->addProjectile(new Shell(vessel, startPos, rotQuat*dirVec, rotQuat*leftVec, rotQuat*upVec, unitId, 0, turretId));
-				*/
-
         if(sfx)
 						sfx->play();
 
@@ -195,10 +139,5 @@ namespace battleship{
 										t->fire();
             }
         }
-    }
-
-    void Vessel::debug() {
-        for (Turret *t : turrets)
-            t->debug();
     }
 }

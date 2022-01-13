@@ -10,7 +10,6 @@ namespace battleship{
         Torpedo(Unit*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
         ~Torpedo(){}
         void update();
-        //void explode()
     };
 }
 

@@ -53,7 +53,6 @@ namespace battleship{
         ~Unit();
         virtual void update();
         virtual void blowUp();
-        virtual void debug();
         virtual void halt();
         void toggleSelection(bool);
         void setOrder(Order);
@@ -71,7 +70,6 @@ namespace battleship{
         inline vb01::Vector2 getScreenPos(){return screenPos;}
         inline vb01::Vector3 getPos() {return pos;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
-        //inline ILightSceneNode* getLight() {return light;}
         inline float getLineOfSight() {return lineOfSight;}
         inline float getWidth() {return width;}
         inline float getHeight() {return height;}
@@ -92,7 +90,6 @@ namespace battleship{
         inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
-        //ILightSceneNode *light;
         const int orderVecDispLength = 2000;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
@@ -102,7 +99,6 @@ namespace battleship{
     protected:
         Player *player;
         MoveDir moveDir = MoveDir::FORWARD;
-        //vb01::Material createLineMaterial();
         unitData::UNIT_TYPE type;
 				vb01::Vector2 screenPos;
         std::vector<Order> orders;

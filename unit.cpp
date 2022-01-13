@@ -49,12 +49,6 @@ namespace battleship{
 				root->getRootNode()->attachChild(model);
         placeUnit(pos);
 
-				/*
-        light = smgr->addLightSceneNode(node, vector3df(0, 2, 0), SColor(255, 255, 255, 255), lineOfSight);
-        light->setVisible(false);
-        model->setVisible(false);
-				*/
-
         selectionSfxBuffer = new sf::SoundBuffer();
         string p = PATH + "Sounds/" + unitData::name[id] + "s/selection.ogg";
 
@@ -83,12 +77,6 @@ namespace battleship{
     }
 
     Unit::~Unit() {
-				/*
-				GameManager *gm = GameManager::getSingleton();
-        driver->removeTexture(node->getMaterial(0).getTexture(0));
-        node->removeChild(light);
-        node->getParent()->removeChild(node);
-				*/
     }
 
     void Unit::update() {
@@ -110,7 +98,6 @@ namespace battleship{
 
         if (selected) {
             displayUnitStats();
-            drawCuboid();
         }
 
         if (health <= 0) 
@@ -126,40 +113,6 @@ namespace battleship{
 				hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
 				hpForeground->setSize(Vector3(health / unitData::health[id] * lenHpBar, 10, 0));
 				hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
-    }
-
-    void Unit::drawCuboid() {
-				/*
-        IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
-        driver->setTransform(ETS_WORLD, IdentityMatrix);
-
-        for (int i = 0; i < 8; i++) {
-            vector3df vec = unitCornerPoints[id][i];
-            vector3df yVec;
-            vec = leftVec * vec.X + upVec * vec.Y - dirVec * vec.Z;
-            if (0 <= i && i < 4)
-                yVec = vector3df(0, unitCuboidDimensions[id][i].Y, 0);
-            else if (i >= 4)
-                yVec = vector3df(0, -unitCuboidDimensions[id][i].Y, 0);
-            quaternion rotQuat = rotQuat.fromAngleAxis(PI / 2 * i, vector3df(0, 1, 0));
-            vector3df vec1 = rotQuat * (-leftVec * unitCuboidDimensions[id][i].X), vec2 = rotQuat * (-dirVec * unitCuboidDimensions[id][i].Z);
-            driver->draw3DLine(pos + vec, pos + vec + vec1);
-            driver->draw3DLine(pos + vec, pos + vec + vec2);
-            driver->draw3DLine(pos + vec, pos + vec + yVec);
-        }
-				*/
-    }
-
-    void Unit::debug() {
-		/*
-        IVideoDriver *driver = GameManager::getSingleton()->getDevice()->getVideoDriver();
-        driver->setTransform(ETS_WORLD, IdentityMatrix);
-        driver->setMaterial(createLineMaterial());
-        float length = unitAxisLength[id];
-        driver->draw3DLine(pos, pos + dirVec * length, SColor(255, 0, 0, 255));
-        driver->draw3DLine(pos, pos + leftVec * length, SColor(255, 255, 0, 0));
-        driver->draw3DLine(pos, pos + upVec * length, SColor(255, 0, 255, 0));
-		*/
     }
 
     void Unit::executeOrders() {
@@ -300,7 +253,6 @@ namespace battleship{
         Quaternion rotQuat = Quaternion(projAngle / 180 * PI, leftVec);
         dirVec = rotQuat * dirVec;
         upVec = rotQuat * upVec;
-        //node->setRotation(vector3df(projAngle,rotAngle,0));
     }
     
     Vector3 Unit::getCorner(int i) {
@@ -337,14 +289,6 @@ namespace battleship{
 
         orderLineDispTime = getTime();
     }
-
-		/*
-    SMaterial Unit::createLineMaterial() {
-        SMaterial mat;
-        mat.Lighting = false;
-        return mat;
-    }
-		*/
 
     void Unit::addProjectile(Projectile *p) {((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE))->addProjectile(p);}
 }

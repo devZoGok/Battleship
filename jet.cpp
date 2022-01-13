@@ -141,9 +141,5 @@ namespace battleship{
         dirVec = rotQuat * dirVec, upVec = rotQuat * upVec;
         horAngle = angle;
         float yAngle = model->getOrientation().y;
-				/*
-        node->setOrientation(vector3df(angle, 0, 0));
-        node->setOrientation(vector3df(angle, yAngle, 0));
-				*/
     }
 }

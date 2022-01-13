@@ -21,8 +21,6 @@ namespace battleship {
     protected:
     	void attack(Order);
     private:
-        void debug();
-
         class Turret {
         public:
 						struct Mantlet{
@@ -33,7 +31,6 @@ namespace battleship {
             void update();
             void fire();
             void rotate(double);
-            void debug();
 						vb01::Vector3 getInitDir(int);
             inline vb01::Vector3 getDirVec(){return dirVec;}
             inline vb01::Vector3 getLeftVec(){return leftVec;}

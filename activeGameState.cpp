@@ -32,92 +32,6 @@ namespace battleship{
 
     const int size = 50;
     
-    ActiveGameState::UnitButton::UnitButton(ActiveGameState *activeState, Vector2 pos, Vector2 size, std::string name, int faction, int unitId) : vb01Gui::Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, true){
-        this->activeState=activeState;
-        this->faction=faction;
-        this->unitId=unitId;
-    }
-    
-    void ActiveGameState::UnitButton::onClick(){
-        Player *player=activeState->getPlayer();
-        Vector3 spawnPoint=player->getSpawnPoint();
-        Unit *u;
-
-        switch(unitData::unitType[unitId]){
-            case unitData::UNIT_TYPE::VESSEL:
-                u=new Vessel(player,spawnPoint,unitId);
-                break;
-            case unitData::UNIT_TYPE::DESTROYER:
-                u=new Destroyer(player,spawnPoint,unitId);
-                break;
-            case unitData::UNIT_TYPE::CRUISER:
-                u=new Cruiser(player,spawnPoint,unitId);
-                break;
-            case unitData::UNIT_TYPE::AIRCRAFT_CARRIER:
-                u=new AircraftCarrier(player,spawnPoint,unitId);
-                break;
-            case unitData::UNIT_TYPE::SUBMARINE:
-                u=new Submarine(player,spawnPoint,unitId);
-                break;
-        }
-
-        player->addUnit(u);
-    }
-    
-    void ActiveGameState::UnitButton::onMouseOver(){
-				/*
-        if(!mouseOverDone){
-						GameManager *gm = GameManager::getSingleton();
-            GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
-            guiState->addTooltip(new gui::Tooltip(pos-Vector2(100,0),name));
-        }
-				*/
-    }
-
-    void ActiveGameState::UnitButton::onMouseAway(){
-				/*
-        if(!mouseAwayDone){
-            GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
-            guiState->removeAllTooltips();
-        }
-				*/
-    }
-    
-    ActiveGameState::UnitActionButton::UnitActionButton(unitData::UNIT_TYPE type, Vector2 pos, Vector2 size, string name, string path) : vb01Gui::Button(pos, size, name, "", -1, true){
-        this->type=type;
-				GameManager *gm = GameManager::getSingleton();
-        activeState=((ActiveGameState*)gm->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE));
-				/*
-        IVideoDriver *driver = gm->getDevice()->getVideoDriver();
-        setImageButton(new Image(driver->getTexture(path),pos,vector2di(50,50)));
-				*/
-    }
-
-    void ActiveGameState::UnitActionButton::onClick(){
-        std::vector<Unit*> &selectedUnits=activeState->getSelectedUnits();
-        for(Unit *u : selectedUnits)
-            if(u->getType()==type)
-                units.push_back(u);
-    }
-
-    void ActiveGameState::UnitActionButton::onMouseOver(){
-				/*
-        if(!mouseOverDone){
-            GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
-            guiState->addTooltip(new gui::Tooltip(pos-Vector2(100,0),name));
-        }
-				*/
-    }
-
-    void ActiveGameState::UnitActionButton::onMouseAway(){
-				/*
-        if(!mouseAwayDone){
-            GuiAppState *guiState=((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppState(AppStateTypes::GUI_STATE));
-            guiState->removeAllTooltips();
-        }
-				*/
-    }
-    
     ActiveGameState::ActiveGameState(GuiAppState *guiState, Map *map, vector<Player*> players, int playerId) {
 				type = AppStateType::ACTIVE_STATE;
         this->guiState = guiState;
@@ -156,22 +70,6 @@ namespace battleship{
         int faction = mainPlayer->getFaction(), width = gm->getWidth(), height = gm->getHeight(), size = 50;
         string names[5] = {"Battleship", "Destroyer", "Cruiser", "Carrier", "Submarine"};
 
-				/*
-        for(int i = 0; i < 5; i++){
-            int id = 2 * i + (i == 4 && faction == 1 ? 0 : faction);
-            Vector2 pos = Vector2(width - size - 1, 1 + i * size), sizeVec = Vector2(size, size);
-            UnitButton *button = new UnitButton(this, pos, sizeVec, names[i], faction, id);
-
-            if(i == 3)
-                names[i] = "aircraftCarrier";
-            else
-								transform(names[i].begin(), names[i].end(), names[i], names[i]);
-
-            //button->setImageButton(new Image(driver->getTexture(PATH+"Textures/Icons/"+names[i]+"0"+stringw(faction)+".png"),pos,sizeVec));
-            guiState->addButton(button);
-        }
-				*/
-
 				Bind binds[]{Bind::LOOK_UP, Bind::LOOK_DOWN, Bind::LOOK_LEFT, Bind::LOOK_RIGHT};
 				int triggers[]{Mapping::MOUSE_AXIS_UP, Mapping::MOUSE_AXIS_DOWN, Mapping::MOUSE_AXIS_LEFT, Mapping::MOUSE_AXIS_RIGHT};
 				int numData = sizeof(triggers) / sizeof(int);
@@ -198,8 +96,6 @@ namespace battleship{
 				dragboxNode->setVisible(isSelectionBox);
 
         renderUnits();
-        renderGUIBorders();
-        renderActionButtons();
 
 				if(!lookingAround)
 					updateCameraPosition();
@@ -238,7 +134,6 @@ namespace battleship{
                     }
                 }
 
-                //rendUn->getLight()->setVisible(true);
                 u->getNode()->setVisible(true);
             }
 						else{
@@ -252,107 +147,9 @@ namespace battleship{
                     u->getNode()->setVisible(dist <= units[i]->getLineOfSight() || isInLineOfSight(compUnPos, units[i]->getLineOfSight(), u) ? true : false);
                 }
 						}
-
-            if (u->isDebuggable())
-                u->debug();
         }
     }
 
-    void ActiveGameState::renderGUIBorders(){
-				/*
-				GameManager *gm = GameManager::getSingleton();
-        IVideoDriver *driver = gm->getDevice()->getVideoDriver();
-        int width = gm->getWidth(), height = gm->getHeight(), size = 50;
-
-        for(int i=0;i<height/size;i++){
-            driver->draw2DRectangleOutline(recti(vector2di(width-(2*size+3),size*i),dimension2di(size+2,size+2)));
-            driver->draw2DRectangleOutline(recti(vector2di(width-(size+2),size*i),dimension2di(size+2,size+2)));
-        }
-				*/
-    }
-
-    void ActiveGameState::renderActionButtons(){
-        class MakeJetButton : public UnitActionButton{
-        public:
-            MakeJetButton(int faction, unitData::UNIT_TYPE type, Vector2 pos, Vector2 size):UnitActionButton(type, pos, size, "Jet", PATH + "Textures/Icons/jet0" + to_string(faction) + ".png"){
-            }
-            ~MakeJetButton(){}
-            void onClick(){
-                UnitActionButton::onClick();
-
-                for(int i=0;i<units.size();i++)
-                    ((AircraftCarrier*)units[i])->makeJet();
-            }
-        private:
-        };
-        class LaunchButton : public UnitActionButton{
-        public:
-            LaunchButton(int faction, unitData::UNIT_TYPE type, Vector2 pos, Vector2 size) : UnitActionButton(type, pos, size, "Launch", PATH + "Textures/Icons/guidedMissile0" + to_string(faction) + ".png"){}
-            ~LaunchButton(){}
-            void onClick(){
-                UnitActionButton::onClick();
-                activeState->setSelectingLaunchPoint(true);
-            }
-        private:
-        };
-        class MissileButton : public UnitActionButton{
-        public:
-            MissileButton(bool aam, Vector2 pos, Vector2 size, string name, string path) : UnitActionButton(unitData::UNIT_TYPE::MISSILE_JET,pos,size,name,path){
-                this->aam=aam;
-            }
-            ~MissileButton(){}
-            void onClick(){
-                UnitActionButton::onClick();
-
-                for(int i=0;i<units.size();i++)
-                    ((MissileJet*)units[i])->installMissiles(aam);
-            }
-        private:
-            bool aam;
-        };
-
-				GameManager *gm = GameManager::getSingleton();
-        int width = gm->getWidth(), height = gm->getHeight(), slotSize = size + 2, faction = mainPlayer->getFaction();
-        bool carriers=false, cruisers=false, missileJets=false;
-
-        for(int i=0;i<selectedUnits.size()&&!(carriers&&cruisers&&missileJets);i++){
-            if(selectedUnits[i]->getType()==unitData::UNIT_TYPE::AIRCRAFT_CARRIER)
-                carriers=true;
-            else if(selectedUnits[i]->getType()==unitData::UNIT_TYPE::CRUISER)
-                cruisers=true;
-            else if(selectedUnits[i]->getType()==unitData::UNIT_TYPE::MISSILE_JET)
-                missileJets=true;
-        }
-        if(carriers&&!actionButtons[0]){
-            actionButtons[0] = new MakeJetButton(faction, unitData::UNIT_TYPE::AIRCRAFT_CARRIER, Vector2(width - 2 * slotSize, 0), Vector2(size, size));
-            guiState->addButton(actionButtons[0]);
-        }
-        else if(!carriers&&actionButtons[0]){
-            guiState->removeButton(actionButtons[0]);
-            actionButtons[0]=nullptr;
-        }
-        if(cruisers&&!actionButtons[1]){
-            actionButtons[1] = new LaunchButton(faction, unitData::UNIT_TYPE::CRUISER, Vector2(width - 2 * slotSize, slotSize), Vector2(size, size));
-            guiState->addButton(actionButtons[1]);
-        }
-        else if(!cruisers&&actionButtons[1]){
-            guiState->removeButton(actionButtons[1]);
-            actionButtons[1]=nullptr;
-        }
-        if(missileJets&&!actionButtons[2]){
-            actionButtons[2]=new MissileButton(true, Vector2(width - 2 * slotSize, slotSize * 3), Vector2(size, size), "AAM", PATH + "Textures/Icons/aam.png");
-            actionButtons[3]=new MissileButton(false, Vector2(width - 2 * slotSize, slotSize * 4), Vector2(size, size), "AWM", PATH + "Textures/Icons/awm.png");
-            guiState->addButton(actionButtons[2]);
-            guiState->addButton(actionButtons[3]);
-        }
-        else if(!missileJets&&actionButtons[2]){
-            guiState->removeButton(actionButtons[2]);
-            guiState->removeButton(actionButtons[3]);
-            actionButtons[2]=nullptr;
-            actionButtons[3]=nullptr;
-        }
-    }
-    
     bool ActiveGameState::isInLineOfSight(Vector3 center, float radius, Unit *u) {
         bool inside = false;
 
@@ -477,14 +274,6 @@ namespace battleship{
 				Ray::retrieveCollisions(camPos, rayDir, map->getWaterNode(), results);
 				std::map<Node*, Unit*> unitData;
 
-				/*
-        for (Player *p : players)
-            for (Unit *u : p->getUnits()){
-							Ray::retrieveCollisions(camPos, rayDir, u->getNode(), results);
-							unitData.emplace(u->getNode(), u);
-						}
-				*/
-
 				Ray::sortResults(results);
 
 				if(!results.empty()){
@@ -579,9 +368,6 @@ namespace battleship{
                 break;
 						case Bind::INSTALL_AAM:
             case Bind::INSTALL_AWM:
-                for(Unit *u : selectedUnits)
-                    if(u->getType() == unitData::UNIT_TYPE::MISSILE_JET)
-                        ((MissileJet*)u)->installMissiles(bind == Bind::INSTALL_AAM);
                 break;
 						case Bind::GROUP_0:
             case Bind::GROUP_1:

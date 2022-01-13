@@ -27,10 +27,6 @@ namespace battleship{
     void makeTitlescreenButtons(GuiAppState*);
 		vb01::Vector2 spaceToScreen(vb01::Vector3);
 		vb01::Vector3 screenToSpace(vb01::Vector2);
-		/*
-    bool isWithinRect(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
-    bool isWithinCuboid(irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df,irr::core::vector3df);
-		*/
 }
 
 #endif

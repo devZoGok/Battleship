@@ -29,10 +29,6 @@ namespace battleship{
     }
     void OptionsButton::BackButton::onClick() {
 				GameManager *gm = GameManager::getSingleton();
-				/*
-        gm->detachAllBitmapTexts();
-        gm->detachAllImages();
-				*/
         state->removeAllListboxes();
         state->removeAllCheckboxes();
         state->removeAllSliders();
@@ -52,7 +48,6 @@ namespace battleship{
         OkButton *okButton = new OkButton();
         DefaultsButton *defaultsButton = new DefaultsButton();
         BackButton *returnButton = new BackButton();
-        //defaultsButton->moveText(-25, 0);
         state->addButton(okButton);
         state->addButton(defaultsButton);
         state->addButton(returnButton);
@@ -97,11 +92,6 @@ namespace battleship{
         Textbox *mouseSensitivityTextbox = new Textbox(Vector2(pos.x + 320, pos.y - 10), Vector2(100, 20), font);
         Checkbox *reverseMouseCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50), font);
 
-				/*
-        gm->attachBitmapText(new BitmapText("MouseSensitivity", vector2d<s32>(gm->getWidth() / 3 - 90, gm->getHeight() / 4 - 5), font));
-        gm->attachBitmapText(new BitmapText("ReverseMouse", vector2d<s32>(gm->getWidth() / 3 + 20, gm->getHeight() / 4 + 50), font));
-				*/
-
         state->addTextbox(mouseSensitivityTextbox);
         state->addSlider(mouseSensitivitySlider);
         state->addCheckbox(reverseMouseCheckbox);
@@ -133,14 +123,6 @@ namespace battleship{
         Checkbox *normalMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 70), font);
         Checkbox *parallaxMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 90), font);
         Checkbox *specularMapCheckbox = new Checkbox(Vector2(pos.x, pos.y + 110), font);
-
-				/*
-        gm->attachBitmapText(new BitmapText("Fullscreen", vector2d<s32>(pos.X + 20, pos.Y + 30), font));
-        gm->attachBitmapText(new BitmapText("VSync", vector2d<s32>(pos.X + 20, pos.Y + 50), font));
-        gm->attachBitmapText(new BitmapText("Normal map", vector2d<s32>(pos.X + 20, pos.Y + 70), font));
-        gm->attachBitmapText(new BitmapText("Parallax map", vector2d<s32>(pos.X + 20, pos.Y + 90), font));
-        gm->attachBitmapText(new BitmapText("Specular map", vector2d<s32>(pos.X + 20, pos.Y + 110), font));
-				*/
 
         state->addListbox(resolutionsListbox);
         state->addCheckbox(fullscreenCheckbox);
@@ -184,12 +166,6 @@ namespace battleship{
         Textbox *udpTextbox = new Textbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), font);
         Textbox *playerNameTextbox = new Textbox(Vector2(pos.x, pos.y + 60), Vector2(100, 20), font);
 
-				/*
-        gm->attachBitmapText(new BitmapText("TCP port", vector2d<s32>(pos.X - 50, pos.Y), font));
-        gm->attachBitmapText(new BitmapText("UDP port", vector2d<s32>(pos.X - 50, pos.Y + 30), font));
-        gm->attachBitmapText(new BitmapText("Player name", vector2d<s32>(pos.X - 65, pos.Y + 60), font));
-				*/
-
         state->addTextbox(tcpTextbox);
         state->addTextbox(udpTextbox);
         state->addTextbox(playerNameTextbox);
@@ -209,7 +185,6 @@ namespace battleship{
         VideoTab *videoTab = new VideoTab();
         AudioTab *audioTab = new AudioTab();
         MultiplayerTab *mupltiplayerTab = new MultiplayerTab();
-        //mupltiplayerTab->moveText(-20, 0);
         state->addButton(controlsTab);
         state->addButton(mouseTab);
         state->addButton(videoTab);

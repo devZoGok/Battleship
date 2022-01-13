@@ -31,8 +31,6 @@ namespace battleship{
 						validateAddUnitArguments(fullCommand);
             executeAddUnit(atoi(fullCommand[1].c_str()), atoi(fullCommand[2].c_str()));
 				}
-        else
-            printConsoleMessage("No such command");
     }
 
 		void ConsoleCommand::parse(string commandStr, vector<string> &fullCommand){
@@ -101,42 +99,5 @@ namespace battleship{
         }
 
         players[playerId]->addUnit(u);
-    }
-
-		/*
-    void ConsoleCommand::debugUnits() {
-        if (arguments.size() == 0)
-            for (Player *pl : players){
-                vector<Unit*> &units=pl->getUnits();
-
-                for (Unit *u : units){
-                    u->toggleDebugging(true);
-                    vector<Projectile*> projectiles=u->getProjectiles();
-
-                    for(Projectile *pr : projectiles)
-                        pr->debug();
-                }
-            }
-        else
-            printConsoleMessage("Too many arguments");
-    }
-		*/
-
-    void ConsoleCommand::printConsoleMessage(string message) {
-				/*
-        int messageId = 0;
-        bool foundEmptySlot = false;
-
-        for (int i = 0; i < listbox->getContents().size() && !foundEmptySlot; i++)
-            if (listbox->getContents()[i] == L"") {
-                messageId = i;
-                foundEmptySlot = true;
-            }
-
-        if (foundEmptySlot)
-            listbox->changeLine(messageId, message);
-        else
-            listbox->addLine(message);
-						*/
     }
 }
