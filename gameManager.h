@@ -2,7 +2,6 @@
 #ifndef GAME_MANAGER_H
 #define GAME_MANAGER_H
 
-#include "defConfigs.h"
 #include "util.h"
 
 #include <mapping.h>

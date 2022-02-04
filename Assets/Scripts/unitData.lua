@@ -1,7 +1,7 @@
---dofile("defConfigs.lua")
-
 numUnits = 11
+
 UnitType = {VESSEL = 0, DESTROYER = 1, CRUISER = 2, AIRCRAFT_CARRIER = 3, SUBMARINE = 4, MISSILE_JET = 5, DEMO_JET = 6};
+
 unitType = {
 	UnitType.VESSEL, UnitType.VESSEL,
 	UnitType.DESTROYER, UnitType.DESTROYER,
@@ -10,6 +10,7 @@ unitType = {
 	UnitType.SUBMARINE,
 	UnitType.MISSILE_JET, UnitType.DEMO_JET
 };
+
 health = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
 speed = {.025, .025, .05, .05, .1, .1, .1, .1, .1, .1, .15}
 destinationOffset = {.75, .75, 1, 1, .1, .1, .1, .1, .1, .5, .5}
@@ -261,7 +262,6 @@ meshPath = {
 	"submarine.vb",
 	"jet00.x", "jet01.x"
 }
-PATH = ""
 basePath = {
 	PATH .. "Models/Battleships/", PATH .. "Models/Battleships/",
 	PATH .. "Models/Destroyers/", PATH .. "Models/Destroyers/",

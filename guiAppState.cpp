@@ -3,6 +3,7 @@
 #include <util.h>
 
 #include "util.h"
+#include "defConfigs.h"
 #include "gameManager.h"
 #include "guiAppState.h"
 
@@ -12,8 +13,13 @@ using namespace vb01Gui;
 using namespace std;
 
 namespace battleship{
-    GuiAppState::GuiAppState() {
-				type = AppStateType::GUI_STATE;
+		using namespace configData;
+
+    GuiAppState::GuiAppState() : AbstractAppState(
+						AppStateType::GUI_STATE,
+					 	configData::calcSumBinds(AppStateType::GUI_STATE, true),
+					 	configData::calcSumBinds(AppStateType::GUI_STATE, false),
+					 	PATH + "Scripts/options.lua"){
     }
 
     GuiAppState::~GuiAppState() {}
@@ -70,35 +76,6 @@ namespace battleship{
 
     void GuiAppState::onAttached() {
         AbstractAppState::onAttached();
-
-				Mapping *leftClick = new Mapping;
-				leftClick->bind = Bind::LEFT_CLICK;
-				leftClick->type = Mapping::MOUSE_KEY;
-				leftClick->trigger = 0;
-				leftClick->action = true;
-
-				Mapping *deleteCharacter = new Mapping;
-				deleteCharacter->bind = Bind::DELETE_CHAR;
-				deleteCharacter->type = Mapping::KEYBOARD;
-				deleteCharacter->trigger = GLFW_KEY_BACKSPACE;
-				deleteCharacter->action = true;
-
-				Mapping *up = new Mapping;
-				up->bind = Bind::SCROLLING_UP;
-				up->type = Mapping::KEYBOARD;
-				up->trigger = GLFW_KEY_W;
-				up->action = true;
-
-				Mapping *down = new Mapping;
-				down->bind = Bind::SCROLLING_DOWN;
-				down->type = Mapping::KEYBOARD;
-				down->trigger = GLFW_KEY_S;
-				down->action = true;
-
-				mappings.push_back(leftClick);
-				mappings.push_back(deleteCharacter);
-				mappings.push_back(up);
-				mappings.push_back(down);
     }
 
     void GuiAppState::onDettached() {

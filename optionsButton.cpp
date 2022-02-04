@@ -1,5 +1,6 @@
 #include "optionsButton.h"
 #include "util.h"
+#include "defConfigs.h"
 
 #include <stateManager.h>
 

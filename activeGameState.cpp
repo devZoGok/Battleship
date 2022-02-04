@@ -29,11 +29,15 @@ using namespace std;
 
 namespace battleship{
 		using namespace configData;
+		using namespace gameBase;
 
     const int size = 50;
     
-    ActiveGameState::ActiveGameState(GuiAppState *guiState, Map *map, vector<Player*> players, int playerId) {
-				type = AppStateType::ACTIVE_STATE;
+    ActiveGameState::ActiveGameState(GuiAppState *guiState, Map *map, vector<Player*> players, int playerId) : AbstractAppState(
+						AppStateType::ACTIVE_STATE,
+					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, true),
+					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, false),
+					 	PATH + "Scripts/options.lua"){
         this->guiState = guiState;
         this->map = map;
         this->players = players;
@@ -62,31 +66,10 @@ namespace battleship{
     }
 
     void ActiveGameState::onAttached() {
-				readFile(PATH + "../options.cfg", bindingsLines, configData::numConfBinds[AppStateType::IN_GAME_STATE], configData::numConfBinds[AppStateType::ACTIVE_STATE]);
-
         AbstractAppState::onAttached();
-
-				GameManager *gm = GameManager::getSingleton();
-        int faction = mainPlayer->getFaction(), width = gm->getWidth(), height = gm->getHeight(), size = 50;
-        string names[5] = {"Battleship", "Destroyer", "Cruiser", "Carrier", "Submarine"};
-
-				Bind binds[]{Bind::LOOK_UP, Bind::LOOK_DOWN, Bind::LOOK_LEFT, Bind::LOOK_RIGHT};
-				int triggers[]{Mapping::MOUSE_AXIS_UP, Mapping::MOUSE_AXIS_DOWN, Mapping::MOUSE_AXIS_LEFT, Mapping::MOUSE_AXIS_RIGHT};
-				int numData = sizeof(triggers) / sizeof(int);
-
-				for(int i = 0; i < numData; i++){
-					Mapping *m = new Mapping;
-					m->bind = binds[i];
-					m->trigger = triggers[i];
-					m->action = false;
-					m->type = Mapping::MOUSE_AXIS;
-
-					mappings.push_back(m);
-				}
     }
 
-    void ActiveGameState::onDettached() {
-        AbstractAppState::onDettached();
+    void ActiveGameState::onDettached() { AbstractAppState::onDettached();
     }
 
     void ActiveGameState::update() {
@@ -365,9 +348,6 @@ namespace battleship{
                 break;
 						case Bind::LAUNCH: 
                 selectingGuidedMissileTarget = isPressed;
-                break;
-						case Bind::INSTALL_AAM:
-            case Bind::INSTALL_AWM:
                 break;
 						case Bind::GROUP_0:
             case Bind::GROUP_1:

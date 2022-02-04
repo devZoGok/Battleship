@@ -173,8 +173,11 @@ namespace battleship{
     void InGameAppState::SubmarineCreationButton::onClick() {
     }
 
-    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions) {
-				type = AppStateType::IN_GAME_STATE;
+    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions) : AbstractAppState(
+						AppStateType::IN_GAME_STATE,
+					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, true),
+					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, false),
+					 	PATH + "Scripts/options.lua"){
         this->playerId = 0;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;
@@ -184,8 +187,6 @@ namespace battleship{
     }
 
     void InGameAppState::onAttached() {
-				readFile(PATH + "../options.cfg", bindingsLines, 0, configData::numBinds[AppStateType::IN_GAME_STATE]);
-
         AbstractAppState::onAttached();
 
         map = new Map();

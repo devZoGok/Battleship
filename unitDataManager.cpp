@@ -1,16 +1,16 @@
 #include "unitDataManager.h"
-#include "luaManager.h"
+#include "defConfigs.h"
 
-#include <lauxlib.h>
-#include <lualib.h>
+#include <luaManager.h>
 
 #include <string>
 #include <iostream>
 
-using namespace std;
-using namespace vb01;
-
 namespace battleship{
+		using namespace std;
+		using namespace vb01;
+		using namespace gameBase;
+
 		typedef LuaManager::Index Index;
 
 		UnitDataManager *unitDataManager = nullptr;
@@ -24,7 +24,7 @@ namespace battleship{
 
 		UnitDataManager::UnitDataManager(){
 				LuaManager *luaManager = LuaManager::getSingleton();
-				luaManager->readFile("../Scripts/unitData.lua");
+				luaManager->buildScript(vector<string>{configData::PATH + "defPaths.lua", configData::PATH + "unitData.lua"});
 
 				numUnits = luaManager->getInt("numUnits");
 
