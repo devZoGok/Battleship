@@ -2,6 +2,7 @@
 #include <quad.h>
 #include <node.h>
 #include <material.h>
+#include <assetManager.h>
 
 #include "map.h"
 #include "gameManager.h"
@@ -24,34 +25,42 @@ namespace battleship{
     }
 
     void Map::load() {
-				string path[]{
-					PATH + "Textures/left.jpg",
-					PATH + "Textures/right.jpg",
-					PATH + "Textures/top.jpg",
-					PATH + "Textures/bottom.jpg",
-					PATH + "Textures/front.jpg",
-					PATH + "Textures/back.jpg"
-				};
+		int numPaths = 6;
+		string path[] = {
+			PATH + "Textures/left.jpg",
+			PATH + "Textures/right.jpg",
+			PATH + "Textures/top.jpg",
+			PATH + "Textures/bottom.jpg",
+			PATH + "Textures/front.jpg",
+			PATH + "Textures/back.jpg"
+		};
 
-				Root *root = Root::getSingleton();
-				root->createSkybox(path);
+		for(int i = 0; i < numPaths; i++)
+			AssetManager::getSingleton()->load(path[i]);
 
-				Quad *quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
-				Material *mat = new Material(root->getLibPath() + "texture");
-				mat->addBoolUniform("texturingEnabled", true);
-				mat->addBoolUniform("lightingEnabled", false);
-				string fr[]{PATH + "Textures/water.jpg"};
-				Texture *t = new Texture(fr, 1, false);
-				mat->addTexUniform("textures[0]", t, true);
-				quad->setMaterial(mat);
-				waterNode = new Node();
-				waterNode->attachMesh(quad);
-				root->getRootNode()->attachChild(waterNode);
-				waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
+		Root *root = Root::getSingleton();
+		root->createSkybox(path);
 
-				Camera *cam = root->getCamera();
-				cam->setPosition(Vector3(1, 1, 1) * 10);
-				cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
+		Quad *quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
+		Material *mat = new Material(root->getLibPath() + "texture");
+		mat->addBoolUniform("texturingEnabled", true);
+		mat->addBoolUniform("lightingEnabled", false);
+
+		string fr[]{PATH + "Textures/water.jpg"};
+		AssetManager::getSingleton()->load(fr[0]);
+		Texture *t = new Texture(fr, 1, false);
+
+		mat->addTexUniform("textures[0]", t, true);
+		quad->setMaterial(mat);
+
+		waterNode = new Node();
+		waterNode->attachMesh(quad);
+		root->getRootNode()->attachChild(waterNode);
+		waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
+
+		Camera *cam = root->getCamera();
+		cam->setPosition(Vector3(1, 1, 1) * 10);
+		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
     }
 
     void Map::unload() {}

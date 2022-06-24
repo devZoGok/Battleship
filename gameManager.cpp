@@ -5,6 +5,8 @@
 #include <stateManager.h>
 #include <inputManager.h>
 
+#include <assetManager.h>
+
 #include "gameManager.h"
 #include "guiAppState.h"
 

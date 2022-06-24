@@ -4,6 +4,7 @@
 #include <root.h>
 #include <vector.h>
 #include <util.h>
+#include <assetManager.h>
 
 #include <stateManager.h>
 
@@ -191,6 +192,7 @@ namespace battleship{
 
 				GameManager *gm = GameManager::getSingleton();
 				string font = PATH + "Fonts/batang.ttf";
+				AssetManager::getSingleton()->load(font);
         SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
         MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);
         ExitButton *exitButton = new ExitButton(Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 3), Vector2(150, 40), "Exit", true);
