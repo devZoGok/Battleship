@@ -26,6 +26,7 @@ add_executable(${GAME_NAME} ${states} ${gui} ${core} ${content} ${util})
 
 target_include_directories(${GAME_NAME} PUBLIC ${FREETYPE_DIR}/include)
 
+include_directories(external/tinydir)
 include_directories(external/vb01Gui/external/vb01/external/glm)
 include_directories(external/vb01Gui/external/vb01/external/glm/glm)
 

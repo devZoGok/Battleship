@@ -13,3 +13,6 @@
 [submodule "external/lua"]
 	path = external/lua
 	url = https://github.com/lua/lua
+[submodule "external/tinydir"]
+	path = external/tinydir
+	url = https://github.com/cxong/tinydir

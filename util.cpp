@@ -11,6 +11,8 @@
 #include <glm.hpp>
 #include <ext.hpp>
 
+#include <tinydir.h>
+
 #include "util.h"
 #include "gameManager.h"
 #include "guiAppState.h"
@@ -107,10 +109,30 @@ namespace battleship{
                 factions.push_back("0");
                 factions.push_back("1");
 
+				tinydir_dir dir;
+				int i;
+				tinydir_open_sorted(&dir, (PATH + "Models/Maps").c_str());
+				vector<string> folders;
+				
+				for (i = 0; i < dir.n_files; i++) {
+					tinydir_file file;
+					tinydir_readfile_n(&dir, &file, i);
+
+					if (file.is_dir && file.name[0] != '.')
+						folders.push_back(file.name);
+
+					cout << "\n";
+				}
+				
+				tinydir_close(&dir);
+
 								string font = PATH + "Fonts/batang.ttf";
                 Listbox *cpuDifficulty = new Listbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), difficulties, 3, font);
                 Listbox *cpuFaction = new Listbox(Vector2(pos.x + 110, pos.y + 30), Vector2(100, 20), factions, 2, font);
                 Listbox *playerFaction = new Listbox(Vector2(pos.x + 110, pos.y), Vector2(100, 20), factions, 2, font);
+				int numMinDirs = 3;
+				int numShowDirs = folders.size() < numMinDirs ? folders.size() : numMinDirs;
+				Listbox *map = new Listbox(Vector2(pos.x + 110, pos.y + 100), Vector2(100, 20), folders, numShowDirs, font);
                 Listbox **difficultyListboxes=new Listbox*[1];
                 Listbox **factionListboxes=new Listbox*[2];
 								
@@ -126,9 +148,11 @@ namespace battleship{
                 state->addListbox(cpuDifficulty);
                 state->addListbox(cpuFaction);
                 state->addListbox(playerFaction);
+				state->addListbox(map);
                 state->removeButton("Options");
                 state->removeButton("Exit");
                 state->removeButton("Singleplayer");
+
             }
         private:
             GuiAppState *state;
