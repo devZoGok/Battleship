@@ -262,11 +262,12 @@ meshPath = {
 	"submarine.vb",
 	"jet00.x", "jet01.x"
 }
+pathPrefix = "Models/Units/"
 basePath = {
-	PATH .. "Models/Battleships/", PATH .. "Models/Battleships/",
-	PATH .. "Models/Destroyers/", PATH .. "Models/Destroyers/",
-	PATH .. "Models/Cruisers/", PATH .. "Models/Cruisers/",
-	PATH .. "Models/Aircraft carriers/", PATH .. "Models/Aircraft carriers/",
-	PATH .. "Models/Submarines/",
-	PATH .. "Models/Jets/", PATH .. "Models/Jets/"
+	PATH .. pathPrefix .. "Battleships/", PATH .. pathPrefix .. "Battleships/",
+	PATH .. pathPrefix .. "Destroyers/", PATH .. pathPrefix .. "Destroyers/",
+	PATH .. pathPrefix .. "Cruisers/", PATH .. pathPrefix .. "Cruisers/",
+	PATH .. pathPrefix .. "Aircraft carriers/", PATH .. pathPrefix .. "Aircraft carriers/",
+	PATH .. pathPrefix .. "Submarines/",
+	PATH .. pathPrefix .. "Jets/", PATH .. pathPrefix .. "Jets/"
 };

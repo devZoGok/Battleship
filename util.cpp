@@ -120,8 +120,6 @@ namespace battleship{
 
 					if (file.is_dir && file.name[0] != '.')
 						folders.push_back(file.name);
-
-					cout << "\n";
 				}
 				
 				tinydir_close(&dir);
