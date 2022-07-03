@@ -255,12 +255,12 @@ name = {
 	"Jet", "Jet"
 }
 meshPath = {
-	"battleship00.vb", "battleship01.vb",
-	"destroyer00.vb", "destroyer01.vb", 
-	"cruiser00.vb", "cruiser01.vb", 
-	"aircraftCarrier00.vb", "aircraftCarrier01.vb",
-	"submarine.vb",
-	"jet00.x", "jet01.x"
+	"battleship00.xml", "battleship01.xml",
+	"destroyer00.xml", "destroyer01.xml", 
+	"cruiser00.xml", "cruiser01.xml", 
+	"aircraftCarrier00.xml", "aircraftCarrier01.xml",
+	"submarine.xml",
+	"jet00.xml", "jet01.xml"
 }
 pathPrefix = "Models/Units/"
 basePath = {
