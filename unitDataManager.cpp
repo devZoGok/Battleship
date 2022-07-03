@@ -24,7 +24,7 @@ namespace battleship{
 
 		UnitDataManager::UnitDataManager(){
 				LuaManager *luaManager = LuaManager::getSingleton();
-				luaManager->buildScript(vector<string>{configData::PATH + "defPaths.lua", configData::PATH + "unitData.lua"});
+				luaManager->buildScript(vector<string>{configData::PATH + "Scripts/defPaths.lua", configData::PATH + "Scripts/unitData.lua"});
 
 				numUnits = luaManager->getInt("numUnits");
 

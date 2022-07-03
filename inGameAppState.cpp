@@ -2,10 +2,12 @@
 #include <button.h>
 
 #include <util.h>
+#include <assetManager.h>
 
 #include <stateManager.h>
 
 #include "inGameAppState.h"
+#include "unitDataManager.h"
 #include "consoleCommand.h"
 #include "aircraftCarrier.h"
 #include "vessel.h"
@@ -218,6 +220,14 @@ namespace battleship{
         guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
         activeState = new ActiveGameState(guiState, map, players, playerId);
         stateManager->attachAppState(activeState);
+
+		UnitDataManager *unitDataManager = UnitDataManager::getSingleton();
+		int numUnits = unitDataManager->getNumUnits();
+		string *basePaths = unitDataManager->getBasePath();
+		string *meshPaths = unitDataManager->getMeshPath();
+
+		for(int i = 0; i < numUnits; ++i)
+			AssetManager::getSingleton()->load(basePaths[i] + meshPaths[i]);
     }
 
     void InGameAppState::onDettached() {

@@ -9,6 +9,9 @@ namespace battleship{
 		class UnitDataManager{
 				public:
 						static UnitDataManager* getSingleton();
+						inline int getNumUnits(){return numUnits;}
+						inline std::string* getBasePath(){return basePath;}
+						inline std::string* getMeshPath(){return meshPath;}
 				private:
 						UnitDataManager();
 
