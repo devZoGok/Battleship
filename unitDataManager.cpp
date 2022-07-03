@@ -11,8 +11,6 @@ namespace battleship{
 		using namespace vb01;
 		using namespace gameBase;
 
-		typedef LuaManager::Index Index;
-
 		UnitDataManager *unitDataManager = nullptr;
 
 		UnitDataManager* UnitDataManager::getSingleton(){

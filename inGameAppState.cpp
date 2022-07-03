@@ -175,7 +175,7 @@ namespace battleship{
     void InGameAppState::SubmarineCreationButton::onClick() {
     }
 
-    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions) : AbstractAppState(
+    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions, string mapName) : AbstractAppState(
 						AppStateType::IN_GAME_STATE,
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, true),
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, false),
@@ -183,6 +183,8 @@ namespace battleship{
         this->playerId = 0;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;
+
+        map = new Map(mapName);
     }
 
     InGameAppState::~InGameAppState() {
@@ -191,7 +193,6 @@ namespace battleship{
     void InGameAppState::onAttached() {
         AbstractAppState::onAttached();
 
-        map = new Map();
         map->load();
 
         for (int i = 0; i < factions.size(); i++) {
@@ -226,8 +227,10 @@ namespace battleship{
 		string *basePaths = unitDataManager->getBasePath();
 		string *meshPaths = unitDataManager->getMeshPath();
 
+		/*
 		for(int i = 0; i < numUnits; ++i)
 			AssetManager::getSingleton()->load(basePaths[i] + meshPaths[i]);
+			*/
     }
 
     void InGameAppState::onDettached() {

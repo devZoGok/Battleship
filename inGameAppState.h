@@ -20,7 +20,7 @@ namespace battleship{
     
     class InGameAppState : public gameBase::AbstractAppState {
     public:
-        InGameAppState(std::vector<std::string>, std::vector<std::string>);
+        InGameAppState(std::vector<std::string>, std::vector<std::string>, std::string);
         ~InGameAppState();
         void onAttached();
         void onDettached();
