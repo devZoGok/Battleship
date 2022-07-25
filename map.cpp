@@ -69,7 +69,7 @@ namespace battleship{
 	}
 
 	void Map::loadWaterbodies(LuaManager *luaManager){
-		//TODO : replace the magic value when it's possible to extract fields from nested tables
+		//TODO : replace the magic value
 		int numWaterBodies = 1;
 		string table = "waterBodies";
 		Root *root = Root::getSingleton();
@@ -108,10 +108,37 @@ namespace battleship{
 		loadTerrain(luaManager);
 		loadWaterbodies(luaManager);
 
+		generateCells();
+
 		Camera *cam = Root::getSingleton()->getCamera();
 		cam->setPosition(Vector3(1, 1, 1) * 10);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
     }
+
+		void Map::generateCells(){
+				//TODO replace magic values by retrieving terrain dimensions
+				Vector3 terrainSize = Vector3(20, 6, 20);
+				Vector3 initPos = terrainSize * (-0.5);
+				int numCellsByDim[]{terrainSize.x / cellSize, terrainSize.y / cellSize, terrainSize.z / cellSize};
+				cells = new GraphNode**[numCellsByDim[0]];
+
+				for(int i = 0; i < numCellsByDim[0]; i++){
+					cells[i] = new GraphNode*[numCellsByDim[1]];
+
+					for(int j = 0; j < numCellsByDim[1]; j++){
+						cells[i][j] = new GraphNode[numCellsByDim[2]];
+
+						for(int k = 0; k < numCellsByDim[2]; k++){
+								GraphNode::Type type = GraphNode::SEA;
+
+								GraphNode node;
+								node.type = type;
+								node.pos = initPos + Vector3(cellSize * i, cellSize * j, cellSize * k);
+								cells[i][j][k] = node;
+						}
+					}
+				}
+		}
 
     void Map::unload() {}
 }

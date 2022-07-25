@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.9)
 project(battleship)
 
 set(CMAKE_BUILD_TYPE Debug)
-set(BUILD_TESTS OFF)
+set(BUILD_TESTS ON)
 cmake_policy(SET CMP0015 NEW)
 
 set(states activeGameState.cpp inGameAppState.cpp guiAppState.cpp)
