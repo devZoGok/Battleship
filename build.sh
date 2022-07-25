@@ -1,3 +1,8 @@
+basePath=$(pwd)
+file="Assets/Scripts/defPaths.lua"
+touch $file
+echo "PATH = \"$basePath/Assets/\"" > $file
+
 cd external
 git submodule update --init --recursive
 

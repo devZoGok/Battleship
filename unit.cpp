@@ -50,7 +50,7 @@ namespace battleship{
         placeUnit(pos);
 
         selectionSfxBuffer = new sf::SoundBuffer();
-        string p = PATH + "Sounds/" + unitData::name[id] + "s/selection.ogg";
+        string p = GameManager::getSingleton()->getPath() + "Sounds/" + unitData::name[id] + "s/selection.ogg";
 
         if(selectionSfxBuffer->loadFromFile(p.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);

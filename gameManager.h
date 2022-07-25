@@ -23,6 +23,7 @@ namespace battleship{
         void update();
         inline int getWidth(){return width;}
         inline int getHeight(){return height;}
+				inline std::string getPath(){return path;}
         inline gameBase::InputManager* getInputManager(){return inputManager;}
         inline bool isServerSide(){return serverSide;}
 				inline gameBase::StateManager* getStateManager(){return stateManager;}
@@ -33,6 +34,7 @@ namespace battleship{
 				gameBase::StateManager *stateManager = nullptr;
 				gameBase::InputManager *inputManager = nullptr;
         int width, height;
+				std::string path = "";
         bool serverSide;
     };
     

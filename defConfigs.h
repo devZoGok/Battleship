@@ -7,13 +7,13 @@
 #include <mapping.h>
 
 #include "binds.h"
+#include "gameManager.h"
 
 namespace battleship{
 	namespace configData{
 		using namespace gameBase;
 
-  		const std::string PATH = "/home/dominykas/c++/Battleship/Assets/";
-  		const std::string DEFAULT_TEXTURE = PATH + "Textures/defaultTexture.jpg";
+  		const std::string DEFAULT_TEXTURE = GameManager::getSingleton()->getPath() + "Textures/defaultTexture.jpg";
   		const double camPanSpeed = .1;
 
   		const static int numAppStates = 3;

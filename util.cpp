@@ -30,7 +30,7 @@ namespace battleship{
 
         class SpButton : public Button {
         public:
-            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_S, separate) {
+            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_S, separate) {
                 this->state = state;
             }
 
@@ -47,7 +47,7 @@ namespace battleship{
 
                 class PlayButton : public Button {
                 public:
-                    PlayButton(Listbox **difficulties, Listbox **factions, Listbox *mapListbox, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
+                    PlayButton(Listbox **difficulties, Listbox **factions, Listbox *mapListbox, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
                         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::GUI_STATE));
                         this->lengths[0] = lengths[0];
                         this->lengths[1] = lengths[1];
@@ -88,7 +88,7 @@ namespace battleship{
                 class ReturnButton : public Button {
                 public:
 
-                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_B, separate) {
+                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_B, separate) {
                         this->state = state;
                     }
 
@@ -114,11 +114,10 @@ namespace battleship{
                 factions.push_back("1");
 
 				tinydir_dir dir;
-				int i;
-				tinydir_open_sorted(&dir, (PATH + "Models/Maps").c_str());
+				tinydir_open_sorted(&dir, (gm->getPath() + "Models/Maps").c_str());
 				vector<string> folders;
 				
-				for (i = 0; i < dir.n_files; i++) {
+				for (int i = 0; i < dir.n_files; i++) {
 					tinydir_file file;
 					tinydir_readfile_n(&dir, &file, i);
 
@@ -128,7 +127,7 @@ namespace battleship{
 				
 				tinydir_close(&dir);
 
-								string font = PATH + "Fonts/batang.ttf";
+								string font = gm->getPath() + "Fonts/batang.ttf";
                 Listbox *cpuDifficulty = new Listbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), difficulties, 3, font);
                 Listbox *cpuFaction = new Listbox(Vector2(pos.x + 110, pos.y + 30), Vector2(100, 20), factions, 2, font);
                 Listbox *playerFaction = new Listbox(Vector2(pos.x + 110, pos.y), Vector2(100, 20), factions, 2, font);
@@ -188,7 +187,7 @@ namespace battleship{
             class ReturnButton : public Button {
             public:
 
-                ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+                ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
                     this->state = state;
                 }
 
@@ -217,7 +216,7 @@ namespace battleship{
         };
 
 				GameManager *gm = GameManager::getSingleton();
-				string font = PATH + "Fonts/batang.ttf";
+				string font = gm->getPath() + "Fonts/batang.ttf";
 				AssetManager::getSingleton()->load(font);
         SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
         MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);
