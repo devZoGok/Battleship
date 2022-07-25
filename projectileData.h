@@ -229,16 +229,16 @@ namespace battleship{
             {"missile","missile"},
         };
         const std::string meshPath[unitData::numberOfUnits][numberOfTypesOfWeapons]{
-            {PATH + "Models/Shell/shell.x"},
-            {PATH + "Models/Shell/shell.x"},
-            {PATH + "Models/Shell/shell.x", PATH + "Models/Depth charge/depthCharge.x"},
-            {PATH + "Models/Shell/shell.x", PATH + "Models/Depth charge/depthCharge.x"},
-            {PATH + "Models/Shell/shell.x", PATH + "Models/Guided missile/guidedMissile.x"},
-            {PATH + "Models/Shell/shell.x", PATH + "Models/Guided missile/guidedMissile.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Shell/shell.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Shell/shell.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Shell/shell.x", GameManager::getSingleton()->getPath() + "Models/Depth charge/depthCharge.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Shell/shell.x", GameManager::getSingleton()->getPath() + "Models/Depth charge/depthCharge.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Shell/shell.x", GameManager::getSingleton()->getPath() + "Models/Guided missile/guidedMissile.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Shell/shell.x", GameManager::getSingleton()->getPath() + "Models/Guided missile/guidedMissile.x"},
             {},
             {},
-            {PATH + "Models/Torpedo/torpedo.x"},
-            {PATH + "Models/Jets/aam.x", PATH + "Models/Jets/awm.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Torpedo/torpedo.x"},
+            {GameManager::getSingleton()->getPath() + "Models/Jets/aam.x", GameManager::getSingleton()->getPath() + "Models/Jets/awm.x"},
         };
         const std::string diffuseMapTextPath[unitData::numberOfUnits][numberOfTypesOfWeapons]{
             {},

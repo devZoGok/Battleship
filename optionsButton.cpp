@@ -1,6 +1,7 @@
 #include "optionsButton.h"
 #include "util.h"
 #include "defConfigs.h"
+#include "gameManager.h"
 
 #include <stateManager.h>
 
@@ -11,21 +12,21 @@ using namespace std;
 namespace battleship{
 	using namespace configData;
 
-    OptionsButton::OkButton::OkButton() : Button(Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Ok", PATH + "Fonts/batang.ttf", -1, true) {
+    OptionsButton::OkButton::OkButton() : Button(Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
     }
     void OptionsButton::OkButton::onClick() {
 
     }
 
-    OptionsButton::DefaultsButton::DefaultsButton() : Button(Vector2(200, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Restore defaults", PATH + "Fonts/batang.ttf", -1, true) {
+    OptionsButton::DefaultsButton::DefaultsButton() : Button(Vector2(200, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Restore defaults", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
     }
     void OptionsButton::DefaultsButton::onClick() {
         
     }
 
-    OptionsButton::BackButton::BackButton() : Button(Vector2(350, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Back", PATH + "Fonts/batang.ttf", -1, true) {
+    OptionsButton::BackButton::BackButton() : Button(Vector2(350, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Back", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
     }
     void OptionsButton::BackButton::onClick() {
@@ -41,7 +42,7 @@ namespace battleship{
         state->removeButton("Back");
     }
 
-    OptionsButton::TabButton::TabButton(Vector2 pos, Vector2 size, string name) :Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, true) {
+    OptionsButton::TabButton::TabButton(Vector2 pos, Vector2 size, string name) :Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
     }
     void OptionsButton::TabButton::onClick() {
@@ -63,10 +64,11 @@ namespace battleship{
     void OptionsButton::ControlsTab::onClick() {
         TabButton::onClick();
         std::vector<string> lines;
-        readFile(PATH + "../options.cfg", lines);
+				string path = GameManager::getSingleton()->getPath();
+        readFile(path + "../options.cfg", lines);
 
 				GameManager *gm = GameManager::getSingleton();
-        Listbox *listbox = new Listbox(Vector2(gm->getWidth() / 4, gm->getHeight() / 10), Vector2(360, 20), lines, lines.size() < 5 ? lines.size() : 5, PATH + "Fonts/batang.ttf");
+        Listbox *listbox = new Listbox(Vector2(gm->getWidth() / 4, gm->getHeight() / 10), Vector2(360, 20), lines, lines.size() < 5 ? lines.size() : 5, path + "Fonts/batang.ttf");
 
         state->addListbox(listbox);
         state->removeButton("Mouse");
@@ -88,7 +90,7 @@ namespace battleship{
 				GameManager *gm = GameManager::getSingleton();
         Vector2 pos = Vector2(gm->getWidth() / 3, gm->getHeight() / 4);
 
-        string font = PATH + "Fonts/batang.ttf";
+        string font = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
         Slider *mouseSensitivitySlider = new Slider(Vector2(pos.x, pos.y), Vector2(300, 10), .1, 3.);
         Textbox *mouseSensitivityTextbox = new Textbox(Vector2(pos.x + 320, pos.y - 10), Vector2(100, 20), font);
         Checkbox *reverseMouseCheckbox = new Checkbox(Vector2(pos.x, pos.y + 50), font);
@@ -115,7 +117,7 @@ namespace battleship{
         }
 
 				GameManager *gm = GameManager::getSingleton();
-        string font = PATH + "Fonts/batang.ttf";
+        string font = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
         Vector2 pos = Vector2(gm->getWidth() / 3, gm->getHeight() / 8);
         Listbox *resolutionsListbox = new Listbox(Vector2(pos.x, pos.y), Vector2(100, 20), lines, 5, font);
 
@@ -145,7 +147,7 @@ namespace battleship{
 				GameManager *gm = GameManager::getSingleton();
         Vector2 pos(gm->getWidth() / 3, gm->getHeight() / 8);
         Slider *volumeSlider = new Slider(Vector2(pos.x, pos.y), Vector2(300, 10), 0., 2.);
-        Textbox *volumeTextbox = new Textbox(Vector2(pos.x + 320, pos.y), Vector2(100, 20), PATH + "Fonts/batang.ttf");
+        Textbox *volumeTextbox = new Textbox(Vector2(pos.x + 320, pos.y), Vector2(100, 20), GameManager::getSingleton()->getPath() + "Fonts/batang.ttf");
 				volumeSlider->setTextbox(volumeTextbox);
 				volumeTextbox->setSlider(volumeSlider);
         state->addTextbox(volumeTextbox);
@@ -161,7 +163,7 @@ namespace battleship{
     void OptionsButton::MultiplayerTab::onClick() {
         TabButton::onClick();
 				GameManager *gm = GameManager::getSingleton();
-        string font = PATH + "Fonts/batang.ttf";
+        string font = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
         Vector2 pos = Vector2(gm->getWidth() / 3, gm->getHeight() / 6);
         Textbox *tcpTextbox = new Textbox(Vector2(pos.x, pos.y), Vector2(100, 20), font);
         Textbox *udpTextbox = new Textbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), font);
@@ -177,7 +179,7 @@ namespace battleship{
         state->removeButton("Multiplayer");
     }
 
-    OptionsButton::OptionsButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+    OptionsButton::OptionsButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::GUI_STATE));
     }
     void OptionsButton::onClick() {

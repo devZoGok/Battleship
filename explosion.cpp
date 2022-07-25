@@ -13,7 +13,7 @@ namespace battleship{
     void detonate(InGameAppState *inGameState, Vector3 pos, Vector3 dir){
 				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
 				sf::Sound *sfx = nullptr;
-        string  p = PATH + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
+        string  p = GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
 
         if(sfxBuffer->loadFromFile(p.c_str())){
             sfx = new sf::Sound(*sfxBuffer);
@@ -30,7 +30,7 @@ namespace battleship{
     void detonateDepthCharge(InGameAppState *inGameState, Vector3){
 				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
 				sf::Sound *sfx = nullptr;
-        string p = PATH + "Sounds/Destroyers/depthCharge.ogg";
+        string p = GameManager::getSingleton()->getPath() + "Sounds/Destroyers/depthCharge.ogg";
 
         if(sfxBuffer->loadFromFile(p.c_str())){
             sfx = new sf::Sound(*sfxBuffer);
@@ -47,7 +47,7 @@ namespace battleship{
     void detonateTorpedo(InGameAppState *inGameState, Vector3){
 				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
 				sf::Sound *sfx = nullptr;
-        string p = PATH + "Sounds/Submarines/torpedo.ogg";
+        string p = GameManager::getSingleton()->getPath() + "Sounds/Submarines/torpedo.ogg";
 
         if(sfxBuffer->loadFromFile(p.c_str())){
             sfx = new sf::Sound(*sfxBuffer);

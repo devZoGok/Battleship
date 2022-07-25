@@ -280,12 +280,12 @@ namespace battleship {
             "jet00.x", "jet01.x"
         };
         const std::string basePath[numberOfUnits]{
-            PATH + "Models/Battleships/", PATH + "Models/Battleships/",
-            PATH + "Models/Destroyers/", PATH + "Models/Destroyers/",
-            PATH + "Models/Cruisers/", PATH + "Models/Cruisers/",
-            PATH + "Models/Aircraft carriers/", PATH + "Models/Aircraft carriers/",
-            PATH + "Models/Submarines/",
-            PATH + "Models/Jets/", PATH + "Models/Jets/"};
+						GameManager::getSingleton()->getPath() + "Models/Battleships/", GameManager::getSingleton()->getPath() + "Models/Battleships/",
+            GameManager::getSingleton()->getPath() + "Models/Destroyers/", GameManager::getSingleton()->getPath() + "Models/Destroyers/",
+            GameManager::getSingleton()->getPath() + "Models/Cruisers/", GameManager::getSingleton()->getPath() + "Models/Cruisers/",
+            GameManager::getSingleton()->getPath() + "Models/Aircraft carriers/", GameManager::getSingleton()->getPath() + "Models/Aircraft carriers/",
+            GameManager::getSingleton()->getPath() + "Models/Submarines/",
+            GameManager::getSingleton()->getPath() + "Models/Jets/", GameManager::getSingleton()->getPath() + "Models/Jets/"};
     }
 }
 

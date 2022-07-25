@@ -29,7 +29,7 @@ namespace battleship{
 
 	void Map::loadSkybox(LuaManager *luaManager){
 		int numPaths = 6;
-		string table = "skybox", basePath = configData::PATH + "Models/Maps/" + mapName + "/";
+		string table = "skybox", basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
 		string path[] = {
 			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("left", true)}),
 			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("right", true)}),
@@ -50,7 +50,7 @@ namespace battleship{
 		string albedoFile = luaManager->getString("albedoMap");
 
 		AssetManager *assetManager = AssetManager::getSingleton();
-		string basePath = configData::PATH + "Models/Maps/" + mapName + "/";
+		string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
 		assetManager->load(basePath + terrainFile);
 		assetManager->load(basePath + albedoFile);
 
@@ -82,7 +82,7 @@ namespace battleship{
 			mat->addBoolUniform("texturingEnabled", true);
 			mat->addBoolUniform("lightingEnabled", false);
 
-			string fr[]{PATH + "Models/Maps/" + mapName + "/" + luaManager->getStringFromTable(table, vector<Index>{Index("albedoMap", true)})};
+			string fr[]{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + luaManager->getStringFromTable(table, vector<Index>{Index("albedoMap", true)})};
 			AssetManager::getSingleton()->load(fr[0]);
 			Texture *t = new Texture(fr, 1, false);
 
@@ -102,7 +102,7 @@ namespace battleship{
 
     void Map::load() {
 		LuaManager *luaManager = LuaManager::getSingleton();
-		luaManager->buildScript(vector<string>{configData::PATH + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
+		luaManager->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
 
 		loadSkybox(luaManager);
 		loadTerrain(luaManager);
