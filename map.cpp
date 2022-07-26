@@ -125,9 +125,12 @@ namespace battleship{
 				for(int i = 0; i < numCellsByDim[0]; i++){
 					cells[i] = new GraphNode*[numCellsByDim[1]];
 
-					for(int j = 0; j < numCellsByDim[1]; j++){
+					for(int j = 0; j < numCellsByDim[1]; j++)
 						cells[i][j] = new GraphNode[numCellsByDim[2]];
+				}
 
+				for(int i = 0; i < numCellsByDim[0]; i++){
+					for(int j = 0; j < numCellsByDim[1]; j++){
 						for(int k = 0; k < numCellsByDim[2]; k++){
 								GraphNode::Type type = GraphNode::SEA;
 
@@ -137,6 +140,32 @@ namespace battleship{
 								cells[i][j][k] = node;
 						}
 					}
+				}
+
+				int numCells = numCellsByDim[0] * numCellsByDim[1] * numCellsByDim[2];
+				weights = new int*[numCells];
+
+				for(int i = 0; i < numCells; i++){
+						weights[i] = new int[numCells];
+						int x1 = i / numCellsByDim[2] / numCellsByDim[1];
+						int y1 = i / numCellsByDim[2] % numCellsByDim[1];
+						int z1 = i % numCellsByDim[2];
+
+						for(int j = 0; j < numCells; j++){
+								int x2 = j / numCellsByDim[2] / numCellsByDim[1];
+								int y2 = j / numCellsByDim[2] % numCellsByDim[1];
+								int z2 = j % numCellsByDim[2];
+								int weight;
+
+								if(abs(x1 - x2) == 1 || abs(y1 - y2) == 1 || abs(z1 - z2) == 1)
+										weight = 1;
+								else if(x1 == x2 && y1 == y2 && z1 == z2)
+										weight = 0;
+								else
+										weight = -1;
+
+								weights[i][j] = weight;
+						}
 				}
 		}
 

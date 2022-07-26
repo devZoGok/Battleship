@@ -31,6 +31,7 @@ namespace battleship{
 			std::string mapName;
 			float cellSize = 1;
 			GraphNode*** cells = nullptr;
+			int **weights = nullptr;
 
 		void loadSkybox(gameBase::LuaManager*);
 		void loadTerrain(gameBase::LuaManager*);
