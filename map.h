@@ -25,13 +25,13 @@ namespace battleship{
         void update();
         void load();
         void unload();
-				inline vb01::Node* getWaterNode(){return waterNode;}
+		inline vb01::Node* getNodeParent(){return nodeParent;}
     private:
-				vb01::Node *waterNode = nullptr;
-			std::string mapName;
-			float cellSize = 1;
-			GraphNode*** cells = nullptr;
-			int **weights = nullptr;
+		vb01::Node *nodeParent = nullptr;
+		std::string mapName;
+		float cellSize = 1;
+		GraphNode*** cells = nullptr;
+		int **weights = nullptr;
 
 		void loadSkybox(gameBase::LuaManager*);
 		void loadTerrain(gameBase::LuaManager*);

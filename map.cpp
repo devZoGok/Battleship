@@ -66,6 +66,7 @@ namespace battleship{
 		mat->addTexUniform("textures[0]", t, true);
 		model->setMaterial(mat);
 		root->getRootNode()->attachChild(model);
+		nodeParent->attachChild(model);
 	}
 
 	void Map::loadWaterbodies(LuaManager *luaManager){
@@ -89,7 +90,7 @@ namespace battleship{
 			mat->addTexUniform("textures[0]", t, true);
 			quad->setMaterial(mat);
 
-			waterNode = new Node();
+			Node *waterNode = new Node();
 			waterNode->attachMesh(quad);
 			root->getRootNode()->attachChild(waterNode);
 			float posX = luaManager->getFloatFromTable(table, vector<Index>{Index("posX", true)});
@@ -97,6 +98,7 @@ namespace battleship{
 			float posZ = luaManager->getFloatFromTable(table, vector<Index>{Index("posZ", true)});
 			waterNode->setPosition(Vector3(posX, posY, posZ));
 			waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
+			nodeParent->attachChild(waterNode);
 		}
 	}
 
@@ -104,13 +106,15 @@ namespace battleship{
 		LuaManager *luaManager = LuaManager::getSingleton();
 		luaManager->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
 
+		nodeParent = new Node();
+		Root *root = Root::getSingleton();
+		root->getRootNode()->attachChild(nodeParent);
+
 		loadSkybox(luaManager);
 		loadTerrain(luaManager);
 		loadWaterbodies(luaManager);
 
-		generateCells();
-
-		Camera *cam = Root::getSingleton()->getCamera();
+		Camera *cam = root->getCamera();
 		cam->setPosition(Vector3(1, 1, 1) * 10);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
     }

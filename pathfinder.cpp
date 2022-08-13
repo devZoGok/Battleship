@@ -40,6 +40,7 @@ namespace battleship{
 								vertStrich = i;
 								initVertStrichSet = true;
 							}
+
 							if(initVertStrichSet && (distances[vertStrich] > distances[i]))
 								vertStrich = i;
 						}
@@ -59,5 +60,8 @@ namespace battleship{
 				}
 
 				return paths[dest];
+		}
+
+		void Pathfinder::generateWeights(u32 **weights, int &size, Vector3* verts[], Vector2 mapSize){
 		}
 }

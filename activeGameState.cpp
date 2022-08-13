@@ -254,7 +254,7 @@ namespace battleship{
 
 				vector<Ray::CollisionResult> results;
 				Vector3 rayDir = (endPos - camPos).norm();
-				Ray::retrieveCollisions(camPos, rayDir, map->getWaterNode(), results);
+				Ray::retrieveCollisions(camPos, rayDir, map->getNodeParent(), results);
 				std::map<Node*, Unit*> unitData;
 
 				Ray::sortResults(results);
