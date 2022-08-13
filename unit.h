@@ -28,11 +28,11 @@ namespace battleship{
         enum class TYPE {ATTACK, MOVE, PATROL, LAUNCH};
 				struct Target{
 						Unit *unit = nullptr;
-						vb01::Vector3 *pos = nullptr;
+						vb01::Vector3 pos;
 
 						Target(){}
 
-						Target(Unit *unit, vb01::Vector3 *pos){
+						Target(Unit *unit, vb01::Vector3 pos){
 								this->unit = unit;
 								this->pos = pos;
 						}
@@ -62,7 +62,7 @@ namespace battleship{
         float getCircleRadius();
 				vb01::Vector3 getCorner(int);
         std::vector<Projectile*> getProjectiles();
-        inline void addOrder(Order o){orders.push_back(o);}
+        void addOrder(Order);
         inline bool isSelected(){return selected;}
         inline bool isSelectable(){return selectable;}
         inline bool isDebuggable(){return debugging;}
@@ -93,9 +93,10 @@ namespace battleship{
         const int orderVecDispLength = 2000;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
-				vb01::Quad *hpBackground = nullptr, *hpForeground = nullptr;
-				vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
-				int lenHpBar = 200;
+		vb01::Quad *hpBackground = nullptr, *hpForeground = nullptr;
+		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
+		int lenHpBar = 200;
+		std::vector<vb01::Vector3> pathPoints;
     protected:
         Player *player;
         MoveDir moveDir = MoveDir::FORWARD;

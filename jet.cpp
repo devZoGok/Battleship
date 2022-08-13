@@ -24,14 +24,14 @@ namespace battleship{
             if (orders.size() == 0) {
                 Order o;
                 o.type = Order::TYPE::MOVE;
-                o.targets.push_back(Order::Target(nullptr, new Vector3(lp)));
+                o.targets.push_back(Order::Target(nullptr, lp));
                 setOrder(o);
             }
 
             if (!landing
-                    &&aircraftCarrier
-                    &&pos.getDistanceFrom(lp) <= unitData::destinationOffset[id]
-                    &&*orders[0].targets[0].pos == lp){
+                    && aircraftCarrier
+                    && pos.getDistanceFrom(lp) <= unitData::destinationOffset[id]
+                    && orders[0].targets[0].pos == lp){
                 float angle = dirVec.getAngleBetween(aircraftCarrier->getDirVec()), maxAngle = PI - anglePrecision[id] / 180 * PI;
 
                 if(!toTurnPoint && anglePrecision[id] / 180 * PI < angle && angle < maxAngle){
@@ -47,7 +47,7 @@ namespace battleship{
                     Vector3 tanPoint = pos + (jetSideVec + carrierSideVec) * radius;
                     float ang1 = (tanPoint - lp).getAngleBetween(carrierSideVec);
                     float ang2 = dirVec.getAngleBetween(-carrierSideVec);
-                    float base = (tanPoint-lp).getLength() * cos(ang1);
+                    float base = (tanPoint - lp).getLength() * cos(ang1);
                     float hyp = base / cos(ang2);
                     landingPos = (pos + dirVec * hyp);
                     toTurnPoint = true;
@@ -84,7 +84,7 @@ namespace battleship{
         Vector3 offsetDir = Quaternion(PI / 2, upVec) * destDir;
         Vector3 destDirPos = Quaternion(angle, upVec) * dirVec;
         Vector3 offsetDirPos = Quaternion(angle + PI / 2, upVec) * dirVec;
-        Vector3 hypVec = *orders[0].targets[0].pos - destDirPos;
+        Vector3 hypVec = orders[0].targets[0].pos - destDirPos;
         float triAngle = hypVec.getAngleBetween(offsetDir);
         float distance = cos(triAngle) * hypVec.getLength();
         Vector3 destPoint = offsetDirPos + offsetDirPos.norm() * distance;

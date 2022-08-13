@@ -11,6 +11,7 @@
 #include "unit.h"
 #include "util.h"
 #include "inGameAppState.h"
+#include "pathfinder.h"
 #include "unitData.h"
 
 using namespace glm;
@@ -152,7 +153,7 @@ namespace battleship{
     void Unit::move(Order order, float destOffset) {
         float movementAmmount, radius = getCircleRadius(), angle = 0.;
 				int targetId = (order.type == Order::TYPE::PATROL ? getNextPatrolPointId(order.targets.size()) : 0);
-        Vector3 dest = *order.targets[targetId].pos;
+        Vector3 dest = order.targets[targetId].pos;
         dest.y = pos.y;
         Vector3 center;
 
@@ -270,14 +271,29 @@ namespace battleship{
 
         return projectiles;
     }
+
+	void Unit::addOrder(Order order){
+		u32 **weights = new u32*;
+		float eps = getCircleRadius();
+		Map *map = Map::getSingleton();
+		Vector2 mapSize = map->getSize();
+		int numCells = int(mapSize.x / eps) * int(mapSize.y / eps);
+
+		Pathfinder *pathfinder = Pathfinder::getSingleton();
+		Vector3 **verts = nullptr;
+		pathfinder->generateWeights(weights, numCells, verts, mapSize);
+
+		vector<int> path = pathfinder->findPath(weights, numCells, map->getCellId(), map->getCellId());
+		pathPoints.clear();
+
+		for(int p : path)
+			pathPoints.push_back(map->getCellPos());
+
+		orders.push_back(order);
+	}
     
     void Unit::removeOrder(int id) {
-				LineRenderer::getSingleton()->removeLine(orders[id].line.id);
-
-				for(Order::Target t : orders[id].targets)
-						if(t.unit)
-								delete t.pos;
-
+		LineRenderer::getSingleton()->removeLine(orders[id].line.id);
         orders.erase(orders.begin() + id);
     }
 

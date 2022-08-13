@@ -13,7 +13,7 @@ namespace vb01{
 namespace battleship{
     class ActiveGameState : public gameBase::AbstractAppState {
     public:
-        ActiveGameState(GuiAppState*, Map*, std::vector<Player*> players, int);
+        ActiveGameState(GuiAppState*, std::vector<Player*> players, int);
         ~ActiveGameState();
         void onAttached();
         void onDettached();
@@ -35,7 +35,6 @@ namespace battleship{
 				void orientCamera(vb01::Vector3, double);
 
         GuiAppState *guiState;
-        Map *map;
         std::vector<Player*> players;
         Player *mainPlayer;
 				vb01::Quad *dragbox = nullptr;

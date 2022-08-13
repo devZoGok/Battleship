@@ -183,8 +183,7 @@ namespace battleship{
         this->playerId = 0;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;
-
-        map = new Map(mapName);
+		this->mapName = mapName;
     }
 
     InGameAppState::~InGameAppState() {
@@ -193,7 +192,7 @@ namespace battleship{
     void InGameAppState::onAttached() {
         AbstractAppState::onAttached();
 
-        map->load();
+		Map::getSingleton()->load(mapName);
 
         for (int i = 0; i < factions.size(); i++) {
             int faction;
@@ -219,7 +218,7 @@ namespace battleship{
         mainPlayer = players[playerId];
 				StateManager *stateManager = GameManager::getSingleton()->getStateManager();
         guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
-        activeState = new ActiveGameState(guiState, map, players, playerId);
+        activeState = new ActiveGameState(guiState, players, playerId);
         stateManager->attachAppState(activeState);
 
 		UnitDataManager *unitDataManager = UnitDataManager::getSingleton();
@@ -238,9 +237,6 @@ namespace battleship{
     }
 
     void InGameAppState::update() {
-        if (map)
-            map->update();
-
         for (Player *p : players)
             if (p) {
                 p->update();

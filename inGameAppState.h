@@ -135,8 +135,8 @@ namespace battleship{
         std::vector<std::string> difficultyLevels, factions;
         std::vector<Projectile*> projectiles;
         std::vector<Fx> fx;
+		std::string mapName;
         Player *mainPlayer;
-        Map *map;
         int playerId;
         ActiveGameState* activeState;
         GuiAppState* guiState;

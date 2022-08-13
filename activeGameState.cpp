@@ -33,13 +33,12 @@ namespace battleship{
 
     const int size = 50;
     
-    ActiveGameState::ActiveGameState(GuiAppState *guiState, Map *map, vector<Player*> players, int playerId) : AbstractAppState(
+    ActiveGameState::ActiveGameState(GuiAppState *guiState, vector<Player*> players, int playerId) : AbstractAppState(
 						AppStateType::ACTIVE_STATE,
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, true),
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, false),
 					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
         this->guiState = guiState;
-        this->map = map;
         this->players = players;
 
 				GameManager *gm = GameManager::getSingleton();
@@ -226,7 +225,7 @@ namespace battleship{
 
         for (int i = 0; i < selectedUnits.size(); ++i) {
 						Unit *u = selectedUnits[i];
-						lineRenderer->addLine(u->getPos(), *targets[i].pos, color);
+						lineRenderer->addLine(u->getPos(), targets[i].pos, color);
 						vector<LineRenderer::Line> lines = lineRenderer->getLines();
 						o.line = lines[lines.size() - 1];
 
@@ -234,7 +233,7 @@ namespace battleship{
             if (type != Order::TYPE::LAUNCH || (u->getId() == 4 || u->getId() == 5)) {
 								if(type == Order::TYPE::PATROL){
 										Vector3 p = u->getPos();
-										targets[0] = Order::Target(nullptr, new Vector3(p));
+										targets[0] = Order::Target(nullptr, p);
 								}
 
                 if (addOrder)
@@ -254,7 +253,7 @@ namespace battleship{
 
 				vector<Ray::CollisionResult> results;
 				Vector3 rayDir = (endPos - camPos).norm();
-				Ray::retrieveCollisions(camPos, rayDir, map->getNodeParent(), results);
+				Ray::retrieveCollisions(camPos, rayDir, Map::getSingleton()->getNodeParent(), results);
 				std::map<Node*, Unit*> unitData;
 
 				Ray::sortResults(results);
@@ -263,7 +262,7 @@ namespace battleship{
 						vector<Node*> ancestors = results[0].mesh->getNode()->getAncestors();
 						Node *node = ancestors[ancestors.size() - 2];
 						std::map<Node*, Unit*>::iterator it = unitData.find(node);
-						targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : nullptr), new Vector3(results[0].pos)));
+						targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : nullptr), results[0].pos));
 				}
     }
     

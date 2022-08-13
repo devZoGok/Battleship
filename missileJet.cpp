@@ -15,24 +15,23 @@ namespace battleship{
 
     void MissileJet::attack(Order order) {
         if(!onBoard && canFire() && missilesInstalled){
-            Vector3 target = *order.targets[0].pos;
+            Vector3 target = order.targets[0].pos;
             float distance=pos.getDistanceFrom(target);
 
             if(distance <= range){
-                Vector3 *targetPtr = nullptr;
+                Vector3 targetPtr = Vector3::VEC_ZERO;
                 InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
                 for(Player *p : inGameState->getPlayers())
                     for(Unit *u : p->getUnits()){
                         bool jet = (u->getType() == UNIT_TYPE::MISSILE_JET || u->getType() == UNIT_TYPE::DEMO_JET);
-                        if((jet && type == AAM) && (!jet && type == AWM) && u->getPosPtr() == order.targets[0].pos)
-                            targetPtr = u->getPosPtr();
+						
+                        if((jet && type == AAM) && (!jet && type == AWM) && u->getPos() == order.targets[0].pos)
+                            targetPtr = u->getPos();
                     }
 								
-                if(!targetPtr){
-                    targetPtr = new Vector3();
-                    *targetPtr = target;
-                }
+                if(targetPtr != Vector3::VEC_ZERO)
+                    targetPtr = target;
 
                 fireMissile(targetPtr);
             }
@@ -45,7 +44,7 @@ namespace battleship{
             removeOrder(0);
     }
 
-    void MissileJet::fireMissile(Vector3 *t) {
+    void MissileJet::fireMissile(Vector3 t) {
         Vector3 p = pos + leftVec * projectileData::pos[id][0][missiles - 1].x + upVec * projectileData::pos[id][0][missiles - 1].y - dirVec * projectileData::pos[id][0][missiles - 1].z;
         addProjectile(new Missile(this, missileNodes[missiles-1], t, p, dirVec, leftVec, upVec, id, 0, 0));
         missileNodes[missiles-1]->setParent(Root::getSingleton()->getRootNode());

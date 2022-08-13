@@ -6,7 +6,7 @@
 using namespace vb01;
 
 namespace battleship{
-    Missile::Missile(Unit *unit, Node *node, Vector3 *target, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) :
+    Missile::Missile(Unit *unit, Node *node, Vector3 target, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) :
         Projectile(unit, node, pos, dir, left, up, id, weaponTypeId, weaponId) {
         this->target = target;
         this->type = (MissileType)weaponId;
@@ -17,8 +17,8 @@ namespace battleship{
         Projectile::update();
         pos = pos + dirVec * speed;
         node->setPosition(pos);
-        float angle = dirVec.getAngleBetween(*target - pos);
-        Vector3 axis = dirVec.cross(*target - pos).norm();
+        float angle = dirVec.getAngleBetween(target - pos);
+        Vector3 axis = dirVec.cross(target - pos).norm();
 
         if(rotationSpeed / 180 * PI < angle){
             Quaternion rotQuat = Quaternion(rotationSpeed / 180 * PI, axis);

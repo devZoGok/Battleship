@@ -17,15 +17,14 @@ using namespace gameBase;
 namespace battleship{
 	using namespace configData;
 
-    Map::Map(string mapName) {
-		this->mapName = mapName;
-    }
+	Map *map = nullptr;
 
-    Map::~Map() {
-    }
+	Map* Map::getSingleton(){
+		if(!map)
+			map = new Map;
 
-    void Map::update() {
-    }
+		return map;
+	}
 
 	void Map::loadSkybox(LuaManager *luaManager){
 		int numPaths = 6;
@@ -102,7 +101,8 @@ namespace battleship{
 		}
 	}
 
-    void Map::load() {
+    void Map::load(string mapName) {
+		this->mapName = mapName;
 		LuaManager *luaManager = LuaManager::getSingleton();
 		luaManager->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
 
@@ -174,4 +174,12 @@ namespace battleship{
 		}
 
     void Map::unload() {}
+
+	Vector3 Map::getCellPos(){
+		return Vector3::VEC_ZERO;
+	}
+
+	int Map::getCellId(){
+		return 0;
+	}
 }
