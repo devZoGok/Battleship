@@ -18,13 +18,13 @@ namespace battleship{
 		Pathfinder::Pathfinder(){
 		}
 
-		vector<int> Pathfinder::findPath(s32 **weights, int size, int source, int dest){
-				s32 distances[size];
+		vector<int> Pathfinder::findPath(u32 **weights, int size, int source, int dest){
+				u32 distances[size];
 				vector<int> paths[size];
 				paths[source].push_back(source);
 
 				for(int i = 0; i < size; i++)
-						distances[i] = (i == source ? 0 : 999);
+						distances[i] = (i == source ? 0 : u16(0 - 1));
 
 				vector<int> checkedNodes;
 

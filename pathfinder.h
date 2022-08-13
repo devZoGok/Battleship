@@ -9,7 +9,7 @@ namespace battleship{
 		class Pathfinder{
 				public:
 						static Pathfinder* getSingleton();
-						std::vector<int> findPath(vb01::s32**, int, int, int);
+						std::vector<int> findPath(vb01::u32**, int, int, int);
 				private:
 						Pathfinder();
 		};

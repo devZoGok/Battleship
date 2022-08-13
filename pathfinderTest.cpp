@@ -11,19 +11,20 @@ namespace battleship{
 
 		void PathfinderTest::testFindPath(){
 				int size = 7;
-				s32 w[size][size] = {
-						{0, 2, 4, 999, 999, 999, 999},
-						{999, 0, 1, 9, 13, 999, 999},
-						{999, 2, 0, 999, 4, 5, 999},
-						{999, 999, 999, 0, 999, 999, 1},
-						{1, 999, 999, 1, 0, 999, 3},
-						{999, 999, 999, 999, 9, 0, 2},
-						{999, 999, 999, 999, 999, 999, 0}
+				const u32 INF = u16(0 - 1);
+				u32 w[size][size] = {
+						{0, 2, 4, INF, INF, INF, INF},
+						{INF, 0, 1, 9, 13, INF, INF},
+						{INF, 2, 0, INF, 4, 5, INF},
+						{INF, INF, INF, 0, INF, INF, 1},
+						{1, INF, INF, 1, 0, INF, 3},
+						{INF, INF, INF, INF, 9, 0, 2},
+						{INF, INF, INF, INF, INF, INF, 0}
 				};
-				s32 **weights = new s32*[size];
+				u32 **weights = new u32*[size];
 
 				for(int i = 0; i < size; i++){
-						weights[i] = new s32[size];
+						weights[i] = new u32[size];
 
 						for(int j = 0; j < size; j++)
 								weights[i][j] = w[i][j];
