@@ -62,6 +62,6 @@ namespace battleship{
 				return paths[dest];
 		}
 
-		void Pathfinder::generateWeights(u32 **weights, int &size, Vector3* verts[], Vector2 mapSize){
+		void Pathfinder::generateWeights(u32 **weights, int &size, Vector3* verts[], Vector3 mapSize){
 		}
 }

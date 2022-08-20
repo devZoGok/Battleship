@@ -152,8 +152,8 @@ namespace battleship{
 
     void Unit::move(Order order, float destOffset) {
         float movementAmmount, radius = getCircleRadius(), angle = 0.;
-				int targetId = (order.type == Order::TYPE::PATROL ? getNextPatrolPointId(order.targets.size()) : 0);
-        Vector3 dest = order.targets[targetId].pos;
+		int targetId = (order.type == Order::TYPE::PATROL ? getNextPatrolPointId(order.targets.size()) : 0);
+        Vector3 dest = pathPoints[0];
         dest.y = pos.y;
         Vector3 center;
 
@@ -194,13 +194,17 @@ namespace battleship{
 
         advance(movementAmmount);
 
-        if (pos.getDistanceFrom(dest) <= destOffset && orders[0].type != Order::TYPE::ATTACK) {
-            moveDir = MoveDir::FORWARD;
+        if (pos.getDistanceFrom(dest) <= destOffset){
+			pathPoints.erase(pathPoints.begin());
 
-						if(orders[0].type == Order::TYPE::MOVE)
-            	removeOrder(0);
-						else if(orders[0].type == Order::TYPE::PATROL)
-							patrolPointId = targetId;
+			if(pathPoints.empty() && orders[0].type != Order::TYPE::ATTACK) {
+        		moveDir = MoveDir::FORWARD;
+
+				if(orders[0].type == Order::TYPE::MOVE)
+        			removeOrder(0);
+				else if(orders[0].type == Order::TYPE::PATROL)
+					patrolPointId = targetId;
+			}
         }
     }
 
@@ -276,18 +280,18 @@ namespace battleship{
 		u32 **weights = new u32*;
 		float eps = getCircleRadius();
 		Map *map = Map::getSingleton();
-		Vector2 mapSize = map->getSize();
+		Vector3 mapSize = map->getSize();
 		int numCells = int(mapSize.x / eps) * int(mapSize.y / eps);
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		Vector3 **verts = nullptr;
 		pathfinder->generateWeights(weights, numCells, verts, mapSize);
 
-		vector<int> path = pathfinder->findPath(weights, numCells, map->getCellId(), map->getCellId());
+		vector<int> path = pathfinder->findPath(weights, numCells, map->getCellId(pos), map->getCellId(order.targets[0].pos));
 		pathPoints.clear();
 
 		for(int p : path)
-			pathPoints.push_back(map->getCellPos());
+			pathPoints.push_back(map->getCellPos(p));
 
 		orders.push_back(order);
 	}

@@ -66,6 +66,7 @@ namespace battleship{
 		model->setMaterial(mat);
 		root->getRootNode()->attachChild(model);
 		nodeParent->attachChild(model);
+		terrainModel = model;
 	}
 
 	void Map::loadWaterbodies(LuaManager *luaManager){
@@ -73,6 +74,7 @@ namespace battleship{
 		int numWaterBodies = 1;
 		string table = "waterBodies";
 		Root *root = Root::getSingleton();
+		waterBodies = new WaterBody[numWaterBodies];
 
 		for(int i = 0; i < numWaterBodies; i++){
 			float sizeX = luaManager->getFloatFromTable(table, vector<Index>{Index("sizeX", true)});
@@ -89,6 +91,7 @@ namespace battleship{
 			mat->addTexUniform("textures[0]", t, true);
 			quad->setMaterial(mat);
 
+			bool rect = luaManager->getBoolFromTable(table, vector<Index>{Index("rect", true)});
 			Node *waterNode = new Node();
 			waterNode->attachMesh(quad);
 			root->getRootNode()->attachChild(waterNode);
@@ -98,6 +101,10 @@ namespace battleship{
 			waterNode->setPosition(Vector3(posX, posY, posZ));
 			waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 			nodeParent->attachChild(waterNode);
+
+			waterBodies[i].pos = Vector3(posX, posY, posZ);
+			waterBodies[i].size = Vector2(sizeX, sizeY);
+			waterBodies[i].rect = rect;
 		}
 	}
 
@@ -119,67 +126,11 @@ namespace battleship{
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
     }
 
-		void Map::generateCells(){
-				//TODO replace magic values by retrieving terrain dimensions
-				Vector3 terrainSize = Vector3(20, 6, 20);
-				Vector3 initPos = terrainSize * (-0.5);
-				int numCellsByDim[]{terrainSize.x / cellSize, terrainSize.y / cellSize, terrainSize.z / cellSize};
-				cells = new GraphNode**[numCellsByDim[0]];
-
-				for(int i = 0; i < numCellsByDim[0]; i++){
-					cells[i] = new GraphNode*[numCellsByDim[1]];
-
-					for(int j = 0; j < numCellsByDim[1]; j++)
-						cells[i][j] = new GraphNode[numCellsByDim[2]];
-				}
-
-				for(int i = 0; i < numCellsByDim[0]; i++){
-					for(int j = 0; j < numCellsByDim[1]; j++){
-						for(int k = 0; k < numCellsByDim[2]; k++){
-								GraphNode::Type type = GraphNode::SEA;
-
-								GraphNode node;
-								node.type = type;
-								node.pos = initPos + Vector3(cellSize * i, cellSize * j, cellSize * k);
-								cells[i][j][k] = node;
-						}
-					}
-				}
-
-				int numCells = numCellsByDim[0] * numCellsByDim[1] * numCellsByDim[2];
-				weights = new int*[numCells];
-
-				for(int i = 0; i < numCells; i++){
-						weights[i] = new int[numCells];
-						int x1 = i / numCellsByDim[2] / numCellsByDim[1];
-						int y1 = i / numCellsByDim[2] % numCellsByDim[1];
-						int z1 = i % numCellsByDim[2];
-
-						for(int j = 0; j < numCells; j++){
-								int x2 = j / numCellsByDim[2] / numCellsByDim[1];
-								int y2 = j / numCellsByDim[2] % numCellsByDim[1];
-								int z2 = j % numCellsByDim[2];
-								int weight;
-
-								if(abs(x1 - x2) == 1 || abs(y1 - y2) == 1 || abs(z1 - z2) == 1)
-										weight = 1;
-								else if(x1 == x2 && y1 == y2 && z1 == z2)
-										weight = 0;
-								else
-										weight = -1;
-
-								weights[i][j] = weight;
-						}
-				}
-		}
-
     void Map::unload() {}
 
-	Vector3 Map::getCellPos(){
-		return Vector3::VEC_ZERO;
+	Vector3 Map::getCellPos(int id){
 	}
 
-	int Map::getCellId(){
-		return 0;
+	int Map::getCellId(Vector3 pos){
 	}
 }
