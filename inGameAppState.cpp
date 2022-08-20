@@ -251,7 +251,7 @@ namespace battleship{
                         std::vector<Unit*> &units=p->getUnits(),&selectedUnits=activeState->getSelectedUnits();
                         units.erase(units.begin()+i);
 
-                        if(u->getType()==unitData::UNIT_TYPE::MISSILE_JET||u->getType()==unitData::UNIT_TYPE::DEMO_JET){
+                        if(u->getType() == UnitType::MISSILE_JET || u->getType() == UnitType::DEMO_JET){
                             AircraftCarrier *carrier=nullptr;
 
                             for(int i2=0;i2<p->getUnits().size()&&!carrier;i2++){
@@ -266,7 +266,7 @@ namespace battleship{
                                 jets[((Jet*)u)->getJetId()]=nullptr;
                             }
                         }
-                        else if(u->getType()==unitData::UNIT_TYPE::AIRCRAFT_CARRIER){
+                        else if(u->getType() == UnitType::AIRCRAFT_CARRIER){
                             AircraftCarrier *carrier=(AircraftCarrier*)u;
 
                             for(int i2=0;i2<carrier->getMaxNumJets();i2++){

@@ -11,70 +11,69 @@
 #include "unit.h"
 #include "util.h"
 #include "inGameAppState.h"
+#include "defConfigs.h"
 #include "pathfinder.h"
-#include "unitData.h"
 
 using namespace glm;
 using namespace vb01;
 using namespace std;
 
 namespace battleship{
-		using namespace unitData;
-
     Unit::Unit(Player *player, vb01::Vector3 pos, int id) {
         this->id = id;
         this->player = player;
-        this->health = unitData::health[id];
-        this->maxTurnAngle = unitData::maxTurnAngle[id];
-        this->range = unitData::range[id];
-        this->lineOfSight = unitData::lineOfSight[id];
-        this->speed = unitData::speed[id];
-        type = unitData::unitType[id];
-        width = unitData::unitCornerPoints[id][0].x - unitData::unitCornerPoints[id][1].x;
-        height = unitData::unitCornerPoints[id][4].y - unitData::unitCornerPoints[id][0].y;
-        length = unitData::unitCornerPoints[id][3].z - unitData::unitCornerPoints[id][0].z;
+		UnitDataManager *udm = UnitDataManager::getSingleton();
+        health = udm->getHealth()[id];
+        maxTurnAngle = udm->getMaxTurnAngle()[id];
+        range = udm->getRange()[id];
+        lineOfSight = udm->getLineOfSight()[id];
+        speed = udm->getSpeed()[id];
+        type = udm->getUnitType()[id];
+        width = udm->getUnitCornerPoints()[id][0].x - udm->getUnitCornerPoints()[id][1].x;
+        height = udm->getUnitCornerPoints()[id][4].y - udm->getUnitCornerPoints()[id][0].y;
+        length = udm->getUnitCornerPoints()[id][3].z - udm->getUnitCornerPoints()[id][0].z;
 
-				GameManager *gm = GameManager::getSingleton();
-				model = new Model(basePath[id] + meshPath[id]);
-				Root *root = Root::getSingleton();
-				string libPath = root->getLibPath();
+		GameManager *gm = GameManager::getSingleton();
+		model = new Model(udm->getBasePath()[id] + udm->getMeshPath()[id]);
+		Root *root = Root::getSingleton();
+		string libPath = root->getLibPath();
 
-				Material *mat = new Material(libPath + "texture");
-				string f[]{DEFAULT_TEXTURE};
+		Material *mat = new Material(libPath + "texture");
+		string f[]{configData::DEFAULT_TEXTURE};
         Texture *diffuseTexture = new Texture(f, 1, false);
-				mat->addBoolUniform("texturingEnabled", true);
-				mat->addBoolUniform("lightingEnabled", false);
-				mat->addTexUniform("textures[0]", diffuseTexture, true);
+		mat->addBoolUniform("texturingEnabled", true);
+		mat->addBoolUniform("lightingEnabled", false);
+		mat->addTexUniform("textures[0]", diffuseTexture, true);
 
-				model->setMaterial(mat);
-				root->getRootNode()->attachChild(model);
+		model->setMaterial(mat);
+		root->getRootNode()->attachChild(model);
         placeUnit(pos);
 
         selectionSfxBuffer = new sf::SoundBuffer();
-        string p = GameManager::getSingleton()->getPath() + "Sounds/" + unitData::name[id] + "s/selection.ogg";
+        string p = GameManager::getSingleton()->getPath() + "Sounds/" + udm->getName()[id] + "s/selection.ogg";
 
         if(selectionSfxBuffer->loadFromFile(p.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
 
-				Node *guiNode = root->getGuiNode();
+		Node *guiNode = root->getGuiNode();
 
-				hpBackground = new Quad(Vector3(lenHpBar, 10, 0), false);
-				Material *hpBackgroundMat = new Material(libPath + "gui");
-				hpBackgroundMat->addBoolUniform("texturingEnabled", false);
-				hpBackgroundMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
-				hpBackground->setMaterial(hpBackgroundMat);
-				hpBackgroundNode = new Node();
-				hpBackgroundNode->attachMesh(hpBackground);
-				guiNode->attachChild(hpBackgroundNode);
+		hpBackground = new Quad(Vector3(lenHpBar, 10, 0), false);
+		Material *hpBackgroundMat = new Material(libPath + "gui");
+		hpBackgroundMat->addBoolUniform("texturingEnabled", false);
+		hpBackgroundMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
+		hpBackground->setMaterial(hpBackgroundMat);
+		hpBackgroundNode = new Node();
+		hpBackgroundNode->attachMesh(hpBackground);
+		guiNode->attachChild(hpBackgroundNode);
 
-				hpForeground = new Quad(Vector3(lenHpBar, 10, 0), false);
-				Material *hpForegroundMat = new Material(libPath + "gui");
-				hpForegroundMat->addBoolUniform("texturingEnabled", false);
-				hpForegroundMat->addVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
-				hpForeground->setMaterial(hpForegroundMat);
-				hpForegroundNode = new Node();
-				hpForegroundNode->attachMesh(hpForeground);
-				guiNode->attachChild(hpForegroundNode);
+		hpForeground = new Quad(Vector3(lenHpBar, 10, 0), false);
+		Material *hpForegroundMat = new Material(libPath + "gui");
+		hpForegroundMat->addBoolUniform("texturingEnabled", false);
+		hpForegroundMat->addVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
+		hpForeground->setMaterial(hpForegroundMat);
+		hpForegroundNode = new Node();
+		hpForegroundNode->attachMesh(hpForeground);
+		guiNode->attachChild(hpForegroundNode);
     }
 
     Unit::~Unit() {
@@ -112,7 +111,7 @@ namespace battleship{
     void Unit::displayUnitStats() {
 				float shiftedX = screenPos.x - 0.5 * lenHpBar;
 				hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
-				hpForeground->setSize(Vector3(health / unitData::health[id] * lenHpBar, 10, 0));
+				hpForeground->setSize(Vector3(health / UnitDataManager::getSingleton()->getHealth()[id] * lenHpBar, 10, 0));
 				hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
     }
 
@@ -125,7 +124,7 @@ namespace battleship{
                     attack(order);
                     break;
                 case Order::TYPE::MOVE:
-                    move(order, unitData::destinationOffset[id]);
+                    move(order, UnitDataManager::getSingleton()->getDestinationOffset()[id]);
                     break;
                 case Order::TYPE::PATROL:
                     patrol(order);
@@ -166,6 +165,7 @@ namespace battleship{
         }
 
         bool withinCircle = center.getDistanceFrom(dest) < radius ? true : false;
+		float anglePrecision = UnitDataManager::getSingleton()->getAnglePrecision()[id];
 
         if (moveDir != MoveDir::FORWARD) {
             if (withinCircle)
@@ -175,14 +175,14 @@ namespace battleship{
 
             angle = isnan(angle) ? 0. : angle;
 
-            if (angle > anglePrecision[id]) {
+            if (angle > anglePrecision) {
                 float rotAngle = maxTurnAngle > angle ? angle : maxTurnAngle;
                 angle -= rotAngle;
                 turn(moveDir == MoveDir::RIGHT ? -rotAngle : rotAngle);
             }
         }
 
-        if (angle > anglePrecision[id])
+        if (angle > anglePrecision)
             movementAmmount = speed;
         else {
             if (withinCircle) {
@@ -209,7 +209,7 @@ namespace battleship{
     }
 
     void Unit::patrol(Order order) {
-        move(order, unitData::destinationOffset[id]);
+        move(order, UnitDataManager::getSingleton()->getDestinationOffset()[id]);
     }
 
     void Unit::launch(Order order) {}
@@ -261,7 +261,7 @@ namespace battleship{
     }
     
     Vector3 Unit::getCorner(int i) {
-        Vector3 corner = unitCornerPoints[id][i];
+        Vector3 corner = UnitDataManager::getSingleton()->getUnitCornerPoints()[id][i];
         return pos + (leftVec * corner.x + upVec * corner.y - dirVec * corner.z);
     }
 

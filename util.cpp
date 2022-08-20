@@ -14,6 +14,7 @@
 #include <tinydir.h>
 
 #include "util.h"
+#include "defConfigs.h"
 #include "gameManager.h"
 #include "guiAppState.h"
 #include "inGameAppState.h"

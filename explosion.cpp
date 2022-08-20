@@ -8,8 +8,6 @@ using namespace std;
 using namespace vb01;
 
 namespace battleship{
-		using namespace configData;
-
     void detonate(InGameAppState *inGameState, Vector3 pos, Vector3 dir){
 				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
 				sf::Sound *sfx = nullptr;

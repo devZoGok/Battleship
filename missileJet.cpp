@@ -24,7 +24,7 @@ namespace battleship{
 
                 for(Player *p : inGameState->getPlayers())
                     for(Unit *u : p->getUnits()){
-                        bool jet = (u->getType() == UNIT_TYPE::MISSILE_JET || u->getType() == UNIT_TYPE::DEMO_JET);
+                        bool jet = (u->getType() == UnitType::MISSILE_JET || u->getType() == UnitType::DEMO_JET);
 						
                         if((jet && type == AAM) && (!jet && type == AWM) && u->getPos() == order.targets[0].pos)
                             targetPtr = u->getPos();

@@ -300,7 +300,7 @@ namespace battleship{
 						case Bind::TOGGLE_SUB:
                 if (isPressed) {
                     for (Unit *u : selectedUnits) {
-                        if (u->getPlayer() == mainPlayer && u->getType() == unitData::UNIT_TYPE::SUBMARINE) {
+                        if (u->getPlayer() == mainPlayer && u->getType() == UnitType::SUBMARINE) {
                             Submarine *s = (Submarine*) u;
 
                             if (s->isSubmerged())

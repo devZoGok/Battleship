@@ -9,7 +9,7 @@
 
 #include <SFML/Audio.hpp>
 
-#include "unitData.h"
+#include "unitDataManager.h"
 #include "gameManager.h"
 #include "projectile.h"
 
@@ -60,7 +60,7 @@ namespace battleship{
         void orientUnit(vb01::Vector3);
         void addProjectile(Projectile*);
         float getCircleRadius();
-				vb01::Vector3 getCorner(int);
+		vb01::Vector3 getCorner(int);
         std::vector<Projectile*> getProjectiles();
         void addOrder(Order);
         inline bool isSelected(){return selected;}
@@ -76,7 +76,7 @@ namespace battleship{
         inline float getLength() {return length;}
         inline vb01::Model* getNode() {return model;}
         inline Player* getPlayer(){return player;}
-        inline unitData::UNIT_TYPE getType() {return type;}
+        inline UnitType getType() {return type;}
         inline void toggleDebugging(bool d){this->debugging=d;}
         inline void takeDamage(int damage) {health -= damage;}
         inline int getId() {return id;}
@@ -100,14 +100,14 @@ namespace battleship{
     protected:
         Player *player;
         MoveDir moveDir = MoveDir::FORWARD;
-        unitData::UNIT_TYPE type;
-				vb01::Vector2 screenPos;
+        UnitType type;
+		vb01::Vector2 screenPos;
         std::vector<Order> orders;
-				vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), leftVec = vb01::Vector3(1, 0, 0);
-				vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
+		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), leftVec = vb01::Vector3(1, 0, 0);
+		vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
         int health, cost, id, patrolPointId = 0, playerId;
         s64 orderLineDispTime = 0;
-				vb01::Model *model;
+		vb01::Model *model;
         bool selected = false, selectable, debugging = false, working = true;
         float lineOfSight, speed, maxTurnAngle, range, width, height, length;
 
