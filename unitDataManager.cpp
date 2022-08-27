@@ -30,6 +30,7 @@ namespace battleship{
 				health = new int[numUnits];
 				speed = new float[numUnits];
 				destinationOffset = new float[numUnits];
+				unitType = new UnitType[numUnits];
 				anglePrecision = new float[numUnits];
 				cost = new int[numUnits];
 				maxTurnAngle = new float[numUnits];
@@ -45,6 +46,7 @@ namespace battleship{
 				for(int i = 0; i < numUnits; i++){
 					health[i] = luaManager->getIntFromTable("health", vector<Index>{Index(to_string(i + 1), false)});
 					speed[i] = luaManager->getFloatFromTable("speed", vector<Index>{Index(to_string(i + 1), false)});
+					unitType[i] = (UnitType)luaManager->getIntFromTable("unitType", vector<Index>{Index(to_string(i + 1), false)});
 					destinationOffset[i] = luaManager->getFloatFromTable("destinationOffset", vector<Index>{Index(to_string(i + 1), false)});
 					anglePrecision[i] = luaManager->getFloatFromTable("anglePrecision", vector<Index>{Index(to_string(i + 1), false)});
 					cost[i] = luaManager->getIntFromTable("cost", vector<Index>{Index(to_string(i + 1), false)});

@@ -220,16 +220,16 @@ namespace battleship{
         guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
         activeState = new ActiveGameState(guiState, players, playerId);
         stateManager->attachAppState(activeState);
+		AssetManager *assetManager = AssetManager::getSingleton();
+		assetManager->load(DEFAULT_TEXTURE);
 
 		UnitDataManager *unitDataManager = UnitDataManager::getSingleton();
 		int numUnits = unitDataManager->getNumUnits();
 		string *basePaths = unitDataManager->getBasePath();
 		string *meshPaths = unitDataManager->getMeshPath();
 
-		/*
 		for(int i = 0; i < numUnits; ++i)
-			AssetManager::getSingleton()->load(basePaths[i] + meshPaths[i]);
-			*/
+			assetManager->load(basePaths[i] + meshPaths[i]);
     }
 
     void InGameAppState::onDettached() {

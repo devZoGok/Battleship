@@ -74,7 +74,6 @@ namespace battleship{
 		int numWaterBodies = 1;
 		string table = "waterBodies";
 		Root *root = Root::getSingleton();
-		waterBodies = new WaterBody[numWaterBodies];
 
 		for(int i = 0; i < numWaterBodies; i++){
 			float sizeX = luaManager->getFloatFromTable(table, vector<Index>{Index("sizeX", true)});
@@ -102,9 +101,11 @@ namespace battleship{
 			waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 			nodeParent->attachChild(waterNode);
 
-			waterBodies[i].pos = Vector3(posX, posY, posZ);
-			waterBodies[i].size = Vector2(sizeX, sizeY);
-			waterBodies[i].rect = rect;
+			WaterBody waterBody;
+			waterBody.pos = Vector3(posX, posY, posZ);
+			waterBody.size = Vector2(sizeX, sizeY);
+			waterBody.rect = rect;
+			waterBodies.push_back(waterBody);
 		}
 	}
 
@@ -128,9 +129,29 @@ namespace battleship{
 
     void Map::unload() {}
 
-	Vector3 Map::getCellPos(int id){
+	Vector3 Map::getCellPos(int id, Vector3 cellSize){
+		int numCellsX = size.x / cellSize.x;
+		int numCellsY = size.y / cellSize.y;
+		int numCellsZ = size.z / cellSize.z;
+
+		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5;
+		int x = id % numCellsX;
+		int y = (id / numCellsX) % numCellsZ;
+		int z = id / (numCellsX * numCellsZ);
+
+		return Vector3(x * cellSize.x, y * cellSize.y, z * cellSize.z);
 	}
 
-	int Map::getCellId(Vector3 pos){
+	int Map::getCellId(Vector3 pos, Vector3 cellSize){
+		int numCellsX = size.x / cellSize.x;
+		int numCellsY = size.y / cellSize.y;
+		int numCellsZ = size.z / cellSize.z;
+
+		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5;
+		int x = fabs(pos.x - initPos.x) / cellSize.x;
+		int y = fabs(pos.y - initPos.y) / cellSize.y;
+		int z = fabs(pos.z - initPos.z) / cellSize.z;
+
+		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
 	}
 }

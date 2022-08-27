@@ -41,9 +41,6 @@ namespace battleship{
 				CPPUNIT_ASSERT(sumPathWeights == 9);
 		}
 
-		void PathfinderTest::testGenerateWeights(){
-		}
-
 		void PathfinderTest::setUp(){
 				pathfinder = Pathfinder::getSingleton();
 		}

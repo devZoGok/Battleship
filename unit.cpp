@@ -276,22 +276,29 @@ namespace battleship{
         return projectiles;
     }
 
+	void Unit::generateWeights(u32 **weights, int size){
+	}
+
 	void Unit::addOrder(Order order){
-		u32 **weights = new u32*;
 		float eps = getCircleRadius();
 		Map *map = Map::getSingleton();
 		Vector3 mapSize = map->getSize();
-		int numCells = int(mapSize.x / eps) * int(mapSize.y / eps);
+		Vector3 cellSize = Vector3(int(mapSize.x / eps), 0, int(mapSize.z / eps));
+		int numCells = cellSize.x * (cellSize.y > 0 ? cellSize.y : 1) * cellSize.z;
+		u32 **weights = new u32*[numCells];
+
+		for(int i = 0; i < numCells; i++)
+			weights[i] = new u32[numCells];
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		Vector3 **verts = nullptr;
-		pathfinder->generateWeights(weights, numCells, verts, mapSize);
-
-		vector<int> path = pathfinder->findPath(weights, numCells, map->getCellId(pos), map->getCellId(order.targets[0].pos));
+		vector<int> path = pathfinder->findPath(weights,
+			   	numCells,
+			   	map->getCellId(pos, cellSize),
+			   	map->getCellId(order.targets[0].pos, cellSize));
 		pathPoints.clear();
 
 		for(int p : path)
-			pathPoints.push_back(map->getCellPos(p));
+			pathPoints.push_back(map->getCellPos(p, cellSize));
 
 		orders.push_back(order);
 	}

@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "pathfinder.h"
+#include "map.h"
 
 namespace battleship{
 		using namespace std;
@@ -60,8 +61,5 @@ namespace battleship{
 				}
 
 				return paths[dest];
-		}
-
-		void Pathfinder::generateWeights(u32 **weights, int &size, Vector3* verts[], Vector3 mapSize){
 		}
 }

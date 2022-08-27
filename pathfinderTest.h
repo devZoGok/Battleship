@@ -15,7 +15,6 @@ namespace battleship{
 				public:
 						PathfinderTest(){}
 						void testFindPath();
-						void testGenerateWeights();
 						void setUp();
 						void tearDown();
 				private:
