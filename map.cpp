@@ -7,6 +7,7 @@
 #include <luaManager.h>
 
 #include "map.h"
+#include "pathfinder.h"
 #include "gameManager.h"
 #include "defConfigs.h"
 
@@ -114,6 +115,8 @@ namespace battleship{
 		LuaManager *luaManager = LuaManager::getSingleton();
 		luaManager->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
 
+		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
+
 		nodeParent = new Node();
 		Root *root = Root::getSingleton();
 		root->getRootNode()->attachChild(nodeParent);
@@ -131,7 +134,6 @@ namespace battleship{
 
 	Vector3 Map::getCellPos(int id, Vector3 cellSize){
 		int numCellsX = size.x / cellSize.x;
-		int numCellsY = size.y / cellSize.y;
 		int numCellsZ = size.z / cellSize.z;
 
 		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5;
@@ -144,12 +146,11 @@ namespace battleship{
 
 	int Map::getCellId(Vector3 pos, Vector3 cellSize){
 		int numCellsX = size.x / cellSize.x;
-		int numCellsY = size.y / cellSize.y;
 		int numCellsZ = size.z / cellSize.z;
 
 		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5;
 		int x = fabs(pos.x - initPos.x) / cellSize.x;
-		int y = fabs(pos.y - initPos.y) / cellSize.y;
+		int y = (cellSize.y > 0 ? (fabs(pos.y - initPos.y) / cellSize.y) : 0);
 		int z = fabs(pos.z - initPos.z) / cellSize.z;
 
 		return (numCellsX * numCellsZ * y + (numCellsX * z + x));

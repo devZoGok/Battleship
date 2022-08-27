@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 
 #include "pathfinder.h"
 #include "map.h"
@@ -24,8 +25,15 @@ namespace battleship{
 				vector<int> paths[size];
 				paths[source].push_back(source);
 
-				for(int i = 0; i < size; i++)
-						distances[i] = (i == source ? 0 : u16(0 - 1));
+				for(int i = 0; i < size; i++){
+					distances[i] = (i == source ? 0 : impassibleNodeVal);
+
+					for(int j = 0; j < size; j++)
+						if(weights[i][j] > impassibleNodeVal){
+							cout << "Node val higher than allowed max value\n";
+							exit(-1);
+						}
+				}
 
 				vector<int> checkedNodes;
 

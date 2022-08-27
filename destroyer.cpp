@@ -36,7 +36,7 @@ namespace battleship{
 
         for(Player *p : inGameState->getPlayers())
             for(Unit *u : p->getUnits())
-                if(u->getType() == UnitType::SUBMARINE && order.targets[0].pos == u->getPos())
+                if(u->getUnitClass() == UnitClass::SUBMARINE && order.targets[0].pos == u->getPos())
                     sub = true;
 
         if(sub)

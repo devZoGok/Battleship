@@ -6,7 +6,9 @@
 #include <vector.h>
 
 namespace battleship{
-    enum class UnitType {VESSEL, DESTROYER, CRUISER, AIRCRAFT_CARRIER, SUBMARINE, MISSILE_JET, DEMO_JET};
+    enum class UnitClass {VESSEL, DESTROYER, CRUISER, AIRCRAFT_CARRIER, SUBMARINE, MISSILE_JET, DEMO_JET};
+
+    enum class UnitType {UNDERWATER, SEA_LEVEL, LAND, AIR};
 
 	class UnitDataManager{
 			public:
@@ -14,6 +16,7 @@ namespace battleship{
 				inline int getNumUnits(){return numUnits;}
 				inline int* getHealth(){return health;}
 				inline UnitType* getUnitType(){return unitType;}
+				inline UnitClass* getUnitClass(){return unitClass;}
 				inline float* getMaxTurnAngle(){return maxTurnAngle;}
 				inline float* getRange(){return range;}
 				inline float* getLineOfSight(){return lineOfSight;}
@@ -29,6 +32,7 @@ namespace battleship{
 
 			int numUnits;
     		UnitType *unitType;
+    		UnitClass *unitClass;
     		int *health;
     		float *speed;
     		float *destinationOffset;

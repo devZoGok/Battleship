@@ -10,8 +10,12 @@ namespace battleship{
 				public:
 					static Pathfinder* getSingleton();
 					std::vector<int> findPath(vb01::u32**, int, int, int);
+					inline vb01::u32 getImpassibleNodeVal(){return impassibleNodeVal;}
+					inline void setImpassibleNodeVal(vb01::u32 val){this->impassibleNodeVal = val;}
 				private:
 					Pathfinder();
+
+					vb01::u32 impassibleNodeVal;
 		};
 }
 

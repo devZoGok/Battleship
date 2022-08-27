@@ -1,15 +1,26 @@
 numUnits = 11
 
-UnitType = {VESSEL = 0, DESTROYER = 1, CRUISER = 2, AIRCRAFT_CARRIER = 3, SUBMARINE = 4, MISSILE_JET = 5, DEMO_JET = 6};
+UnitClass = {VESSEL = 0, DESTROYER = 1, CRUISER = 2, AIRCRAFT_CARRIER = 3, SUBMARINE = 4, MISSILE_JET = 5, DEMO_JET = 6};
+
+UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, LAND = 2, AIR = 3};
+
+unitClass = {
+	UnitClass.VESSEL, UnitClass.VESSEL,
+	UnitClass.DESTROYER, UnitClass.DESTROYER,
+	UnitClass.CRUISER, UnitClass.CRUISER,
+	UnitClass.AIRCRAFT_CARRIER, UnitClass.AIRCRAFT_CARRIER,
+	UnitClass.SUBMARINE,
+	UnitClass.MISSILE_JET, UnitClass.DEMO_JET
+};
 
 unitType = {
-	UnitType.VESSEL, UnitType.VESSEL,
-	UnitType.DESTROYER, UnitType.DESTROYER,
-	UnitType.CRUISER, UnitType.CRUISER,
-	UnitType.AIRCRAFT_CARRIER, UnitType.AIRCRAFT_CARRIER,
-	UnitType.SUBMARINE,
-	UnitType.MISSILE_JET, UnitType.DEMO_JET
-};
+	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
+	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
+	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
+	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
+	UnitType.UNDERWATER,
+	UnitType.AIR, UnitType.AIR
+}
 
 health = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
 speed = {.025, .025, .05, .05, .1, .1, .1, .1, .1, .1, .15}
@@ -17,7 +28,7 @@ destinationOffset = {.75, .75, 1, 1, .1, .1, .1, .1, .1, .5, .5}
 anglePrecision = {.1, .1, .1, .1, .1, .1, .1, .1, .1, 3, 3}
 cost = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
 maxTurnAngle = {1, 1, .5, .5, 1, 1, .5, .5, 1, 2, 2}
-range = {15, 15, 14, 14, 13, 13, 12, 12,15,25}
+range = {15, 15, 14, 14, 13, 13, 12, 12, 15, 25}
 
 unitCornerPoints = {
     {

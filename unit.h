@@ -77,6 +77,7 @@ namespace battleship{
         inline vb01::Model* getNode() {return model;}
         inline Player* getPlayer(){return player;}
         inline UnitType getType() {return type;}
+        inline UnitClass getUnitClass() {return unitClass;}
         inline void toggleDebugging(bool d){this->debugging=d;}
         inline void takeDamage(int damage) {health -= damage;}
         inline int getId() {return id;}
@@ -101,6 +102,7 @@ namespace battleship{
     protected:
         Player *player;
         MoveDir moveDir = MoveDir::FORWARD;
+        UnitClass unitClass;
         UnitType type;
 		vb01::Vector2 screenPos;
         std::vector<Order> orders;

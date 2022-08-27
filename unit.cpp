@@ -28,6 +28,7 @@ namespace battleship{
         range = udm->getRange()[id];
         lineOfSight = udm->getLineOfSight()[id];
         speed = udm->getSpeed()[id];
+        unitClass = udm->getUnitClass()[id];
         type = udm->getUnitType()[id];
         width = udm->getUnitCornerPoints()[id][0].x - udm->getUnitCornerPoints()[id][1].x;
         height = udm->getUnitCornerPoints()[id][4].y - udm->getUnitCornerPoints()[id][0].y;
@@ -277,24 +278,61 @@ namespace battleship{
     }
 
 	void Unit::generateWeights(u32 **weights, int size){
+		Map *map = Map::getSingleton();
+		int waterbodyId = -1;
+
+		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL)
+			for(int i = 0; i < map->getNumWaterBodies(); i++){
+				WaterBody waterBody = map->getWaterBody(i);
+				Vector3 p = waterBody.pos;
+				Vector2 s = waterBody.size;
+
+				if((waterBody.rect && fabs(pos.x - p.x) < s.x && fabs(pos.z - p.z) < s.y) ||
+					   	(!waterBody.rect && Vector2(pos.x, pos.z).getDistanceFrom(Vector2(p.x, p.z)) < s.x)){
+					waterbodyId = i;
+					break;
+				}
+			}
+
+		u32 impassibleNodeVal = Pathfinder::getSingleton()->getImpassibleNodeVal();
+
+		for(int i = 0; i < size; i++){
+			for(int j = 0; j < size; j++){
+				int weight = (abs(i - j) == 1 ? 1 : impassibleNodeVal);
+				weights[i][j] = weight;
+			}
+		}
 	}
 
 	void Unit::addOrder(Order order){
 		float eps = getCircleRadius();
 		Map *map = Map::getSingleton();
+
 		Vector3 mapSize = map->getSize();
-		Vector3 cellSize = Vector3(int(mapSize.x / eps), 0, int(mapSize.z / eps));
-		int numCells = cellSize.x * (cellSize.y > 0 ? cellSize.y : 1) * cellSize.z;
+		Vector3 cellSize = Vector3(eps, (type == UnitType::UNDERWATER ? int(mapSize.y / height) : 0), eps);
+
+		int numCells = 
+			int(mapSize.x / cellSize.x) *
+		   	(cellSize.y == 0 ? 1 : int(mapSize.y / cellSize.y)) *
+		   	int(mapSize.z / cellSize.z);
 		u32 **weights = new u32*[numCells];
 
 		for(int i = 0; i < numCells; i++)
 			weights[i] = new u32[numCells];
+
+		generateWeights(weights, numCells);
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		vector<int> path = pathfinder->findPath(weights,
 			   	numCells,
 			   	map->getCellId(pos, cellSize),
 			   	map->getCellId(order.targets[0].pos, cellSize));
+
+		for(int i = 0; i < numCells; i++)
+			delete[] weights[i];
+
+		delete[] weights;
+
 		pathPoints.clear();
 
 		for(int p : path)

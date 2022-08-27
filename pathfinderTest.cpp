@@ -11,7 +11,8 @@ namespace battleship{
 
 		void PathfinderTest::testFindPath(){
 				int size = 7;
-				const u32 INF = u16(0 - 1);
+				const u16 INF = u16(0 - 1);
+				//pathfinder->setImpassibleNodeVal(INF);
 				u32 w[size][size] = {
 						{0, 2, 4, INF, INF, INF, INF},
 						{INF, 0, 1, 9, 13, INF, INF},

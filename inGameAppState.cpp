@@ -241,75 +241,74 @@ namespace battleship{
             if (p) {
                 p->update();
 
-                for (int i=0;i<p->getNumberOfUnits();i++){
-                    Unit *u=p->getUnit(i);
+                for (int i = 0; i < p->getNumberOfUnits(); i++){
+                    Unit *u = p->getUnit(i);
 
                     if(u->isWorking())
                         u->update();
                     else{
-                        int selectedId=-1;
-                        std::vector<Unit*> &units=p->getUnits(),&selectedUnits=activeState->getSelectedUnits();
-                        units.erase(units.begin()+i);
+                        int selectedId = -1;
+                        std::vector<Unit*> &units = p->getUnits(), &selectedUnits = activeState->getSelectedUnits();
+                        units.erase(units.begin() + i);
 
-                        if(u->getType() == UnitType::MISSILE_JET || u->getType() == UnitType::DEMO_JET){
-                            AircraftCarrier *carrier=nullptr;
+                        if(u->getUnitClass() == UnitClass::MISSILE_JET || u->getUnitClass() == UnitClass::DEMO_JET){
+                            AircraftCarrier *carrier = nullptr;
 
-                            for(int i2=0;i2<p->getUnits().size()&&!carrier;i2++){
-                                AircraftCarrier *a=((Jet*)u)->getAircraftCarrier();
+                            for(int i2 = 0; i2 < p->getUnits().size() && !carrier; i2++){
+                                AircraftCarrier *a = ((Jet*)u)->getAircraftCarrier();
 
                                 if(a)
-                                    carrier=a;
+                                    carrier = a;
                             }
 
                             if(carrier){
-                                Jet** jets=carrier->getJets();
-                                jets[((Jet*)u)->getJetId()]=nullptr;
+                                Jet** jets = carrier->getJets();
+                                jets[((Jet*)u)->getJetId()] = nullptr;
                             }
                         }
-                        else if(u->getType() == UnitType::AIRCRAFT_CARRIER){
-                            AircraftCarrier *carrier=(AircraftCarrier*)u;
+                        else if(u->getUnitClass() == UnitClass::AIRCRAFT_CARRIER){
+                            AircraftCarrier *carrier = (AircraftCarrier*)u;
 
-                            for(int i2=0;i2<carrier->getMaxNumJets();i2++){
-                                Jet *j=carrier->getJet(i2);
+                            for(int i2 = 0; i2 < carrier->getMaxNumJets(); i2++){
+                                Jet *j = carrier->getJet(i2);
 
-                                if(j&&j->isOnBoard())
+                                if(j && j->isOnBoard())
                                     j->blowUp();
                             }
                         }
                                     
-                        for(int i2=0;i2<10;i2++){
-                            int id=-1;
-                            std::vector<Unit*> &group=activeState->getUnitGroup(i2);
+                        for(int i2 = 0; i2 < 10; i2++){
+                            int id = -1;
+                            std::vector<Unit*> &group = activeState->getUnitGroup(i2);
 
-                            for(int i3=0;i3<group.size()&&id==-1;i3++)
-                                if(group[i3]==u)
-                                    id=i3;
+                            for(int i3 = 0; i3 < group.size() && id == -1; i3++)
+                                if(group[i3] == u)
+                                    id = i3;
 
-                            if(id!=-1)
-                                group.erase(group.begin()+id);
+                            if(id != -1)
+                                group.erase(group.begin() + id);
                         }
 
-                        for(int i2=0;i2<selectedUnits.size()&&selectedId==-1;i2++)
-                            if(selectedUnits[i2]==u)
-                                selectedId=i2;
+                        for(int i2 = 0; i2 < selectedUnits.size() && selectedId == -1; i2++)
+                            if(selectedUnits[i2] == u)
+                                selectedId = i2;
 
-                        if(selectedId!=-1)
-                            selectedUnits.erase(selectedUnits.begin()+selectedId);
+                        if(selectedId != -1)
+                            selectedUnits.erase(selectedUnits.begin() + selectedId);
 
                         delete u;
                     }
                 }
             }
 
-        for(int i=0;i<projectiles.size();i++){
-            Projectile *p=projectiles[i];
+        for(int i = 0; i < projectiles.size(); i++){
+            Projectile *p = projectiles[i];
 
-            if(!p->isExploded()){
+            if(!p->isExploded())
                 p->update();
-            }
             else{
                 delete p;
-                projectiles.erase(projectiles.begin()+i);
+                projectiles.erase(projectiles.begin() + i);
             }
         }
     }
