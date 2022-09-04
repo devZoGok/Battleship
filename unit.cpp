@@ -151,62 +151,30 @@ namespace battleship{
     }
 
     void Unit::move(Order order, float destOffset) {
-        float movementAmmount, radius = getCircleRadius(), angle = 0.;
-		int targetId = (order.type == Order::TYPE::PATROL ? getNextPatrolPointId(order.targets.size()) : 0);
-        Vector3 dest = pathPoints[0];
-        dest.y = pos.y;
-        Vector3 center;
+		Vector3 pointDir = (pathPoints[0] - pos).norm();
+		float angle = dirVec.getAngleBetween(pointDir);
+		UnitDataManager *udm = UnitDataManager::getSingleton();
 
-        if (leftVec.getAngleBetween(dest - pos) < PI / 2) {
-            moveDir = MoveDir::LEFT;
-            center = pos + leftVec*radius;
-        } else if (-leftVec.getAngleBetween(dest - pos) < PI / 2) {
-            moveDir = MoveDir::RIGHT;
-            center = pos - leftVec*radius;
-        }
+		if(angle > udm->getAnglePrecision()[id]){
+			float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
 
-        bool withinCircle = center.getDistanceFrom(dest) < radius ? true : false;
-		float anglePrecision = UnitDataManager::getSingleton()->getAnglePrecision()[id];
+			if(leftVec.getAngleBetween(pointDir) > PI / 2)
+				rotSpeed *= -1;
 
-        if (moveDir != MoveDir::FORWARD) {
-            if (withinCircle)
-                angle = dirVec.getAngleBetween(center - dest) / PI * 180;
-            else
-                angle = dirVec.getAngleBetween(dest - pos) / PI * 180;
-
-            angle = isnan(angle) ? 0. : angle;
-
-            if (angle > anglePrecision) {
-                float rotAngle = maxTurnAngle > angle ? angle : maxTurnAngle;
-                angle -= rotAngle;
-                turn(moveDir == MoveDir::RIGHT ? -rotAngle : rotAngle);
-            }
-        }
-
-        if (angle > anglePrecision)
-            movementAmmount = speed;
-        else {
-            if (withinCircle) {
-                float inDest = ((center - dest).norm() * radius - (center - dest)).getLength();
-                movementAmmount = speed > inDest ? inDest : speed;
-            } else
-                movementAmmount = speed > pos.getDistanceFrom(dest) ? pos.getDistanceFrom(dest) : speed;
-        }
-
-        advance(movementAmmount);
-
-        if (pos.getDistanceFrom(dest) <= destOffset){
-			pathPoints.erase(pathPoints.begin());
-
-			if(pathPoints.empty() && orders[0].type != Order::TYPE::ATTACK) {
-        		moveDir = MoveDir::FORWARD;
-
-				if(orders[0].type == Order::TYPE::MOVE)
-        			removeOrder(0);
-				else if(orders[0].type == Order::TYPE::PATROL)
-					patrolPointId = targetId;
+			turn(rotSpeed);
+		}
+		else{
+			if(pos.getDistanceFrom(pathPoints[0]) > destOffset){
+				float dist = pos.getDistanceFrom(pathPoints[0]);
+				float movementAmmount = (speed > dist ? dist : speed);
+				advance(movementAmmount);
 			}
-        }
+			else
+				pathPoints.erase(pathPoints.begin());
+		}
+
+		if(pathPoints.empty())
+			removeOrder(0);
     }
 
     void Unit::patrol(Order order) {
@@ -221,7 +189,7 @@ namespace battleship{
     }
 
     void Unit::turn(float angle) {
-        Quaternion rotQuat = Quaternion(PI / 180 * angle, Vector3(0, 1, 0));
+        Quaternion rotQuat = Quaternion(angle, Vector3(0, 1, 0));
         model->setOrientation(rotQuat * model->getOrientation());
     }
 
@@ -277,7 +245,7 @@ namespace battleship{
         return projectiles;
     }
 
-	void Unit::generateWeights(u32 **weights, int size){
+	void Unit::generateWeights(u32 **weights, int cellsByDim[3]){
 		Map *map = Map::getSingleton();
 		int waterbodyId = -1;
 
@@ -295,10 +263,34 @@ namespace battleship{
 			}
 
 		u32 impassibleNodeVal = Pathfinder::getSingleton()->getImpassibleNodeVal();
+		int size = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
+		int passVal = 1;
 
 		for(int i = 0; i < size; i++){
+			int xId = i % cellsByDim[0];
+			int yId = i / (cellsByDim[0] * cellsByDim[2]);
+			int zId = (i / cellsByDim[0]) % cellsByDim[2];
+
 			for(int j = 0; j < size; j++){
-				int weight = (abs(i - j) == 1 ? 1 : impassibleNodeVal);
+				int weight = impassibleNodeVal;
+				
+				if(xId == 0 && j - i == 1)
+					weight = passVal;
+				else if(xId == cellsByDim[0] - 1 && j - i == -1)
+					weight = passVal;
+				else if(0 < xId && xId < cellsByDim[0] - 1 && abs(j - i) == 1)
+					weight = passVal;
+
+				if(zId == 0 && j - i == cellsByDim[0])
+					weight = passVal;
+				else if(zId == cellsByDim[2] - 1 && j - i == -cellsByDim[0])
+					weight = passVal;
+				else if(0 < zId && zId < cellsByDim[2] - 1 && abs(j - i) == cellsByDim[0])
+					weight = passVal;
+
+				if(i == j)
+					weight = 0;
+
 				weights[i][j] = weight;
 			}
 		}
@@ -311,16 +303,18 @@ namespace battleship{
 		Vector3 mapSize = map->getSize();
 		Vector3 cellSize = Vector3(eps, (type == UnitType::UNDERWATER ? int(mapSize.y / height) : 0), eps);
 
-		int numCells = 
-			int(mapSize.x / cellSize.x) *
-		   	(cellSize.y == 0 ? 1 : int(mapSize.y / cellSize.y)) *
-		   	int(mapSize.z / cellSize.z);
+		int cellsByDim[3] = { 
+			int(mapSize.x / cellSize.x),
+		   	(cellSize.y == 0 ? 1 : int(mapSize.y / cellSize.y)),
+		   	int(mapSize.z / cellSize.z)
+		};
+		int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
 		u32 **weights = new u32*[numCells];
 
 		for(int i = 0; i < numCells; i++)
 			weights[i] = new u32[numCells];
 
-		generateWeights(weights, numCells);
+		generateWeights(weights, cellsByDim);
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		vector<int> path = pathfinder->findPath(weights,

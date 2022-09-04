@@ -136,12 +136,12 @@ namespace battleship{
 		int numCellsX = size.x / cellSize.x;
 		int numCellsZ = size.z / cellSize.z;
 
-		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5;
 		int x = id % numCellsX;
-		int y = (id / numCellsX) % numCellsZ;
-		int z = id / (numCellsX * numCellsZ);
+		int y = id / (numCellsX * numCellsZ);
+		int z = (id / numCellsX) % numCellsZ;
 
-		return Vector3(x * cellSize.x, y * cellSize.y, z * cellSize.z);
+		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5 + Vector3(cellSize.x, 0, cellSize.z) * 0.5;
+		return initPos + Vector3(x * cellSize.x, y * cellSize.y, z * cellSize.z);
 	}
 
 	int Map::getCellId(Vector3 pos, Vector3 cellSize){
