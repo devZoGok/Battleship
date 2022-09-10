@@ -30,7 +30,7 @@ namespace battleship{
 
         class SpButton : public Button {
         public:
-            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_S, separate) {
+            SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_S, separate) {
                 this->state = state;
             }
 
@@ -47,13 +47,14 @@ namespace battleship{
 
                 class PlayButton : public Button {
                 public:
-                    PlayButton(Listbox **difficulties, Listbox **factions, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
+                    PlayButton(Listbox **difficulties, Listbox **factions, Listbox *mapListbox, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
                         this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::GUI_STATE));
-                        this->lengths[0]=lengths[0];
-                        this->lengths[1]=lengths[1];
+                        this->lengths[0] = lengths[0];
+                        this->lengths[1] = lengths[1];
 
-                        difficultiesListboxes=difficulties;
-                        factionsListboxes=factions;
+                        difficultiesListboxes = difficulties;
+                        factionsListboxes = factions;
+						this->mapListbox = mapListbox;
                     }
 
                     void onClick() {
@@ -66,25 +67,28 @@ namespace battleship{
                         for(int i = 0; i < lengths[1]; i++)
                             factions.push_back(to_string(factionsListboxes[i]->getSelectedOption()));
 
+
                         delete[] difficultiesListboxes;
                         delete[] factionsListboxes;
 
 												StateManager *stateManager = gm->getStateManager();
-                        stateManager->attachAppState(new InGameAppState(difficulties, factions));
+						int selectedMap = mapListbox->getSelectedOption();
+						string mapName = wstringToString(mapListbox->getContents()[selectedMap]);
+                        stateManager->attachAppState(new InGameAppState(difficulties, factions, mapName));
                         state->removeAllListboxes();
                         state->removeButton("Back");
                         state->removeButton("Play");
                     }
                 private:
                     GuiAppState *state;
-                    Listbox **difficultiesListboxes, **factionsListboxes;
+                    Listbox **difficultiesListboxes, **factionsListboxes, *mapListbox = nullptr;
                     int lengths[2];
                 };
 
                 class ReturnButton : public Button {
                 public:
 
-                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", GLFW_KEY_B, separate) {
+                    ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_B, separate) {
                         this->state = state;
                     }
 
@@ -110,11 +114,10 @@ namespace battleship{
                 factions.push_back("1");
 
 				tinydir_dir dir;
-				int i;
-				tinydir_open_sorted(&dir, (PATH + "Models/Maps").c_str());
+				tinydir_open_sorted(&dir, (gm->getPath() + "Models/Maps").c_str());
 				vector<string> folders;
 				
-				for (i = 0; i < dir.n_files; i++) {
+				for (int i = 0; i < dir.n_files; i++) {
 					tinydir_file file;
 					tinydir_readfile_n(&dir, &file, i);
 
@@ -124,22 +127,22 @@ namespace battleship{
 				
 				tinydir_close(&dir);
 
-								string font = PATH + "Fonts/batang.ttf";
+								string font = gm->getPath() + "Fonts/batang.ttf";
                 Listbox *cpuDifficulty = new Listbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), difficulties, 3, font);
                 Listbox *cpuFaction = new Listbox(Vector2(pos.x + 110, pos.y + 30), Vector2(100, 20), factions, 2, font);
                 Listbox *playerFaction = new Listbox(Vector2(pos.x + 110, pos.y), Vector2(100, 20), factions, 2, font);
 				int numMinDirs = 3;
 				int numShowDirs = folders.size() < numMinDirs ? folders.size() : numMinDirs;
 				Listbox *map = new Listbox(Vector2(pos.x + 110, pos.y + 100), Vector2(100, 20), folders, numShowDirs, font);
-                Listbox **difficultyListboxes=new Listbox*[1];
-                Listbox **factionListboxes=new Listbox*[2];
+                Listbox **difficultyListboxes = new Listbox*[1];
+                Listbox **factionListboxes = new Listbox*[2];
 								
-                difficultyListboxes[0]=cpuDifficulty;
-                factionListboxes[0]=playerFaction;
-                factionListboxes[1]=cpuFaction;
+                difficultyListboxes[0] = cpuDifficulty;
+                factionListboxes[0] = playerFaction;
+                factionListboxes[1] = cpuFaction;
 
-                int lengths[]{1,2};
-                PlayButton *playButton = new PlayButton(difficultyListboxes, factionListboxes, lengths, Vector2(50, gm->getHeight() - 150), Vector2(140, 50), "Play", true);
+                int lengths[]{1, 2};
+                PlayButton *playButton = new PlayButton(difficultyListboxes, factionListboxes, map, lengths, Vector2(50, gm->getHeight() - 150), Vector2(140, 50), "Play", true);
                 ReturnButton *returnButton = new ReturnButton(state, Vector2(200, gm->getHeight() - 150), Vector2(140, 50), "Back", true);
                 state->addButton(playButton);
                 state->addButton(returnButton);
@@ -184,7 +187,7 @@ namespace battleship{
             class ReturnButton : public Button {
             public:
 
-                ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+                ReturnButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
                     this->state = state;
                 }
 
@@ -213,7 +216,7 @@ namespace battleship{
         };
 
 				GameManager *gm = GameManager::getSingleton();
-				string font = PATH + "Fonts/batang.ttf";
+				string font = gm->getPath() + "Fonts/batang.ttf";
 				AssetManager::getSingleton()->load(font);
         SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
         MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);

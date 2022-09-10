@@ -19,7 +19,7 @@ using namespace std;
 namespace battleship{
 		using namespace configData;
 
-    InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+    InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -32,7 +32,7 @@ namespace battleship{
         return guiState;
     }
 
-    InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+    InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -42,7 +42,7 @@ namespace battleship{
         class ConsoleCommandEntryButton : public Button {
         public:
 
-            ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+            ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
                 this->inGameState = inGameState;
                 textbox = t;
                 listbox = l;
@@ -64,16 +64,16 @@ namespace battleship{
             list.push_back("");
 
         Vector2 pos = Vector2(300, 100);
-        Listbox *consoleListbox = new Listbox(Vector2(pos.x, pos.y), Vector2(420, 20), list, 20, PATH + "Fonts/batang.ttf");
+        Listbox *consoleListbox = new Listbox(Vector2(pos.x, pos.y), Vector2(420, 20), list, 20, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf");
         consoleListbox->openUp();
         guiState->addListbox(consoleListbox);
-        Textbox *consoleTextbox = new Textbox(Vector2(pos.x, pos.y + 20 * (emptyEntries + 1)), Vector2(300, 20), PATH + "Fonts/batang.ttf");
+        Textbox *consoleTextbox = new Textbox(Vector2(pos.x, pos.y + 20 * (emptyEntries + 1)), Vector2(300, 20), GameManager::getSingleton()->getPath() + "Fonts/batang.ttf");
         guiState->addTextbox(consoleTextbox);
         ConsoleCommandEntryButton *entryButton = new ConsoleCommandEntryButton(inGameState, consoleTextbox, consoleListbox, Vector2(pos.x + 320, pos.y + 20 * (emptyEntries + 1)), Vector2(100, 20), "Enter", true);
         guiState->addButton(entryButton);
     }
 
-    InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+    InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -122,7 +122,7 @@ namespace battleship{
         OptionsButton::onClick();
     }
 
-    InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {
+    InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -131,7 +131,7 @@ namespace battleship{
 
     }
 
-    InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, PATH + "Fonts/batang.ttf", -1, separate) {}
+    InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {}
 
     void InGameAppState::UnitCreationButton::onClick() {
     }
@@ -175,14 +175,16 @@ namespace battleship{
     void InGameAppState::SubmarineCreationButton::onClick() {
     }
 
-    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions) : AbstractAppState(
+    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions, string mapName) : AbstractAppState(
 						AppStateType::IN_GAME_STATE,
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, true),
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, false),
-					 	PATH + "Scripts/options.lua"){
+					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
         this->playerId = 0;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;
+
+        map = new Map(mapName);
     }
 
     InGameAppState::~InGameAppState() {
@@ -191,7 +193,6 @@ namespace battleship{
     void InGameAppState::onAttached() {
         AbstractAppState::onAttached();
 
-        map = new Map();
         map->load();
 
         for (int i = 0; i < factions.size(); i++) {
@@ -226,8 +227,10 @@ namespace battleship{
 		string *basePaths = unitDataManager->getBasePath();
 		string *meshPaths = unitDataManager->getMeshPath();
 
+		/*
 		for(int i = 0; i < numUnits; ++i)
 			AssetManager::getSingleton()->load(basePaths[i] + meshPaths[i]);
+			*/
     }
 
     void InGameAppState::onDettached() {

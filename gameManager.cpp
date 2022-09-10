@@ -1,11 +1,12 @@
 #include <algorithm>
 
-#include <root.h>
-
 #include <stateManager.h>
 #include <inputManager.h>
 
 #include <assetManager.h>
+#include <root.h>
+
+#include <luaManager.h>
 
 #include "gameManager.h"
 #include "guiAppState.h"
@@ -25,6 +26,9 @@ namespace battleship{
 		}
 
     GameManager::GameManager() {
+				LuaManager *luaManager = LuaManager::getSingleton();
+				luaManager->buildScript(vector<string>{"../Assets/Scripts/defPaths.lua"});
+				path = luaManager->getString("PATH");
     }
 
     GameManager::~GameManager() {}

@@ -37,7 +37,7 @@ namespace battleship{
 						AppStateType::ACTIVE_STATE,
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, true),
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, false),
-					 	PATH + "Scripts/options.lua"){
+					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
         this->guiState = guiState;
         this->map = map;
         this->players = players;

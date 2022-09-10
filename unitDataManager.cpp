@@ -11,8 +11,6 @@ namespace battleship{
 		using namespace vb01;
 		using namespace gameBase;
 
-		typedef LuaManager::Index Index;
-
 		UnitDataManager *unitDataManager = nullptr;
 
 		UnitDataManager* UnitDataManager::getSingleton(){
@@ -24,7 +22,8 @@ namespace battleship{
 
 		UnitDataManager::UnitDataManager(){
 				LuaManager *luaManager = LuaManager::getSingleton();
-				luaManager->buildScript(vector<string>{configData::PATH + "Scripts/defPaths.lua", configData::PATH + "Scripts/unitData.lua"});
+				string path = GameManager::getSingleton()->getPath();
+				luaManager->buildScript(vector<string>{path + "Scripts/defPaths.lua", path + "Scripts/unitData.lua"});
 
 				numUnits = luaManager->getInt("numUnits");
 

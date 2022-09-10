@@ -41,7 +41,7 @@ namespace battleship {
             inline bool canFire(){return vb01::getTime() - lastShotTime > rateOfFire;}
 						inline vb01::Node* getNode(){return node;}
         private:
-            inline std::string getExplosionSfxPath(){return configData::PATH + "Sounds/Explosions/explosion0" + std::to_string(rand() % 4) + ".ogg";}
+            inline std::string getExplosionSfxPath(){return GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + std::to_string(rand() % 4) + ".ogg";}
 
             vb01::Node *fxNode;
             vb01::ParticleEmitter *emitter;

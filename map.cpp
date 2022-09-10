@@ -1,8 +1,10 @@
 #include <root.h>
 #include <quad.h>
-#include <node.h>
+#include <model.h>
 #include <material.h>
 #include <assetManager.h>
+
+#include <luaManager.h>
 
 #include "map.h"
 #include "gameManager.h"
@@ -10,12 +12,13 @@
 
 using namespace std;
 using namespace vb01;
+using namespace gameBase;
 
 namespace battleship{
 	using namespace configData;
 
-    Map::Map() {
-        size = Vector2(50, 50);
+    Map::Map(string mapName) {
+		this->mapName = mapName;
     }
 
     Map::~Map() {
@@ -24,41 +27,88 @@ namespace battleship{
     void Map::update() {
     }
 
-    void Map::load() {
+	void Map::loadSkybox(LuaManager *luaManager){
 		int numPaths = 6;
+		string table = "skybox", basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
 		string path[] = {
-			PATH + "Textures/left.jpg",
-			PATH + "Textures/right.jpg",
-			PATH + "Textures/top.jpg",
-			PATH + "Textures/bottom.jpg",
-			PATH + "Textures/front.jpg",
-			PATH + "Textures/back.jpg"
+			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("left", true)}),
+			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("right", true)}),
+			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("up", true)}),
+			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("down", true)}),
+			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("front", true)}),
+			basePath + luaManager->getStringFromTable(table, vector<Index>{Index("back", true)})
 		};
 
 		for(int i = 0; i < numPaths; i++)
 			AssetManager::getSingleton()->load(path[i]);
 
-		Root *root = Root::getSingleton();
-		root->createSkybox(path);
+		Root::getSingleton()->createSkybox(path);
+	}
 
-		Quad *quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
+	void Map::loadTerrain(LuaManager *luaManager){
+		string terrainFile = luaManager->getString("model");
+		string albedoFile = luaManager->getString("albedoMap");
+
+		AssetManager *assetManager = AssetManager::getSingleton();
+		string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
+		assetManager->load(basePath + terrainFile);
+		assetManager->load(basePath + albedoFile);
+
+		Root *root = Root::getSingleton();
+		Model *model = new Model(basePath + terrainFile);
 		Material *mat = new Material(root->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addBoolUniform("lightingEnabled", false);
 
-		string fr[]{PATH + "Textures/water.jpg"};
-		AssetManager::getSingleton()->load(fr[0]);
+		string fr[]{basePath + albedoFile};
 		Texture *t = new Texture(fr, 1, false);
 
 		mat->addTexUniform("textures[0]", t, true);
-		quad->setMaterial(mat);
+		model->setMaterial(mat);
+		root->getRootNode()->attachChild(model);
+	}
 
-		waterNode = new Node();
-		waterNode->attachMesh(quad);
-		root->getRootNode()->attachChild(waterNode);
-		waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
+	void Map::loadWaterbodies(LuaManager *luaManager){
+		//TODO : replace the magic value when it's possible to extract fields from nested tables
+		int numWaterBodies = 1;
+		string table = "waterBodies";
+		Root *root = Root::getSingleton();
 
-		Camera *cam = root->getCamera();
+		for(int i = 0; i < numWaterBodies; i++){
+			float sizeX = luaManager->getFloatFromTable(table, vector<Index>{Index("sizeX", true)});
+			float sizeY = luaManager->getFloatFromTable(table, vector<Index>{Index("sizeY", true)});
+			Quad *quad = new Quad(Vector3(sizeX, sizeY, 1) * 1, true);
+			Material *mat = new Material(root->getLibPath() + "texture");
+			mat->addBoolUniform("texturingEnabled", true);
+			mat->addBoolUniform("lightingEnabled", false);
+
+			string fr[]{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + luaManager->getStringFromTable(table, vector<Index>{Index("albedoMap", true)})};
+			AssetManager::getSingleton()->load(fr[0]);
+			Texture *t = new Texture(fr, 1, false);
+
+			mat->addTexUniform("textures[0]", t, true);
+			quad->setMaterial(mat);
+
+			waterNode = new Node();
+			waterNode->attachMesh(quad);
+			root->getRootNode()->attachChild(waterNode);
+			float posX = luaManager->getFloatFromTable(table, vector<Index>{Index("posX", true)});
+			float posY = luaManager->getFloatFromTable(table, vector<Index>{Index("posY", true)});
+			float posZ = luaManager->getFloatFromTable(table, vector<Index>{Index("posZ", true)});
+			waterNode->setPosition(Vector3(posX, posY, posZ));
+			waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
+		}
+	}
+
+    void Map::load() {
+		LuaManager *luaManager = LuaManager::getSingleton();
+		luaManager->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
+
+		loadSkybox(luaManager);
+		loadTerrain(luaManager);
+		loadWaterbodies(luaManager);
+
+		Camera *cam = Root::getSingleton()->getCamera();
 		cam->setPosition(Vector3(1, 1, 1) * 10);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
     }

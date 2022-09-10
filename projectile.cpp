@@ -52,8 +52,8 @@ namespace battleship{
         float angle = dirVec.getAngleBetween(Vector3(0, 0, -1));
         angle = Quaternion(angle, upVec) * Vector3(0, 0, -1) == dirVec ? angle : -angle;
         
-        string p1 = PATH + "Sounds/" + unitData::name[id] + "s/" + projectileData::name[id][weaponTypeId] + ".ogg";
-        string p2 = PATH + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
+        string p1 = gm->getPath() + "Sounds/" + unitData::name[id] + "s/" + projectileData::name[id][weaponTypeId] + ".ogg";
+        string p2 = gm->getPath() + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
         this->shotSfxBuffer = new sf::SoundBuffer();
         this->explosionSfxBuffer=new sf::SoundBuffer();
 
