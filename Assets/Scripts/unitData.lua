@@ -1,4 +1,4 @@
-numUnits = 11
+numUnits = 2
 
 UnitClass = {VESSEL = 0, DESTROYER = 1, CRUISER = 2, AIRCRAFT_CARRIER = 3, SUBMARINE = 4, MISSILE_JET = 5, DEMO_JET = 6};
 
@@ -14,7 +14,7 @@ unitClass = {
 };
 
 unitType = {
-	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
+	UnitType.SEA_LEVEL, UnitType.LAND,
 	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
 	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
 	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
@@ -266,7 +266,7 @@ name = {
 	"Jet", "Jet"
 }
 meshPath = {
-	"battleship00.xml", "battleship01.xml",
+	"battleship00.xml", "battleship00.xml",
 	"destroyer00.xml", "destroyer01.xml", 
 	"cruiser00.xml", "cruiser01.xml", 
 	"aircraftCarrier00.xml", "aircraftCarrier01.xml",

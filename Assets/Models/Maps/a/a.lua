@@ -12,7 +12,7 @@
 	}
 	waterBodies = {
 		posX = 0,
-		posY = 0,
+		posY = -1,
 		posZ = 0,
 		sizeX = 100,
 		sizeY = 100,
