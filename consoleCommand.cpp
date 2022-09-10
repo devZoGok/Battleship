@@ -24,13 +24,18 @@ namespace battleship{
 		using namespace unitData;
 
     void ConsoleCommand::execute(string commandStr) {
-				vector<string> fullCommand;
-				parse(commandStr, fullCommand);
+		vector<string> fullCommand;
+		parse(commandStr, fullCommand);
 
         if (fullCommand[0] == "add-unit") {
-						validateAddUnitArguments(fullCommand);
-            executeAddUnit(atoi(fullCommand[1].c_str()), atoi(fullCommand[2].c_str()));
-				}
+			validateAddUnitArguments(fullCommand);
+			Vector3 pos = Vector3::VEC_ZERO;
+
+			if(fullCommand.size() == 6)
+				pos = Vector3(atof(fullCommand[3].c_str()), atof(fullCommand[4].c_str()), atof(fullCommand[5].c_str()));
+
+            executeAddUnit(atoi(fullCommand[1].c_str()), atoi(fullCommand[2].c_str()), pos);
+		}
     }
 
 		void ConsoleCommand::parse(string commandStr, vector<string> &fullCommand){
@@ -52,7 +57,7 @@ namespace battleship{
 		void ConsoleCommand::validateAddUnitArguments(vector<string> &fullCommand){
 				//addUnit <playerId> <unitId> [<posX> <posY> <posZ> ]
 				if(fullCommand.size() != 3 || fullCommand.size() != 6)
-						return;
+					return;
 
 				int playerId = atoi(fullCommand[1].c_str());
 
@@ -65,16 +70,15 @@ namespace battleship{
 					return;
 		}
 
-    void ConsoleCommand::executeAddUnit(int playerId, int unitId) {
+    void ConsoleCommand::executeAddUnit(int playerId, int unitId, Vector3 pos) {
 				StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 				InGameAppState *inGameState = (InGameAppState*)stateManager->getAppStateByType(AppStateType::IN_GAME_STATE);
         vector<Player*> players = inGameState->getPlayers();
-        Vector3 pos(0, 0, 0);
         Unit *u = nullptr;
 
         switch (unitType[unitId]) {
             case UNIT_TYPE::VESSEL:
-                u = new Vessel(players[playerId], pos, unitId);
+                u = new Unit(players[playerId], pos, unitId);
                 break;
             case UNIT_TYPE::DESTROYER:
                 u = new Destroyer(players[playerId], pos, unitId);
