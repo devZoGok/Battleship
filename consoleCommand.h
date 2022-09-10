@@ -11,14 +11,12 @@
 namespace battleship{
     class ConsoleCommand{
     public:
-      static void execute(std::string);
+		static void execute(std::string);
     private:
-			static void parse(std::string, std::vector<std::string>&);
-
-			static void validateAddUnitArguments(std::vector<std::string>&);
-      static void executeAddUnit(int, int);
-
-			static void validateDebugUnitsArguments();
+		static void parse(std::string, std::vector<std::string>&);
+		static void validateAddUnitArguments(std::vector<std::string>&);
+		static void executeAddUnit(int, int, vb01::Vector3);
+		static void validateDebugUnitsArguments();
     };
 }
 
