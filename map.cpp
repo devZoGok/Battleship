@@ -126,7 +126,7 @@ namespace battleship{
 		loadWaterbodies(luaManager);
 
 		Camera *cam = root->getCamera();
-		cam->setPosition(Vector3(1, 1, 1) * 10);
+		cam->setPosition(Vector3(1, 1, 1) * 40);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
     }
 
@@ -154,5 +154,10 @@ namespace battleship{
 		int z = fabs(pos.z - initPos.z) / cellSize.z;
 
 		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
+	}
+
+	bool Map::isPointWithin(int id, Vector3 point, Vector3 cellSize){
+		Vector3 cellPos = getCellPos(id, cellSize);
+		return ((fabs(point.x - cellPos.x) < 0.5 * cellSize.x) && (point.y > 0) && (fabs(point.z - cellPos.z) < 0.5 * cellSize.z));
 	}
 }

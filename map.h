@@ -32,6 +32,7 @@ namespace battleship{
         void unload();
 		vb01::Vector3 getCellPos(int, vb01::Vector3);
 		int getCellId(vb01::Vector3, vb01::Vector3);
+		bool isPointWithin(int, vb01::Vector3, vb01::Vector3);
 		inline WaterBody getWaterBody(int i){return waterBodies[i];}
 		inline int getNumWaterBodies(){return waterBodies.size();}
 		inline vb01::Model* getTerrainModel(){return terrainModel;}
@@ -43,7 +44,7 @@ namespace battleship{
 		std::string mapName;
 		std::vector<WaterBody> waterBodies;
 		//TODO replace hardcoded values
-		vb01::Vector3 size = vb01::Vector3(100, 6, 100);
+		vb01::Vector3 size = vb01::Vector3(100, 33, 100);
 
         Map(){}
 		void loadSkybox(gameBase::LuaManager*);

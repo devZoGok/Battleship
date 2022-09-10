@@ -47,7 +47,6 @@ namespace battleship{
 
         this->playerId = playerId;
         mainPlayer = players[playerId];
-        cam->setPosition(Vector3(0, 5, 0));
         Quaternion rotQuat = Quaternion(4 * atan(1) / 6, Vector3(1, 0, 0));
 				
 				Material *mat = new Material(root->getLibPath() + "gui");
@@ -199,42 +198,43 @@ namespace battleship{
         o.type = type;
         o.targets = targets;
 
-				Vector3 color;
+		Vector3 color;
 
       	switch(type){
       	    case Order::TYPE::MOVE:
-								color = Vector3::VEC_J;
+				color = Vector3::VEC_J;
       	        break;
       	    case Order::TYPE::ATTACK:
-								color = Vector3::VEC_I;
+				color = Vector3::VEC_I;
       	        break;
       	    case Order::TYPE::PATROL:
-								color = Vector3::VEC_K;
-								break;
+				color = Vector3::VEC_K;
+				break;
       	    case Order::TYPE::LAUNCH:
-								color = Vector3(1, 1, 0);
+				color = Vector3(1, 1, 0);
       	        break;
       	}
 
-				LineRenderer *lineRenderer = LineRenderer::getSingleton();
-				targets.push_back(Order::Target());
+		targets.push_back(Order::Target());
 
-				if(o.type == Order::TYPE::PATROL)
-					for(int i = targets.size() - 2; i >= 0; i--)
-							targets[i + 1] = targets[i];
+		if(o.type == Order::TYPE::PATROL)
+			for(int i = targets.size() - 2; i >= 0; i--)
+				targets[i + 1] = targets[i];
+
+		LineRenderer *lineRenderer = LineRenderer::getSingleton();
 
         for (int i = 0; i < selectedUnits.size(); ++i) {
-						Unit *u = selectedUnits[i];
-						lineRenderer->addLine(u->getPos(), targets[i].pos, color);
-						vector<LineRenderer::Line> lines = lineRenderer->getLines();
-						o.line = lines[lines.size() - 1];
+			Unit *u = selectedUnits[i];
+			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
+			vector<LineRenderer::Line> lines = lineRenderer->getLines();
+			o.line = lines[lines.size() - 1];
 
 
             if (type != Order::TYPE::LAUNCH || (u->getId() == 4 || u->getId() == 5)) {
-								if(type == Order::TYPE::PATROL){
-										Vector3 p = u->getPos();
-										targets[0] = Order::Target(nullptr, p);
-								}
+				if(type == Order::TYPE::PATROL){
+					Vector3 p = u->getPos();
+					targets[0] = Order::Target(nullptr, p);
+				}
 
                 if (addOrder)
                     u->addOrder(o);

@@ -49,6 +49,7 @@ namespace battleship{
 					speed[i] = luaManager->getFloatFromTable("speed", vector<Index>{Index(to_string(i + 1), false)});
 					unitClass[i] = (UnitClass)luaManager->getIntFromTable("unitClass", vector<Index>{Index(to_string(i + 1), false)});
 					destinationOffset[i] = luaManager->getFloatFromTable("destinationOffset", vector<Index>{Index(to_string(i + 1), false)});
+					unitType[i] = (UnitType)luaManager->getIntFromTable("unitType", vector<Index>{Index(to_string(i + 1), false)});
 					anglePrecision[i] = luaManager->getFloatFromTable("anglePrecision", vector<Index>{Index(to_string(i + 1), false)});
 					cost[i] = luaManager->getIntFromTable("cost", vector<Index>{Index(to_string(i + 1), false)});
 					maxTurnAngle[i] = luaManager->getFloatFromTable("maxTurnAngle", vector<Index>{Index(to_string(i + 1), false)});

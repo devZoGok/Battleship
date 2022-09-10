@@ -141,7 +141,7 @@ namespace battleship{
 
     void Unit::setOrder(Order order) {
         while (!orders.empty())
-						removeOrder(0);
+			removeOrder(0);
 
         addOrder(order);
         orderLineDispTime = getTime();
@@ -197,7 +197,7 @@ namespace battleship{
         while (orders.size() > 0)
             removeOrder(orders.size() - 1);
 
-				patrolPointId = 0;
+		patrolPointId = 0;
     }
 
     float Unit::getCircleRadius() {
@@ -245,7 +245,7 @@ namespace battleship{
         return projectiles;
     }
 
-	void Unit::generateWeights(u32 **weights, int cellsByDim[3]){
+	void Unit::generateWeights(u32 **weights, int cellsByDim[3], Vector3 cellSize){
 		Map *map = Map::getSingleton();
 		int waterbodyId = -1;
 
@@ -273,23 +273,39 @@ namespace battleship{
 
 			for(int j = 0; j < size; j++){
 				int weight = impassibleNodeVal;
+				bool adjacent = false;
 				
 				if(xId == 0 && j - i == 1)
-					weight = passVal;
+					adjacent = true;
 				else if(xId == cellsByDim[0] - 1 && j - i == -1)
-					weight = passVal;
+					adjacent = true;
 				else if(0 < xId && xId < cellsByDim[0] - 1 && abs(j - i) == 1)
-					weight = passVal;
+					adjacent = true;
 
 				if(zId == 0 && j - i == cellsByDim[0])
-					weight = passVal;
+					adjacent = true;
 				else if(zId == cellsByDim[2] - 1 && j - i == -cellsByDim[0])
-					weight = passVal;
+					adjacent = true;
 				else if(0 < zId && zId < cellsByDim[2] - 1 && abs(j - i) == cellsByDim[0])
-					weight = passVal;
+					adjacent = true;
 
 				if(i == j)
 					weight = 0;
+
+				if(adjacent){
+					weight = passVal;
+					MeshData meshData = map->getTerrainModel()->getChild(0)->getMesh(0)->getMeshBase();
+					MeshData::Vertex *verts = meshData.vertices;
+					int numVerts = 3 * meshData.numTris;
+
+					if(type == UnitType::SEA_LEVEL){
+						for(int k = 0; k < numVerts; k++)
+							if(map->isPointWithin(j, verts[k].pos, cellSize)){
+								weight = impassibleNodeVal;
+								break;
+							}
+					}
+				}
 
 				weights[i][j] = weight;
 			}
@@ -314,25 +330,31 @@ namespace battleship{
 		for(int i = 0; i < numCells; i++)
 			weights[i] = new u32[numCells];
 
-		generateWeights(weights, cellsByDim);
+		generateWeights(weights, cellsByDim, cellSize);
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		vector<int> path = pathfinder->findPath(weights,
-			   	numCells,
-			   	map->getCellId(pos, cellSize),
-			   	map->getCellId(order.targets[0].pos, cellSize));
+		int source = map->getCellId(pos, cellSize);
+		int dest = map->getCellId(order.targets[0].pos, cellSize);
+		vector<int> path = pathfinder->findPath(weights, numCells, source, dest);
+		bool impassibleNodePresent = false;
+
+		pathPoints.clear();
+
+		for(int i = 1; i < path.size(); i++)
+			if(!impassibleNodePresent && weights[path[i - 1]][path[i]] == pathfinder->getImpassibleNodeVal())
+				impassibleNodePresent = true;
+
+		if(!(impassibleNodePresent || path.empty())){
+			for(int p : path)
+				pathPoints.push_back(map->getCellPos(p, cellSize));
+
+			orders.push_back(order);
+		}
 
 		for(int i = 0; i < numCells; i++)
 			delete[] weights[i];
 
 		delete[] weights;
-
-		pathPoints.clear();
-
-		for(int p : path)
-			pathPoints.push_back(map->getCellPos(p, cellSize));
-
-		orders.push_back(order);
 	}
     
     void Unit::removeOrder(int id) {
