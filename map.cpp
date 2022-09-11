@@ -169,6 +169,6 @@ namespace battleship{
 
 	bool Map::isPointWithin(int id, Vector3 point, Vector3 cellSize){
 		Vector3 cellPos = getCellPos(id, cellSize);
-		return ((fabs(point.x - cellPos.x) < 0.5 * cellSize.x) && (point.y > 0) && (fabs(point.z - cellPos.z) < 0.5 * cellSize.z));
+		return ((fabs(point.x - cellPos.x) < 0.5 * cellSize.x) && (fabs(point.z - cellPos.z) < 0.5 * cellSize.z));
 	}
 }

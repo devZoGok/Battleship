@@ -249,13 +249,12 @@ namespace battleship{
 		Map *map = Map::getSingleton();
 		int waterbodyId = -1;
 
-		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL)
-			for(int i = 0; i < map->getNumWaterBodies(); i++){
-				if(map->getWaterBody(i).isPointWithin(pos)){
-					waterbodyId = i;
-					break;
-				}
+		for(int i = 0; i < map->getNumWaterBodies(); i++){
+			if(map->getWaterBody(i).isPointWithin(pos)){
+				waterbodyId = i;
+				break;
 			}
+		}
 
 		u32 impassibleNodeVal = Pathfinder::getSingleton()->getImpassibleNodeVal();
 		int size = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
@@ -293,12 +292,20 @@ namespace battleship{
 					MeshData::Vertex *verts = meshData.vertices;
 					int numVerts = 3 * meshData.numTris;
 
-					if(type == UnitType::SEA_LEVEL){
-						for(int k = 0; k < numVerts; k++)
-							if(map->isPointWithin(j, verts[k].pos, cellSize)){
-								weight = impassibleNodeVal;
-								break;
-							}
+					for(int k = 0; k < numVerts; k++){
+						bool pointWithin = map->isPointWithin(j, verts[k].pos, cellSize);
+						WaterBody waterbody;
+
+						if(waterbodyId != -1)
+							waterbody = map->getWaterBody(waterbodyId);
+
+						bool impassibleForSeaUnits = (type == UnitType::SEA_LEVEL && pointWithin && waterbodyId != -1 && verts[k].pos.y > waterbody.pos.y);
+						bool impassibleForLandUnits = (type == UnitType::LAND && pointWithin && (waterbodyId != -1 && verts[k].pos.y < waterbody.pos.y));
+
+						if(impassibleForSeaUnits || impassibleForLandUnits){
+							weight = impassibleNodeVal;
+							break;
+						}
 					}
 				}
 
