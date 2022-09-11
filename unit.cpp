@@ -251,12 +251,7 @@ namespace battleship{
 
 		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL)
 			for(int i = 0; i < map->getNumWaterBodies(); i++){
-				WaterBody waterBody = map->getWaterBody(i);
-				Vector3 p = waterBody.pos;
-				Vector2 s = waterBody.size;
-
-				if((waterBody.rect && fabs(pos.x - p.x) < s.x && fabs(pos.z - p.z) < s.y) ||
-					   	(!waterBody.rect && Vector2(pos.x, pos.z).getDistanceFrom(Vector2(p.x, p.z)) < s.x)){
+				if(map->getWaterBody(i).isPointWithin(pos)){
 					waterbodyId = i;
 					break;
 				}

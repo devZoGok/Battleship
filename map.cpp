@@ -18,6 +18,17 @@ using namespace gameBase;
 namespace battleship{
 	using namespace configData;
 
+	bool WaterBody::isPointWithin(Vector3 p){
+		bool within;
+
+		if(rect)
+			within = (fabs(pos.x - p.x) < size.x && fabs(pos.z - p.z) < size.y);
+		else
+			within = Vector2(pos.x, pos.z).getDistanceFrom(Vector2(p.x, p.z)) < size.x;
+
+		return within;
+	}
+
 	Map *map = nullptr;
 
 	Map* Map::getSingleton(){

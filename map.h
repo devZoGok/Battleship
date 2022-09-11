@@ -21,6 +21,8 @@ namespace battleship{
 		vb01::Vector3 pos;
 		vb01::Vector2 size;
 		bool rect;
+
+		bool isPointWithin(vb01::Vector3);
 	};
 
     class Map {
