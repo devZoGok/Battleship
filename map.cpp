@@ -76,7 +76,6 @@ namespace battleship{
 
 		mat->addTexUniform("textures[0]", t, true);
 		model->setMaterial(mat);
-		root->getRootNode()->attachChild(model);
 		nodeParent->attachChild(model);
 		terrainModel = model;
 	}
@@ -92,7 +91,8 @@ namespace battleship{
 			float sizeY = luaManager->getFloatFromTable(table, vector<Index>{Index("sizeY", true)});
 			Quad *quad = new Quad(Vector3(sizeX, sizeY, 1) * 1, true);
 			Material *mat = new Material(root->getLibPath() + "texture");
-			mat->addBoolUniform("texturingEnabled", true);
+			mat->addBoolUniform("texturingEnabled", false);
+			mat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 0.5));
 			mat->addBoolUniform("lightingEnabled", false);
 
 			string fr[]{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + luaManager->getStringFromTable(table, vector<Index>{Index("albedoMap", true)})};
@@ -167,8 +167,11 @@ namespace battleship{
 		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
 	}
 
-	bool Map::isPointWithin(int id, Vector3 point, Vector3 cellSize){
+	bool Map::isPointWithin(int id, Vector3 point, Vector3 cellSize, bool cellSpatial){
 		Vector3 cellPos = getCellPos(id, cellSize);
-		return ((fabs(point.x - cellPos.x) < 0.5 * cellSize.x) && (fabs(point.z - cellPos.z) < 0.5 * cellSize.z));
+		bool withinX = (fabs(point.x - cellPos.x) < 0.5 * cellSize.x);
+		bool withinY = (cellSpatial ? (fabs(point.y - cellPos.y) < 0.5 * cellSize.y) : true);
+		bool withinZ = (fabs(point.z - cellPos.z) < 0.5 * cellSize.z);
+		return withinX && withinY && withinZ;
 	}
 }

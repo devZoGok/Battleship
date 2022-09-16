@@ -25,28 +25,29 @@ namespace battleship{
         inline std::vector<Unit*>& getSelectedUnits(){return selectedUnits;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
-				void deselectUnits();
+		void deselectUnits();
         void renderUnits();
         void updateCameraPosition();
         void updateSelectionBox();
         void addTarget();
         void issueOrder(Order::TYPE, bool);
         void lookAround(bool);
-				void orientCamera(vb01::Vector3, double);
+		void orientCamera(vb01::Vector3, double);
+        bool isInLineOfSight(vb01::Vector3, float, Unit*);
 
         GuiAppState *guiState;
         std::vector<Player*> players;
         Player *mainPlayer;
-				vb01::Quad *dragbox = nullptr;
-				vb01::Node *dragboxNode = nullptr;
-				vb01::Vector2 clickPoint;
+		vb01::Quad *dragbox = nullptr;
+		vb01::Node *dragboxNode = nullptr, *textNode = nullptr;
+		vb01::Vector2 clickPoint;
         std::vector<vb01::Vector2> unitScreenPosVec;
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9], selectedUnits;
-				std::vector<Order::Target> targets;
+		std::vector<Order::Target> targets;
         bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false,lookingAround=false;
-        bool isInLineOfSight(vb01::Vector3, float, Unit*);
         int playerId, zooms = 0;
+		float depth = 1;
     };
 }
 

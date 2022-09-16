@@ -3,6 +3,7 @@
 #include <model.h>
 #include <material.h>
 #include <quad.h>
+#include <text.h>
 #include <ray.h>
 
 #include <stateManager.h>
@@ -58,6 +59,16 @@ namespace battleship{
 				dragboxNode = new Node();
 				dragboxNode->attachMesh(dragbox);
 				root->getGuiNode()->attachChild(dragboxNode);
+
+		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"depth: ");
+		Material *tm = new Material(root->getLibPath() + "text");
+		tm->addBoolUniform("texturingEnabled", false);
+		tm->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
+		t->setMaterial(tm);
+		textNode = new Node(Vector3(0, 100, 0));
+		textNode->addText(t);
+
+		depth = 1;
     }
 
     ActiveGameState::~ActiveGameState() {
@@ -65,12 +76,17 @@ namespace battleship{
 
     void ActiveGameState::onAttached() {
         AbstractAppState::onAttached();
+		Root::getSingleton()->getGuiNode()->attachChild(textNode);
     }
 
-    void ActiveGameState::onDettached() { AbstractAppState::onDettached();
+    void ActiveGameState::onDettached() {
+		AbstractAppState::onDettached();
+		Root::getSingleton()->getGuiNode()->attachChild(textNode);
     }
 
     void ActiveGameState::update() {
+		textNode->getText(0)->setText(L"Depth: " + to_wstring(depth));
+
         if (isSelectionBox)
             updateSelectionBox();
 
@@ -222,13 +238,25 @@ namespace battleship{
 				targets[i + 1] = targets[i];
 
 		LineRenderer *lineRenderer = LineRenderer::getSingleton();
+		Map *map = Map::getSingleton();
 
         for (int i = 0; i < selectedUnits.size(); ++i) {
 			Unit *u = selectedUnits[i];
+
+			if(u->getType() == UnitType::UNDERWATER && o.type == Order::TYPE::MOVE){
+				for(int j = 0; j < map->getNumWaterBodies(); j++){
+					WaterBody w = map->getWaterBody(j);
+
+					if(w.isPointWithin(u->getPos()) && w.isPointWithin(targets[i].pos)){
+						targets[i].pos.y = -map->getBottom() + depth * fabs(w.pos.y - map->getBottom());
+						break;
+					}
+				}
+			}
+
 			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
 			o.line = lines[lines.size() - 1];
-
 
             if (type != Order::TYPE::LAUNCH || (u->getId() == 4 || u->getId() == 5)) {
 				if(type == Order::TYPE::PATROL){
@@ -247,23 +275,23 @@ namespace battleship{
     }
     
     void ActiveGameState::addTarget() {
-				Camera *cam = Root::getSingleton()->getCamera();
-				Vector3 camPos = cam->getPosition();
-				Vector3 endPos = screenToSpace(getCursorPos());
+		Camera *cam = Root::getSingleton()->getCamera();
+		Vector3 camPos = cam->getPosition();
+		Vector3 endPos = screenToSpace(getCursorPos());
 
-				vector<Ray::CollisionResult> results;
-				Vector3 rayDir = (endPos - camPos).norm();
-				Ray::retrieveCollisions(camPos, rayDir, Map::getSingleton()->getNodeParent(), results);
-				std::map<Node*, Unit*> unitData;
+		vector<Ray::CollisionResult> results;
+		Vector3 rayDir = (endPos - camPos).norm();
+		Ray::retrieveCollisions(camPos, rayDir, Map::getSingleton()->getNodeParent(), results);
+		std::map<Node*, Unit*> unitData;
 
-				Ray::sortResults(results);
+		Ray::sortResults(results);
 
-				if(!results.empty()){
-						vector<Node*> ancestors = results[0].mesh->getNode()->getAncestors();
-						Node *node = ancestors[ancestors.size() - 2];
-						std::map<Node*, Unit*>::iterator it = unitData.find(node);
-						targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : nullptr), results[0].pos));
-				}
+		if(!results.empty()){
+			vector<Node*> ancestors = results[0].mesh->getNode()->getAncestors();
+			Node *node = ancestors[ancestors.size() - 2];
+			std::map<Node*, Unit*>::iterator it = unitData.find(node);
+			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : nullptr), results[0].pos));
+		}
     }
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
@@ -334,9 +362,11 @@ namespace battleship{
                 break;
 						case Bind::LEFT_CONTROL:
                 controlPressed = isPressed;
+				if(isPressed) depth -= 0.05;
                 break;
 						case Bind::LEFT_SHIFT:
                 shiftPressed = isPressed;
+				if(isPressed) depth += 0.05;
                 break;
 						case Bind::SELECT_PATROL_POINTS: 
                 selectingPatrolPoints = isPressed;

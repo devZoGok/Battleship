@@ -43,7 +43,7 @@ namespace battleship{
         std::vector<Target> targets;
     };
     
-    enum class MoveDir {FORWARD, LEFT, RIGHT};
+    enum class MoveDir {LEFT, UP, FORW};
     
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
     
@@ -101,7 +101,6 @@ namespace battleship{
 		std::vector<vb01::Vector3> pathPoints;
     protected:
         Player *player;
-        MoveDir moveDir = MoveDir::FORWARD;
         UnitClass unitClass;
         UnitType type;
 		vb01::Vector2 screenPos;
@@ -121,7 +120,7 @@ namespace battleship{
         virtual void patrol(Order);
         virtual void launch(Order);
         virtual void turn(float);
-        virtual void advance(float);
+        virtual void advance(float, MoveDir = MoveDir::FORW);
         void drawCuboid();
     };
 }

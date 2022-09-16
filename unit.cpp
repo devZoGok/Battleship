@@ -151,26 +151,34 @@ namespace battleship{
     }
 
     void Unit::move(Order order, float destOffset) {
-		Vector3 pointDir = (pathPoints[0] - pos).norm();
-		float angle = dirVec.getAngleBetween(pointDir);
+		Vector3 linDest = Vector3(pathPoints[0].x, pos.y, pathPoints[0].z);
+		Vector3 destDir = (linDest - pos).norm();
+
+		float angle = dirVec.getAngleBetween(destDir);
 		UnitDataManager *udm = UnitDataManager::getSingleton();
 
 		if(angle > udm->getAnglePrecision()[id]){
 			float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
 
-			if(leftVec.getAngleBetween(pointDir) > PI / 2)
+			if(leftVec.getAngleBetween(destDir) > PI / 2)
 				rotSpeed *= -1;
 
 			turn(rotSpeed);
 		}
 		else{
-			if(pos.getDistanceFrom(pathPoints[0]) > destOffset){
+			if(pos.getDistanceFrom(linDest) > destOffset){
 				float dist = pos.getDistanceFrom(pathPoints[0]);
 				float movementAmmount = (speed > dist ? dist : speed);
 				advance(movementAmmount);
 			}
 			else
 				pathPoints.erase(pathPoints.begin());
+
+			if(fabs(pos.y - pathPoints[0].y) > destOffset){
+				float dist = pos.getDistanceFrom(pathPoints[0]);
+				float movementAmmount = -(speed > dist ? dist : speed);
+				advance(movementAmmount, MoveDir::UP);
+			}
 		}
 
 		if(pathPoints.empty())
@@ -183,8 +191,22 @@ namespace battleship{
 
     void Unit::launch(Order order) {}
 
-    void Unit::advance(float speed) {
-        pos = pos + dirVec * speed;
+    void Unit::advance(float speed, MoveDir moveDir) {
+		Vector3 dir;
+
+		switch(moveDir){
+			case MoveDir::FORW:
+				dir = dirVec;
+				break;
+			case MoveDir::LEFT:
+				dir = leftVec;
+				break;
+			case MoveDir::UP:
+				dir = upVec;
+				break;
+		}
+
+        pos = pos + dir * speed;
         model->setPosition(pos);
     }
 
@@ -293,16 +315,17 @@ namespace battleship{
 					int numVerts = 3 * meshData.numTris;
 
 					for(int k = 0; k < numVerts; k++){
-						bool pointWithin = map->isPointWithin(j, verts[k].pos, cellSize);
+						bool pointWithin = map->isPointWithin(j, verts[k].pos, cellSize, type == UnitType::UNDERWATER);
 						WaterBody waterbody;
 
 						if(waterbodyId != -1)
 							waterbody = map->getWaterBody(waterbodyId);
 
 						bool impassibleForSeaUnits = (type == UnitType::SEA_LEVEL && pointWithin && waterbodyId != -1 && verts[k].pos.y > waterbody.pos.y);
+						bool impassibleForSubs = (type == UnitType::UNDERWATER && pointWithin && waterbodyId != -1);
 						bool impassibleForLandUnits = (type == UnitType::LAND && pointWithin && (waterbodyId != -1 && verts[k].pos.y < waterbody.pos.y));
 
-						if(impassibleForSeaUnits || impassibleForLandUnits){
+						if(impassibleForSeaUnits || impassibleForSubs || impassibleForLandUnits){
 							weight = impassibleNodeVal;
 							break;
 						}

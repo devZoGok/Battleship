@@ -6,7 +6,7 @@ UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, LAND = 2, AIR = 3};
 
 unitClass = {
 	UnitClass.VESSEL, UnitClass.VESSEL,
-	UnitClass.DESTROYER, UnitClass.DESTROYER,
+	UnitClass.VESSEL, UnitClass.DESTROYER,
 	UnitClass.CRUISER, UnitClass.CRUISER,
 	UnitClass.AIRCRAFT_CARRIER, UnitClass.AIRCRAFT_CARRIER,
 	UnitClass.SUBMARINE,
@@ -14,7 +14,7 @@ unitClass = {
 };
 
 unitType = {
-	UnitType.SEA_LEVEL, UnitType.LAND,
+	UnitType.SEA_LEVEL, UnitType.UNDERWATER,
 	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
 	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
 	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
