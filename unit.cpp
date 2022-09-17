@@ -302,6 +302,13 @@ namespace battleship{
 				else if(0 < xId && xId < cellsByDim[0] - 1 && abs(j - i) == 1)
 					adjacent = true;
 
+				if(yId == 0 && j - i == cellsByDim[0] * cellsByDim[2])
+					adjacent = true;
+				else if(0 < yId && yId < cellsByDim[1] - 1 && abs(j - i) == cellsByDim[0] * cellsByDim[2])
+					adjacent = true;
+				else if(yId == cellsByDim[1] - 1 && j - i == -(cellsByDim[0] * cellsByDim[2]))
+					adjacent = true;
+
 				if(zId == 0 && j - i == cellsByDim[0])
 					adjacent = true;
 				else if(zId == cellsByDim[2] - 1 && j - i == -cellsByDim[0])
@@ -346,11 +353,11 @@ namespace battleship{
 		Map *map = Map::getSingleton();
 
 		Vector3 mapSize = map->getSize();
-		Vector3 cellSize = Vector3(eps, (type == UnitType::UNDERWATER ? int(mapSize.y / height) : 0), eps);
+		Vector3 cellSize = Vector3(eps, (type == UnitType::UNDERWATER ? (mapSize.y / height) : 0), eps);
 
 		int cellsByDim[3] = { 
 			int(mapSize.x / cellSize.x),
-		   	(cellSize.y == 0 ? 1 : int(mapSize.y / cellSize.y)),
+		   	(cellSize.y == 0 ? 1 : cellSize.y),
 		   	int(mapSize.z / cellSize.z)
 		};
 		int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
