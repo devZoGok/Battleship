@@ -11,11 +11,11 @@
 		back = "back.jpg"
 	}
 	waterBodies = {
-		posX = 0,
-		posY = -1,
-		posZ = 0,
-		sizeX = 100,
-		sizeY = 100,
+		posX = -25,
+		posY = 10,
+		posZ = -25,
+		sizeX = 50,
+		sizeY = 50,
 		rect = true,
 		albedoMap = "water.jpg"
 	}

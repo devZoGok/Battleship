@@ -32,9 +32,9 @@ namespace battleship{
         void update(){}
         void load(std::string);
         void unload();
-		vb01::Vector3 getCellPos(int, vb01::Vector3);
-		int getCellId(vb01::Vector3, vb01::Vector3);
-		bool isPointWithin(int, vb01::Vector3, vb01::Vector3, bool = false);
+		vb01::Vector3 getCellPos(int, vb01::Vector3, int);
+		int getCellId(vb01::Vector3, vb01::Vector3, int);
+		bool isPointWithin(int, int, vb01::Vector3, vb01::Vector3, bool = false);
 		inline WaterBody getWaterBody(int i){return waterBodies[i];}
 		inline int getNumWaterBodies(){return waterBodies.size();}
 		inline vb01::Model* getTerrainModel(){return terrainModel;}

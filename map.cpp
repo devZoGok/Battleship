@@ -143,23 +143,41 @@ namespace battleship{
 
     void Map::unload() {}
 
-	Vector3 Map::getCellPos(int id, Vector3 cellSize){
-		int numCellsX = size.x / cellSize.x;
-		int numCellsZ = size.z / cellSize.z;
+	Vector3 Map::getCellPos(int id, Vector3 cellSize, int waterbodyId){
+		Vector3 regionSize = size;
+		Vector3 regionPos = Vector3::VEC_ZERO;
+
+		if(waterbodyId != -1){
+			Vector2 s = waterBodies[waterbodyId].size;
+			regionSize = Vector3(s.x, 0, s.y);
+			regionPos = waterBodies[waterbodyId].pos;
+		}
+
+		int numCellsX = regionSize.x / cellSize.x;
+		int numCellsZ = regionSize.z / cellSize.z;
 
 		int x = id % numCellsX;
 		int y = id / (numCellsX * numCellsZ);
 		int z = (id / numCellsX) % numCellsZ;
 
-		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5 + Vector3(cellSize.x, 0, cellSize.z) * 0.5;
+		Vector3 initPos = regionPos - (Vector3(regionSize.x, 0, regionSize.z) + Vector3(cellSize.x, 0, cellSize.z)) * .5;
 		return initPos + Vector3(x * cellSize.x, y * cellSize.y, z * cellSize.z);
 	}
 
-	int Map::getCellId(Vector3 pos, Vector3 cellSize){
-		int numCellsX = size.x / cellSize.x;
-		int numCellsZ = size.z / cellSize.z;
+	int Map::getCellId(Vector3 pos, Vector3 cellSize, int waterbodyId){
+		Vector3 regionSize = size;
+		Vector3 regionPos = Vector3::VEC_ZERO;
 
-		Vector3 initPos = Vector3(size.x, 0, size.z) * -0.5;
+		if(waterbodyId != -1){
+			Vector2 s = waterBodies[waterbodyId].size;
+			regionSize = Vector3(s.x, 0, s.y);
+			regionPos = waterBodies[waterbodyId].pos;
+		}
+
+		int numCellsX = regionSize.x / cellSize.x;
+		int numCellsZ = regionSize.z / cellSize.z;
+
+		Vector3 initPos = regionPos - Vector3(regionSize.x, 0, regionSize.z) * 0.5;
 		int x = fabs(pos.x - initPos.x) / cellSize.x;
 		int y = (cellSize.y > 0 ? (fabs(pos.y - initPos.y) / cellSize.y) : 0);
 		int z = fabs(pos.z - initPos.z) / cellSize.z;
@@ -167,8 +185,8 @@ namespace battleship{
 		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
 	}
 
-	bool Map::isPointWithin(int id, Vector3 point, Vector3 cellSize, bool cellSpatial){
-		Vector3 cellPos = getCellPos(id, cellSize);
+	bool Map::isPointWithin(int cellId, int waterbodyId, Vector3 point, Vector3 cellSize, bool cellSpatial){
+		Vector3 cellPos = getCellPos(cellId, cellSize, waterbodyId);
 		bool withinX = (fabs(point.x - cellPos.x) < 0.5 * cellSize.x);
 		bool withinY = (cellSpatial ? (fabs(point.y - cellPos.y) < 0.5 * cellSize.y) : true);
 		bool withinZ = (fabs(point.z - cellPos.z) < 0.5 * cellSize.z);
