@@ -167,7 +167,7 @@ namespace battleship{
 		}
 		else{
 			if(pos.getDistanceFrom(linDest) > destOffset){
-				float dist = pos.getDistanceFrom(pathPoints[0]);
+				float dist = pos.getDistanceFrom(linDest);
 				float movementAmmount = (speed > dist ? dist : speed);
 				advance(movementAmmount);
 			}
@@ -175,8 +175,12 @@ namespace battleship{
 				pathPoints.erase(pathPoints.begin());
 
 			if(fabs(pos.y - pathPoints[0].y) > destOffset){
-				float dist = pos.getDistanceFrom(pathPoints[0]);
-				float movementAmmount = -(speed > dist ? dist : speed);
+				float dist = pos.y - pathPoints[0].y;
+				float movementAmmount = (speed > fabs(dist) ? dist : speed);
+
+				if(dist > 0)
+					movementAmmount *= -1;
+
 				advance(movementAmmount, MoveDir::UP);
 			}
 		}

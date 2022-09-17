@@ -48,7 +48,7 @@ namespace battleship{
 		std::vector<WaterBody> waterBodies;
 		//TODO replace hardcoded values
 		vb01::Vector3 size = vb01::Vector3(100, 20, 100);
-		float bottom = 14;
+		float bottom = 13;
 
         Map(){}
 		void loadSkybox(gameBase::LuaManager*);

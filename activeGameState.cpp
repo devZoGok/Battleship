@@ -247,14 +247,14 @@ namespace battleship{
 				for(int j = 0; j < map->getNumWaterBodies(); j++){
 					WaterBody w = map->getWaterBody(j);
 
-					if(w.isPointWithin(u->getPos()) && w.isPointWithin(targets[i].pos)){
-						targets[i].pos.y = -map->getBottom() + depth * fabs(w.pos.y - map->getBottom());
+					if(w.isPointWithin(u->getPos()) && w.isPointWithin(o.targets[i].pos)){
+						o.targets[i].pos.y = -map->getBottom() + depth * (w.pos.y - (-map->getBottom()));
 						break;
 					}
 				}
 			}
 
-			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
+			lineRenderer->addLine(u->getPos(), o.targets[i].pos, color);
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
 			o.line = lines[lines.size() - 1];
 
@@ -375,9 +375,17 @@ namespace battleship{
 										issueOrder(Order::TYPE::PATROL, shiftPressed);
 								
                 break;
-						case Bind::LAUNCH: 
+						case Bind::LAUNCH:{ 
+							if(isPressed){
+								Map *map = Map::getSingleton();
+								Node *node = map->getNodeParent()->getChild(1);
+								bool visible = node->isVisible();
+								node->setVisible(!visible);
+							}
+
                 selectingGuidedMissileTarget = isPressed;
                 break;
+										  }
 						case Bind::GROUP_0:
             case Bind::GROUP_1:
             case Bind::GROUP_2:
