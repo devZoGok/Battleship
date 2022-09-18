@@ -139,6 +139,10 @@ namespace battleship{
 		Camera *cam = root->getCamera();
 		cam->setPosition(Vector3(1, 1, 1) * 40);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
+
+		//TODO replace hardcoded values
+		size = Vector3(100, 33, 100);
+		bottom = 33;
     }
 
     void Map::unload() {}

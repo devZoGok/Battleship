@@ -154,7 +154,7 @@ namespace battleship{
 		Vector3 linDest = Vector3(pathPoints[0].x, pos.y, pathPoints[0].z);
 		Vector3 destDir = (linDest - pos).norm();
 
-		float angle = dirVec.getAngleBetween(destDir);
+		float angle = (destDir != Vector3::VEC_ZERO ? dirVec.getAngleBetween(destDir) : -1);
 		UnitDataManager *udm = UnitDataManager::getSingleton();
 
 		if(angle > udm->getAnglePrecision()[id]){
@@ -171,8 +171,6 @@ namespace battleship{
 				float movementAmmount = (speed > dist ? dist : speed);
 				advance(movementAmmount);
 			}
-			else
-				pathPoints.erase(pathPoints.begin());
 
 			if(fabs(pos.y - pathPoints[0].y) > destOffset){
 				float dist = pos.y - pathPoints[0].y;
@@ -183,6 +181,9 @@ namespace battleship{
 
 				advance(movementAmmount, MoveDir::UP);
 			}
+
+			if(pos.getDistanceFrom(pathPoints[0]) <= destOffset)
+				pathPoints.erase(pathPoints.begin());
 		}
 
 		if(pathPoints.empty())
@@ -348,7 +349,7 @@ namespace battleship{
 			if(map->getWaterBody(i).isPointWithin(pos)){
 				if(type == UnitType::SEA_LEVEL || type == UnitType::UNDERWATER){
 					Vector2 s = map->getWaterBody(i).size;
-					size = Vector3(s.x, 0, s.y);
+					size = Vector3(s.x, size.y, s.y);
 				}
 
 				waterbodyId = i;
@@ -372,12 +373,12 @@ namespace battleship{
 
 		generateWeights(weights, cellsByDim, cellSize, waterbodyId);
 
-		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		int source = map->getCellId(pos, cellSize, waterbodyId);
 		int dest = map->getCellId(order.targets[0].pos, cellSize, waterbodyId);
+		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		vector<int> path = pathfinder->findPath(weights, numCells, source, dest);
-		bool impassibleNodePresent = false;
 
+		bool impassibleNodePresent = false;
 		pathPoints.clear();
 
 		for(int i = 1; i < path.size(); i++)
