@@ -276,6 +276,27 @@ namespace battleship{
 		Map *map = Map::getSingleton();
 		u32 impassibleNodeVal = Pathfinder::getSingleton()->getImpassibleNodeVal();
 		int size = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
+
+		bool terrainCellsImpassible[size];
+		MeshData meshData = map->getTerrainModel()->getChild(0)->getMesh(0)->getMeshBase();
+		MeshData::Vertex *verts = meshData.vertices;
+		int numVerts = 3 * meshData.numTris;
+
+		for(int i = 0; i < size; i++){
+			for(int j = 0; j < numVerts; j++){
+				bool pointWithin = map->isPointWithin(i, waterbodyId, verts[j].pos, cellSize, type == UnitType::UNDERWATER);
+				WaterBody waterbody;
+
+				if(waterbodyId != -1)
+					waterbody = map->getWaterBody(waterbodyId);
+
+				bool impassibleForSeaUnits = (type == UnitType::SEA_LEVEL && pointWithin && waterbodyId != -1 && verts[j].pos.y > waterbody.pos.y);
+				bool impassibleForSubs = (type == UnitType::UNDERWATER && pointWithin && waterbodyId != -1);
+				bool impassibleForLandUnits = (type == UnitType::LAND && pointWithin && (waterbodyId != -1 && verts[j].pos.y < waterbody.pos.y));
+				terrainCellsImpassible[i] = (impassibleForSeaUnits || impassibleForSubs || impassibleForLandUnits);
+			}
+		}
+
 		int passVal = 1;
 
 		for(int i = 0; i < size; i++){
@@ -311,29 +332,7 @@ namespace battleship{
 				if(i == j)
 					weight = 0;
 
-				if(adjacent){
-					weight = passVal;
-					MeshData meshData = map->getTerrainModel()->getChild(0)->getMesh(0)->getMeshBase();
-					MeshData::Vertex *verts = meshData.vertices;
-					int numVerts = 3 * meshData.numTris;
-
-					for(int k = 0; k < numVerts; k++){
-						bool pointWithin = map->isPointWithin(j, waterbodyId, verts[k].pos, cellSize, type == UnitType::UNDERWATER);
-						WaterBody waterbody;
-
-						if(waterbodyId != -1)
-							waterbody = map->getWaterBody(waterbodyId);
-
-						bool impassibleForSeaUnits = (type == UnitType::SEA_LEVEL && pointWithin && waterbodyId != -1 && verts[k].pos.y > waterbody.pos.y);
-						bool impassibleForSubs = (type == UnitType::UNDERWATER && pointWithin && waterbodyId != -1);
-						bool impassibleForLandUnits = (type == UnitType::LAND && pointWithin && (waterbodyId != -1 && verts[k].pos.y < waterbody.pos.y));
-
-						if(impassibleForSeaUnits || impassibleForSubs || impassibleForLandUnits){
-							weight = impassibleNodeVal;
-							break;
-						}
-					}
-				}
+				weight = (adjacent && !terrainCellsImpassible[j] ? passVal : impassibleNodeVal);
 
 				weights[i][j] = weight;
 			}
