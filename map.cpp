@@ -165,7 +165,7 @@ namespace battleship{
 		int z = (id / numCellsX) % numCellsZ;
 
 		Vector3 initPos = regionPos - (Vector3(regionSize.x, 0, regionSize.z) + Vector3(cellSize.x, 0, cellSize.z)) * .5;
-		return initPos + Vector3(x * cellSize.x, y * cellSize.y, z * cellSize.z);
+		return initPos + Vector3(x * cellSize.x, -y * cellSize.y, z * cellSize.z);
 	}
 
 	int Map::getCellId(Vector3 pos, Vector3 cellSize, int waterbodyId){

@@ -248,7 +248,10 @@ namespace battleship{
 					WaterBody w = map->getWaterBody(j);
 
 					if(w.isPointWithin(u->getPos()) && w.isPointWithin(o.targets[i].pos)){
-						o.targets[i].pos.y = -map->getBottom() + depth * (w.pos.y - (-map->getBottom()));
+						vector<Ray::CollisionResult> res;
+						Ray::retrieveCollisions(u->getPos(), Vector3(0, -1, 0), map->getTerrainModel()->getChild(0), res);
+						Ray::sortResults(res);
+						o.targets[i].pos.y = res[0].pos.y + depth * (w.pos.y - res[0].pos.y);
 						break;
 					}
 				}
