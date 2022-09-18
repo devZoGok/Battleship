@@ -164,7 +164,7 @@ namespace battleship{
 		int y = id / (numCellsX * numCellsZ);
 		int z = (id / numCellsX) % numCellsZ;
 
-		Vector3 initPos = regionPos - (Vector3(regionSize.x, 0, regionSize.z) + Vector3(cellSize.x, 0, cellSize.z)) * .5;
+		Vector3 initPos = regionPos - (Vector3(regionSize.x, 0, regionSize.z) - Vector3(cellSize.x, 0, cellSize.z)) * .5;
 		return initPos + Vector3(x * cellSize.x, -y * cellSize.y, z * cellSize.z);
 	}
 
