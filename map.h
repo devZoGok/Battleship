@@ -40,14 +40,13 @@ namespace battleship{
 		inline vb01::Model* getTerrainModel(){return terrainModel;}
 		inline vb01::Node* getNodeParent(){return nodeParent;}
 		inline vb01::Vector3 getSize(){return size;}
-		inline float getBottom(){return bottom;}
     private:
+		std::string terrTable = "terrain";
 		vb01::Node *nodeParent = nullptr;
 		vb01::Model *terrainModel = nullptr;
 		std::string mapName;
 		std::vector<WaterBody> waterBodies;
 		vb01::Vector3 size;
-		float bottom;
 
         Map(){}
 		void loadSkybox(gameBase::LuaManager*);

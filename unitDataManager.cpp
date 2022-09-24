@@ -45,33 +45,33 @@ namespace battleship{
 				unitCuboidDimensions = new Vector3*[numUnits];
 
 				for(int i = 0; i < numUnits; i++){
-					health[i] = luaManager->getIntFromTable("health", vector<Index>{Index(to_string(i + 1), false)});
-					speed[i] = luaManager->getFloatFromTable("speed", vector<Index>{Index(to_string(i + 1), false)});
-					unitClass[i] = (UnitClass)luaManager->getIntFromTable("unitClass", vector<Index>{Index(to_string(i + 1), false)});
-					destinationOffset[i] = luaManager->getFloatFromTable("destinationOffset", vector<Index>{Index(to_string(i + 1), false)});
-					unitType[i] = (UnitType)luaManager->getIntFromTable("unitType", vector<Index>{Index(to_string(i + 1), false)});
-					anglePrecision[i] = luaManager->getFloatFromTable("anglePrecision", vector<Index>{Index(to_string(i + 1), false)});
-					cost[i] = luaManager->getIntFromTable("cost", vector<Index>{Index(to_string(i + 1), false)});
-					maxTurnAngle[i] = luaManager->getFloatFromTable("maxTurnAngle", vector<Index>{Index(to_string(i + 1), false)});
-					range[i] = luaManager->getFloatFromTable("range", vector<Index>{Index(to_string(i + 1), false)});
-					unitAxisLength[i] = luaManager->getFloatFromTable("unitAxisLength", vector<Index>{Index(to_string(i + 1), false)});
-					lineOfSight[i] = luaManager->getFloatFromTable("lineOfSight", vector<Index>{Index(to_string(i + 1), false)});
-					name[i] = luaManager->getStringFromTable("name", vector<Index>{Index(to_string(i + 1), false)});
-					meshPath[i] = luaManager->getStringFromTable("meshPath", vector<Index>{Index(to_string(i + 1), false)});
-					basePath[i] = luaManager->getStringFromTable("basePath", vector<Index>{Index(to_string(i + 1), false)});
+					health[i] = luaManager->getIntFromTable("health", vector<Index>{Index(i + 1)});
+					speed[i] = luaManager->getFloatFromTable("speed", vector<Index>{Index(i + 1)});
+					unitClass[i] = (UnitClass)luaManager->getIntFromTable("unitClass", vector<Index>{Index(i + 1)});
+					destinationOffset[i] = luaManager->getFloatFromTable("destinationOffset", vector<Index>{Index(i + 1)});
+					unitType[i] = (UnitType)luaManager->getIntFromTable("unitType", vector<Index>{Index(i + 1)});
+					anglePrecision[i] = luaManager->getFloatFromTable("anglePrecision", vector<Index>{Index(i + 1)});
+					cost[i] = luaManager->getIntFromTable("cost", vector<Index>{Index(i + 1)});
+					maxTurnAngle[i] = luaManager->getFloatFromTable("maxTurnAngle", vector<Index>{Index(i + 1)});
+					range[i] = luaManager->getFloatFromTable("range", vector<Index>{Index(i + 1)});
+					unitAxisLength[i] = luaManager->getFloatFromTable("unitAxisLength", vector<Index>{Index(i + 1)});
+					lineOfSight[i] = luaManager->getFloatFromTable("lineOfSight", vector<Index>{Index(i + 1)});
+					name[i] = luaManager->getStringFromTable("name", vector<Index>{Index(i + 1)});
+					meshPath[i] = luaManager->getStringFromTable("meshPath", vector<Index>{Index(i + 1)});
+					basePath[i] = luaManager->getStringFromTable("basePath", vector<Index>{Index(i + 1)});
 
 					unitCornerPoints[i] = new Vector3[8];
 					unitCuboidDimensions[i] = new Vector3[8];
 
 					for(int j = 0; j < 8; j++){
-							float cornerX = luaManager->getFloatFromTable("unitCornerPoints", vector<Index>{Index(to_string(i + 1), false), Index(to_string(j + 1), false), Index("x", true)});
-							float cornerY = luaManager->getFloatFromTable("unitCornerPoints", vector<Index>{Index(to_string(i + 1), false), Index(to_string(j + 1), false), Index("y", true)});
-							float cornerZ = luaManager->getFloatFromTable("unitCornerPoints", vector<Index>{Index(to_string(i + 1), false), Index(to_string(j + 1), false), Index("z", true)});
+							float cornerX = luaManager->getFloatFromTable("unitCornerPoints", vector<Index>{Index(i + 1), Index(j + 1), Index("x")});
+							float cornerY = luaManager->getFloatFromTable("unitCornerPoints", vector<Index>{Index(i + 1), Index(j + 1), Index("y")});
+							float cornerZ = luaManager->getFloatFromTable("unitCornerPoints", vector<Index>{Index(i + 1), Index(j + 1), Index("z")});
 							unitCornerPoints[i][j] = Vector3(cornerX, cornerY, cornerZ);
 
-							float dimX = luaManager->getFloatFromTable("unitCuboidDimensions", vector<Index>{Index(to_string(i + 1), false), Index(to_string(j + 1), false), Index("x", true)});
-							float dimY = luaManager->getFloatFromTable("unitCuboidDimensions", vector<Index>{Index(to_string(i + 1), false), Index(to_string(j + 1), false), Index("y", true)});
-							float dimZ = luaManager->getFloatFromTable("unitCuboidDimensions", vector<Index>{Index(to_string(i + 1), false), Index(to_string(j + 1), false), Index("z", true)});
+							float dimX = luaManager->getFloatFromTable("unitCuboidDimensions", vector<Index>{Index(i + 1), Index(j + 1), Index("x")});
+							float dimY = luaManager->getFloatFromTable("unitCuboidDimensions", vector<Index>{Index(i + 1), Index(j + 1), Index("y")});
+							float dimZ = luaManager->getFloatFromTable("unitCuboidDimensions", vector<Index>{Index(i + 1), Index(j + 1), Index("z")});
 							unitCuboidDimensions[i][j] = Vector3(dimX, dimY, dimZ);
 					}
 				}
