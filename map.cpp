@@ -42,12 +42,12 @@ namespace battleship{
 		int numPaths = 6;
 		string skyTable = "skybox", basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
 		string path[] = {
-			basePath + luaManager->getStringFromTable(terrTable, vector<Index>{Index(skyTable), Index("left")}),
-			basePath + luaManager->getStringFromTable(terrTable, vector<Index>{Index(skyTable), Index("right")}),
-			basePath + luaManager->getStringFromTable(terrTable, vector<Index>{Index(skyTable), Index("up")}),
-			basePath + luaManager->getStringFromTable(terrTable, vector<Index>{Index(skyTable), Index("down")}),
-			basePath + luaManager->getStringFromTable(terrTable, vector<Index>{Index(skyTable), Index("front")}),
-			basePath + luaManager->getStringFromTable(terrTable, vector<Index>{Index(skyTable), Index("back")})
+			basePath + luaManager->getStringFromTable(mapTable, vector<Index>{Index(skyTable), Index("left")}),
+			basePath + luaManager->getStringFromTable(mapTable, vector<Index>{Index(skyTable), Index("right")}),
+			basePath + luaManager->getStringFromTable(mapTable, vector<Index>{Index(skyTable), Index("up")}),
+			basePath + luaManager->getStringFromTable(mapTable, vector<Index>{Index(skyTable), Index("down")}),
+			basePath + luaManager->getStringFromTable(mapTable, vector<Index>{Index(skyTable), Index("front")}),
+			basePath + luaManager->getStringFromTable(mapTable, vector<Index>{Index(skyTable), Index("back")})
 		};
 
 		for(int i = 0; i < numPaths; i++)
@@ -57,14 +57,15 @@ namespace battleship{
 	}
 
 	void Map::loadTerrain(LuaManager *luaManager){
-		string terrainFile = luaManager->getStringFromTable(terrTable, vector<Index>{Index("model")});
-		string albedoFile = luaManager->getStringFromTable(terrTable, vector<Index>{Index("albedoMap")});
+		string terrainTable = "terrain";
+		string terrainFile = luaManager->getStringFromTable(mapTable, vector<Index>{Index(terrainTable), Index("model")});
+		string albedoFile = luaManager->getStringFromTable(mapTable, vector<Index>{Index(terrainTable), Index("albedoMap")});
 
 		string table = "size";
 		size = Vector3(
-				luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index("x")}),
-				luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index("y")}),
-				luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index("z")})
+				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("x")}),
+				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("y")}),
+				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("z")})
 			);
 
 		AssetManager *assetManager = AssetManager::getSingleton();
@@ -88,33 +89,33 @@ namespace battleship{
 	}
 
 	void Map::loadWaterbodies(LuaManager *luaManager){
-		int numWaterBodies = luaManager->getIntFromTable(terrTable, vector<Index>{Index("numWaterBodies")});
+		int numWaterBodies = luaManager->getIntFromTable(mapTable, vector<Index>{Index("numWaterBodies")});
 		string table = "waterBodies";
 		Root *root = Root::getSingleton();
 
 		for(int i = 1; i <= numWaterBodies; i++){
-			float sizeX = luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index(i), Index("sizeX")});
-			float sizeY = luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index(i), Index("sizeY")});
+			float sizeX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("sizeX")});
+			float sizeY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("sizeY")});
 			Quad *quad = new Quad(Vector3(sizeX, sizeY, 1) * 1, true);
 			Material *mat = new Material(root->getLibPath() + "texture");
 			mat->addBoolUniform("texturingEnabled", false);
 			mat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 0.5));
 			mat->addBoolUniform("lightingEnabled", false);
 
-			string fr[]{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + luaManager->getStringFromTable(terrTable, vector<Index>{Index(table), Index(i), Index("albedoMap")})};
+			string fr[]{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + luaManager->getStringFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("albedoMap")})};
 			AssetManager::getSingleton()->load(fr[0]);
 			Texture *t = new Texture(fr, 1, false);
 
 			mat->addTexUniform("textures[0]", t, true);
 			quad->setMaterial(mat);
 
-			bool rect = luaManager->getBoolFromTable(terrTable, vector<Index>{Index(table), Index("rect")});
+			bool rect = luaManager->getBoolFromTable(mapTable, vector<Index>{Index(table), Index("rect")});
 			Node *waterNode = new Node();
 			waterNode->attachMesh(quad);
 			root->getRootNode()->attachChild(waterNode);
-			float posX = luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index(i), Index("posX")});
-			float posY = luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index(i), Index("posY")});
-			float posZ = luaManager->getFloatFromTable(terrTable, vector<Index>{Index(table), Index(i), Index("posZ")});
+			float posX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("posX")});
+			float posY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("posY")});
+			float posZ = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("posZ")});
 			waterNode->setPosition(Vector3(posX, posY, posZ));
 			waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 			nodeParent->attachChild(waterNode);

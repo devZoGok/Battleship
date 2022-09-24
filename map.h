@@ -41,7 +41,7 @@ namespace battleship{
 		inline vb01::Node* getNodeParent(){return nodeParent;}
 		inline vb01::Vector3 getSize(){return size;}
     private:
-		std::string terrTable = "terrain";
+		std::string mapTable = "map";
 		vb01::Node *nodeParent = nullptr;
 		vb01::Model *terrainModel = nullptr;
 		std::string mapName;

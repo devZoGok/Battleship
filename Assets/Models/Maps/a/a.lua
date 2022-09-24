@@ -1,27 +1,26 @@
 map = {
-	numWaterBodies = 1,
+	numWaterBodies = 2,
 	terrain = {
-		model = "terrain.xml",
-		albedoMap = "terrain.jpg",
-		size = {x = 100, y = 33, z = 100},
+		model = "a.xml",
+		albedoMap = "a.jpg",
+		size = {x = 100.0, y = 46.024871826171875, z = 100.0},
+		cells = {},
 	},
-	skybox = {
-		left = "left.jpg",
-		right = "right.jpg",
-		up = "up.jpg",
-		down = "down.jpg",
-		front = "front.jpg",
-		back = "back.jpg"
-	},
+	skybox = {left = "left.jpg", right = "right.jpg", up = "up.jpg", down = "down.jpg", front = "front.jpg", back = "back.jpg"},
 	waterBodies = {
-	{
-		posX = -25,
-		posY = 10,
-		posZ = -25,
-		sizeX = 50,
-		sizeY = 50,
-		rect = true,
-		albedoMap = "water.jpg"
-	}
+		{
+			posX = -20.925153732299805, posY = 11.165120124816895, posZ = -21.885021209716797,
+			sizeX = 29.09984016418457, sizeY = 29.09984016418457,
+			rect = true,
+			albedoMap = "water.jpg",
+			cells = {}
+		},
+		{
+			posX = 18.941593170166016, posY = -5.167899131774902, posZ = 16.209856033325195,
+			sizeX = 41.878990173339844, sizeY = 41.878990173339844,
+			rect = true,
+			albedoMap = "water.jpg",
+			cells = {}
+		}
 	}
 }
