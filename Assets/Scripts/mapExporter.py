@@ -1,4 +1,13 @@
 from xml.etree import ElementTree as ET
+import numpy as np
+
+LAND = 'LAND'
+SEA_LEVEL = 'SEA_LEVEL'
+UNDERWATER = 'UNDERWATER'
+
+def createWaterBody(wb):
+    waterBody = None
+    return waterBody
 
 impassibleNodeVal = 65535
 passVal = 1
@@ -6,20 +15,46 @@ passVal = 1
 fullFilename = bpy.data.filepath[0 : bpy.data.filepath.rfind('.')]
 verts = list(ET.parse(fullFilename + '.xml').find('node').find('mesh').iter('vertdata'))
 
-def createCells(cellSize, mapSize):
+def createCells(cellSize, mapSize, land):
     weights = []
-    cellsStr = '\n\t\t{'
+    cellsStr = 'nodes = \n\t\t{'
     cellsStr += '\n\t\tsize = {x = ' + str(cellSize[0]) + ', y = ' + str(cellSize[1]) + ', z = ' + str(cellSize[2]) + '},\n'
-    cellsStr += '\t\tweights = {\n\t\t'
+    cellsStr += '\t\tcells = {\n\t\t'
 
     cellsByDim = [int(mapSize[0] / cellSize[0]), 1 if cellSize[1] == 0 else int(mapSize[1] / cellSize[1]), int(mapSize[2] / cellSize[2])]
     numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2]
+    cellsStr += '{pos = '
+    initPos = -.5 * np.array([mapSize[0] - cellSize[0], 0, mapSize[2] - cellSize[2]])
+
+    for i in range(numCells):
+        xId = i % cellsByDim[0]
+        yId = i / (cellsByDim[0] * cellsByDim[2])
+        zId = (i / cellsByDim[0]) % cellsByDim[2]
+        cellPos = initPos + np.array([xId * cellSize[0], -yId * cellSize[1], zId * cellSize[2]])
+        cellsStr += '{x = ' + str(cellPos[0]) + ', y = ' + str(cellPos[1]) + ', z = ' + str(cellPos[2]) + '}'
+        cellsStr += (', ' if i < numCells - 1 else '')
+        
+    cellsStr += '},\nweights = {\n'
 
     for i in range(numCells):
         xId = i % cellsByDim[0]
         yId = i / (cellsByDim[0] * cellsByDim[2])
         zId = (i / cellsByDim[0]) % cellsByDim[2]
 
+        for j in range(len(verts)):
+            pass
+            '''
+	        pointWithin = map->isPointWithin(i, waterbodyId, verts, cellSize, type == UnitType::UNDERWATER);
+	        WaterBody waterbody;
+
+	        if(waterbodyId != -1)
+	        	waterbody = map->getWaterBody(waterbodyId);
+
+	        impassibleForSeaUnits = (cellType == SEA_LEVEL && pointWithin && waterbodyId != -1 && verts.y > waterbody.pos.y);
+	        impassibleForSubs = (cellType == UNDERWATER && pointWithin && waterbodyId != -1);
+	        impassibleForLandUnits = (cellType == LAND && pointWithin && (waterbodyId != -1 && verts.y < waterbody.pos.y));
+	        terrainCellsImpassible[i] = (impassibleForSeaUnits || impassibleForSubs || impassibleForLandUnits);
+            '''
         for j in range(numCells):
             adjacent = False
 			
@@ -53,7 +88,7 @@ def createCells(cellSize, mapSize):
 
             cellsStr += str(weight) + (', ' if numCells * i + j < numCells * numCells - 1 else '')
 
-    cellsStr += '\n\t\t}\n\t}'
+    cellsStr += '\n}\n\t\t}\n\t}'
 
     return cellsStr
 
@@ -70,12 +105,12 @@ modelName = baseFilename + '.xml'
 content += '\t\tmodel = "' + modelName + '",\n'
 content += '\t\talbedoMap = "' + baseFilename + '.jpg",\n'
 
-terrDim = terrain.dimensions;
+terrDim = np.array([terrain.dimensions.x, terrain.dimensions.y, terrain.dimensions.z]);
 maxTurnAngles = [.1]
 sizes = [(14, 0, 14)]
 
-content += '\t\tsize = {x = ' + str(terrDim.x) + ', y = ' + str(terrDim.z) + ', z = ' + str(terrDim.y) + '},\n'
-content += '\t\tcells = ' + createCells(sizes[0], terrDim) + '\n'
+content += '\t\tsize = {x = ' + str(terrDim[0]) + ', y = ' + str(terrDim[2]) + ', z = ' + str(terrDim[1]) + '},\n'
+content += '\t\t' + createCells(sizes[0], terrDim, True) + '\n'
 content += '\t},\n'
 content += '\tskybox = {left = "left.jpg", right = "right.jpg", up = "up.jpg", down = "down.jpg", front = "front.jpg", back = "back.jpg"},\n'
 content += '\twaterBodies = {\n'
@@ -84,11 +119,11 @@ i = 0
 for wb in waterBodies:
     content += '\t\t{\n'
     content += '\t\t\tposX = ' + str(wb.location.x) + ', posY = ' + str(wb.location.z) + ', posZ = ' + str(-wb.location.y) + ',\n'
-    waterDim = (wb.dimensions.x, terrDim.y, wb.dimensions.y);
+    waterDim = np.array([wb.dimensions.x, terrDim[1], wb.dimensions.y]);
     content += '\t\t\tsizeX = ' + str(waterDim[0]) + ', sizeY = ' + str(waterDim[2]) + ',\n'
     content += '\t\t\trect = true,\n'
     content += '\t\t\talbedoMap = "water.jpg",\n'
-    content += '\t\t\tcells = ' + createCells(sizes[0], waterDim) + '\n'
+    content += '\t\t\t' + createCells(sizes[0], waterDim, False) + '\n'
     content += '\t\t}' + (',' if i != len(waterBodies) - 1 else '') + '\n'
     i += 1
 
