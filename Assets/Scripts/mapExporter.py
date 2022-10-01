@@ -34,7 +34,7 @@ def createCells(cellSize, mapSize, land):
         cellsStr += '{x = ' + str(cp[0]) + ', y = ' + str(cp[1]) + ', z = ' + str(-cp[2]) + '}'
         cellsStr += (', ' if i < numCells - 1 else '')
         
-    cellsStr += '},\nimpassible = {,\n'
+    cellsStr += '},\nimpassible = {\n'
 
     for i in range(numCells):
         xId = i % cellsByDim[0]
@@ -42,38 +42,36 @@ def createCells(cellSize, mapSize, land):
         zId = (i / cellsByDim[0]) % cellsByDim[2]
 
         waterbodyId = -1
-
-        for j in range(len(waterBodies)):
-            wb = waterBodies[j]
-            diffX = (abs(cellPos[i][0] - wb.location[0]) < .5 * wb.dimensions[0])
-            diffY = (abs(cellPos[i][1] - wb.location[2]) < .5 * wb.dimensions[2])
-            diffZ = (abs(cellPos[i][2] + wb.location[1]) < .5 * wb.dimensions[1])
-            
-            if diffX and diffZ:
-                waterbodyId = j
-                break
-
-        impassibleForSubs = False
-        impassibleForLandUnits = False
+        impassible = False
     
         for j in range(len(verts)):
+            point = (float(verts[j].get('px')), float(verts[j].get('py')), float(verts[j].get('pz')))
+
+            for k in range(len(waterBodies)):
+                wb = waterBodies[k]
+                diffX = (abs(point[0] - waterBodies[k].location[0]) < .5 * waterBodies[k].dimensions[0])
+                diffY = (abs(point[1] - waterBodies[k].location[2]) < .5 * waterBodies[k].dimensions[2])
+                diffZ = (abs(point[2] + waterBodies[k].location[1]) < .5 * waterBodies[k].dimensions[1])
+                
+                if diffX and diffZ:
+                    waterbodyId = k
+                    break
+
             if waterbodyId != -1:
                 waterbody = waterBodies[waterbodyId]
 
-            point = (float(verts[j].get('px')), float(verts[j].get('py')), float(verts[j].get('pz')))
-
             withinX = (abs(point[0] - cellPos[i][0]) < 0.5 * cellSize[0])
-            withinY = ((abs(point[1] - cellPos[i][1]) < 0.5 * cellSize[1]) if land else True)
+            withinY = ((abs(point[1] - cellPos[i][1]) < 0.5 * cellSize[1]) if not land else True)
             withinZ = (abs(point[2] - cellPos[i][2]) < 0.5 * cellSize[2])
             pointWithin = (withinX and withinY and withinZ)
+            impassibleStr = ''
 
-            if not land and pointWithin and waterbodyId != -1:
-                impassibleForSubs = True
+            if land and pointWithin and (waterbodyId != -1 and point[1] < waterbody.location.z):
+                impassible = True
+            elif not land and pointWithin and waterbodyId != -1:
+                impassible = True
 
-            if land and pointWithin and (waterbodyId != -1 and verts[1] < waterbody.location.z):
-                impassibleForLandUnits = True
-
-        cellsStr += '{land = ' + str(impassibleForLandUnits).lower() + ', naval = ' + str(impassibleForSubs).lower()  + '}' + (', ' if i < numCells - 1 else '')
+        cellsStr += str(impassible).lower() + (', ' if i < numCells - 1 else '')
 
     cellsStr += '},\nweights = {\n'
 
@@ -131,9 +129,9 @@ modelName = baseFilename + '.xml'
 content += '\t\tmodel = "' + modelName + '",\n'
 content += '\t\talbedoMap = "' + baseFilename + '.jpg",\n'
 
-terrDim = np.array([terrain.dimensions.x, terrain.dimensions.y, terrain.dimensions.z]);
+terrDim = np.array([terrain.dimensions.x, terrain.dimensions.z, terrain.dimensions.y]);
 maxTurnAngles = [.1]
-sizes = [(14, 0, 14)]
+sizes = [(14, 0, 14), (14, 6, 14)]
 
 content += '\t\tsize = {x = ' + str(terrDim[0]) + ', y = ' + str(terrDim[2]) + ', z = ' + str(terrDim[1]) + '},\n'
 content += '\t\t' + createCells(sizes[0], terrDim, True) + '\n'
@@ -149,7 +147,7 @@ for wb in waterBodies:
     content += '\t\t\tsizeX = ' + str(waterDim[0]) + ', sizeY = ' + str(waterDim[2]) + ',\n'
     content += '\t\t\trect = true,\n'
     content += '\t\t\talbedoMap = "water.jpg",\n'
-    content += '\t\t\t' + createCells(sizes[0], waterDim, False) + '\n'
+    content += '\t\t\t' + createCells(sizes[1], waterDim, False) + '\n'
     content += '\t\t}' + (',' if i != len(waterBodies) - 1 else '') + '\n'
     i += 1
 
