@@ -86,7 +86,7 @@ namespace battleship{
         inline vb01::Vector3 getLeftVec() {return leftVec;}
         inline vb01::Vector3 getUpVec() {return upVec;}
     private:
-		void generateWeights(vb01::u32**, int[3], vb01::Vector3, int);
+		//void generateWeights(vb01::u32**, int[3], vb01::Vector3, int);
         void updateScreenCoordinates();
         void displayUnitStats();
         inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <vector.h>
+#include <util.h>
 
 namespace gameBase{
 	class LuaManager;
@@ -17,12 +18,32 @@ namespace vb01{
 }
 
 namespace battleship{
-	struct WaterBody{
+	struct Cell{
+		bool land, impassible;
 		vb01::Vector3 pos;
-		vb01::Vector2 size;
-		bool rect;
 
-		bool isPointWithin(vb01::Vector3);
+		Cell(){}
+		Cell(vb01::Vector3 p, bool l, bool i): pos(p), land(l), impassible(i){}
+	};
+
+	struct TerrainObject{
+		enum Type{LANDMASS, RECT_WATERBODY, ROUND_WATERBODY};
+		vb01::Vector3 pos, size, cellSize;
+		Type type;
+		vb01::Node *node = nullptr;
+		int numCells;
+		Cell *cells = nullptr;
+		vb01::u32 **weights = nullptr;
+
+		TerrainObject(vb01::Vector3 p, vb01::Vector3 s, vb01::Vector3 cs, Type t, vb01::Node *n, int num, Cell *c, vb01::u32 **w) :
+		   	pos(p),
+		   	size(s),
+		   	cellSize(cs),
+		   	type(t),
+		   	node(n),
+		   	numCells(num),
+		   	cells(c),
+		   	weights(w){}
 	};
 
     class Map {
@@ -32,26 +53,25 @@ namespace battleship{
         void update(){}
         void load(std::string);
         void unload();
-		vb01::Vector3 getCellPos(int, vb01::Vector3, int);
-		int getCellId(vb01::Vector3, vb01::Vector3, int);
+		int getCellId(vb01::Vector3, int);
+		bool isPointWithinTerrainObject(vb01::Vector3, int);
+		/*
+		vb01::Vector3 getCellPos(int, int);
 		bool isPointWithin(int, int, vb01::Vector3, vb01::Vector3, bool = false);
-		inline WaterBody getWaterBody(int i){return waterBodies[i];}
-		inline int getNumWaterBodies(){return waterBodies.size();}
-		inline vb01::Model* getTerrainModel(){return terrainModel;}
+		*/
+		inline TerrainObject getTerrainObject(int i){return terrainObjects[i];}
+		inline int getNumTerrainObjects(){return terrainObjects.size();}
 		inline vb01::Node* getNodeParent(){return nodeParent;}
-		inline vb01::Vector3 getSize(){return size;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *nodeParent = nullptr;
-		vb01::Model *terrainModel = nullptr;
 		std::string mapName;
-		std::vector<WaterBody> waterBodies;
-		vb01::Vector3 size;
+		std::vector<TerrainObject> terrainObjects;
 
         Map(){}
 		void loadSkybox(gameBase::LuaManager*);
-		void loadTerrain(gameBase::LuaManager*);
-		void loadWaterbodies(gameBase::LuaManager*);
+		void loadTerrainObject(gameBase::LuaManager*, int);
+		//void loadWaterbodies(gameBase::LuaManager*);
     };
 }
 

@@ -244,14 +244,12 @@ namespace battleship{
 			Unit *u = selectedUnits[i];
 
 			if(u->getType() == UnitType::UNDERWATER && o.type == Order::TYPE::MOVE){
-				for(int j = 0; j < map->getNumWaterBodies(); j++){
-					WaterBody w = map->getWaterBody(j);
-
-					if(w.isPointWithin(u->getPos()) && w.isPointWithin(o.targets[i].pos)){
+				for(int j = 1; j < map->getNumTerrainObjects(); j++){
+					if(map->isPointWithinTerrainObject(u->getPos(), j) && map->isPointWithinTerrainObject(o.targets[i].pos, j)){
 						vector<Ray::CollisionResult> res;
-						Ray::retrieveCollisions(u->getPos(), Vector3(0, -1, 0), map->getTerrainModel()->getChild(0), res);
+						Ray::retrieveCollisions(u->getPos(), Vector3(0, -1, 0), map->getTerrainObject(0).node->getChild(0), res);
 						Ray::sortResults(res);
-						o.targets[i].pos.y = res[0].pos.y + depth * (w.pos.y - res[0].pos.y);
+						o.targets[i].pos.y = res[0].pos.y + depth * (map->getTerrainObject(j).pos.y - res[0].pos.y);
 						break;
 					}
 				}

@@ -272,20 +272,21 @@ namespace battleship{
         return projectiles;
     }
 
+	/*
 	void Unit::generateWeights(u32 **weights, int cellsByDim[3], Vector3 cellSize, int waterbodyId){
 		Map *map = Map::getSingleton();
 		u32 impassibleNodeVal = Pathfinder::getSingleton()->getImpassibleNodeVal();
 		int size = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
 
 		bool terrainCellsImpassible[size];
-		MeshData meshData = map->getTerrainModel()->getChild(0)->getMesh(0)->getMeshBase();
+		MeshData meshData = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = 3 * meshData.numTris;
 
 		for(int i = 0; i < size; i++){
 			for(int j = 0; j < numVerts; j++){
 				bool pointWithin = map->isPointWithin(i, waterbodyId, verts[j].pos, cellSize, type == UnitType::UNDERWATER);
-				WaterBody waterbody;
+				TerrainObject waterbody;
 
 				if(waterbodyId != -1)
 					waterbody = map->getWaterBody(waterbodyId);
@@ -338,44 +339,23 @@ namespace battleship{
 			}
 		}
 	}
+	*/
 
 	void Unit::addOrder(Order order){
+		int id = 0;
 		Map *map = Map::getSingleton();
-		int waterbodyId = -1;
-		Vector3 size = map->getSize();
 
-		for(int i = 0; i < map->getNumWaterBodies(); i++){
-			if(map->getWaterBody(i).isPointWithin(pos)){
-				if(type == UnitType::SEA_LEVEL || type == UnitType::UNDERWATER){
-					Vector2 s = map->getWaterBody(i).size;
-					size = Vector3(s.x, size.y, s.y);
-				}
-
-				waterbodyId = i;
+		for(int i = 1; i < map->getNumTerrainObjects(); i++)
+			if(map->isPointWithinTerrainObject(pos, i)){
+				id = i;
 				break;
 			}
-		}
 
-		float eps = getCircleRadius();
-		Vector3 cellSize = Vector3(eps, (type == UnitType::UNDERWATER ? (size.y / height) : 0), eps);
-
-		int cellsByDim[3] = { 
-			int(size.x / cellSize.x),
-		   	(cellSize.y == 0 ? 1 : cellSize.y),
-		   	int(size.z / cellSize.z)
-		};
-		int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
-		u32 **weights = new u32*[numCells];
-
-		for(int i = 0; i < numCells; i++)
-			weights[i] = new u32[numCells];
-
-		generateWeights(weights, cellsByDim, cellSize, waterbodyId);
-
-		int source = map->getCellId(pos, cellSize, waterbodyId);
-		int dest = map->getCellId(order.targets[0].pos, cellSize, waterbodyId);
+		int source = map->getCellId(pos, id);
+		int dest = map->getCellId(order.targets[0].pos, id);
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		vector<int> path = pathfinder->findPath(weights, numCells, source, dest);
+		u32 **weights = map->getTerrainObject(id).weights;
+		vector<int> path = pathfinder->findPath(weights, map->getTerrainObject(id).numCells, source, dest);
 
 		bool impassibleNodePresent = false;
 		pathPoints.clear();
@@ -386,15 +366,10 @@ namespace battleship{
 
 		if(!(impassibleNodePresent || path.empty())){
 			for(int p : path)
-				pathPoints.push_back(map->getCellPos(p, cellSize, waterbodyId));
+				pathPoints.push_back(map->getTerrainObject(id).cells[p].pos);
 
 			orders.push_back(order);
 		}
-
-		for(int i = 0; i < numCells; i++)
-			delete[] weights[i];
-
-		delete[] weights;
 	}
     
     void Unit::removeOrder(int id) {

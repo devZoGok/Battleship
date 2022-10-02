@@ -18,17 +18,6 @@ using namespace gameBase;
 namespace battleship{
 	using namespace configData;
 
-	bool WaterBody::isPointWithin(Vector3 p){
-		bool within;
-
-		if(rect)
-			within = (fabs(pos.x - p.x) < size.x && fabs(pos.z - p.z) < size.y);
-		else
-			within = Vector2(pos.x, pos.z).getDistanceFrom(Vector2(p.x, p.z)) < size.x;
-
-		return within;
-	}
-
 	Map *map = nullptr;
 
 	Map* Map::getSingleton(){
@@ -56,13 +45,22 @@ namespace battleship{
 		Root::getSingleton()->createSkybox(path);
 	}
 
-	void Map::loadTerrain(LuaManager *luaManager){
-		string terrainTable = "terrain";
-		string terrainFile = luaManager->getStringFromTable(mapTable, vector<Index>{Index(terrainTable), Index("model")});
+	void Map::loadTerrainObject(LuaManager *luaManager, int id){
+		string terrainTable = (id == -1 ? "terrain" : "waterBodies[" + to_string(id) + "]");
+		string terrainFile = (id != -1 ? luaManager->getStringFromTable(mapTable, vector<Index>{Index(terrainTable), Index("model")}) : "");
 		string albedoFile = luaManager->getStringFromTable(mapTable, vector<Index>{Index(terrainTable), Index("albedoMap")});
 
 		string table = "size";
-		size = Vector3(
+		Vector3 pos = Vector3::VEC_ZERO;
+
+		if(id != -1){
+			float posX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(id), Index("posX")});
+			float posY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(id), Index("posY")});
+			float posZ = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(id), Index("posZ")});
+			pos = Vector3(posX, posY, posZ);
+		}
+
+		Vector3 size = Vector3(
 				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("x")}),
 				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("y")}),
 				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("z")})
@@ -74,7 +72,17 @@ namespace battleship{
 		assetManager->load(basePath + albedoFile);
 
 		Root *root = Root::getSingleton();
-		Model *model = new Model(basePath + terrainFile);
+		Quad *quad = nullptr;
+		Node *node = nullptr;
+
+		if(id == -1)
+			node = new Model(basePath + terrainFile);
+		else{
+			quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
+			node = new Node();
+			node->attachMesh(quad);
+		}
+
 		Material *mat = new Material(root->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addBoolUniform("lightingEnabled", false);
@@ -83,11 +91,51 @@ namespace battleship{
 		Texture *t = new Texture(fr, 1, false);
 
 		mat->addTexUniform("textures[0]", t, true);
-		model->setMaterial(mat);
-		nodeParent->attachChild(model);
-		terrainModel = model;
+
+		if(id == -1)
+			((Model*)node)->setMaterial(mat);
+		else
+			quad->setMaterial(mat);
+
+		string nodeTable = "nodes";
+		float sizeX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("size"), Index("x")});
+		float sizeY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("size"), Index("x")});
+		float sizeZ = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("size"), Index("x")});
+		Vector3 cellSize = Vector3(sizeX, sizeY, sizeZ);
+
+		int numCells = luaManager->getIntFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("numCells")});
+		u32 **weights = new u32*[numCells];
+		Cell *cells = new Cell[numCells];
+
+		for(int i = 0; i < numCells; i++){
+			weights[i] = new u32[numCells];
+
+			for(int j = 0; j < numCells; j++){
+				int wid = i * numCells + j;
+				u32 w = luaManager->getIntFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("weights[" + to_string(wid) + "]")});
+				weights[i][j] = w;
+			}
+
+			char *ch = "xyz";
+			float arr[3];
+
+			for(int j = 0; j < 3; j++)
+				arr[j] = luaManager->getFloatFromTable(mapTable, vector<Index>{
+						Index(terrainTable),
+					   	Index(nodeTable),
+					   	Index("pos[" + to_string(i) + "]"),
+						Index(ch[j])
+					});
+
+			bool impassible = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("impassible"), Index(i)});
+			cells[i] = Cell(Vector3(arr[0], arr[1], arr[2]), (id == -1), impassible);
+		}
+
+		nodeParent->attachChild(node);
+		terrainObjects.push_back(TerrainObject(pos, size, cellSize, TerrainObject::LANDMASS, node, numCells, cells, weights));
 	}
 
+	/*
 	void Map::loadWaterbodies(LuaManager *luaManager){
 		int numWaterBodies = luaManager->getIntFromTable(mapTable, vector<Index>{Index("numWaterBodies")});
 		string table = "waterBodies";
@@ -120,13 +168,11 @@ namespace battleship{
 			waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 			nodeParent->attachChild(waterNode);
 
-			WaterBody waterBody;
-			waterBody.pos = Vector3(posX, posY, posZ);
-			waterBody.size = Vector2(sizeX, sizeY);
-			waterBody.rect = rect;
-			waterBodies.push_back(waterBody);
+			Vector3 pos = Vector3(posX, posY, posZ), size = Vector3(sizeX, 0, sizeY);
+			terrainObjects.push_back(TerrainObject(pos, size, TerrainObject::RECT_WATERBODY, waterNode));
 		}
 	}
+	*/
 
     void Map::load(string mapName) {
 		this->mapName = mapName;
@@ -135,13 +181,16 @@ namespace battleship{
 
 		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
 
+		int numWaterbodies;
 		nodeParent = new Node();
 		Root *root = Root::getSingleton();
 		root->getRootNode()->attachChild(nodeParent);
 
 		loadSkybox(luaManager);
-		loadTerrain(luaManager);
-		loadWaterbodies(luaManager);
+		loadTerrainObject(luaManager, -1);
+
+		for(int i = 0; i < numWaterbodies; i++)
+			loadTerrainObject(luaManager, i);
 
 		Camera *cam = root->getCamera();
 		cam->setPosition(Vector3(1, 1, 1) * 40);
@@ -150,14 +199,45 @@ namespace battleship{
 
     void Map::unload() {}
 
+	int Map::getCellId(Vector3 pos, int id){
+		Vector3 regionSize = terrainObjects[id].size;
+		Vector3 regionPos = terrainObjects[id].pos;
+		Vector3 cellSize = terrainObjects[id].cellSize;
+
+		int numCellsX = regionSize.x / cellSize.x;
+		int numCellsZ = regionSize.z / cellSize.z;
+
+		Vector3 initPos = regionPos - Vector3(regionSize.x, 0, regionSize.z) * 0.5;
+		int x = fabs(pos.x - initPos.x) / cellSize.x;
+		int y = (cellSize.y > 0 ? (fabs(pos.y - initPos.y) / cellSize.y) : 0);
+		int z = fabs(pos.z - initPos.z) / cellSize.z;
+
+		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
+	}
+
+	bool Map::isPointWithinTerrainObject(Vector3 p, int id){
+		bool within;
+		Vector3 pos = terrainObjects[id].pos, size = terrainObjects[id].size;
+
+		if(terrainObjects[id].type == TerrainObject::RECT_WATERBODY)
+			within = (fabs(pos.x - p.x) < size.x && fabs(pos.z - p.z) < size.y);
+		else if(terrainObjects[id].type == TerrainObject::ROUND_WATERBODY)
+			within = Vector2(pos.x, pos.z).getDistanceFrom(Vector2(p.x, p.z)) < size.x;
+		else
+			within = true;
+
+		return within;
+	}
+
+	/*
 	Vector3 Map::getCellPos(int id, Vector3 cellSize, int waterbodyId){
 		Vector3 regionSize = size;
 		Vector3 regionPos = Vector3::VEC_ZERO;
 
 		if(waterbodyId != -1){
-			Vector2 s = waterBodies[waterbodyId].size;
+			Vector3 s = terrainObjects[waterbodyId].size;
 			regionSize = Vector3(s.x, 0, s.y);
-			regionPos = waterBodies[waterbodyId].pos;
+			regionPos = terrainObjects[waterbodyId].pos;
 		}
 
 		int numCellsX = regionSize.x / cellSize.x;
@@ -171,26 +251,6 @@ namespace battleship{
 		return initPos + Vector3(x * cellSize.x, -y * cellSize.y, z * cellSize.z);
 	}
 
-	int Map::getCellId(Vector3 pos, Vector3 cellSize, int waterbodyId){
-		Vector3 regionSize = size;
-		Vector3 regionPos = Vector3::VEC_ZERO;
-
-		if(waterbodyId != -1){
-			Vector2 s = waterBodies[waterbodyId].size;
-			regionSize = Vector3(s.x, 0, s.y);
-			regionPos = waterBodies[waterbodyId].pos;
-		}
-
-		int numCellsX = regionSize.x / cellSize.x;
-		int numCellsZ = regionSize.z / cellSize.z;
-
-		Vector3 initPos = regionPos - Vector3(regionSize.x, 0, regionSize.z) * 0.5;
-		int x = fabs(pos.x - initPos.x) / cellSize.x;
-		int y = (cellSize.y > 0 ? (fabs(pos.y - initPos.y) / cellSize.y) : 0);
-		int z = fabs(pos.z - initPos.z) / cellSize.z;
-
-		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
-	}
 
 	bool Map::isPointWithin(int cellId, int waterbodyId, Vector3 point, Vector3 cellSize, bool cellSpatial){
 		Vector3 cellPos = getCellPos(cellId, cellSize, waterbodyId);
@@ -199,4 +259,5 @@ namespace battleship{
 		bool withinZ = (fabs(point.z - cellPos.z) < 0.5 * cellSize.z);
 		return withinX && withinY && withinZ;
 	}
+	*/
 }
