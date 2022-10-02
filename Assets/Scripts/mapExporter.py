@@ -15,13 +15,13 @@ verts = list(ET.parse(fullFilename + '.xml').find('node').find('mesh').iter('ver
 
 def createCells(cellSize, mapSize, land):
     weights = []
-    cellsStr = 'nodes = {'
-    cellsStr += '\n\t\tsize = {x = ' + str(cellSize[0]) + ', y = ' + str(cellSize[1]) + ', z = ' + str(cellSize[2]) + '},\n'
-    cellsStr += '\t\tcells = {\n\t\t'
-
     cellsByDim = [int(mapSize[0] / cellSize[0]), 1 if cellSize[1] == 0 else int(mapSize[1] / cellSize[1]), int(mapSize[2] / cellSize[2])]
     numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2]
+
+    cellsStr = 'nodes = {\nnumCells = ' + str(numCells) + ','
+    cellsStr += '\n\t\tsize = {x = ' + str(cellSize[0]) + ', y = ' + str(cellSize[1]) + ', z = ' + str(cellSize[2]) + '},\n'
     cellsStr += 'pos = {'
+
     initPos = -.5 * np.array([mapSize[0] - cellSize[0], 0, mapSize[2] - cellSize[2]])
     cellPos = []
 
@@ -113,7 +113,7 @@ def createCells(cellSize, mapSize, land):
 
             cellsStr += str(weight) + (', ' if numCells * i + j < numCells * numCells - 1 else '')
 
-    cellsStr += '\n}\n\t\t}\n\t}'
+    cellsStr += '\n\t\t}\n\t}'
 
     return cellsStr
 
