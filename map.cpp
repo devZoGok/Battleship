@@ -46,48 +46,119 @@ namespace battleship{
 	}
 
 	void Map::loadTerrainObject(LuaManager *luaManager, int id){
-		string terrainTable = (id == -1 ? "terrain" : "waterBodies[" + to_string(id) + "]");
-		string terrainFile = (id != -1 ? luaManager->getStringFromTable(mapTable, vector<Index>{Index(terrainTable), Index("model")}) : "");
-		string albedoFile = luaManager->getStringFromTable(mapTable, vector<Index>{Index(terrainTable), Index("albedoMap")});
+		string terrainTable = (id == -1 ? "terrain" : "waterBodies");
+		vector<Index> baseIndices = (id == -1 ? vector<Index>{Index(terrainTable)} : vector<Index>{Index(terrainTable), Index(id + 1)});
+		Vector3 pos = Vector3::VEC_ZERO, size = Vector3::VEC_ZERO;
+		Index terrInd = Index("terrain"),
+			  waterInd = Index("waterBodies"),
+			  idIndex = Index(id + 1),
+			  posInd = Index("pos"),
+			  sizeInd = Index("size"),
+			  xInd = Index("x"),
+			  yInd = Index("y"),
+			  zInd = Index("z"),
+			  nodeInd = Index("nodes");
 
-		string table = "size";
-		Vector3 pos = Vector3::VEC_ZERO;
+		vector<Index> sizeBaseInd;
 
-		if(id != -1){
-			float posX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(id), Index("posX")});
-			float posY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(id), Index("posY")});
-			float posZ = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(id), Index("posZ")});
-			pos = Vector3(posX, posY, posZ);
+		if(id == -1){
+			sizeBaseInd.push_back(terrInd);
 		}
-
-		Vector3 size = Vector3(
-				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("x")}),
-				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("y")}),
-				luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(table), Index("z")})
-			);
-
-		AssetManager *assetManager = AssetManager::getSingleton();
-		string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
-		assetManager->load(basePath + terrainFile);
-		assetManager->load(basePath + albedoFile);
-
-		Root *root = Root::getSingleton();
-		Quad *quad = nullptr;
-		Node *node = nullptr;
-
-		if(id == -1)
-			node = new Model(basePath + terrainFile);
 		else{
-			quad = new Quad(Vector3(size.x, size.y, 1) * 1, true);
-			node = new Node();
-			node->attachMesh(quad);
+			float x = luaManager->getFloatFromTable(mapTable, vector<Index>{waterInd, idIndex, posInd, xInd});
+			float y = luaManager->getFloatFromTable(mapTable, vector<Index>{waterInd, idIndex, posInd, yInd});
+			float z = luaManager->getFloatFromTable(mapTable, vector<Index>{waterInd, idIndex, posInd, zInd});
+			pos = Vector3(x, y, z);
+
+			sizeBaseInd = vector<Index>{waterInd, idIndex};
 		}
 
-		Material *mat = new Material(root->getLibPath() + "texture");
+		sizeBaseInd.push_back(sizeInd);
+		vector<Index> indVecX = sizeBaseInd;
+		vector<Index> indVecY = sizeBaseInd;
+		vector<Index> indVecZ = sizeBaseInd;
+		indVecX.push_back(xInd);
+		indVecY.push_back(yInd);
+		indVecZ.push_back(zInd);
+		float x = luaManager->getFloatFromTable(mapTable, indVecX);
+		float y = luaManager->getFloatFromTable(mapTable, indVecY);
+		float z = luaManager->getFloatFromTable(mapTable, indVecZ);
+		size = Vector3(x, y, z);
+
+		vector<Index> baseNodeInd = baseIndices;
+		baseNodeInd.push_back(nodeInd);
+
+		vector<Index> ind = baseNodeInd;
+		ind.push_back(Index("numCells"));
+		int numCells = luaManager->getIntFromTable(mapTable, ind);
+
+		u32 **weights = new u32*[numCells];
+		Cell *cells = new Cell[numCells];
+
+		for(int i = 0; i < numCells; i++){
+			weights[i] = new u32[numCells];
+
+			for(int j = 0; j < numCells; j++){
+				int wid = i * numCells + j;
+				ind = baseNodeInd;
+				ind.push_back(Index("weights"));
+				ind.push_back(Index(wid + 1));
+				u32 w = luaManager->getIntFromTable(mapTable, ind);
+				weights[i][j] = w;
+			}
+
+			ind = baseNodeInd;
+			ind.push_back(Index("impassible"));
+			ind.push_back(Index(i + 1));
+			bool impassible = luaManager->getFloatFromTable(mapTable, ind);
+
+			vector<Index> posBaseInd = baseNodeInd;
+			posBaseInd.push_back(posInd);
+			posBaseInd.push_back(Index(i + 1));
+
+			vector<Index> indVecX = posBaseInd;
+			vector<Index> indVecY = posBaseInd;
+			vector<Index> indVecZ = posBaseInd;
+			indVecX.push_back(xInd);
+			indVecY.push_back(yInd);
+			indVecZ.push_back(zInd);
+			float x = luaManager->getFloatFromTable(mapTable, indVecX);
+			float y = luaManager->getFloatFromTable(mapTable, indVecY);
+			float z = luaManager->getFloatFromTable(mapTable, indVecZ);
+			cells[i] = Cell(Vector3(x, y, z), (id == -1), impassible);
+		}
+
+		Node *node = nullptr;
+		Quad *quad = nullptr;
+		TerrainObject::Type type;
+		string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
+
+		if(id == -1){
+			type = TerrainObject::LANDMASS;
+
+			string terrainFile = basePath + luaManager->getStringFromTable(mapTable, vector<Index>{terrInd, Index("model")});
+			AssetManager::getSingleton()->load(terrainFile);
+			node = new Model(terrainFile);
+		}
+		else{
+			type = TerrainObject::RECT_WATERBODY;
+			node = new Node();
+			quad = new Quad(Vector3(size.x, size.z, 1), true);
+			node->attachMesh(quad);
+			node->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
+		}
+
+		nodeParent->attachChild(node);
+		node->setPosition(pos);
+
+		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addBoolUniform("lightingEnabled", false);
 
-		string fr[]{basePath + albedoFile};
+		ind = baseIndices;
+		ind.push_back(Index("albedoMap"));
+		string fr[]{basePath + luaManager->getStringFromTable(mapTable, ind)};
+		AssetManager::getSingleton()->load(fr[0]);
 		Texture *t = new Texture(fr, 1, false);
 
 		mat->addTexUniform("textures[0]", t, true);
@@ -97,42 +168,7 @@ namespace battleship{
 		else
 			quad->setMaterial(mat);
 
-		string nodeTable = "nodes";
-		float sizeX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("size"), Index("x")});
-		float sizeY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("size"), Index("x")});
-		float sizeZ = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("size"), Index("x")});
-		Vector3 cellSize = Vector3(sizeX, sizeY, sizeZ);
-
-		int numCells = luaManager->getIntFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("numCells")});
-		u32 **weights = new u32*[numCells];
-		Cell *cells = new Cell[numCells];
-
-		for(int i = 0; i < numCells; i++){
-			weights[i] = new u32[numCells];
-
-			for(int j = 0; j < numCells; j++){
-				int wid = i * numCells + j;
-				u32 w = luaManager->getIntFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("weights[" + to_string(wid) + "]")});
-				weights[i][j] = w;
-			}
-
-			char *ch = "xyz";
-			float arr[3];
-
-			for(int j = 0; j < 3; j++)
-				arr[j] = luaManager->getFloatFromTable(mapTable, vector<Index>{
-						Index(terrainTable),
-					   	Index(nodeTable),
-					   	Index("pos[" + to_string(i) + "]"),
-						Index(ch[j])
-					});
-
-			bool impassible = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(terrainTable), Index(nodeTable), Index("impassible"), Index(i)});
-			cells[i] = Cell(Vector3(arr[0], arr[1], arr[2]), (id == -1), impassible);
-		}
-
-		nodeParent->attachChild(node);
-		terrainObjects.push_back(TerrainObject(pos, size, cellSize, TerrainObject::LANDMASS, node, numCells, cells, weights));
+		terrainObjects.push_back(TerrainObject(pos, size, Vector3(14, (id == -1 ? 0 : 4), 14), type, node, numCells, cells, weights));
 	}
 
 	/*
@@ -181,7 +217,7 @@ namespace battleship{
 
 		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
 
-		int numWaterbodies;
+		int numWaterbodies = luaManager->getIntFromTable(mapTable, vector<Index>{Index("numWaterBodies")});
 		nodeParent = new Node();
 		Root *root = Root::getSingleton();
 		root->getRootNode()->attachChild(nodeParent);
