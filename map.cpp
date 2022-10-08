@@ -143,7 +143,7 @@ namespace battleship{
 		else{
 			type = TerrainObject::RECT_WATERBODY;
 			node = new Node();
-			quad = new Quad(Vector3(size.x, size.z, 1), true);
+			quad = new Quad(Vector3(size.x, size.y, 1), true);
 			node->attachMesh(quad);
 			node->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 		}
@@ -170,45 +170,6 @@ namespace battleship{
 
 		terrainObjects.push_back(TerrainObject(pos, size, Vector3(14, (id == -1 ? 0 : 4), 14), type, node, numCells, cells, weights));
 	}
-
-	/*
-	void Map::loadWaterbodies(LuaManager *luaManager){
-		int numWaterBodies = luaManager->getIntFromTable(mapTable, vector<Index>{Index("numWaterBodies")});
-		string table = "waterBodies";
-		Root *root = Root::getSingleton();
-
-		for(int i = 1; i <= numWaterBodies; i++){
-			float sizeX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("sizeX")});
-			float sizeY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("sizeY")});
-			Quad *quad = new Quad(Vector3(sizeX, sizeY, 1) * 1, true);
-			Material *mat = new Material(root->getLibPath() + "texture");
-			mat->addBoolUniform("texturingEnabled", false);
-			mat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 0.5));
-			mat->addBoolUniform("lightingEnabled", false);
-
-			string fr[]{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + luaManager->getStringFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("albedoMap")})};
-			AssetManager::getSingleton()->load(fr[0]);
-			Texture *t = new Texture(fr, 1, false);
-
-			mat->addTexUniform("textures[0]", t, true);
-			quad->setMaterial(mat);
-
-			bool rect = luaManager->getBoolFromTable(mapTable, vector<Index>{Index(table), Index("rect")});
-			Node *waterNode = new Node();
-			waterNode->attachMesh(quad);
-			root->getRootNode()->attachChild(waterNode);
-			float posX = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("posX")});
-			float posY = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("posY")});
-			float posZ = luaManager->getFloatFromTable(mapTable, vector<Index>{Index(table), Index(i), Index("posZ")});
-			waterNode->setPosition(Vector3(posX, posY, posZ));
-			waterNode->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
-			nodeParent->attachChild(waterNode);
-
-			Vector3 pos = Vector3(posX, posY, posZ), size = Vector3(sizeX, 0, sizeY);
-			terrainObjects.push_back(TerrainObject(pos, size, TerrainObject::RECT_WATERBODY, waterNode));
-		}
-	}
-	*/
 
     void Map::load(string mapName) {
 		this->mapName = mapName;
@@ -264,36 +225,4 @@ namespace battleship{
 
 		return within;
 	}
-
-	/*
-	Vector3 Map::getCellPos(int id, Vector3 cellSize, int waterbodyId){
-		Vector3 regionSize = size;
-		Vector3 regionPos = Vector3::VEC_ZERO;
-
-		if(waterbodyId != -1){
-			Vector3 s = terrainObjects[waterbodyId].size;
-			regionSize = Vector3(s.x, 0, s.y);
-			regionPos = terrainObjects[waterbodyId].pos;
-		}
-
-		int numCellsX = regionSize.x / cellSize.x;
-		int numCellsZ = regionSize.z / cellSize.z;
-
-		int x = id % numCellsX;
-		int y = id / (numCellsX * numCellsZ);
-		int z = (id / numCellsX) % numCellsZ;
-
-		Vector3 initPos = regionPos - (Vector3(regionSize.x, 0, regionSize.z) - Vector3(cellSize.x, 0, cellSize.z)) * .5;
-		return initPos + Vector3(x * cellSize.x, -y * cellSize.y, z * cellSize.z);
-	}
-
-
-	bool Map::isPointWithin(int cellId, int waterbodyId, Vector3 point, Vector3 cellSize, bool cellSpatial){
-		Vector3 cellPos = getCellPos(cellId, cellSize, waterbodyId);
-		bool withinX = (fabs(point.x - cellPos.x) < 0.5 * cellSize.x);
-		bool withinY = (cellSpatial ? (fabs(point.y - cellPos.y) < 0.5 * cellSize.y) : true);
-		bool withinZ = (fabs(point.z - cellPos.z) < 0.5 * cellSize.z);
-		return withinX && withinY && withinZ;
-	}
-	*/
 }
