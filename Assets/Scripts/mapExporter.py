@@ -142,9 +142,9 @@ i = 0
 
 for wb in waterBodies:
     content += '\t\t{\n'
-    content += '\t\t\tposX = ' + str(wb.location.x) + ', posY = ' + str(wb.location.z) + ', posZ = ' + str(-wb.location.y) + ',\n'
+    content += '\t\t\tpos = {x = ' + str(wb.location.x) + ', y = ' + str(wb.location.z) + ', z = ' + str(-wb.location.y) + '},\n'
     waterDim = np.array([wb.dimensions.x, terrDim[1], wb.dimensions.y]);
-    content += '\t\t\tsizeX = ' + str(waterDim[0]) + ', sizeY = ' + str(waterDim[2]) + ',\n'
+    content += '\t\t\tsize = {x = ' + str(waterDim[0]) + ', y = ' + str(waterDim[2]) + '},\n'
     content += '\t\t\trect = true,\n'
     content += '\t\t\talbedoMap = "water.jpg",\n'
     content += '\t\t\t' + createCells(sizes[1], waterDim, False) + '\n'
