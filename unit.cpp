@@ -125,7 +125,7 @@ namespace battleship{
                     attack(order);
                     break;
                 case Order::TYPE::MOVE:
-                    move(order, UnitDataManager::getSingleton()->getDestinationOffset()[id]);
+                    move(order, 0.5 * Map::getSingleton()->getCellSize().x);
                     break;
                 case Order::TYPE::PATROL:
                     patrol(order);
@@ -284,6 +284,11 @@ namespace battleship{
 
 		int source = map->getCellId(pos, id);
 		int dest = map->getCellId(order.targets[0].pos, id);
+		int numCells = map->getTerrainObject(id).numCells;
+
+		if(source > numCells || dest > numCells)
+			return;
+
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		u32 **weights = map->getTerrainObject(id).weights;
 		vector<int> path = pathfinder->findPath(weights, map->getTerrainObject(id).numCells, source, dest);

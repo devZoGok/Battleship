@@ -168,10 +168,12 @@ namespace battleship{
 		else
 			quad->setMaterial(mat);
 
-		terrainObjects.push_back(TerrainObject(pos, size, Vector3(14, (id == -1 ? 0 : 4), 14), type, node, numCells, cells, weights));
+		terrainObjects.push_back(TerrainObject(pos, size, Vector3(cellSize.x, (id == -1 ? 0 : cellSize.y), cellSize.z), type, node, numCells, cells, weights));
 	}
 
     void Map::load(string mapName) {
+		cellSize = Vector3(14, 6, 14);
+
 		this->mapName = mapName;
 		LuaManager *luaManager = LuaManager::getSingleton();
 		luaManager->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
@@ -217,7 +219,7 @@ namespace battleship{
 		Vector3 pos = terrainObjects[id].pos, size = terrainObjects[id].size;
 
 		if(terrainObjects[id].type == TerrainObject::RECT_WATERBODY)
-			within = (fabs(pos.x - p.x) < size.x && fabs(pos.z - p.z) < size.y);
+			within = (fabs(pos.x - p.x) < 0.5 * size.x && fabs(pos.z - p.z) < 0.5 * size.z);
 		else if(terrainObjects[id].type == TerrainObject::ROUND_WATERBODY)
 			within = Vector2(pos.x, pos.z).getDistanceFrom(Vector2(p.x, p.z)) < size.x;
 		else
