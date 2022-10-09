@@ -273,25 +273,26 @@ namespace battleship{
     }
 
 	void Unit::addOrder(Order order){
-		int id = 0;
+		int srcObjId = 0, destObjId = 0;
 		Map *map = Map::getSingleton();
 
-		for(int i = 1; i < map->getNumTerrainObjects(); i++)
-			if(map->isPointWithinTerrainObject(pos, i)){
-				id = i;
-				break;
-			}
+		for(int i = 1; i < map->getNumTerrainObjects(); i++){
+			if(map->isPointWithinTerrainObject(pos, i))
+				srcObjId = i;
 
-		int source = map->getCellId(pos, id);
-		int dest = map->getCellId(order.targets[0].pos, id);
-		int numCells = map->getTerrainObject(id).numCells;
+			if(map->isPointWithinTerrainObject(order.targets[0].pos, i))
+				destObjId = i;
+		}
 
-		if(source > numCells || dest > numCells)
+		if(srcObjId != destObjId)
 			return;
 
+		int source = map->getCellId(pos, srcObjId);
+		int dest = map->getCellId(order.targets[0].pos, destObjId);
+
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		u32 **weights = map->getTerrainObject(id).weights;
-		vector<int> path = pathfinder->findPath(weights, map->getTerrainObject(id).numCells, source, dest);
+		u32 **weights = map->getTerrainObject(srcObjId).weights;
+		vector<int> path = pathfinder->findPath(weights, map->getTerrainObject(srcObjId).numCells, source, dest);
 
 		bool impassibleNodePresent = false;
 		pathPoints.clear();
@@ -302,7 +303,7 @@ namespace battleship{
 
 		if(!(impassibleNodePresent || path.empty())){
 			for(int p : path)
-				pathPoints.push_back(map->getTerrainObject(id).cells[p].pos);
+				pathPoints.push_back(map->getTerrainObject(srcObjId).cells[p].pos);
 
 			orders.push_back(order);
 		}

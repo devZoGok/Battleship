@@ -143,7 +143,7 @@ namespace battleship{
 		else{
 			type = TerrainObject::RECT_WATERBODY;
 			node = new Node();
-			quad = new Quad(Vector3(size.x, size.y, 1), true);
+			quad = new Quad(Vector3(size.x, size.z, 1), true);
 			node->attachMesh(quad);
 			node->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 		}
