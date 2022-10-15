@@ -20,7 +20,7 @@ namespace battleship{
 
             if(maxTurnAngle < angle / PI * 180){
                 Quaternion rotQuat = Quaternion(maxTurnAngle / 180 * PI, axis);
-                orientUnit(rotQuat*dirVec);
+                //orientUnit(rotQuat*dirVec);
             }
         }
         else

@@ -58,7 +58,7 @@ namespace battleship{
 
             if (j && j->isOnBoard()) {
                 Vector3 oP = j->getOffsetPos();
-                j->orientUnit(dirVec);
+                //j->orientUnit(dirVec);
                 j->placeUnit(pos + leftVec * oP.x + upVec * oP.y - dirVec * oP.z);
             }
         }

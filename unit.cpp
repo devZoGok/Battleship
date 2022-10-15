@@ -2,6 +2,7 @@
 #include <quad.h>
 #include <material.h>
 #include <texture.h>
+#include <ray.h>
 
 #include <stateManager.h>
 
@@ -81,25 +82,24 @@ namespace battleship{
     }
 
     void Unit::update() {
-				leftVec = model->getGlobalAxis(0);
-				upVec = model->getGlobalAxis(1);
-				dirVec = model->getGlobalAxis(2);
+		leftVec = model->getGlobalAxis(0);
+		upVec = model->getGlobalAxis(1);
+		dirVec = model->getGlobalAxis(2);
 
         if (!orders.empty()){
-						LineRenderer *lineRenderer = LineRenderer::getSingleton();
-						lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
-						lineRenderer->changeLineField(orders[0].line.id, pos, LineRenderer::START);
+			LineRenderer *lineRenderer = LineRenderer::getSingleton();
+			lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
+			lineRenderer->changeLineField(orders[0].line.id, pos, LineRenderer::START);
         }
 
         executeOrders();
 
-				screenPos = spaceToScreen(pos);
-				hpBackgroundNode->setVisible(selected);
-				hpForegroundNode->setVisible(selected);
+		screenPos = spaceToScreen(pos);
+		hpBackgroundNode->setVisible(selected);
+		hpForegroundNode->setVisible(selected);
 
-        if (selected) {
+        if (selected)
             displayUnitStats();
-        }
 
         if (health <= 0) 
             blowUp();
@@ -154,13 +154,13 @@ namespace battleship{
 		Vector3 linDest = Vector3(pathPoints[0].x, pos.y, pathPoints[0].z);
 		Vector3 destDir = (linDest - pos).norm();
 
-		float angle = (destDir != Vector3::VEC_ZERO ? dirVec.getAngleBetween(destDir) : -1);
+		float angle = (destDir != Vector3::VEC_ZERO ? Vector3(dirVec.x, 0, dirVec.z).norm().getAngleBetween(destDir) : -1);
 		UnitDataManager *udm = UnitDataManager::getSingleton();
 
 		if(angle > udm->getAnglePrecision()[id]){
 			float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
 
-			if(leftVec.getAngleBetween(destDir) > PI / 2)
+			if(Vector3(leftVec.x, 0, leftVec.z).norm().getAngleBetween(destDir) > PI / 2)
 				rotSpeed *= -1;
 
 			turn(rotSpeed);
@@ -182,12 +182,30 @@ namespace battleship{
 				advance(movementAmmount, MoveDir::UP);
 			}
 
-			if(pos.getDistanceFrom(pathPoints[0]) <= destOffset)
+			if(pos.getDistanceFrom(type != UnitType::UNDERWATER ? linDest : pathPoints[0]) <= destOffset)
 				pathPoints.erase(pathPoints.begin());
 		}
 
 		if(pathPoints.empty())
 			removeOrder(0);
+
+		vector<Ray::CollisionResult> res;
+
+		if(type == UnitType::LAND){
+			Map *map = Map::getSingleton();
+			TerrainObject terr = map->getTerrainObject(0);
+			Ray::retrieveCollisions(Vector3(pos.x, terr.size.y, pos.z), Vector3(0, -1, 0), terr.node, res);
+			Ray::sortResults(res);
+
+			if(!res.empty()){
+				placeUnit(res[0].pos);
+
+				float angle = upVec.getAngleBetween(res[0].norm);
+				Vector3 axis = upVec.cross(res[0].norm).norm();
+				Quaternion rotQuat = Quaternion(angle, axis);
+				orientUnit(rotQuat * rot);
+			}
+		}
     }
 
     void Unit::patrol(Order order) {
@@ -216,8 +234,9 @@ namespace battleship{
     }
 
     void Unit::turn(float angle) {
-        Quaternion rotQuat = Quaternion(angle, Vector3(0, 1, 0));
-        model->setOrientation(rotQuat * model->getOrientation());
+        Quaternion newRot = Quaternion(angle, Vector3(0, 1, 0)) * model->getOrientation();
+        model->setOrientation(newRot);
+		rot = newRot;
     }
 
     void Unit::halt() {
@@ -241,19 +260,9 @@ namespace battleship{
         pos = p;
     }
 
-    void Unit::orientUnit(Vector3 orientVec){
-        Vector3 orientVecProj = Vector3(orientVec.x, 0, orientVec.z).norm();
-        float projAngle = orientVec.getAngleBetween(orientVecProj);
-        float rotAngle = Vector3(0,0,-1).getAngleBetween(orientVecProj);
-
-        rotAngle *= (orientVec.x < 0 ? 1 : -1) / PI * 180;
-        projAngle *= (orientVec.y > 0 ? 1 : -1) / PI * 180;
-        dirVec = orientVecProj;
-        upVec = Vector3(0,1,0);
-        leftVec = Quaternion(-PI / 2, upVec) * dirVec;
-        Quaternion rotQuat = Quaternion(projAngle / 180 * PI, leftVec);
-        dirVec = rotQuat * dirVec;
-        upVec = rotQuat * upVec;
+    void Unit::orientUnit(Quaternion rotQuat){
+		model->setOrientation(rotQuat);
+		rot = rotQuat;
     }
     
     Vector3 Unit::getCorner(int i) {

@@ -55,7 +55,7 @@ namespace battleship{
                 else if(PI - angle < anglePrecision[id] / 180 * PI){
                     onBoard = true;
                     landing = true;
-                    orientUnit(-aircraftCarrier->getDirVec());
+                    //orientUnit(-aircraftCarrier->getDirVec());
                 }
             }
         }

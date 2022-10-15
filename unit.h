@@ -57,7 +57,7 @@ namespace battleship{
         void toggleSelection(bool);
         void setOrder(Order);
         void placeUnit(vb01::Vector3);
-        void orientUnit(vb01::Vector3);
+        void orientUnit(vb01::Quaternion);
         void addProjectile(Projectile*);
         float getCircleRadius();
 		vb01::Vector3 getCorner(int);
