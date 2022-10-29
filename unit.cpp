@@ -175,7 +175,7 @@ namespace battleship{
 				advance(movementAmmount);
 			}
 
-			if(fabs(pos.y - pathPoints[0].y) > destOffset){
+			if(fabs(pos.y - pathPoints[0].y) > 0.5 * height){
 				float dist = pos.y - pathPoints[0].y;
 				float movementAmmount = (speed > fabs(dist) ? dist : speed);
 
@@ -185,7 +185,9 @@ namespace battleship{
 				advance(movementAmmount, MoveDir::UP);
 			}
 
-			if(pos.getDistanceFrom(type != UnitType::UNDERWATER ? linDest : pathPoints[0]) <= destOffset)
+			if(type != UnitType::UNDERWATER && pos.getDistanceFrom(linDest) <= destOffset)
+				pathPoints.erase(pathPoints.begin());
+			else if(type == UnitType::UNDERWATER && fabs(pos.y - pathPoints[0].y) < 0.5 * height && pos.getDistanceFrom(linDest) <= destOffset)
 				pathPoints.erase(pathPoints.begin());
 		}
 

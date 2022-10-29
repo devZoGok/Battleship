@@ -172,7 +172,7 @@ namespace battleship{
 	}
 
     void Map::load(string mapName) {
-		cellSize = Vector3(14, 6, 14);
+		cellSize = Vector3(7, 6, 7);
 
 		this->mapName = mapName;
 		LuaManager *luaManager = LuaManager::getSingleton();

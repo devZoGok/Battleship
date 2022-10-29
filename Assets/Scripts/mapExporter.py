@@ -27,7 +27,7 @@ def createCells(cellSize, mapSize, height, land):
 
     for i in range(numCells):
         xId = i % cellsByDim[0]
-        yId = i / (cellsByDim[0] * cellsByDim[2])
+        yId = int(i / (cellsByDim[0] * cellsByDim[2]))
         zId = (int(i / cellsByDim[0])) % cellsByDim[2]
         cp = initPos + np.array([xId * cellSize[0], -yId * cellSize[1], zId * cellSize[2]])
         cellPos.append(cp)
@@ -37,10 +37,6 @@ def createCells(cellSize, mapSize, height, land):
     cellsStr += '},\nimpassible = {\n'
 
     for i in range(numCells):
-        xId = i % cellsByDim[0]
-        yId = i / (cellsByDim[0] * cellsByDim[2])
-        zId = (i / cellsByDim[0]) % cellsByDim[2]
-
         waterbodyId = -1
         impassible = False
     
@@ -131,7 +127,7 @@ content += '\t\talbedoMap = "' + baseFilename + '.jpg",\n'
 
 terrDim = np.array([terrain.dimensions.x, terrain.dimensions.z, terrain.dimensions.y]);
 maxTurnAngles = [.1]
-sizes = [(14, 0, 14), (14, 6, 14)]
+sizes = [(7, 0, 7), (7, 6, 7)]
 
 content += '\t\tsize = {x = ' + str(terrDim[0]) + ', y = ' + str(terrDim[1]) + ', z = ' + str(terrDim[2]) + '},\n'
 content += '\t\t' + createCells(sizes[0], terrDim, 0, True) + '\n'
