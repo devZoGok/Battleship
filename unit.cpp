@@ -151,16 +151,19 @@ namespace battleship{
     }
 
     void Unit::move(Order order, float destOffset) {
-		Vector3 linDest = Vector3(pathPoints[0].x, pos.y, pathPoints[0].z);
-		Vector3 destDir = (linDest - pos).norm();
+		Vector3 hypVec = (pathPoints[0] - pos);
+		float hypAngle = hypVec.norm().getAngleBetween(upVec) - PI / 2;
+		float offset = hypVec.getLength() * sin(hypAngle);
 
-		float angle = (destDir != Vector3::VEC_ZERO ? Vector3(dirVec.x, 0, dirVec.z).norm().getAngleBetween(destDir) : -1);
+		Vector3 linDest = pathPoints[0] + upVec * offset;
+		Vector3 destDir = (linDest - pos).norm();
+		float angle = (destDir != Vector3::VEC_ZERO ? dirVec.getAngleBetween(destDir) : -1);
 		UnitDataManager *udm = UnitDataManager::getSingleton();
 
 		if(angle > udm->getAnglePrecision()[id]){
 			float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
 
-			if(Vector3(leftVec.x, 0, leftVec.z).norm().getAngleBetween(destDir) > PI / 2)
+			if(leftVec.getAngleBetween(destDir) > PI / 2)
 				rotSpeed *= -1;
 
 			turn(rotSpeed);
@@ -234,7 +237,7 @@ namespace battleship{
     }
 
     void Unit::turn(float angle) {
-        Quaternion newRot = Quaternion(angle, Vector3(0, 1, 0)) * model->getOrientation();
+        Quaternion newRot = Quaternion(angle, upVec) * model->getOrientation();
         model->setOrientation(newRot);
 		rot = newRot;
     }
