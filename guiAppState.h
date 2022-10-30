@@ -24,7 +24,6 @@ namespace battleship{
         void update();
         void addButton(vb01Gui::Button*);
         void removeButton(vb01Gui::Button*);
-        void removeSeparateButton(vb01Gui::Button*);
         void removeButton(std::string);
         void addListbox(vb01Gui::Listbox*);
         void removeListbox(vb01Gui::Listbox*);
@@ -44,10 +43,13 @@ namespace battleship{
         void removeAllTooltips();
         inline bool isLeftMousePressed(){return leftMousePressed;}
     private:
+		void updateCurrentListbox(vb01Gui::Button*, bool&);
+		void updateCurrentSlider(vb01Gui::Button*);
+		void updateCurrentTextbox(vb01Gui::Button*, bool&);
         virtual void onAction(int, bool);
         virtual void onAnalog(int, float);
         virtual void onRawKeyPress(int);
-				virtual void onRawCharPress(vb01::u32);
+		virtual void onRawCharPress(vb01::u32);
         virtual void onRawMousePress(int);
         vb01Gui::Textbox* getOpenTextbox();
         vb01Gui::Listbox* getOpenListbox();
@@ -59,9 +61,9 @@ namespace battleship{
         std::vector<vb01Gui::Textbox*> textboxes;
         std::vector<vb01Gui::Slider*> sliders;
         std::vector<Tooltip*> tooltips;
-				vb01Gui::Slider *currentSlider = nullptr;
-				vb01Gui::Textbox *currentTextbox = nullptr;
-				vb01Gui::Listbox *currentListbox = nullptr;
+		vb01Gui::Slider *currentSlider = nullptr;
+		vb01Gui::Textbox *currentTextbox = nullptr;
+		vb01Gui::Listbox *currentListbox = nullptr;
         bool leftMousePressed = false, backspacePressed = false;
     protected:
     };

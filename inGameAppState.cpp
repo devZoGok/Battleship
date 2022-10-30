@@ -90,6 +90,7 @@ namespace battleship{
         this->inGameState = inGameState;
     }
 
+	//TODO: replace string literals removeButton() lines
     void InGameAppState::InGameOptionsButton::ReturnButton::onClick() {
         guiState->removeAllCheckboxes();
         guiState->removeAllListboxes();

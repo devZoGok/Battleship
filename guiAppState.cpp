@@ -13,7 +13,7 @@ using namespace vb01Gui;
 using namespace std;
 
 namespace battleship{
-		using namespace configData;
+	using namespace configData;
 
     GuiAppState::GuiAppState() : AbstractAppState(
 						AppStateType::GUI_STATE,
@@ -25,7 +25,6 @@ namespace battleship{
     GuiAppState::~GuiAppState() {}
 
     void GuiAppState::update() {
-				GameManager *gm = GameManager::getSingleton();
         Vector2 mousePos = getCursorPos();
 
         for (Button *b : buttons) {
@@ -44,13 +43,13 @@ namespace battleship{
         for (Listbox *l : listboxes)
             l->update();
 
-				if(currentListbox &&
-							 	leftMousePressed && (
-										currentListbox->getScrollingButton()->getPos().x < mousePos.x &&
-									 	mousePos.x < currentListbox->getPos().x + currentListbox->getSize().x))
-				{
-						currentListbox->scrollToHeight(mousePos.y);
-				}
+		if(currentListbox &&
+			   	leftMousePressed &&
+			   	(currentListbox->getScrollingButton()->getPos().x < mousePos.x &&
+				 mousePos.x < currentListbox->getPos().x + currentListbox->getSize().x))
+		{
+				currentListbox->scrollToHeight(mousePos.y);
+		}
 
         for (Checkbox *c : checkboxes)
             c->update();
@@ -58,17 +57,17 @@ namespace battleship{
         for (Slider *s : sliders)
             s->update();
 
-				if(currentSlider){
-						float percentage = (mousePos.x - currentSlider->getPos().x) / currentSlider->getSize().x;
-						currentSlider->setValue(percentage * currentSlider->getMaxValue());
-				}
+		if(currentSlider){
+			float percentage = (mousePos.x - currentSlider->getPos().x) / currentSlider->getSize().x;
+			currentSlider->setValue(percentage * currentSlider->getMaxValue());
+		}
 
         for (Textbox *t : textboxes){
             t->update();
 
-						if(t->isEnabled() && backspacePressed)
-								t->deleteCharacter();
-				}
+			if(t->isEnabled() && backspacePressed)
+				t->deleteCharacter();
+		}
 
         for (Tooltip *t : tooltips)
             t->update();
@@ -82,126 +81,135 @@ namespace battleship{
         AbstractAppState::onDettached();
     }
 
+	void GuiAppState::updateCurrentListbox(Button *b, bool &listboxClicked){
+		Listbox *pastListbox = currentListbox;
+		
+		for(Listbox *l : listboxes){
+			if(b == l->getListboxButton() || b == l->getScrollingButton()){
+				currentListbox = l;
+				listboxClicked = true;
+		
+				if(pastListbox && currentListbox != pastListbox){
+					if(pastListbox->isCloseable())
+						pastListbox->close();
+				}
+				else
+					currentListbox = (l->isOpen() ? l : nullptr);
+		
+				break;
+			}
+		}
+	}
+
+	void GuiAppState::updateCurrentSlider(Button *b){
+		for(Slider *s : sliders)
+			if(b == s->getMovableSliderButton()){
+				currentSlider = s;
+				break;
+			}
+	}
+
+	void GuiAppState::updateCurrentTextbox(Button *b, bool &textboxClicked){
+		Textbox *pastTextbox = currentTextbox;
+
+		for(Textbox *t : textboxes)
+			if(b == t->getTextboxButton()){
+				currentTextbox = t;
+				textboxClicked = true;
+		
+				if(pastTextbox && currentTextbox != pastTextbox)
+					pastTextbox->disable();
+				else
+					currentTextbox = (t->isEnabled() ? t : nullptr);
+		
+				break;
+			}
+	}
+
     void GuiAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
-						case Bind::LEFT_CLICK:
-								leftMousePressed = isPressed;
-								currentSlider = nullptr;
+			case Bind::LEFT_CLICK:
+				leftMousePressed = isPressed;
+				currentSlider = nullptr;
 
-                if(isPressed){
-									Textbox *pastTextbox = currentTextbox;
-									Listbox *pastListbox = currentListbox;
-									bool textboxClicked = false;
-									bool listboxClicked = false;
+            	if(isPressed){
+					bool textboxClicked = false, listboxClicked = false;
 
-                  for (int i = 0; i < buttons.size(); i++) {
-											Vector2 mousePos = getCursorPos();
-                      Button *b = buttons[i];
-                      bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
-                      bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
+					for (int i = 0; i < buttons.size(); i++) {
+						Vector2 mousePos = getCursorPos();
+						Button *b = buttons[i];
+						bool withinX = mousePos.x > b->getPos().x && mousePos.x < b->getPos().x + b->getSize().x;
+						bool withinY = mousePos.y > b->getPos().y && mousePos.y < b->getPos().y + b->getSize().y;
 
-                      if (b->isActive() && withinX && withinY){
-                          b->onClick();
-
-													for(Listbox *l : listboxes){
-															if(b == l->getListboxButton() || b == l->getScrollingButton()){
-																	currentListbox = l;
-																	listboxClicked = true;
-
-																	if(pastListbox && currentListbox != pastListbox){
-																			if(pastListbox->isCloseable())
-																				pastListbox->close();
-																	}
-																	else
-																			currentListbox = (l->isOpen() ? l : nullptr);
-
-																	break;
-															}
-													}
-
-													for(Slider *s : sliders)
-														if(b == s->getMovableSliderButton()){
-																currentSlider = s;
-																break;
-														}
-
-													for(Textbox *t : textboxes)
-															if(b == t->getTextboxButton()){
-																	currentTextbox = t;
-																	textboxClicked = true;
-
-																	if(pastTextbox && currentTextbox != pastTextbox)
-																			pastTextbox->disable();
-																	else{
-																			currentTextbox = (t->isEnabled() ? t : nullptr);
-																	}
-
-																	break;
-															}
-											}
-                  }
-
-									if(!textboxClicked && currentTextbox){
-											currentTextbox->disable();
-											currentTextbox = nullptr;
-									}
-
-									if(!listboxClicked && currentListbox && currentListbox->isCloseable()){
-											currentListbox->close();
-											currentListbox = nullptr;
-									}
-								}
-								
-                break;
-						case Bind::SCROLLING_UP:{
-								Listbox *l = getOpenListbox();
-								if(l) l->scrollUp();
-                break;
+						if (b->isActive() && withinX && withinY){
+						    b->onClick();
+							updateCurrentListbox(b, listboxClicked);
+							updateCurrentSlider(b);
+							updateCurrentTextbox(b, textboxClicked);
 						}
-						case Bind::SCROLLING_DOWN:{
-								Listbox *l = getOpenListbox();
-								if(l) l->scrollDown();
-                break;
-						}
-						case Bind::DELETE_CHAR:
-								backspacePressed = isPressed;
-								break;
+              		}
+
+					if(!textboxClicked && currentTextbox){
+						currentTextbox->disable();
+						currentTextbox = nullptr;
+					}
+
+					if(!listboxClicked && currentListbox && currentListbox->isCloseable()){
+						currentListbox->close();
+						currentListbox = nullptr;
+					}
+				}
+							
+            	break;
+			case Bind::SCROLLING_UP:{
+				Listbox *l = getOpenListbox();
+				if(l) l->scrollUp();
+            	break;
+			}
+			case Bind::SCROLLING_DOWN:{
+				Listbox *l = getOpenListbox();
+				if(l) l->scrollDown();
+            	break;
+			}
+			case Bind::DELETE_CHAR:
+				backspacePressed = isPressed;
+				break;
         }
     }
 
     void GuiAppState::updateControlsListbox(int trigger){
-        Listbox *controlsListbox=nullptr;
+        Listbox *controlsListbox = nullptr;
 
         for(Listbox *l : listboxes)
             if(l->isOpen())
-                controlsListbox=l;
+                controlsListbox = l;
 
         if(controlsListbox){
-            int selectedOption=controlsListbox->getSelectedOption(),colonId=-1;
+            int selectedOption = controlsListbox->getSelectedOption(), colonId = -1;
             wstring line = controlsListbox->getContents()[selectedOption];
 
-            for(int i=0;i<line.size()&&colonId==-1;i++)
-                if(line.c_str()[i]==':')
-                    colonId=i;
+            for(int i = 0; i < line.size() && colonId == -1; i++)
+                if(line.c_str()[i] == ':')
+                    colonId = i;
 
             stringstream ss;
-            ss<<hex<<trigger;
-            line=line.substr(0,colonId+1)+L"0x"/*+ss.str().c_str()*/;
-            controlsListbox->changeLine(selectedOption,line);
+            ss << hex << trigger;
+            line = line.substr(0, colonId + 1) + L"0x"/*+ss.str().c_str()*/;
+            controlsListbox->changeLine(selectedOption, line);
         }
     }
     
     void GuiAppState::onRawKeyPress(int ch){
-				for(Button *b : buttons)
-						if(b->getTrigger() == ch){
-								b->onClick();
-								break;
-						}
+		for(Button *b : buttons)
+			if(b->getTrigger() == ch){
+				b->onClick();
+				break;
+			}
     }
 
 		void GuiAppState::onRawCharPress(u32 codepoint){
-				if(currentTextbox)
-					currentTextbox->type(codepoint);
+			if(currentTextbox)
+				currentTextbox->type(codepoint);
 		}
     
     void GuiAppState::onRawMousePress(int trigger){
@@ -216,7 +224,7 @@ namespace battleship{
     Listbox* GuiAppState::getOpenListbox() {
         for (int i = 0; i < listboxes.size(); i++)
             if (listboxes[i]->isOpen())
-								return listboxes[i];
+				return listboxes[i];
     }
 
     void GuiAppState::onAnalog(int bind, float strength) {}
@@ -269,19 +277,10 @@ namespace battleship{
         }
     }
 
-    void GuiAppState::removeSeparateButton(Button *b) {
-        for (int i = 0; i < buttons.size(); i++) {
-            if (b == buttons[i]) {
-                delete b;
-                buttons.erase(buttons.begin() + i);
-            }
-        }
-    }
-
     void GuiAppState::removeListbox(Listbox *l) {
         for (int i = 0; i < listboxes.size(); i++) {
             if (l == listboxes[i]) {
-                removeSeparateButton(l->getListboxButton());
+                removeButton(l->getListboxButton());
                 delete l;
                 listboxes.erase(listboxes.begin() + i);
             }
@@ -291,7 +290,7 @@ namespace battleship{
     void GuiAppState::removeCheckbox(Checkbox *c) {
         for (int i = 0; i < checkboxes.size(); i++) {
             if (c == checkboxes[i]) {
-                removeSeparateButton(c->getCheckboxButton());
+                removeButton(c->getCheckboxButton());
                 delete c;
                 checkboxes.erase(checkboxes.begin() + i);
             }
@@ -301,8 +300,8 @@ namespace battleship{
     void GuiAppState::removeSlider(Slider *s) {
         for (int i = 0; i < sliders.size(); i++) {
             if (s == sliders[i]) {
-                removeSeparateButton(s->getMovableSliderButton());
-                removeSeparateButton(s->getStaticSliderButton());
+                removeButton(s->getMovableSliderButton());
+                removeButton(s->getStaticSliderButton());
                 delete s;
                 sliders.erase(sliders.begin() + i);
             }
@@ -312,7 +311,7 @@ namespace battleship{
     void GuiAppState::removeTextbox(Textbox* t) {
         for (int i = 0; i < textboxes.size(); i++) {
             if (t == textboxes[i]) {
-                removeSeparateButton(t->getTextboxButton());
+                removeButton(t->getTextboxButton());
                 delete t;
                 textboxes.erase(textboxes.begin() + i);
             }
@@ -337,7 +336,7 @@ namespace battleship{
 
     void GuiAppState::removeAllListboxes() {
         while (listboxes.size() > 0) {
-            removeSeparateButton(listboxes[listboxes.size() - 1]->getListboxButton());
+            removeButton(listboxes[listboxes.size() - 1]->getListboxButton());
             delete listboxes[listboxes.size() - 1];
             listboxes.pop_back();
         }
@@ -345,7 +344,7 @@ namespace battleship{
 
     void GuiAppState::removeAllCheckboxes() {
         while (checkboxes.size() > 0) {
-            removeSeparateButton(checkboxes[checkboxes.size() - 1]->getCheckboxButton());
+            removeButton(checkboxes[checkboxes.size() - 1]->getCheckboxButton());
             delete checkboxes[checkboxes.size() - 1];
             checkboxes.pop_back();
         }
@@ -353,8 +352,8 @@ namespace battleship{
 
     void GuiAppState::removeAllSliders() {
         while (sliders.size() > 0) {
-            removeSeparateButton(sliders[sliders.size() - 1]->getMovableSliderButton());
-            removeSeparateButton(sliders[sliders.size() - 1]->getStaticSliderButton());
+            removeButton(sliders[sliders.size() - 1]->getMovableSliderButton());
+            removeButton(sliders[sliders.size() - 1]->getStaticSliderButton());
             delete sliders[sliders.size() - 1];
             sliders.pop_back();
         }
@@ -362,7 +361,7 @@ namespace battleship{
 
     void GuiAppState::removeAllTextboxes() {
         while (textboxes.size() > 0) {
-            removeSeparateButton(textboxes[textboxes.size() - 1]->getTextboxButton());
+            removeButton(textboxes[textboxes.size() - 1]->getTextboxButton());
             delete textboxes[textboxes.size() - 1];
             textboxes.pop_back();
         }
