@@ -29,10 +29,8 @@ using namespace vb01Gui;
 using namespace std;
 
 namespace battleship{
-		using namespace configData;
-		using namespace gameBase;
-
-    const int size = 50;
+	using namespace configData;
+	using namespace gameBase;
     
     ActiveGameState::ActiveGameState(GuiAppState *guiState, vector<Player*> players, int playerId) : AbstractAppState(
 						AppStateType::ACTIVE_STATE,
@@ -42,37 +40,46 @@ namespace battleship{
         this->guiState = guiState;
         this->players = players;
 
-				GameManager *gm = GameManager::getSingleton();
-				Root *root = Root::getSingleton();
-        Camera *cam = root->getCamera();
-
         this->playerId = playerId;
         mainPlayer = players[playerId];
-        Quaternion rotQuat = Quaternion(4 * atan(1) / 6, Vector3(1, 0, 0));
-				
-				Material *mat = new Material(root->getLibPath() + "gui");
-				mat->addBoolUniform("texturingEnabled", false);
-				mat->addBoolUniform("diffuseColorEnabled", false);
-				mat->addVec4Uniform("diffuseColor", Vector4(.5, .5, .5, .5));
-				dragbox = new Quad(Vector3::VEC_ZERO, false);
-				dragbox->setMaterial(mat);
-				dragboxNode = new Node();
-				dragboxNode->attachMesh(dragbox);
-				root->getGuiNode()->attachChild(dragboxNode);
 
-		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"depth: ");
-		Material *tm = new Material(root->getLibPath() + "text");
-		tm->addBoolUniform("texturingEnabled", false);
-		tm->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
-		t->setMaterial(tm);
-		textNode = new Node(Vector3(0, 100, 0));
-		textNode->addText(t);
-
-		depth = 1;
+		initDragbox();
+		initDepthText();
     }
 
     ActiveGameState::~ActiveGameState() {
     }
+
+	void ActiveGameState::initDragbox(){
+		Root *root = Root::getSingleton();
+
+		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addBoolUniform("diffuseColorEnabled", false);
+		mat->addVec4Uniform("diffuseColor", Vector4(.5, .5, .5, .5));
+
+		dragbox = new Quad(Vector3::VEC_ZERO, false);
+		dragbox->setMaterial(mat);
+		dragboxNode = new Node();
+		dragboxNode->attachMesh(dragbox);
+
+		root->getGuiNode()->attachChild(dragboxNode);
+	}
+
+	void ActiveGameState::initDepthText(){
+		Root *root = Root::getSingleton();
+		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"depth: ");
+
+		Material *tm = new Material(root->getLibPath() + "text");
+		tm->addBoolUniform("texturingEnabled", false);
+		tm->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
+		t->setMaterial(tm);
+
+		textNode = new Node(Vector3(0, 100, 0));
+		textNode->addText(t);
+
+		depth = 1;
+	}
 
     void ActiveGameState::onAttached() {
         AbstractAppState::onAttached();
@@ -88,25 +95,26 @@ namespace battleship{
 		textNode->getText(0)->setText(L"Depth: " + to_wstring(depth));
 
         if (isSelectionBox)
-            updateSelectionBox();
+			updateSelectionBox();
 
-				dragboxNode->setVisible(isSelectionBox);
+		dragboxNode->setVisible(isSelectionBox);
 
         renderUnits();
 
-				if(!lookingAround)
-					updateCameraPosition();
+		if(!lookingAround)
+			updateCameraPosition();
     }
 
-		void ActiveGameState::deselectUnits(){
-				while(!selectedUnits.empty()){
-						selectedUnits[0]->toggleSelection(false);
-						selectedUnits.pop_back();
-				}
+	void ActiveGameState::deselectUnits(){
+		while(!selectedUnits.empty()){
+			selectedUnits[0]->toggleSelection(false);
+			selectedUnits.pop_back();
 		}
+	}
 
+	//TODO fix fog of war for hostile units
     void ActiveGameState::renderUnits() {
-				vector<Unit*> units;
+		vector<Unit*> units;
 
         for (Player *p : players)
             for (Unit *u : p->getUnits())
@@ -114,9 +122,9 @@ namespace battleship{
 
         for (Unit *u : units) {
             if (u->getPlayer() == mainPlayer){
-								Vector3 selectionBoxOrigin = dragboxNode->getPosition();
-								Vector3 selectionBoxEnd = selectionBoxOrigin + dragbox->getSize();
-            		Vector2 pos = u->getScreenPos();
+				Vector3 selectionBoxOrigin = dragboxNode->getPosition();
+				Vector3 selectionBoxEnd = selectionBoxOrigin + dragbox->getSize();
+            	Vector2 pos = u->getScreenPos();
 
                 if(isSelectionBox && 
                     pos.x >= selectionBoxOrigin.x && pos.x <= selectionBoxEnd.x &&
@@ -124,36 +132,37 @@ namespace battleship{
 
                     if(!u->isSelected()){
                         if(!shiftPressed)
-														deselectUnits();
+							deselectUnits();
 
                         selectedUnits.push_back(u);
-                				u->toggleSelection(true);
+                		u->toggleSelection(true);
                     }
                 }
 
                 u->getNode()->setVisible(true);
             }
-						else{
-            		Vector3 rendUnPos = u->getPos();
-            		rendUnPos.y = 0;
+			else{
+            	Vector3 rendUnPos = u->getPos();
+            	rendUnPos.y = 0;
 
                 for (int i = 0; i < units.size() && units[i] != u && units[i]->getPlayer() == mainPlayer; i++) {
                     Vector3 compUnPos = units[i]->getPos();
                     compUnPos.y = 0;
                     float dist = compUnPos.getDistanceFrom(rendUnPos);
-                    u->getNode()->setVisible(dist <= units[i]->getLineOfSight() || isInLineOfSight(compUnPos, units[i]->getLineOfSight(), u) ? true : false);
+                    u->getNode()->setVisible(dist <= units[i]->getLineOfSight() || isInLineOfSight(compUnPos, units[i]->getLineOfSight(), u));
                 }
-						}
+			}
         }
     }
 
     bool ActiveGameState::isInLineOfSight(Vector3 center, float radius, Unit *u) {
         bool inside = false;
 
-        for (int i = 0; i < 4 && !inside; i++) {
-            if (center.getDistanceFrom(u->getCorner(i)) <= radius)
+        for (int i = 0; i < 4 && !inside; i++)
+            if (center.getDistanceFrom(u->getCorner(i)) <= radius){
                 inside = true;
-        }
+				break;
+			}
 
         return inside;
     }
@@ -165,36 +174,36 @@ namespace battleship{
             selectionBoxOrigin = Vector2(clickPoint.x, clickPoint.y);
             selectionBoxEnd = Vector2(mousePos.x, mousePos.y);
         }
-				else if (mousePos.x < clickPoint.x && mousePos.y > clickPoint.y) {
+		else if (mousePos.x < clickPoint.x && mousePos.y > clickPoint.y) {
             selectionBoxOrigin = Vector2(mousePos.x, clickPoint.y);
             selectionBoxEnd = Vector2(clickPoint.x, mousePos.y);
         }
-				else if (mousePos.x >= clickPoint.x && mousePos.y < clickPoint.y) {
+		else if (mousePos.x >= clickPoint.x && mousePos.y < clickPoint.y) {
             selectionBoxOrigin = Vector2(clickPoint.x, mousePos.y);
             selectionBoxEnd = Vector2(mousePos.x, clickPoint.y);
         }
-				else {
+		else {
             selectionBoxOrigin = Vector2(mousePos.x, mousePos.y);
             selectionBoxEnd = Vector2(clickPoint.x, clickPoint.y);
         }
 
-				Vector3 size = Vector3(selectionBoxEnd.x - selectionBoxOrigin.x, selectionBoxEnd.y - selectionBoxOrigin.y, 0);
-				dragbox->setSize(size);
-				dragboxNode->setPosition(Vector3(selectionBoxOrigin.x, selectionBoxOrigin.y, 0));
+		Vector3 size = Vector3(selectionBoxEnd.x - selectionBoxOrigin.x, selectionBoxEnd.y - selectionBoxOrigin.y, 0);
+		dragbox->setSize(size);
+		dragboxNode->setPosition(Vector3(selectionBoxOrigin.x, selectionBoxOrigin.y, 0));
     }
 
     void ActiveGameState::updateCameraPosition() {
-				GameManager *gm = GameManager::getSingleton();
+		GameManager *gm = GameManager::getSingleton();
         Vector2 cursorPos = getCursorPos();
 
-				Camera *cam = Root::getSingleton()->getCamera();
-				Vector3 camDir = cam->getDirection();
+		Camera *cam = Root::getSingleton()->getCamera();
+		Vector3 camDir = cam->getDirection();
         Vector3 forwVec = Vector3(camDir.x, 0, camDir.z).norm();
-				Vector3 camLeft = cam->getLeft();
-				camLeft = Vector3(camLeft.x, 0, camLeft.z).norm();
+		Vector3 camLeft = cam->getLeft();
+		camLeft = Vector3(camLeft.x, 0, camLeft.z).norm();
 
-				int width, height;
-				glfwGetWindowSize(Root::getSingleton()->getWindow(), &width, &height);
+		int width, height;
+		glfwGetWindowSize(Root::getSingleton()->getWindow(), &width, &height);
 
         if (cursorPos.x <= 0 && 0 < cursorPos.y && cursorPos.y < height) 
             cam->setPosition(cam->getPosition() - camLeft * camPanSpeed);
@@ -210,10 +219,6 @@ namespace battleship{
     }
 
     void ActiveGameState::issueOrder(Order::TYPE type, bool addOrder) {
-        Order o;
-        o.type = type;
-        o.targets = targets;
-
 		Vector3 color;
 
       	switch(type){
@@ -231,6 +236,9 @@ namespace battleship{
       	        break;
       	}
 
+        Order o;
+        o.type = type;
+        o.targets = targets;
 		targets.push_back(Order::Target());
 
 		if(o.type == Order::TYPE::PATROL)
@@ -248,7 +256,7 @@ namespace battleship{
 					if(map->isPointWithinTerrainObject(u->getPos(), j) && map->isPointWithinTerrainObject(o.targets[i].pos, j)){
 						vector<Ray::CollisionResult> res;
 						Vector3 pos = u->getPos();
-						Ray::retrieveCollisions(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), map->getTerrainObject(0).node->getChild(0), res);
+						Ray::retrieveCollisions(Vector3(pos.x, map->getTerrainObject(0).size.y, pos.z), Vector3(0, -1, 0), map->getTerrainObject(0).node->getChild(0), res);
 						Ray::sortResults(res);
 						o.targets[i].pos.y = res[0].pos.y + depth * (map->getTerrainObject(j).pos.y - res[0].pos.y);
 						break;
@@ -260,7 +268,7 @@ namespace battleship{
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
 			o.line = lines[lines.size() - 1];
 
-            if (type != Order::TYPE::LAUNCH || (u->getId() == 4 || u->getId() == 5)) {
+            if (type != Order::TYPE::LAUNCH || u->getUnitClass() == UnitClass::CRUISER) {
 				if(type == Order::TYPE::PATROL){
 					Vector3 p = u->getPos();
 					targets[0] = Order::Target(nullptr, p);
@@ -273,7 +281,7 @@ namespace battleship{
             }
         }
 
-				targets.clear();
+		targets.clear();
     }
     
     void ActiveGameState::addTarget() {
@@ -297,37 +305,35 @@ namespace battleship{
     }
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
-				GameManager *gm = GameManager::getSingleton();
+		GameManager *gm = GameManager::getSingleton();
         InGameAppState *inGameState = (InGameAppState*) gm->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE);
 
         switch((Bind)bind){
-						case Bind::DRAG_BOX: 
+			case Bind::DRAG_BOX: 
                 isSelectionBox = isPressed;
 
                 if (isPressed) {
-										clickPoint = getCursorPos();
+					clickPoint = getCursorPos();
 
                     if (!selectedUnits.empty()){
                     	addTarget();
 
-											if(!(targets.empty() || selectingPatrolPoints)){
-												Order::TYPE type = Order::TYPE::MOVE;
-
-												if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getSide() != mainPlayer->getSide()))
-														type = Order::TYPE::ATTACK;
-
-												issueOrder(type, shiftPressed);
-											}
-										}
+						if(!(targets.empty() || selectingPatrolPoints)){
+							Order::TYPE type = Order::TYPE::MOVE;
+						
+							if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getSide() != mainPlayer->getSide()))
+								type = Order::TYPE::ATTACK;
+						
+							issueOrder(type, shiftPressed);
+						}
+					}
                 }
 
                 break;
-						case Bind::DESELECT:
-                if (!isPressed)
-										deselectUnits();
-
+			case Bind::DESELECT:
+                if (!isPressed) deselectUnits();
                 break;
-						case Bind::TOGGLE_SUB:
+			case Bind::TOGGLE_SUB:
                 if (isPressed) {
                     for (Unit *u : selectedUnits) {
                         if (u->getPlayer() == mainPlayer && u->getUnitClass() == UnitClass::SUBMARINE) {
@@ -341,54 +347,53 @@ namespace battleship{
                     }
                 }
                 break;
-						case Bind::ZOOM_IN:
-                if (zooms > -10) {
-										Camera *cam = Root::getSingleton()->getCamera();
+			case Bind::ZOOM_IN:
+                if (zooms > -NUM_MAX_ZOOMS) {
+					Camera *cam = Root::getSingleton()->getCamera();
                     cam->setPosition(cam->getPosition() + cam->getDirection().norm() * .5f);
                     zooms--;
                 }
                 break;
-						case Bind::ZOOM_OUT:
-                if (zooms < 10) {
-										Camera *cam = Root::getSingleton()->getCamera();
+			case Bind::ZOOM_OUT:
+                if (zooms < NUM_MAX_ZOOMS) {
+					Camera *cam = Root::getSingleton()->getCamera();
                     cam->setPosition(cam->getPosition() - (cam->getDirection().norm().norm() * .5f));
                     zooms++;
                 }
                 break;
-						case Bind::LOOK_AROUND:
+			case Bind::LOOK_AROUND:
                 lookingAround = isPressed;
                 break;
-						case Bind::HALT: 
+			case Bind::HALT: 
                 for (Unit *u : selectedUnits)
                     u->halt();
                 break;
-						case Bind::LEFT_CONTROL:
+				//TODO reimplement submarine diving mechanic
+			case Bind::LEFT_CONTROL:
                 controlPressed = isPressed;
 				if(isPressed) depth -= 0.05;
                 break;
-						case Bind::LEFT_SHIFT:
+			case Bind::LEFT_SHIFT:
                 shiftPressed = isPressed;
 				if(isPressed) depth += 0.05;
                 break;
-						case Bind::SELECT_PATROL_POINTS: 
+			case Bind::SELECT_PATROL_POINTS: 
                 selectingPatrolPoints = isPressed;
 
-								if(!selectingPatrolPoints)
-										issueOrder(Order::TYPE::PATROL, shiftPressed);
+				if(!selectingPatrolPoints)
+					issueOrder(Order::TYPE::PATROL, shiftPressed);
 								
                 break;
-						case Bind::LAUNCH:{ 
-							if(isPressed){
-								Map *map = Map::getSingleton();
-								Node *node = map->getNodeParent()->getChild(1);
-								bool visible = node->isVisible();
-								node->setVisible(!visible);
-							}
+			case Bind::LAUNCH:{ 
+				if(isPressed){
+					Node *node = Map::getSingleton()->getNodeParent()->getChild(1);
+					node->setVisible(!node->isVisible());
+				}
 
                 selectingGuidedMissileTarget = isPressed;
                 break;
 										  }
-						case Bind::GROUP_0:
+			case Bind::GROUP_0:
             case Bind::GROUP_1:
             case Bind::GROUP_2:
             case Bind::GROUP_3:
@@ -400,9 +405,9 @@ namespace battleship{
             case Bind::GROUP_9:
                 if(isPressed){
                     int group = bind - Bind::GROUP_0;
-                    if(controlPressed){
+
+                    if(controlPressed)
                         unitGroups[group] = selectedUnits;
-                    }
                     else{
                         if(!shiftPressed)
                             selectedUnits = unitGroups[group];
@@ -411,36 +416,36 @@ namespace battleship{
                                 selectedUnits.push_back(u);
                     }
                 }
+
                 break;
         }
     }
 
-		void ActiveGameState::orientCamera(Vector3 rotAxis, double str){
-				float minStr = .001;
-				Quaternion rotQuat = Quaternion(.5 * (fabs(str) > minStr ? str : 0), rotAxis);
-				Camera *cam = Root::getSingleton()->getCamera();
-				Vector3 dir = rotQuat * cam->getDirection();
-				Vector3 up = rotQuat * cam->getUp();
-				cam->lookAt(dir, up);
-		}
+	void ActiveGameState::orientCamera(Vector3 rotAxis, double str){
+		float minStr = .001;
+		Quaternion rotQuat = Quaternion(.5 * (fabs(str) > minStr ? str : 0), rotAxis);
+		Camera *cam = Root::getSingleton()->getCamera();
+		Vector3 dir = rotQuat * cam->getDirection(), up = rotQuat * cam->getUp();
+		cam->lookAt(dir, up);
+	}
 
     void ActiveGameState::onAnalog(int bind, float strength) {
-				switch((Bind)bind){
-						{
-						case Bind::LOOK_UP: 
-						case Bind::LOOK_DOWN: 
-								if(lookingAround) {
-									Vector3 dirProj = Root::getSingleton()->getCamera()->getDirection();
-									dirProj = Vector3(dirProj.x, 0, dirProj.z).norm();
-									orientCamera(Vector3(0, 1, 0).cross(dirProj), strength);
-								}
-								break;
-						}
-						case Bind::LOOK_LEFT: 
-						case Bind::LOOK_RIGHT: 
-								if(lookingAround)
-									orientCamera(Vector3(0, 1, 0), strength);
-								break;
+		switch((Bind)bind){
+			case Bind::LOOK_UP: 
+			case Bind::LOOK_DOWN: 
+				if(lookingAround) {
+					Vector3 dirProj = Root::getSingleton()->getCamera()->getDirection();
+					dirProj = Vector3(dirProj.x, 0, dirProj.z).norm();
+					orientCamera(Vector3(0, 1, 0).cross(dirProj), strength);
 				}
+
+				break;
+			case Bind::LOOK_LEFT: 
+			case Bind::LOOK_RIGHT: 
+				if(lookingAround)
+					orientCamera(Vector3(0, 1, 0), strength);
+
+				break;
 		}
+	}
 }

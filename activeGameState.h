@@ -7,7 +7,7 @@
 #include "map.h"
 
 namespace vb01{
-		class Node;
+	class Node;
 }
 
 namespace battleship{
@@ -25,6 +25,8 @@ namespace battleship{
         inline std::vector<Unit*>& getSelectedUnits(){return selectedUnits;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
+		void initDragbox();
+		void initDepthText();
 		void deselectUnits();
         void renderUnits();
         void updateCameraPosition();
@@ -45,8 +47,9 @@ namespace battleship{
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9], selectedUnits;
 		std::vector<Order::Target> targets;
-        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false,lookingAround=false;
+        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, lookingAround = false;
         int playerId, zooms = 0;
+	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;
     };
 }

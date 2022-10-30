@@ -7,6 +7,7 @@
 #include <checkbox.h>
 #include <textbox.h>
 #include <slider.h>
+
 #include <vector>
 
 #include <abstractAppState.h>
