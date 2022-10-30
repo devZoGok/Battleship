@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.9)
-project(battleship)
+
+set(GAME_NAME battleship)
+project(${GAME_NAME})
 
 set(CMAKE_BUILD_TYPE Debug)
 set(BUILD_TESTS ON)
@@ -18,15 +20,10 @@ set(GAME_SRC ${STATES} ${GUI} ${CORE} ${CONTENT} ${UTIL})
 
 set(SFML_DIR external/SFML)
 set(VB01_DIR external/vb01)
-set(FREETYPE_DIR ${VB01_DIR}/external/freetype)
 set(VB01_GUI_DIR external/vb01Gui)
 set(GAME_BASE_DIR external/gameBase)
-set(GLFW_DIR ${VB01_DIR}/external/glfw/)
-set(GAME_NAME battleship)
 
 add_executable(${GAME_NAME} main.cpp ${GAME_SRC})
-
-target_include_directories(${GAME_NAME} PUBLIC ${FREETYPE_DIR}/include)
 
 include_directories(external/tinydir)
 include_directories(external/vb01Gui/external/vb01/external/glm)
@@ -52,11 +49,7 @@ set(SFML_LIB_DIR build/${SFML_DIR}/src)
 target_include_directories(${GAME_NAME} PUBLIC ${SFML_DIR}/include)
 target_link_directories(${GAME_NAME} PUBLIC ${SFML_LIB_DIR})
 
-set(GLFW_LIB_DIR build/${GLFW_DIR}/src)
-include_directories(${GLFW_DIR}/include/GLFW)
-target_link_directories(${GAME_NAME} PUBLIC ${GLFW_LIB_DIR})
-
-set(DEPS vb01 vb01Gui gameBase sfml-system sfml-audio glfw)
+set(DEPS vb01 vb01Gui gameBase sfml-system sfml-audio)
 target_link_libraries(${GAME_NAME} ${DEPS})
 
 if(BUILD_TESTS)
