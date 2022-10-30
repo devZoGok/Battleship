@@ -16,37 +16,40 @@ using namespace vb01;
 using namespace gameBase;
 
 namespace battleship{
-		static GameManager *gameManager = nullptr;
+	static GameManager *gameManager = nullptr;
 
-		GameManager* GameManager::getSingleton(){
-				if(!gameManager)
-						gameManager = new GameManager();
+	GameManager* GameManager::getSingleton(){
+		if(!gameManager)
+			gameManager = new GameManager();
 
-				return gameManager;
-		}
+		return gameManager;
+	}
 
     GameManager::GameManager() {
-				LuaManager *luaManager = LuaManager::getSingleton();
-				luaManager->buildScript(vector<string>{"../Assets/Scripts/defPaths.lua"});
-				path = luaManager->getString("PATH");
+		LuaManager *luaManager = LuaManager::getSingleton();
+		string pathBase = "../Assets/Scripts/";
+		luaManager->buildScript(vector<string>{pathBase + "defPaths.lua"});
+		path = luaManager->getString("PATH");
+
+		luaManager->buildScript(vector<string>{pathBase + "options.lua"});
+		string ind1 = "graphics", ind2 = "resolution";
+		width = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("x")});
+		height = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("y")});
     }
 
     GameManager::~GameManager() {}
 
-		void GameManager::start(int width, int height) {
-				this->width = width;
-				this->height = height;
+	void GameManager::start() {
+		Root *root = Root::getSingleton();
+		root->start(width, height, "../../vb01/", "Battleship");
 
-				Root *root = Root::getSingleton();
-				root->start(width, height, "../../vb01/", "Battleship");
-
-				stateManager = new StateManager();
-        inputManager = new InputManager(stateManager, root->getWindow());
-		}
+		stateManager = new StateManager();
+    	inputManager = new InputManager(stateManager, root->getWindow());
+	}
 
     void GameManager::update() {
-				Root::getSingleton()->update();
+		Root::getSingleton()->update();
         inputManager->update();
-				stateManager->update();
+		stateManager->update();
     }
 }
