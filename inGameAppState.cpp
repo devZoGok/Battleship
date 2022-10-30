@@ -1,4 +1,5 @@
 #include <algorithm>
+
 #include <button.h>
 
 #include <util.h>
@@ -17,9 +18,9 @@ using namespace vb01Gui;
 using namespace std;
 
 namespace battleship{
-		using namespace configData;
+	using namespace configData;
 
-    InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
+    InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : Button(pos, size, "Resume", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -32,31 +33,12 @@ namespace battleship{
         return guiState;
     }
 
-    InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
+    InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : Button(pos, size, "Console", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
 
     void InGameAppState::ConsoleButton::onClick() {
-
-        class ConsoleCommandEntryButton : public Button {
-        public:
-
-            ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
-                this->inGameState = inGameState;
-                textbox = t;
-                listbox = l;
-            }
-
-            void onClick() {
-								ConsoleCommand::execute(wstringToString(textbox->getText()));
-            }
-        private:
-            InGameAppState *inGameState;
-            Textbox *textbox;
-            Listbox *listbox;
-        };
-
         vector<string> list;
         int emptyEntries = 20;
 
@@ -64,14 +46,44 @@ namespace battleship{
             list.push_back("");
 
         Vector2 pos = Vector2(300, 100);
-        Listbox *consoleListbox = new Listbox(Vector2(pos.x, pos.y), Vector2(420, 20), list, 20, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf");
+        Listbox *consoleListbox = new Listbox(
+				Vector2(pos.x, pos.y),
+			   	Vector2(420, 20),
+			   	list,
+			   	20,
+			   	GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"
+				);
         consoleListbox->openUp();
         guiState->addListbox(consoleListbox);
-        Textbox *consoleTextbox = new Textbox(Vector2(pos.x, pos.y + 20 * (emptyEntries + 1)), Vector2(300, 20), GameManager::getSingleton()->getPath() + "Fonts/batang.ttf");
+
+        Textbox *consoleTextbox = new Textbox(
+				Vector2(pos.x, pos.y + 20 * (emptyEntries + 1)),
+			   	Vector2(300, 20),
+			   	GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"
+				);
         guiState->addTextbox(consoleTextbox);
-        ConsoleCommandEntryButton *entryButton = new ConsoleCommandEntryButton(inGameState, consoleTextbox, consoleListbox, Vector2(pos.x + 320, pos.y + 20 * (emptyEntries + 1)), Vector2(100, 20), "Enter", true);
+		
+        entryButton = new ConsoleCommandEntryButton(
+				inGameState,
+			   	consoleTextbox,
+			   	consoleListbox,
+			   	Vector2(pos.x + 320, pos.y + 20 * (emptyEntries + 1)),
+			   	Vector2(100, 20),
+			   	"Enter",
+			   	true
+				);
         guiState->addButton(entryButton);
     }
+
+		InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
+	        this->inGameState = inGameState;
+	        textbox = t;
+	        listbox = l;
+	    }
+	
+		void InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::onClick() {
+			ConsoleCommand::execute(wstringToString(textbox->getText()));
+	    }
 
     InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
         this->guiState = guiState;
@@ -88,26 +100,30 @@ namespace battleship{
         guiState->removeButton("Video");
         guiState->removeButton("Audio");
         guiState->removeButton("Multiplayer");
-        Vector2 pos = Vector2(100, 100);
-        ResumeButton *resumeButton = new ResumeButton(guiState, inGameState, Vector2(pos.x, pos.y), Vector2(150, 50), "Resume", true);
-        ConsoleButton *consoleButton = new ConsoleButton(guiState, inGameState, Vector2(pos.x, pos.y + 60), Vector2(150, 50), "Console", true);
-        InGameOptionsButton *optionsButton = new InGameOptionsButton(guiState, inGameState, Vector2(pos.x, pos.y + 120), Vector2(150, 50), "Options", true);
-        MainMenuButton *mainMenuButton = new MainMenuButton(guiState, inGameState, Vector2(pos.x, pos.y + 180), Vector2(150, 50), "Main menu", true);
-        ExitButton *exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), Vector2(150, 50), "Exit", true);
+
+        Vector2 pos = Vector2(100, 100), size = Vector2(150, 50);
+        ResumeButton *resumeButton = new ResumeButton(guiState, inGameState, Vector2(pos.x, pos.y), size);
+        ConsoleButton *consoleButton = new ConsoleButton(guiState, inGameState, Vector2(pos.x, pos.y + 60), size);
+        InGameOptionsButton *optionsButton = new InGameOptionsButton(guiState, inGameState, Vector2(pos.x, pos.y + 120), size);
+        MainMenuButton *mainMenuButton = new MainMenuButton(guiState, inGameState, Vector2(pos.x, pos.y + 180), size);
+        ExitButton *exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), size);
+
         inGameState->setResumeButton(resumeButton);
         inGameState->setConsoleButton(consoleButton);
         inGameState->setOptionsButton(optionsButton);
         inGameState->setMainMenuButton(mainMenuButton);
         inGameState->setExitButton(exitButton);
+
         guiState->addButton(resumeButton);
         guiState->addButton(consoleButton);
         guiState->addButton(optionsButton);
         guiState->addButton(mainMenuButton);
         guiState->addButton(exitButton);
+
         guiState->removeButton("Back");
     }
 
-    InGameAppState::InGameOptionsButton::InGameOptionsButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : OptionsButton(pos, size, name, separate) {
+    InGameAppState::InGameOptionsButton::InGameOptionsButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : OptionsButton(pos, size, "Options", true) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
@@ -115,64 +131,20 @@ namespace battleship{
     void InGameAppState::InGameOptionsButton::onClick() {
         returnButton = new ReturnButton(guiState, inGameState, Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(150, 50), "Back", true);
         guiState->addButton(returnButton);
-        guiState->removeButton("Resume");
-        guiState->removeButton("Console");
-        guiState->removeButton("Main menu");
-        guiState->removeButton("Exit");
+        guiState->removeButton(inGameState->getResumeButton());
+        guiState->removeButton(inGameState->getConsoleButton());
+        guiState->removeButton(inGameState->getMainMenuButton());
+        guiState->removeButton(inGameState->getExitButton());
         OptionsButton::onClick();
     }
 
-    InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
+    InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : Button(pos, size, "Main menu", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
         this->guiState = guiState;
         this->inGameState = inGameState;
     }
 
     void InGameAppState::MainMenuButton::onClick() {
 
-    }
-
-    InGameAppState::UnitCreationButton::UnitCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {}
-
-    void InGameAppState::UnitCreationButton::onClick() {
-    }
-
-    void InGameAppState::UnitCreationButton::update() {
-        Button::update();
-    }
-
-    InGameAppState::BattleshipCreationButton::BattleshipCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
-    : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
-    }
-
-    void InGameAppState::BattleshipCreationButton::onClick() {
-    }
-
-    InGameAppState::DestroyerCreationButton::DestroyerCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
-    : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
-    }
-
-    void InGameAppState::DestroyerCreationButton::onClick() {
-    }
-
-    InGameAppState::CruiserCreationButton::CruiserCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
-    : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
-    }
-
-    void InGameAppState::CruiserCreationButton::onClick() {
-    }
-
-    InGameAppState::CarrierCreationButton::CarrierCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
-    : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
-    }
-
-    void InGameAppState::CarrierCreationButton::onClick() {
-    }
-
-    InGameAppState::SubmarineCreationButton::SubmarineCreationButton(string icon, Vector2 pos, Vector2 size, string name, bool separate)
-    : InGameAppState::UnitCreationButton(icon, pos, size, name, separate) {
-    }
-
-    void InGameAppState::SubmarineCreationButton::onClick() {
     }
 
     InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions, string mapName) : AbstractAppState(
@@ -195,8 +167,7 @@ namespace battleship{
 		Map::getSingleton()->load(mapName);
 
         for (int i = 0; i < factions.size(); i++) {
-            int faction;
-            int difficulty;
+            int faction, difficulty;
 
             if (i == 0)
                 difficulty = -1;
@@ -216,10 +187,12 @@ namespace battleship{
         }
 
         mainPlayer = players[playerId];
-				StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+
+		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
         guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
         activeState = new ActiveGameState(guiState, players, playerId);
         stateManager->attachAppState(activeState);
+
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(DEFAULT_TEXTURE);
 
@@ -232,75 +205,44 @@ namespace battleship{
 			assetManager->load(basePaths[i] + meshPaths[i]);
     }
 
-    void InGameAppState::onDettached() {
+    void InGameAppState::onDettached() {}
 
-    }
+	void InGameAppState::updateUnits(Player *p){
+		for (int i = 0; i < p->getNumberOfUnits(); i++){
+		    Unit *u = p->getUnit(i);
+		
+		    if(u->isWorking())
+		        u->update();
+		    else{
+		        int selectedId = -1;
+		        std::vector<Unit*> &units = p->getUnits(), &selectedUnits = activeState->getSelectedUnits();
+		        units.erase(units.begin() + i);
+		
+		        for(int j = 0; j < maxNumGroups; j++){
+		            int id = -1;
+		            std::vector<Unit*> &group = activeState->getUnitGroup(j);
+		
+		            for(int k = 0; k < group.size() && id == -1; k++)
+		                if(group[k] == u)
+		                    id = k;
+		
+		            if(id != -1)
+		                group.erase(group.begin() + id);
+		        }
+		
+		        for(int j = 0; j < selectedUnits.size() && selectedId == -1; j++)
+		            if(selectedUnits[j] == u)
+		                selectedId = j;
+		
+		        if(selectedId != -1)
+		            selectedUnits.erase(selectedUnits.begin() + selectedId);
+		
+		        delete u;
+		    }
+		}
+	}
 
-    void InGameAppState::update() {
-        for (Player *p : players)
-            if (p) {
-                p->update();
-
-                for (int i = 0; i < p->getNumberOfUnits(); i++){
-                    Unit *u = p->getUnit(i);
-
-                    if(u->isWorking())
-                        u->update();
-                    else{
-                        int selectedId = -1;
-                        std::vector<Unit*> &units = p->getUnits(), &selectedUnits = activeState->getSelectedUnits();
-                        units.erase(units.begin() + i);
-
-                        if(u->getUnitClass() == UnitClass::MISSILE_JET || u->getUnitClass() == UnitClass::DEMO_JET){
-                            AircraftCarrier *carrier = nullptr;
-
-                            for(int i2 = 0; i2 < p->getUnits().size() && !carrier; i2++){
-                                AircraftCarrier *a = ((Jet*)u)->getAircraftCarrier();
-
-                                if(a)
-                                    carrier = a;
-                            }
-
-                            if(carrier){
-                                Jet** jets = carrier->getJets();
-                                jets[((Jet*)u)->getJetId()] = nullptr;
-                            }
-                        }
-                        else if(u->getUnitClass() == UnitClass::AIRCRAFT_CARRIER){
-                            AircraftCarrier *carrier = (AircraftCarrier*)u;
-
-                            for(int i2 = 0; i2 < carrier->getMaxNumJets(); i2++){
-                                Jet *j = carrier->getJet(i2);
-
-                                if(j && j->isOnBoard())
-                                    j->blowUp();
-                            }
-                        }
-                                    
-                        for(int i2 = 0; i2 < 10; i2++){
-                            int id = -1;
-                            std::vector<Unit*> &group = activeState->getUnitGroup(i2);
-
-                            for(int i3 = 0; i3 < group.size() && id == -1; i3++)
-                                if(group[i3] == u)
-                                    id = i3;
-
-                            if(id != -1)
-                                group.erase(group.begin() + id);
-                        }
-
-                        for(int i2 = 0; i2 < selectedUnits.size() && selectedId == -1; i2++)
-                            if(selectedUnits[i2] == u)
-                                selectedId = i2;
-
-                        if(selectedId != -1)
-                            selectedUnits.erase(selectedUnits.begin() + selectedId);
-
-                        delete u;
-                    }
-                }
-            }
-
+	void InGameAppState::updateProjectiles(){
         for(int i = 0; i < projectiles.size(); i++){
             Projectile *p = projectiles[i];
 
@@ -311,42 +253,31 @@ namespace battleship{
                 projectiles.erase(projectiles.begin() + i);
             }
         }
-    }
+	}
 
-    void InGameAppState::attachGui() {
-        int idOffset = 0;
+    void InGameAppState::update() {
+        for (Player *p : players)
+            if (p) {
+                p->update();
+				updateUnits(p);
+            }
 
-        if (mainPlayer->getFaction() == 1)
-            idOffset += 7;
-
-        guiState->addButton(bcb);
-        guiState->addButton(dcb);
-        guiState->addButton(crcb);
-        guiState->addButton(ccb);
-        guiState->addButton(scb);
-    }
-
-    void InGameAppState::detachGui() {
-        guiState->removeButton(bcb);
-        guiState->removeButton(dcb);
-        guiState->removeButton(crcb);
-        guiState->removeButton(ccb);
-        guiState->removeButton(scb);
+		updateProjectiles();
     }
 
     void InGameAppState::toggleMainMenu() {
-				GameManager *gm = GameManager::getSingleton();
+		GameManager *gm = GameManager::getSingleton();
 
         if (!isMainMenuActive) {
             isMainMenuActive = true;
             gm->getStateManager()->dettachAppState(activeState);
 						
             Vector2 pos = Vector2(100, 100);
-            resumeButton = new ResumeButton(guiState, this, Vector2(pos.x, pos.y), Vector2(150, 50), "Resume", true);
-            consoleButton = new ConsoleButton(guiState, this, Vector2(pos.x, pos.y + 60), Vector2(150, 50), "Console", true);
-            optionsButton = new InGameOptionsButton(guiState, this, Vector2(pos.x, pos.y + 120), Vector2(150, 50), "Options", true);
-            mainMenuButton = new MainMenuButton(guiState, this, Vector2(pos.x, pos.y + 180), Vector2(150, 50), "Main menu", true);
-            exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), Vector2(150, 50), "Exit", true);
+            resumeButton = new ResumeButton(guiState, this, Vector2(pos.x, pos.y), Vector2(150, 50));
+            consoleButton = new ConsoleButton(guiState, this, Vector2(pos.x, pos.y + 60), Vector2(150, 50));
+            optionsButton = new InGameOptionsButton(guiState, this, Vector2(pos.x, pos.y + 120), Vector2(150, 50));
+            mainMenuButton = new MainMenuButton(guiState, this, Vector2(pos.x, pos.y + 180), Vector2(150, 50));
+            exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), Vector2(150, 50));
             guiState->addButton(resumeButton);
             guiState->addButton(consoleButton);
             guiState->addButton(optionsButton);
@@ -361,19 +292,19 @@ namespace battleship{
             guiState->removeAllListboxes();
             guiState->removeAllSliders();
             guiState->removeAllTextboxes();
-            guiState->removeButton("Enter");
-            guiState->removeButton("Console");
-            guiState->removeButton("Main menu");
-            guiState->removeButton("Options");
-            guiState->removeButton("Exit");
-            guiState->removeButton("Resume");
+            guiState->removeButton(consoleButton->getEntryButton());
+            guiState->removeButton(consoleButton);
+            guiState->removeButton(mainMenuButton);
+            guiState->removeButton(optionsButton);
+            guiState->removeButton(exitButton);
+            guiState->removeButton(resumeButton);
         }
     }
 
     void InGameAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
-						case Bind::TOGGLE_MAIN_MENU: 
-                if(isPressed)toggleMainMenu();
+				case Bind::TOGGLE_MAIN_MENU: 
+                	if(isPressed)toggleMainMenu();
                 break;
         }
     }

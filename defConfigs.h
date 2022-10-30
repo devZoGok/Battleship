@@ -15,16 +15,17 @@ namespace battleship{
 
   		const std::string DEFAULT_TEXTURE = GameManager::getSingleton()->getPath() + "Textures/defaultTexture.jpg";
   		const double camPanSpeed = .1;
+		const int maxNumGroups = 10;
 
   		const static int numAppStates = 3;
   		const static int numStaticBinds[numAppStates]{6, 0, 5};
   		const static int numConfBinds[numAppStates]{0, 1, 20};
-			const static int maxStaticBinds = 6;
-			const static int maxConfBinds = 20;
+		const static int maxStaticBinds = 6;
+		const static int maxConfBinds = 20;
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{
   		    {
-							Bind::LEFT_CLICK,
+				Bind::LEFT_CLICK,
   		        Bind::SCROLLING_UP,
   		        Bind::SCROLLING_DOWN,
   		        Bind::LEFT,
@@ -43,12 +44,12 @@ namespace battleship{
   		const static Bind confBinds[numAppStates][maxConfBinds]{
   		    {},
   		    {
-							Bind::TOGGLE_MAIN_MENU
+				Bind::TOGGLE_MAIN_MENU
   		    },
   		    {
   		        Bind::DRAG_BOX,
   		        Bind::DESELECT,
-							Bind::HALT,
+				Bind::HALT,
   		        Bind::ZOOM_IN,
   		        Bind::ZOOM_OUT,
   		        Bind::LEFT_CONTROL,
@@ -72,19 +73,19 @@ namespace battleship{
   		const static int staticTriggers[numAppStates][maxStaticBinds]{
   		    {
   		        0,
-							GLFW_KEY_W,
-							GLFW_KEY_S,
+				GLFW_KEY_W,
+				GLFW_KEY_S,
   		        GLFW_KEY_LEFT,
   		        GLFW_KEY_RIGHT,
   		        GLFW_KEY_BACKSPACE
   		    },
   		    {},
   		    {
-							Mapping::MOUSE_AXIS_UP,
-							Mapping::MOUSE_AXIS_DOWN,
-							Mapping::MOUSE_AXIS_LEFT,
-							Mapping::MOUSE_AXIS_RIGHT,
-							0
+				Mapping::MOUSE_AXIS_UP,
+				Mapping::MOUSE_AXIS_DOWN,
+				Mapping::MOUSE_AXIS_LEFT,
+				Mapping::MOUSE_AXIS_RIGHT,
+				0
   		    }
   		};
   		const static int confTriggers[numAppStates][maxConfBinds]{
@@ -93,7 +94,7 @@ namespace battleship{
   		        GLFW_KEY_ESCAPE
   		    },
   		    {
-							GLFW_KEY_LEFT,
+				GLFW_KEY_LEFT,
   		        GLFW_KEY_RIGHT,
   		        GLFW_KEY_H, 
   		        3, 
@@ -119,28 +120,28 @@ namespace battleship{
   		const static bool isStaticKey[numAppStates][maxStaticBinds]{
   		    {0, 1, 1, 1, 1, 1},
   		    {},
-					{0, 0, 0, 0, 1}
+			{0, 0, 0, 0, 1}
   		};
   		const static bool isConfKey[numAppStates][maxConfBinds]{
-					{},
+			{},
   		    {1},
-					{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
   		};
 
   		const static bool isStaticAction[numAppStates][maxStaticBinds]{
   		    {1, 1, 1, 1, 1, 1},
   		    {},
-					{0, 0, 0, 0, 1}
+			{0, 0, 0, 0, 1}
   		};
   		const static bool isConfAction[numAppStates][maxConfBinds]{
-					{},
+			{},
   		    {1},
-					{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
   		};
 
-			int calcSumStaticBinds(int, bool);
-			int calcSumConfBinds(int, bool);
-			int calcSumBinds(int, bool);
+		int calcSumStaticBinds(int, bool);
+		int calcSumConfBinds(int, bool);
+		int calcSumBinds(int, bool);
 	}
 }
 

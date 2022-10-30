@@ -35,7 +35,7 @@ namespace battleship{
     private:
         class ResumeButton : public vb01Gui::Button {
         public:
-            ResumeButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2, std::string, bool);
+            ResumeButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2);
             void onClick();
             GuiAppState *getGuiState();
         private:
@@ -45,16 +45,28 @@ namespace battleship{
 
         class ConsoleButton : public vb01Gui::Button {
         public:
-            ConsoleButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2, std::string, bool);
+			class ConsoleCommandEntryButton : public Button {
+			public:
+			    ConsoleCommandEntryButton(InGameAppState*, vb01Gui::Textbox*, vb01Gui::Listbox*, vb01::Vector2, vb01::Vector2, std::string, bool);
+			    void onClick();
+			private:
+			    InGameAppState *inGameState;
+			    vb01Gui::Textbox *textbox;
+			    vb01Gui::Listbox *listbox;
+			};
+
+            ConsoleButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2);
             void onClick();
+			inline ConsoleCommandEntryButton* getEntryButton(){return entryButton;} 
         private:
             GuiAppState *guiState;
             InGameAppState *inGameState;
+			ConsoleCommandEntryButton *entryButton = nullptr;
         };
 
         class MainMenuButton : public vb01Gui::Button {
         public:
-            MainMenuButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2, std::string, bool);
+            MainMenuButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2);
             void onClick();
         private:
             GuiAppState *guiState;
@@ -63,7 +75,7 @@ namespace battleship{
 
         class InGameOptionsButton : public OptionsButton {
         public:
-            InGameOptionsButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2, std::string, bool);
+            InGameOptionsButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2);
             void onClick();
         private:
             class ReturnButton : public vb01Gui::Button {
@@ -74,47 +86,10 @@ namespace battleship{
                 GuiAppState *guiState;
                 InGameAppState *inGameState;
             };
+
             GuiAppState *guiState;
             InGameAppState *inGameState;
             ReturnButton *returnButton;
-        };
-
-        class UnitCreationButton : public vb01Gui::Button {
-        public:
-            UnitCreationButton(std::string, vb01::Vector2, vb01::Vector2, std::string, bool);
-            void onClick();
-            void update();
-        private:
-        };
-
-        class BattleshipCreationButton : public UnitCreationButton {
-        public:
-            BattleshipCreationButton(std::string, vb01::Vector2, vb01::Vector2, std::string, bool);
-            void onClick();
-        };
-
-        class DestroyerCreationButton : public UnitCreationButton {
-        public:
-            DestroyerCreationButton(std::string, vb01::Vector2, vb01::Vector2, std::string, bool);
-            void onClick();
-        };
-
-        class CruiserCreationButton : public UnitCreationButton {
-        public:
-            CruiserCreationButton(std::string, vb01::Vector2, vb01::Vector2, std::string, bool);
-            void onClick();
-        };
-
-        class CarrierCreationButton : public UnitCreationButton {
-        public:
-            CarrierCreationButton(std::string, vb01::Vector2, vb01::Vector2, std::string, bool);
-            void onClick();
-        };
-
-        class SubmarineCreationButton : public UnitCreationButton {
-        public:
-            SubmarineCreationButton(std::string, vb01::Vector2, vb01::Vector2, std::string, bool);
-            void onClick();
         };
 
         ResumeButton *resumeButton;
@@ -122,15 +97,7 @@ namespace battleship{
         InGameOptionsButton *optionsButton;
         MainMenuButton *mainMenuButton;
         ExitButton *exitButton;
-        BattleshipCreationButton *bcb;
-        DestroyerCreationButton *dcb;
-        CruiserCreationButton *crcb;
-        CarrierCreationButton *ccb;
-        SubmarineCreationButton *scb;
         bool isMainMenuActive = false;
-        void toggleMainMenu();
-        void attachGui();
-        void detachGui();
         std::vector<Player*> players;
         std::vector<std::string> difficultyLevels, factions;
         std::vector<Projectile*> projectiles;
@@ -140,12 +107,21 @@ namespace battleship{
         int playerId;
         ActiveGameState* activeState;
         GuiAppState* guiState;
+
+        void toggleMainMenu();
+		void updateUnits(Player*);
+		void updateProjectiles();
     public:
-        inline void setResumeButton(ResumeButton *r){this->resumeButton=r;}
-        inline void setConsoleButton(ConsoleButton *c){this->consoleButton=c;}
-        inline void setOptionsButton(InGameOptionsButton *o){this->optionsButton=o;}
-        inline void setMainMenuButton(MainMenuButton *m){this->mainMenuButton=m;}
-        inline void setExitButton(ExitButton *e){this->exitButton=e;}
+        inline void setResumeButton(ResumeButton *r){this->resumeButton = r;}
+        inline void setConsoleButton(ConsoleButton *c){this->consoleButton = c;}
+        inline void setOptionsButton(InGameOptionsButton *o){this->optionsButton = o;}
+        inline void setMainMenuButton(MainMenuButton *m){this->mainMenuButton = m;}
+        inline void setExitButton(ExitButton *e){this->exitButton = e;}
+        inline ResumeButton* getResumeButton(){return resumeButton;}
+        inline ConsoleButton* getConsoleButton(){return consoleButton;}
+        inline InGameOptionsButton* getOptionsButton(){return optionsButton;}
+        inline MainMenuButton* getMainMenuButton(){return mainMenuButton;}
+        inline ExitButton* getExitButton(){return exitButton;}
     };
 }
 
