@@ -15,13 +15,8 @@
 
 #include "activeGameState.h"
 #include "inGameAppState.h"
+#include "defConfigs.h"
 #include "util.h"
-#include "cruiser.h"
-#include "destroyer.h"
-#include "submarine.h"
-#include "aircraftCarrier.h"
-#include "demoJet.h"
-#include "missileJet.h"
 #include "tooltip.h"
 
 using namespace vb01;
@@ -334,18 +329,6 @@ namespace battleship{
                 if (!isPressed) deselectUnits();
                 break;
 			case Bind::TOGGLE_SUB:
-                if (isPressed) {
-                    for (Unit *u : selectedUnits) {
-                        if (u->getPlayer() == mainPlayer && u->getUnitClass() == UnitClass::SUBMARINE) {
-                            Submarine *s = (Submarine*) u;
-
-                            if (s->isSubmerged())
-                                s->emerge();
-                            else
-                                s->submerge();
-                        }
-                    }
-                }
                 break;
 			case Bind::ZOOM_IN:
                 if (zooms > -NUM_MAX_ZOOMS) {

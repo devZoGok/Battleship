@@ -14,10 +14,10 @@
 #include "projectile.h"
 
 namespace vb01{
-		class Mesh;
-		class Quad;
-		class Node;
-		class Camera;
+	class Mesh;
+	class Quad;
+	class Node;
+	class Camera;
 }
 
 namespace battleship{
@@ -26,20 +26,20 @@ namespace battleship{
     
     struct Order {
         enum class TYPE {ATTACK, MOVE, PATROL, LAUNCH};
-				struct Target{
-						Unit *unit = nullptr;
-						vb01::Vector3 pos;
+			struct Target{
+				Unit *unit = nullptr;
+				vb01::Vector3 pos;
 
-						Target(){}
+				Target(){}
 
-						Target(Unit *unit, vb01::Vector3 pos){
-								this->unit = unit;
-								this->pos = pos;
-						}
-				};
+				Target(Unit *unit, vb01::Vector3 pos){
+					this->unit = unit;
+					this->pos = pos;
+				}
+			};
 
         TYPE type;
-				vb01::LineRenderer::Line line;
+		vb01::LineRenderer::Line line;
         std::vector<Target> targets;
     };
     
@@ -59,7 +59,6 @@ namespace battleship{
         void placeUnit(vb01::Vector3);
         void orientUnit(vb01::Quaternion);
         void addProjectile(Projectile*);
-        float getCircleRadius();
 		vb01::Vector3 getCorner(int);
         std::vector<Projectile*> getProjectiles();
         void addOrder(Order);
@@ -86,8 +85,14 @@ namespace battleship{
         inline vb01::Vector3 getLeftVec() {return leftVec;}
         inline vb01::Vector3 getUpVec() {return upVec;}
     private:
+		void initModel();
+		void initSound();
+		void initUnitStats();
         void updateScreenCoordinates();
         void displayUnitStats();
+        void navigate(Order, float = 0.);
+		void alignToSurface();
+		void preparePathpoints(Order);
         inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
@@ -104,7 +109,7 @@ namespace battleship{
         UnitType type;
 		vb01::Vector2 screenPos;
         std::vector<Order> orders;
-		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), leftVec = vb01::Vector3(1, 0, 0);
+		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0);
 		vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
         int health, cost, id, patrolPointId = 0, playerId;
         s64 orderLineDispTime = 0;
@@ -115,7 +120,7 @@ namespace battleship{
         void removeOrder(int);
         virtual void executeOrders();
         virtual void attack(Order);
-        virtual void move(Order, float = 0.);
+        virtual void move(Order);
         virtual void patrol(Order);
         virtual void launch(Order);
         virtual void turn(float);

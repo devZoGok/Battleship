@@ -7,10 +7,10 @@
 
 #include <stateManager.h>
 
+#include "defConfigs.h"
 #include "inGameAppState.h"
 #include "unitDataManager.h"
 #include "consoleCommand.h"
-#include "aircraftCarrier.h"
 #include "vessel.h"
 
 using namespace vb01;

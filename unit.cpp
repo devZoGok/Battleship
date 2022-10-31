@@ -17,12 +17,14 @@
 
 using namespace glm;
 using namespace vb01;
+using namespace gameBase;
 using namespace std;
 
 namespace battleship{
     Unit::Unit(Player *player, vb01::Vector3 pos, int id) {
         this->id = id;
         this->player = player;
+
 		UnitDataManager *udm = UnitDataManager::getSingleton();
         health = udm->getHealth()[id];
         maxTurnAngle = udm->getMaxTurnAngle()[id];
@@ -35,7 +37,17 @@ namespace battleship{
         height = udm->getUnitCornerPoints()[id][4].y - udm->getUnitCornerPoints()[id][0].y;
         length = udm->getUnitCornerPoints()[id][3].z - udm->getUnitCornerPoints()[id][0].z;
 
-		GameManager *gm = GameManager::getSingleton();
+		initModel();
+        placeUnit(pos);
+		initSound();
+		initUnitStats();
+    }
+
+    Unit::~Unit() {
+    }
+
+	void Unit::initModel(){
+		UnitDataManager *udm = UnitDataManager::getSingleton();
 		model = new Model(udm->getBasePath()[id] + udm->getMeshPath()[id]);
 		Root *root = Root::getSingleton();
 		string libPath = root->getLibPath();
@@ -49,23 +61,29 @@ namespace battleship{
 
 		model->setMaterial(mat);
 		root->getRootNode()->attachChild(model);
-        placeUnit(pos);
+	}
 
+	void Unit::initSound(){
+		UnitDataManager *udm = UnitDataManager::getSingleton();
         selectionSfxBuffer = new sf::SoundBuffer();
         string p = GameManager::getSingleton()->getPath() + "Sounds/" + udm->getName()[id] + "s/selection.ogg";
 
         if(selectionSfxBuffer->loadFromFile(p.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
+	}
 
-		Node *guiNode = root->getGuiNode();
+	void Unit::initUnitStats(){
+		Root *root = Root::getSingleton();
 
 		hpBackground = new Quad(Vector3(lenHpBar, 10, 0), false);
+		string libPath = root->getLibPath();
 		Material *hpBackgroundMat = new Material(libPath + "gui");
 		hpBackgroundMat->addBoolUniform("texturingEnabled", false);
 		hpBackgroundMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
 		hpBackground->setMaterial(hpBackgroundMat);
 		hpBackgroundNode = new Node();
 		hpBackgroundNode->attachMesh(hpBackground);
+		Node *guiNode = root->getGuiNode();
 		guiNode->attachChild(hpBackgroundNode);
 
 		hpForeground = new Quad(Vector3(lenHpBar, 10, 0), false);
@@ -76,10 +94,7 @@ namespace battleship{
 		hpForegroundNode = new Node();
 		hpForegroundNode->attachMesh(hpForeground);
 		guiNode->attachChild(hpForegroundNode);
-    }
-
-    Unit::~Unit() {
-    }
+	}
 
     void Unit::update() {
 		leftVec = model->getGlobalAxis(0);
@@ -110,10 +125,10 @@ namespace battleship{
     }
 
     void Unit::displayUnitStats() {
-				float shiftedX = screenPos.x - 0.5 * lenHpBar;
-				hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
-				hpForeground->setSize(Vector3(health / UnitDataManager::getSingleton()->getHealth()[id] * lenHpBar, 10, 0));
-				hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
+		float shiftedX = screenPos.x - 0.5 * lenHpBar;
+		hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
+		hpForeground->setSize(Vector3(health / UnitDataManager::getSingleton()->getHealth()[id] * lenHpBar, 10, 0));
+		hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
     }
 
     void Unit::executeOrders() {
@@ -125,7 +140,7 @@ namespace battleship{
                     attack(order);
                     break;
                 case Order::TYPE::MOVE:
-                    move(order, 0.5 * Map::getSingleton()->getCellSize().x);
+                    move(order);
                     break;
                 case Order::TYPE::PATROL:
                     patrol(order);
@@ -150,7 +165,7 @@ namespace battleship{
     void Unit::attack(Order order) {
     }
 
-    void Unit::move(Order order, float destOffset) {
+	void Unit::navigate(Order order, float destOffset){
 		Vector3 hypVec = (pathPoints[0] - pos);
 		float hypAngle = hypVec.norm().getAngleBetween(upVec) - PI / 2;
 		float offset = hypVec.getLength() * sin(hypAngle);
@@ -193,28 +208,34 @@ namespace battleship{
 
 		if(pathPoints.empty())
 			removeOrder(0);
+	}
 
+	void Unit::alignToSurface(){
+		Map *map = Map::getSingleton();
+		TerrainObject terr = map->getTerrainObject(0);
 		vector<Ray::CollisionResult> res;
-
-		if(type == UnitType::LAND){
-			Map *map = Map::getSingleton();
-			TerrainObject terr = map->getTerrainObject(0);
-			Ray::retrieveCollisions(Vector3(pos.x, terr.size.y, pos.z), Vector3(0, -1, 0), terr.node, res);
-			Ray::sortResults(res);
-
-			if(!res.empty()){
-				placeUnit(res[0].pos);
-
-				float angle = upVec.getAngleBetween(res[0].norm);
-				Vector3 axis = upVec.cross(res[0].norm).norm();
-				Quaternion rotQuat = Quaternion(angle, axis);
-				orientUnit(rotQuat * rot);
-			}
+		Ray::retrieveCollisions(Vector3(pos.x, terr.size.y, pos.z), Vector3(0, -1, 0), terr.node, res);
+		Ray::sortResults(res);
+		
+		if(!res.empty()){
+			placeUnit(res[0].pos);
+		
+			float angle = upVec.getAngleBetween(res[0].norm);
+			Vector3 axis = upVec.cross(res[0].norm).norm();
+			Quaternion rotQuat = Quaternion(angle, axis);
+			orientUnit(rotQuat * rot);
 		}
+	}
+
+    void Unit::move(Order order) {
+		navigate(order, 0.5 * Map::getSingleton()->getCellSize().x);
+
+		if(type == UnitType::LAND)
+			alignToSurface();
     }
 
     void Unit::patrol(Order order) {
-        move(order, UnitDataManager::getSingleton()->getDestinationOffset()[id]);
+        move(order);
     }
 
     void Unit::launch(Order order) {}
@@ -251,15 +272,6 @@ namespace battleship{
 		patrolPointId = 0;
     }
 
-    float Unit::getCircleRadius() {
-        float radius = 0.;
-
-        for (int i = 0; i <= 90 / maxTurnAngle; i++)
-            radius += cos(i * (maxTurnAngle / 180 * PI)) * speed;
-
-        return radius;
-    }
-
     void Unit::placeUnit(Vector3 p) {
         model->setPosition(p);
         pos = p;
@@ -286,7 +298,7 @@ namespace battleship{
         return projectiles;
     }
 
-	void Unit::addOrder(Order order){
+	void Unit::preparePathpoints(Order order){
 		int srcObjId = 0, destObjId = 0;
 		Map *map = Map::getSingleton();
 
@@ -315,12 +327,16 @@ namespace battleship{
 			if(!impassibleNodePresent && weights[path[i - 1]][path[i]] == pathfinder->getImpassibleNodeVal())
 				impassibleNodePresent = true;
 
-		if(!(impassibleNodePresent || path.empty())){
+		if(!(impassibleNodePresent || path.empty()))
 			for(int p : path)
 				pathPoints.push_back(map->getTerrainObject(srcObjId).cells[p].pos);
+	}
 
+	void Unit::addOrder(Order order){
+		preparePathpoints(order);
+
+		if(!pathPoints.empty())
 			orders.push_back(order);
-		}
 	}
     
     void Unit::removeOrder(int id) {
@@ -337,5 +353,8 @@ namespace battleship{
         orderLineDispTime = getTime();
     }
 
-    void Unit::addProjectile(Projectile *p) {((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE))->addProjectile(p);}
+    void Unit::addProjectile(Projectile *p) {
+		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+		((InGameAppState*)stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE))->addProjectile(p);
+	}
 }
