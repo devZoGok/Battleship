@@ -67,6 +67,7 @@ namespace battleship{
 		vb01::Vector3 cellSize;
 
         Map(){}
+		void preprareScene();
 		void loadSkybox(gameBase::LuaManager*);
 		void loadTerrainObject(gameBase::LuaManager*, int);
     };
