@@ -9,7 +9,6 @@
 
 #include <SFML/Audio.hpp>
 
-#include "unitDataManager.h"
 #include "gameManager.h"
 #include "projectile.h"
 
@@ -44,8 +43,9 @@ namespace battleship{
     };
     
     enum class MoveDir {LEFT, UP, FORW};
-    
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
+    enum class UnitClass {VESSEL, DESTROYER, CRUISER, AIRCRAFT_CARRIER, SUBMARINE, MISSILE_JET, DEMO_JET};
+    enum class UnitType {UNDERWATER, SEA_LEVEL, LAND, AIR};
     
     class Unit {
     public:
@@ -59,9 +59,9 @@ namespace battleship{
         void placeUnit(vb01::Vector3);
         void orientUnit(vb01::Quaternion);
         void addProjectile(Projectile*);
-		vb01::Vector3 getCorner(int);
         std::vector<Projectile*> getProjectiles();
         void addOrder(Order);
+		inline vb01::Vector3 getCorner(int i){return corners[i];}
         inline bool isSelected(){return selected;}
         inline bool isSelectable(){return selectable;}
         inline bool isDebuggable(){return debugging;}
@@ -85,6 +85,7 @@ namespace battleship{
         inline vb01::Vector3 getLeftVec() {return leftVec;}
         inline vb01::Vector3 getUpVec() {return upVec;}
     private:
+		void initProperties();
 		void initModel();
 		void initSound();
 		void initUnitStats();
@@ -109,13 +110,13 @@ namespace battleship{
         UnitType type;
 		vb01::Vector2 screenPos;
         std::vector<Order> orders;
-		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0);
+		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
 		vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
-        int health, cost, id, patrolPointId = 0, playerId;
+        int health, maxHealth, cost, id, patrolPointId = 0, playerId;
         s64 orderLineDispTime = 0;
 		vb01::Model *model;
         bool selected = false, selectable, debugging = false, working = true;
-        float lineOfSight, speed, maxTurnAngle, range, width, height, length;
+        float lineOfSight, speed, maxTurnAngle, range, width, height, length, anglePrecision;
 
         void removeOrder(int);
         virtual void executeOrders();

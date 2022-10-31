@@ -5,6 +5,7 @@
 #include <ray.h>
 
 #include <stateManager.h>
+#include <luaManager.h>
 
 #include <glm.hpp>
 #include <ext.hpp>
@@ -25,18 +26,7 @@ namespace battleship{
         this->id = id;
         this->player = player;
 
-		UnitDataManager *udm = UnitDataManager::getSingleton();
-        health = udm->getHealth()[id];
-        maxTurnAngle = udm->getMaxTurnAngle()[id];
-        range = udm->getRange()[id];
-        lineOfSight = udm->getLineOfSight()[id];
-        speed = udm->getSpeed()[id];
-        unitClass = udm->getUnitClass()[id];
-        type = udm->getUnitType()[id];
-        width = udm->getUnitCornerPoints()[id][0].x - udm->getUnitCornerPoints()[id][1].x;
-        height = udm->getUnitCornerPoints()[id][4].y - udm->getUnitCornerPoints()[id][0].y;
-        length = udm->getUnitCornerPoints()[id][3].z - udm->getUnitCornerPoints()[id][0].z;
-
+		initProperties();
 		initModel();
         placeUnit(pos);
 		initSound();
@@ -46,9 +36,42 @@ namespace battleship{
     Unit::~Unit() {
     }
 
+	void Unit::initProperties(){
+		LuaManager *lm = LuaManager::getSingleton();
+		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
+		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
+
+        health = lm->getIntFromTable("health", vector<Index>{Index(id + 1)});
+		maxHealth = health;
+
+        maxTurnAngle = lm->getFloatFromTable("maxTurnAngle", vector<Index>{Index(id + 1)});
+        range = lm->getFloatFromTable("range", vector<Index>{Index(id + 1)});
+        lineOfSight = lm->getFloatFromTable("lineOfSight", vector<Index>{Index(id + 1)});
+        speed = lm->getFloatFromTable("speed", vector<Index>{Index(id + 1)});
+        unitClass = (UnitClass)lm->getIntFromTable("unitClass", vector<Index>{Index(id + 1)});
+		anglePrecision = lm->getFloatFromTable("anglePrecision", vector<Index>{Index(id + 1)});
+		type = (UnitType)lm->getIntFromTable("unitType", vector<Index>{Index(id + 1)});
+
+		string cornerInd = "unitCornerPoints";
+
+		for(int i = 0; i < 8; i++){
+			float x = lm->getFloatFromTable(cornerInd, vector<Index>{Index(id + 1), Index(i + 1), Index("x")});
+			float y = lm->getFloatFromTable(cornerInd, vector<Index>{Index(id + 1), Index(i + 1), Index("y")});
+			float z = lm->getFloatFromTable(cornerInd, vector<Index>{Index(id + 1), Index(i + 1), Index("z")});
+			corners[i] = Vector3(x, y, z);
+		}
+
+        width = corners[0].x - corners[1].x;
+        height = corners[4].y - corners[0].y;
+        length = corners[3].z - corners[0].z;
+	}
+
 	void Unit::initModel(){
-		UnitDataManager *udm = UnitDataManager::getSingleton();
-		model = new Model(udm->getBasePath()[id] + udm->getMeshPath()[id]);
+		LuaManager *lm = LuaManager::getSingleton();
+		string basePath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)});
+		string meshPath = lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
+
+		model = new Model(basePath + meshPath);
 		Root *root = Root::getSingleton();
 		string libPath = root->getLibPath();
 
@@ -64,9 +87,10 @@ namespace battleship{
 	}
 
 	void Unit::initSound(){
-		UnitDataManager *udm = UnitDataManager::getSingleton();
+		LuaManager *lm = LuaManager::getSingleton();
+		string name = lm->getStringFromTable("name", vector<Index>{Index(id + 1)});
         selectionSfxBuffer = new sf::SoundBuffer();
-        string p = GameManager::getSingleton()->getPath() + "Sounds/" + udm->getName()[id] + "s/selection.ogg";
+        string p = GameManager::getSingleton()->getPath() + "Sounds/" + name + "s/selection.ogg";
 
         if(selectionSfxBuffer->loadFromFile(p.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
@@ -127,7 +151,7 @@ namespace battleship{
     void Unit::displayUnitStats() {
 		float shiftedX = screenPos.x - 0.5 * lenHpBar;
 		hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
-		hpForeground->setSize(Vector3(health / UnitDataManager::getSingleton()->getHealth()[id] * lenHpBar, 10, 0));
+		hpForeground->setSize(Vector3(health / maxHealth * lenHpBar, 10, 0));
 		hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
     }
 
@@ -173,9 +197,8 @@ namespace battleship{
 		Vector3 linDest = pathPoints[0] + upVec * offset;
 		Vector3 destDir = (linDest - pos).norm();
 		float angle = (destDir != Vector3::VEC_ZERO ? dirVec.getAngleBetween(destDir) : -1);
-		UnitDataManager *udm = UnitDataManager::getSingleton();
 
-		if(angle > udm->getAnglePrecision()[id]){
+		if(angle > anglePrecision){
 			float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
 
 			if(leftVec.getAngleBetween(destDir) > PI / 2)
@@ -282,11 +305,6 @@ namespace battleship{
 		rot = rotQuat;
     }
     
-    Vector3 Unit::getCorner(int i) {
-        Vector3 corner = UnitDataManager::getSingleton()->getUnitCornerPoints()[id][i];
-        return pos + (leftVec * corner.x + upVec * corner.y - dirVec * corner.z);
-    }
-
     std::vector<Projectile*> Unit::getProjectiles(){
         std::vector<Projectile*> projectiles;
         InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));

@@ -4,6 +4,7 @@
 #include <vector.h>
 
 #include <stateManager.h>
+#include <luaManager.h>
 
 #include "consoleCommand.h"
 #include "inGameAppState.h"
@@ -57,7 +58,11 @@ namespace battleship{
 
 		int unitId = atoi(fullCommand[2].c_str());
 
-		if(!(0 <= unitId && unitId <= UnitDataManager::getSingleton()->getNumUnits()))
+		LuaManager *lm = LuaManager::getSingleton();
+		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
+		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
+
+		if(!(0 <= unitId && unitId <= lm->getInt("numUnits")))
 			return;
 	}
 

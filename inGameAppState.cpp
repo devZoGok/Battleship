@@ -6,10 +6,10 @@
 #include <assetManager.h>
 
 #include <stateManager.h>
+#include <luaManager.h>
 
 #include "defConfigs.h"
 #include "inGameAppState.h"
-#include "unitDataManager.h"
 #include "consoleCommand.h"
 #include "vessel.h"
 
@@ -197,13 +197,16 @@ namespace battleship{
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(DEFAULT_TEXTURE);
 
-		UnitDataManager *unitDataManager = UnitDataManager::getSingleton();
-		int numUnits = unitDataManager->getNumUnits();
-		string *basePaths = unitDataManager->getBasePath();
-		string *meshPaths = unitDataManager->getMeshPath();
+		LuaManager *lm = LuaManager::getSingleton();
+		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
+		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
+		int numUnits = lm->getInt("numUnits");
 
-		for(int i = 0; i < numUnits; ++i)
-			assetManager->load(basePaths[i] + meshPaths[i]);
+		for(int i = 0; i < numUnits; ++i){
+			string basePath = lm->getStringFromTable("basePath", vector<Index>{Index(i + 1)});
+			string meshPath = lm->getStringFromTable("meshPath", vector<Index>{Index(i + 1)});
+			assetManager->load(basePath + meshPath);
+		}
     }
 
     void InGameAppState::onDettached() {}

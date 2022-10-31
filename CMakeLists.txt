@@ -13,7 +13,7 @@ set(GUI tooltip.cpp optionsButton.cpp exitButton.cpp consoleCommand.cpp)
 set(CORE gameManager.cpp defConfigs.cpp)
 set(PROJECTILES projectile.cpp guidedMissile.cpp depthCharge.cpp missile.cpp shell.cpp torpedo.cpp)
 set(FX explosion.cpp)
-set(CONTENT player.cpp unitDataManager.cpp unit.cpp pathfinder.cpp map.cpp ${PROJECTILES} ${FX})
+set(CONTENT player.cpp unit.cpp pathfinder.cpp map.cpp ${PROJECTILES} ${FX})
 set(GAME_SRC ${STATES} ${GUI} ${CORE} ${CONTENT} ${UTIL})
 
 set(SFML_DIR external/SFML)
