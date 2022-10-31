@@ -3,15 +3,17 @@
 #define PROJECTILE_H
 
 #include <SFML/Audio.hpp>
+
 #include <vector.h>
+#include <quaternion.h>
 
 #include "gameManager.h"
 #include "util.h"
 
 namespace vb01{
-		class Node;
-		class Model;
-		class Mesh;
+	class Node;
+	class Model;
+	class Mesh;
 }
 
 namespace battleship {
@@ -23,23 +25,27 @@ namespace battleship {
         virtual ~Projectile();
         virtual void update();
         virtual void debug();
-        void orientProjectile(vb01::Vector3);
+        void orientProjectile(vb01::Quaternion);
         inline bool isExploded() {return exploded;}
         inline Unit* getUnit(){return unit;}
+	private:
+		void initProperties(int);
+		void initModel(vb01::Node*);
+		void initSound();
     protected:
         virtual void checkForCollision();
         void explode(vb01::Node*);
 
-        vb01::Model *node=nullptr;
+        vb01::Model *node = nullptr;
         bool exploded = false;
-        const float g = 2.2;
-        float speed, angle, rayLength, scale;
-        int damage,id,weaponTypeId;
+        float speed, rayLength, scale;
+        int damage, id, weaponTypeId;
         vb01::Vector3 initPos, pos, dirVec, leftVec, upVec;
+		vb01::Quaternion rot;
         s64 lastUpdateTime = 0;
-        Unit *unit;
+        Unit *unit = nullptr;
         sf::SoundBuffer *shotSfxBuffer, *explosionSfxBuffer;
-        sf::Sound *shotSfx=nullptr, *explosionSfx=nullptr;
+        sf::Sound *shotSfx = nullptr, *explosionSfx = nullptr;
     };
 }
 
