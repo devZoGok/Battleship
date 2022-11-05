@@ -108,6 +108,7 @@ namespace battleship{
         ActiveGameState* activeState;
         GuiAppState* guiState;
 
+		void loadModels();
         void toggleMainMenu();
 		void updateUnits(Player*);
 		void updateProjectiles();

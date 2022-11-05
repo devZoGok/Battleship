@@ -197,16 +197,7 @@ namespace battleship{
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(DEFAULT_TEXTURE);
 
-		LuaManager *lm = LuaManager::getSingleton();
-		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
-		int numUnits = lm->getInt("numUnits");
-
-		for(int i = 0; i < numUnits; ++i){
-			string basePath = lm->getStringFromTable("basePath", vector<Index>{Index(i + 1)});
-			string meshPath = lm->getStringFromTable("meshPath", vector<Index>{Index(i + 1)});
-			assetManager->load(basePath + meshPath);
-		}
+		loadModels();
     }
 
     void InGameAppState::onDettached() {}
@@ -269,6 +260,19 @@ namespace battleship{
 		updateProjectiles();
     }
 
+	void InGameAppState::loadModels(){
+		LuaManager *lm = LuaManager::getSingleton();
+		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
+		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
+		int numUnits = lm->getInt("numUnits");
+
+		for(int i = 0; i < numUnits; ++i){
+			string basePath = lm->getStringFromTable("basePath", vector<Index>{Index(i + 1)});
+			string meshPath = lm->getStringFromTable("meshPath", vector<Index>{Index(i + 1)});
+			AssetManager::getSingleton()->load(basePath + meshPath);
+		}
+	}
+
     void InGameAppState::toggleMainMenu() {
 		GameManager *gm = GameManager::getSingleton();
 
@@ -302,6 +306,12 @@ namespace battleship{
             guiState->removeButton(optionsButton);
             guiState->removeButton(exitButton);
             guiState->removeButton(resumeButton);
+
+			loadModels();
+
+			for(Player *p : players)
+				for(Unit *u : p->getUnits())
+					u->reinitUnit();
         }
     }
 

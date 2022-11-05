@@ -61,6 +61,7 @@ namespace battleship{
         void addProjectile(Projectile*);
         std::vector<Projectile*> getProjectiles();
         void addOrder(Order);
+		virtual void reinitUnit();
 		inline vb01::Vector3 getCorner(int i){return corners[i];}
         inline bool isSelected(){return selected;}
         inline bool isSelectable(){return selectable;}
@@ -86,7 +87,9 @@ namespace battleship{
         inline vb01::Vector3 getUpVec() {return upVec;}
     private:
 		void initProperties();
+		void destroyModel();
 		void initModel();
+		void destroySound();
 		void initSound();
 		void initUnitStats();
         void updateScreenCoordinates();

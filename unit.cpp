@@ -28,11 +28,12 @@ namespace battleship{
 
 		initProperties();
 		initModel();
-        placeUnit(pos);
 		initSound();
 		initUnitStats();
+        placeUnit(pos);
     }
 
+	//TODO complete implementation
     Unit::~Unit() {
     }
 
@@ -65,6 +66,11 @@ namespace battleship{
         height = corners[4].y - corners[0].y;
         length = corners[3].z - corners[0].z;
 	}
+	
+	void Unit::destroyModel(){
+		Root::getSingleton()->getRootNode()->dettachChild(model);
+		delete model;
+	}
 
 	void Unit::initModel(){
 		LuaManager *lm = LuaManager::getSingleton();
@@ -86,6 +92,12 @@ namespace battleship{
 		root->getRootNode()->attachChild(model);
 	}
 
+	void Unit::destroySound(){
+		selectionSfx->stop();
+		delete selectionSfx;
+		delete selectionSfxBuffer;
+	}
+
 	void Unit::initSound(){
 		LuaManager *lm = LuaManager::getSingleton();
 		string name = lm->getStringFromTable("name", vector<Index>{Index(id + 1)});
@@ -94,6 +106,16 @@ namespace battleship{
 
         if(selectionSfxBuffer->loadFromFile(p.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
+	}
+
+	void Unit::reinitUnit(){
+		destroySound();
+		destroyModel();
+		initModel();
+		initSound();
+		initProperties();
+		placeUnit(pos);
+		orientUnit(rot);
 	}
 
 	void Unit::initUnitStats(){
