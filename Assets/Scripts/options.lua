@@ -35,5 +35,5 @@ mappings = {
 		{bind = 31, trigger = 57, action = true, bindType = 0, inOptions = true},
 }
 graphics = {
-	resolution = {x = 800, y = 600}
+	resolution = {x = 1366, y = 768}
 }

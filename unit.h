@@ -1,4 +1,5 @@
 #pragma once
+#include "external/vb01/quaternion.h"
 #ifndef UNIT_H
 #define UNIT_H
 
@@ -30,11 +31,7 @@ namespace battleship{
 				vb01::Vector3 pos;
 
 				Target(){}
-
-				Target(Unit *unit, vb01::Vector3 pos){
-					this->unit = unit;
-					this->pos = pos;
-				}
+				Target(Unit *u, vb01::Vector3 p) : unit(u), pos(p){}
 			};
 
         TYPE type;
@@ -44,12 +41,12 @@ namespace battleship{
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {VESSEL, DESTROYER, CRUISER, AIRCRAFT_CARRIER, SUBMARINE, MISSILE_JET, DEMO_JET};
+    enum class UnitClass {VESSEL, DESTROYER, CRUISER, AIRCRAFT_CARRIER, SUBMARINE, MISSILE_JET, DEMO_JET, SAMPLE_BUILDING};
     enum class UnitType {UNDERWATER, SEA_LEVEL, LAND, AIR};
     
     class Unit {
     public:
-        Unit(Player*, vb01::Vector3, int);
+        Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
         ~Unit();
         virtual void update();
         virtual void blowUp();
@@ -60,7 +57,7 @@ namespace battleship{
         void orientUnit(vb01::Quaternion);
         void addProjectile(Projectile*);
         std::vector<Projectile*> getProjectiles();
-        void addOrder(Order);
+        virtual void addOrder(Order);
 		virtual void reinitUnit();
 		inline vb01::Vector3 getCorner(int i){return corners[i];}
         inline bool isSelected(){return selected;}
@@ -86,18 +83,8 @@ namespace battleship{
         inline vb01::Vector3 getLeftVec() {return leftVec;}
         inline vb01::Vector3 getUpVec() {return upVec;}
     private:
-		void initProperties();
-		void destroyModel();
-		void initModel();
-		void destroySound();
-		void initSound();
-		void initUnitStats();
         void updateScreenCoordinates();
         void displayUnitStats();
-        void navigate(Order, float = 0.);
-		void alignToSurface();
-		void preparePathpoints(Order);
-        inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         const int orderVecDispLength = 2000;
@@ -106,7 +93,6 @@ namespace battleship{
 		vb01::Quad *hpBackground = nullptr, *hpForeground = nullptr;
 		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
 		int lenHpBar = 200;
-		std::vector<vb01::Vector3> pathPoints;
     protected:
         Player *player;
         UnitClass unitClass;
@@ -115,21 +101,24 @@ namespace battleship{
         std::vector<Order> orders;
 		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
 		vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
-        int health, maxHealth, cost, id, patrolPointId = 0, playerId;
+        int health, maxHealth, cost, id, playerId;
         s64 orderLineDispTime = 0;
 		vb01::Model *model;
         bool selected = false, selectable, debugging = false, working = true;
-        float lineOfSight, speed, maxTurnAngle, range, width, height, length, anglePrecision;
+        float lineOfSight, range, width, height, length;
 
         void removeOrder(int);
+		virtual void initProperties();
+		virtual void destroyModel();
+		virtual void initModel();
+		virtual void destroySound();
+		virtual void initSound();
+		virtual void initUnitStats();
         virtual void executeOrders();
-        virtual void attack(Order);
-        virtual void move(Order);
-        virtual void patrol(Order);
-        virtual void launch(Order);
-        virtual void turn(float);
-        virtual void advance(float, MoveDir = MoveDir::FORW);
-        void drawCuboid();
+        virtual void attack(Order){}
+        virtual void move(Order){}
+        virtual void patrol(Order){}
+        virtual void launch(Order){}
     };
 }
 

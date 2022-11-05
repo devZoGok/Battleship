@@ -3,10 +3,10 @@
 #define CONSOLE_COMMAND_H
 
 #include <vector>
+#include <string>
 
-#include "unit.h"
-#include "listbox.h"
-#include "player.h"
+#include <vector.h>
+#include <quaternion.h>
 
 namespace battleship{
     class ConsoleCommand{
@@ -15,7 +15,7 @@ namespace battleship{
     private:
 		static void parse(std::string, std::vector<std::string>&);
 		static void validateAddUnitArguments(std::vector<std::string>&);
-		static void executeAddUnit(int, int, vb01::Vector3);
+		static void executeAddUnit(int, int, vb01::Vector3, vb01::Quaternion);
 		static void validateDebugUnitsArguments();
     };
 }

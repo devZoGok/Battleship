@@ -8,6 +8,8 @@
 
 #include "consoleCommand.h"
 #include "inGameAppState.h"
+#include "player.h"
+#include "vehicle.h"
 
 using namespace std;
 using namespace vb01;
@@ -22,11 +24,12 @@ namespace battleship{
         if (fullCommand[0] == "add-unit") {
 			validateAddUnitArguments(fullCommand);
 			Vector3 pos = Vector3::VEC_ZERO;
+			Quaternion rot = Quaternion::QUAT_W;
 
 			if(fullCommand.size() == 6)
 				pos = Vector3(atof(fullCommand[3].c_str()), atof(fullCommand[4].c_str()), atof(fullCommand[5].c_str()));
 
-            executeAddUnit(atoi(fullCommand[1].c_str()), atoi(fullCommand[2].c_str()), pos);
+            executeAddUnit(atoi(fullCommand[1].c_str()), atoi(fullCommand[2].c_str()), pos, rot);
 		}
     }
 
@@ -46,6 +49,7 @@ namespace battleship{
 		}
 	}
 
+	//TODO implement rotation argument
 	void ConsoleCommand::validateAddUnitArguments(vector<string> &fullCommand){
 		//addUnit <playerId> <unitId> [<posX> <posY> <posZ> ]
 		if(fullCommand.size() != 3 || fullCommand.size() != 6)
@@ -66,10 +70,10 @@ namespace battleship{
 			return;
 	}
 
-    void ConsoleCommand::executeAddUnit(int playerId, int unitId, Vector3 pos) {
+    void ConsoleCommand::executeAddUnit(int playerId, int unitId, Vector3 pos, Quaternion rot) {
 		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 		InGameAppState *inGameState = (InGameAppState*)stateManager->getAppStateByType(AppStateType::IN_GAME_STATE);
         vector<Player*> players = inGameState->getPlayers();
-        players[playerId]->addUnit(new Unit(players[playerId], pos, unitId));
+        players[playerId]->addUnit(new Vehicle(players[playerId], unitId, pos, rot));
     }
 }
