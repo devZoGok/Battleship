@@ -26,7 +26,23 @@ using namespace std;
 namespace battleship{
 	using namespace configData;
 	using namespace gameBase;
-    
+
+	ActiveGameState::StructureFrame::StructureFrame(string modelPath, int i, int t) : id(i), type(t) {
+		Root *root = Root::getSingleton();
+		Material *mat = new Material(root->getLibPath() + "texture");
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addBoolUniform("lightingEnabled", false);
+		mat->addVec4Uniform("diffuseColor", Vector4::VEC_ZERO);
+
+		model = new Model(modelPath);
+		model->setWireframe(true);
+		model->setMaterial(mat);
+		root->getRootNode()->attachChild(model);
+	}    
+
+	ActiveGameState::StructureFrame::~StructureFrame(){
+	}    
+
     ActiveGameState::ActiveGameState(GuiAppState *guiState, vector<Player*> players, int playerId) : AbstractAppState(
 						AppStateType::ACTIVE_STATE,
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, true),
@@ -98,6 +114,9 @@ namespace battleship{
 
 		if(!lookingAround)
 			updateCameraPosition();
+
+		if(placingStructures)
+			updateStructureFrames();
     }
 
 	void ActiveGameState::deselectUnits(){
@@ -187,6 +206,19 @@ namespace battleship{
 		dragboxNode->setPosition(Vector3(selectionBoxOrigin.x, selectionBoxOrigin.y, 0));
     }
 
+	//TODO implement terrain evenness check
+	void ActiveGameState::updateStructureFrames(){
+		Map *map = Map::getSingleton();
+		MeshData::Vertex *verts = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMeshBase().vertices;
+
+		for(StructureFrame s : structureFrames){
+			Vector3 cursorSpacePos = screenToSpace(getCursorPos());
+			s.model->setPosition(Vector3(0, 0, 0));
+			Material *mat = s.model->getMaterial();
+			mat->setVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
+		}
+	}
+
     void ActiveGameState::updateCameraPosition() {
 		GameManager *gm = GameManager::getSingleton();
         Vector2 cursorPos = getCursorPos();
@@ -264,7 +296,7 @@ namespace battleship{
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
 			o.line = lines[lines.size() - 1];
 
-            if (type != Order::TYPE::LAUNCH || u->getUnitClass() == UnitClass::CRUISER) {
+            if (type != Order::TYPE::LAUNCH) {
 				if(type == Order::TYPE::PATROL){
 					Vector3 p = u->getPos();
 					targets[0] = Order::Target(nullptr, p);
@@ -319,6 +351,10 @@ namespace battleship{
 						
 							if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getSide() != mainPlayer->getSide()))
 								type = Order::TYPE::ATTACK;
+							else if(placingStructures){
+								type = Order::TYPE::BUILD;
+								placingStructures = false;
+							}
 						
 							issueOrder(type, shiftPressed);
 						}
@@ -346,7 +382,7 @@ namespace battleship{
                 }
                 break;
 			case Bind::LOOK_AROUND:
-				if(!placingStructure)
+				if(!placingStructures)
                 	lookingAround = isPressed;
                 break;
 			case Bind::HALT: 
@@ -404,10 +440,36 @@ namespace battleship{
 
                 break;
 			case Bind::SELECT_STRUCTURE:
-				placingStructure = true;
+			{
+				bool engineersSelected = false;
+
+				for(Unit *u : selectedUnits)
+					if(u->getUnitClass() == UnitClass::ENGINEER){
+						engineersSelected = true;
+						break;
+					}
+
+				if(!engineersSelected)
+					break;
+
+				StateManager *sm = GameManager::getSingleton()->getStateManager();
+				InGameAppState *inGameState = (InGameAppState*)sm->getAppStateByType(int(AppStateType::IN_GAME_STATE));
+
+				//TODO fix the magic value
+				int id = 3;
+				structureFrames.push_back(StructureFrame(inGameState->getModelPath(id), id, (int)UnitType::LAND));
+
+				placingStructures = true;
 				break;
+			}
 			case Bind::DESELECT_STRUCTURE:
-				placingStructure = false;
+				for(StructureFrame s : structureFrames){
+					Root::getSingleton()->getRootNode()->dettachChild(s.model);
+					delete s.model;
+				}
+
+				structureFrames.clear();
+				placingStructures = false;
 				break;
         }
     }

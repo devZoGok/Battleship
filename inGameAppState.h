@@ -30,6 +30,7 @@ namespace battleship{
         std::vector<Unit*> getSelectedUnits(Player*);
         inline std::vector<Player*> getPlayers() {return players;}
         inline std::vector<Projectile*>& getProjectiles(){return projectiles;}
+		inline std::string getModelPath(int i){return modelPaths[i];}
         inline void addFx(Fx fx){this->fx.push_back(fx);}
         inline void addProjectile(Projectile *p){projectiles.push_back(p);}
     private:
@@ -99,7 +100,7 @@ namespace battleship{
         ExitButton *exitButton;
         bool isMainMenuActive = false;
         std::vector<Player*> players;
-        std::vector<std::string> difficultyLevels, factions;
+        std::vector<std::string> difficultyLevels, factions, modelPaths;
         std::vector<Projectile*> projectiles;
         std::vector<Fx> fx;
 		std::string mapName;

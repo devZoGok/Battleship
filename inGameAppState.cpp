@@ -265,11 +265,14 @@ namespace battleship{
 		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
 		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
 		int numUnits = lm->getInt("numUnits");
+		modelPaths.clear();
 
 		for(int i = 0; i < numUnits; ++i){
 			string basePath = lm->getStringFromTable("basePath", vector<Index>{Index(i + 1)});
 			string meshPath = lm->getStringFromTable("meshPath", vector<Index>{Index(i + 1)});
-			AssetManager::getSingleton()->load(basePath + meshPath);
+			string modelPath = basePath + meshPath;
+			AssetManager::getSingleton()->load(modelPath);
+			modelPaths.push_back(modelPath);
 		}
 	}
 
@@ -318,7 +321,7 @@ namespace battleship{
     void InGameAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
 			case Bind::TOGGLE_MAIN_MENU: 
-            	if(isPressed && !activeState->isPlacingStructure())
+            	if(isPressed && !activeState->isPlacingStructures())
 					toggleMainMenu();
             break;
         }

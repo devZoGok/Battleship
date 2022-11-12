@@ -1,25 +1,17 @@
-numUnits = 3
+numUnits = 4
 
-UnitClass = {VESSEL = 0, DESTROYER = 1, CRUISER = 2, AIRCRAFT_CARRIER = 3, SUBMARINE = 4, MISSILE_JET = 5, DEMO_JET = 6, SAMPLE_STRUCTURE = 7};
+UnitClass = {VESSEL = 0, ENGINEER = 1, SAMPLE_STRUCTURE = 2};
 
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, LAND = 2, AIR = 3};
 
 unitClass = {
 	UnitClass.VESSEL, UnitClass.VESSEL,
-	UnitClass.SAMPLE_STRUCTURE, UnitClass.DESTROYER,
-	UnitClass.CRUISER, UnitClass.CRUISER,
-	UnitClass.AIRCRAFT_CARRIER, UnitClass.AIRCRAFT_CARRIER,
-	UnitClass.SUBMARINE,
-	UnitClass.MISSILE_JET, UnitClass.DEMO_JET
+	UnitClass.ENGINEER, UnitClass.SAMPLE_STRUCTURE 
 };
 
 unitType = {
 	UnitType.SEA_LEVEL, UnitType.UNDERWATER,
-	UnitType.LAND, UnitType.SEA_LEVEL,
-	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
-	UnitType.SEA_LEVEL, UnitType.SEA_LEVEL,
-	UnitType.UNDERWATER,
-	UnitType.AIR, UnitType.AIR
+	UnitType.LAND, UnitType.LAND 
 }
 
 health = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
@@ -255,7 +247,7 @@ unitAxisLength = {8, 8, 6, 6, 5, 5, 8, 8, 7, 2, 2}
 lineOfSight = {5, 8, 4, 4, 3, 3, 6, 6, 3, 3, 8}
 name = {
 	"Battleship", "Battleship", 
-	"Sample", "Destroyer", 
+	"Battleship", "Battleship", 
 	"Cruiser", "Cruiser", 
 	"Aircraft carrier", "Aircraft carrier", 
 	"Submarine", 
@@ -263,7 +255,7 @@ name = {
 }
 meshPath = {
 	"battleship00.xml", "battleship00.xml",
-	"sample.xml", "destroyer01.xml", 
+	"battleship00.xml", "sample.xml", 
 	"cruiser00.xml", "cruiser01.xml", 
 	"aircraftCarrier00.xml", "aircraftCarrier01.xml",
 	"submarine.xml",
@@ -273,7 +265,7 @@ vehiclePrefix = "Models/Units/Vehicles/"
 structurePrefix = "Models/Units/Structures/"
 basePath = {
 	PATH .. vehiclePrefix .. "Battleships/", PATH .. vehiclePrefix .. "Battleships/",
-	PATH .. structurePrefix .. "Sample/", PATH .. vehiclePrefix .. "Destroyers/",
+	PATH .. vehiclePrefix .. "Battleships/", PATH .. structurePrefix .. "Sample/",
 	PATH .. vehiclePrefix .. "Cruisers/", PATH .. vehiclePrefix .. "Cruisers/",
 	PATH .. vehiclePrefix .. "Aircraft carriers/", PATH .. vehiclePrefix .. "Aircraft carriers/",
 	PATH .. vehiclePrefix .. "Submarines/",
