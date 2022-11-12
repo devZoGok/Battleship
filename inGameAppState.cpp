@@ -317,9 +317,10 @@ namespace battleship{
 
     void InGameAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
-				case Bind::TOGGLE_MAIN_MENU: 
-                	if(isPressed)toggleMainMenu();
-                break;
+			case Bind::TOGGLE_MAIN_MENU: 
+            	if(isPressed && !activeState->isPlacingStructure())
+					toggleMainMenu();
+            break;
         }
     }
 

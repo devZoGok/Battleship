@@ -34,7 +34,9 @@ namespace battleship{
   		  GROUP_6,
   		  GROUP_7,
   		  GROUP_8,
-  		  GROUP_9
+  		  GROUP_9,
+		  SELECT_STRUCTURE,
+		  DESELECT_STRUCTURE
 		};
 }
 

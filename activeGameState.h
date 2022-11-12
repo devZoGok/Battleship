@@ -20,6 +20,7 @@ namespace battleship{
         void update();
         void onAction(int, bool);
         void onAnalog(int, float);
+		inline bool isPlacingStructure(){return placingStructure;}
         inline void setSelectingLaunchPoint(bool s){this->selectingGuidedMissileTarget=s;}
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getSelectedUnits(){return selectedUnits;}
@@ -47,7 +48,7 @@ namespace battleship{
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9], selectedUnits;
 		std::vector<Order::Target> targets;
-        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, lookingAround = false;
+        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, lookingAround = false, placingStructure = false;
         int playerId, zooms = 0;
 	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;

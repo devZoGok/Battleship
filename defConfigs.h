@@ -19,9 +19,9 @@ namespace battleship{
 
   		const static int numAppStates = 3;
   		const static int numStaticBinds[numAppStates]{6, 0, 5};
-  		const static int numConfBinds[numAppStates]{0, 1, 20};
+  		const static int numConfBinds[numAppStates]{0, 1, 22};
 		const static int maxStaticBinds = 6;
-		const static int maxConfBinds = 20;
+		const static int maxConfBinds = 22;
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{
   		    {
@@ -66,7 +66,9 @@ namespace battleship{
   		        Bind::GROUP_6,
   		        Bind::GROUP_7,
   		        Bind::GROUP_8,
-  		        Bind::GROUP_9
+  		        Bind::GROUP_9,
+  		        Bind::SELECT_STRUCTURE,
+  		        Bind::DESELECT_STRUCTURE
   		    }
   		};
 
@@ -113,7 +115,9 @@ namespace battleship{
   		        GLFW_KEY_6,
   		        GLFW_KEY_7,
   		        GLFW_KEY_8,
-  		        GLFW_KEY_9
+  		        GLFW_KEY_9,
+  		        GLFW_KEY_B,
+  		        GLFW_KEY_ESCAPE
   		    }
   		};
 
@@ -125,7 +129,7 @@ namespace battleship{
   		const static bool isConfKey[numAppStates][maxConfBinds]{
 			{},
   		    {1},
-			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
   		};
 
   		const static bool isStaticAction[numAppStates][maxStaticBinds]{
@@ -136,7 +140,7 @@ namespace battleship{
   		const static bool isConfAction[numAppStates][maxConfBinds]{
 			{},
   		    {1},
-			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
   		};
 
 		int calcSumStaticBinds(int, bool);

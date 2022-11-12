@@ -221,12 +221,13 @@ namespace battleship{
 				color = Vector3::VEC_J;
       	        break;
       	    case Order::TYPE::ATTACK:
+      	    case Order::TYPE::LAUNCH:
 				color = Vector3::VEC_I;
       	        break;
       	    case Order::TYPE::PATROL:
 				color = Vector3::VEC_K;
 				break;
-      	    case Order::TYPE::LAUNCH:
+      	    case Order::TYPE::BUILD:
 				color = Vector3(1, 1, 0);
       	        break;
       	}
@@ -345,7 +346,8 @@ namespace battleship{
                 }
                 break;
 			case Bind::LOOK_AROUND:
-                lookingAround = isPressed;
+				if(!placingStructure)
+                	lookingAround = isPressed;
                 break;
 			case Bind::HALT: 
                 for (Unit *u : selectedUnits)
@@ -401,6 +403,12 @@ namespace battleship{
                 }
 
                 break;
+			case Bind::SELECT_STRUCTURE:
+				placingStructure = true;
+				break;
+			case Bind::DESELECT_STRUCTURE:
+				placingStructure = false;
+				break;
         }
     }
 

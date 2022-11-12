@@ -23,11 +23,7 @@ unitType = {
 }
 
 health = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
-speed = {.025, .025, .05, .05, .1, .1, .1, .1, .1, .1, .15}
-destinationOffset = {.75, .75, 1, 1, .1, .1, .1, .1, .1, .5, .5}
-anglePrecision = {.1, .1, .1, .1, .1, .1, .1, .1, .1, 3, 3}
 cost = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
-maxTurnAngle = {.1, .1, .5, .5, 1, 1, .5, .5, 1, 2, 2}
 range = {15, 15, 14, 14, 13, 13, 12, 12, 15, 25}
 
 unitCornerPoints = {
@@ -255,7 +251,7 @@ unitCuboidDimensions = {
     }
 };
 
-unitAxisLength = {8, 8,6,6,5, 5,8, 8, 7,2,2}
+unitAxisLength = {8, 8, 6, 6, 5, 5, 8, 8, 7, 2, 2}
 lineOfSight = {5, 8, 4, 4, 3, 3, 6, 6, 3, 3, 8}
 name = {
 	"Battleship", "Battleship", 
