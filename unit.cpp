@@ -175,6 +175,7 @@ namespace battleship{
 		hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
     }
 
+	//TODO factor out non mutual order methods
     void Unit::executeOrders() {
         if (orders.size() > 0) {
             Order order = orders[0];
@@ -182,6 +183,9 @@ namespace battleship{
             switch (order.type) {
                 case Order::TYPE::ATTACK:
                     attack(order);
+                    break;
+                case Order::TYPE::BUILD:
+                    build(order);
                     break;
                 case Order::TYPE::MOVE:
                     move(order);

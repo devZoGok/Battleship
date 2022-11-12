@@ -25,7 +25,7 @@ namespace battleship{
 		class Unit;
     
     struct Order {
-        enum class TYPE {ATTACK, MOVE, PATROL, LAUNCH};
+        enum class TYPE {ATTACK, BUILD, MOVE, PATROL, LAUNCH};
 			struct Target{
 				Unit *unit = nullptr;
 				vb01::Vector3 pos;
@@ -41,7 +41,7 @@ namespace battleship{
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {VESSEL, DESTROYER, CRUISER, AIRCRAFT_CARRIER, SUBMARINE, MISSILE_JET, DEMO_JET, SAMPLE_BUILDING};
+    enum class UnitClass {VESSEL, ENGINEER, SAMPLE_BUILDING};
     enum class UnitType {UNDERWATER, SEA_LEVEL, LAND, AIR};
     
     class Unit {
@@ -116,6 +116,7 @@ namespace battleship{
 		virtual void initUnitStats();
         virtual void executeOrders();
         virtual void attack(Order){}
+        virtual void build(Order){}
         virtual void move(Order){}
         virtual void patrol(Order){}
         virtual void launch(Order){}
