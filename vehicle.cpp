@@ -108,9 +108,6 @@ namespace battleship{
 			else if(type == UnitType::UNDERWATER && fabs(pos.y - pathPoints[0].y) < 0.5 * height && pos.getDistanceFrom(linDest) <= destOffset)
 				pathPoints.erase(pathPoints.begin());
 		}
-
-		if(pathPoints.empty())
-			removeOrder(0);
 	}
 
 	void Vehicle::alignToSurface(){
@@ -135,6 +132,9 @@ namespace battleship{
 
 		if(type == UnitType::LAND)
 			alignToSurface();
+
+		if(pathPoints.empty())
+			removeOrder(0);
     }
 
 	void Vehicle::preparePathpoints(Order order){

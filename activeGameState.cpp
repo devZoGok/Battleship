@@ -16,6 +16,7 @@
 #include "activeGameState.h"
 #include "inGameAppState.h"
 #include "defConfigs.h"
+#include "structure.h"
 #include "util.h"
 #include "tooltip.h"
 
@@ -328,7 +329,15 @@ namespace battleship{
 			vector<Node*> ancestors = results[0].mesh->getNode()->getAncestors();
 			Node *node = ancestors[ancestors.size() - 2];
 			std::map<Node*, Unit*>::iterator it = unitData.find(node);
-			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : nullptr), results[0].pos));
+
+			Unit *unit = nullptr;
+
+			if(placingStructures){
+				unit = new Structure(mainPlayer, structureFrames[0].id, results[0].pos, Quaternion::QUAT_W);
+				mainPlayer->addUnit(unit);
+			}
+
+			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : unit), results[0].pos));
 		}
     }
     
@@ -354,6 +363,7 @@ namespace battleship{
 							else if(placingStructures){
 								type = Order::TYPE::BUILD;
 								placingStructures = false;
+								removeStructtureFrames();
 							}
 						
 							issueOrder(type, shiftPressed);
@@ -463,16 +473,20 @@ namespace battleship{
 				break;
 			}
 			case Bind::DESELECT_STRUCTURE:
-				for(StructureFrame s : structureFrames){
-					Root::getSingleton()->getRootNode()->dettachChild(s.model);
-					delete s.model;
-				}
-
-				structureFrames.clear();
+				removeStructtureFrames();
 				placingStructures = false;
 				break;
         }
     }
+
+	void ActiveGameState::removeStructtureFrames(){
+		for(StructureFrame s : structureFrames){
+			Root::getSingleton()->getRootNode()->dettachChild(s.model);
+			delete s.model;
+		}
+
+		structureFrames.clear();
+	}
 
 	void ActiveGameState::orientCamera(Vector3 rotAxis, double str){
 		float minStr = .001;

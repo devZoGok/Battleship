@@ -11,7 +11,6 @@ namespace battleship{
 		private:
 			int patrolPointId = 0;
         	float speed, maxTurnAngle, anglePrecision;
-			std::vector<vb01::Vector3> pathPoints;
 
         	inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
 			void halt();
@@ -20,6 +19,9 @@ namespace battleship{
 			void initProperties();
 			void advance(float, MoveDir = MoveDir::FORW);
 			void preparePathpoints(Order);
+		protected:
+			std::vector<vb01::Vector3> pathPoints;
+
         	void navigate(Order, float = 0.);
 			void alignToSurface();
 	};

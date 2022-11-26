@@ -46,6 +46,7 @@ namespace battleship{
         void issueOrder(Order::TYPE, bool);
         void lookAround(bool);
 		void orientCamera(vb01::Vector3, double);
+		void removeStructtureFrames();
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
 
         GuiAppState *guiState;
