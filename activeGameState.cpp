@@ -7,6 +7,7 @@
 #include <ray.h>
 
 #include <stateManager.h>
+#include <luaManager.h>
 
 #include <algorithm>
 #include <ctype.h>
@@ -125,6 +126,9 @@ namespace battleship{
 			selectedUnits[0]->toggleSelection(false);
 			selectedUnits.pop_back();
 		}
+
+		removeStructtureFrames();
+		placingStructures = false;
 	}
 
 	//TODO fix fog of war for hostile units
@@ -210,13 +214,65 @@ namespace battleship{
 	//TODO implement terrain evenness check
 	void ActiveGameState::updateStructureFrames(){
 		Map *map = Map::getSingleton();
-		MeshData::Vertex *verts = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMeshBase().vertices;
+		MeshData meshData = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMeshBase();
+		MeshData::Vertex *verts = meshData.vertices;
+		int numVerts = 3 * meshData.numTris;
+
+		LuaManager *lm = LuaManager::getSingleton();
+		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
+		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua", pathBase + "structureData.lua"});
+		float maxUnevenness = lm->getFloat("maxUnevenness");
+		string table = "unitCornerPoints";
 
 		for(StructureFrame s : structureFrames){
-			Vector3 cursorSpacePos = screenToSpace(getCursorPos());
-			s.model->setPosition(Vector3(0, 0, 0));
-			Material *mat = s.model->getMaterial();
-			mat->setVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
+			Camera *cam = Root::getSingleton()->getCamera();
+			Vector3 startPos = cam->getPosition();
+			Vector3 endPos = screenToSpace(getCursorPos());
+
+			vector<Ray::CollisionResult> results;
+			Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getTerrainObject(0).node, results);
+			Ray::sortResults(results);
+
+			if(!results.empty()){
+				if(!rotatingStructure)
+					s.model->setPosition(results[0].pos);
+
+       			float width = 
+					lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(1), Index("x")}) -
+				   	lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(2), Index("x")});
+       			float length = 
+					lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(4), Index("z")}) -
+				   	lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(1), Index("z")});
+
+				float unevenness = 0;
+
+				for(int i = 0; i < numVerts; i++){
+					float diffX = fabs(s.model->getPosition().x - verts[i].pos.x);
+					float diffY = fabs(s.model->getPosition().y - verts[i].pos.y);
+					float diffZ = fabs(s.model->getPosition().z - verts[i].pos.z);
+
+					if(diffX < 0.5 * width && diffZ < 0.5 * length && diffY > unevenness){
+						unevenness = diffY;
+
+						if(unevenness > maxUnevenness)
+							break;
+					}
+				}
+
+				Vector4 color;
+
+				if(unevenness > maxUnevenness){
+					color = Vector4(1, 0, 0, 1);
+					s.status = StructureFrame::NOT_PLACEABLE;
+				}
+				else{
+					color = Vector4(0, 1, 0, 1);
+					s.status = StructureFrame::PLACEABLE;
+				}
+
+				Material *mat = s.model->getMaterial();
+				mat->setVec4Uniform("diffuseColor", color);
+			}
 		}
 	}
 
@@ -333,7 +389,7 @@ namespace battleship{
 			Unit *unit = nullptr;
 
 			if(placingStructures){
-				unit = new Structure(mainPlayer, structureFrames[0].id, results[0].pos, Quaternion::QUAT_W);
+				unit = new Structure(mainPlayer, structureFrames[0].id, results[0].pos, structureFrames[0].model->getOrientation());
 				mainPlayer->addUnit(unit);
 			}
 
@@ -373,6 +429,7 @@ namespace battleship{
 
                 break;
 			case Bind::DESELECT:
+				if(placingStructures) rotatingStructure = isPressed;
                 if (!isPressed) deselectUnits();
                 break;
 			case Bind::TOGGLE_SUB:
@@ -451,25 +508,28 @@ namespace battleship{
                 break;
 			case Bind::SELECT_STRUCTURE:
 			{
-				bool engineersSelected = false;
+				if(isPressed){
+					bool engineersSelected = false;
 
-				for(Unit *u : selectedUnits)
-					if(u->getUnitClass() == UnitClass::ENGINEER){
-						engineersSelected = true;
+					for(Unit *u : selectedUnits)
+						if(u->getUnitClass() == UnitClass::ENGINEER){
+							engineersSelected = true;
+							break;
+						}
+
+					if(!engineersSelected)
 						break;
-					}
 
-				if(!engineersSelected)
-					break;
+					StateManager *sm = GameManager::getSingleton()->getStateManager();
+					InGameAppState *inGameState = (InGameAppState*)sm->getAppStateByType(int(AppStateType::IN_GAME_STATE));
 
-				StateManager *sm = GameManager::getSingleton()->getStateManager();
-				InGameAppState *inGameState = (InGameAppState*)sm->getAppStateByType(int(AppStateType::IN_GAME_STATE));
+					//TODO fix the magic value
+					int id = 3;
+					structureFrames.push_back(StructureFrame(inGameState->getModelPath(id), id, (int)UnitType::LAND));
 
-				//TODO fix the magic value
-				int id = 3;
-				structureFrames.push_back(StructureFrame(inGameState->getModelPath(id), id, (int)UnitType::LAND));
+					placingStructures = true;
+				}
 
-				placingStructures = true;
 				break;
 			}
 			case Bind::DESELECT_STRUCTURE:
@@ -511,6 +571,12 @@ namespace battleship{
 			case Bind::LOOK_RIGHT: 
 				if(lookingAround)
 					orientCamera(Vector3(0, 1, 0), strength);
+				else if(placingStructures && rotatingStructure)
+					for(StructureFrame &s : structureFrames)
+						if(s.status != StructureFrame::PLACED){
+							Quaternion rot = s.model->getOrientation();
+						   	s.model->setOrientation(Quaternion(100 * strength, Vector3::VEC_J) * rot);
+						}
 
 				break;
 		}

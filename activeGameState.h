@@ -14,9 +14,11 @@ namespace battleship{
     class ActiveGameState : public gameBase::AbstractAppState {
     public:
 		struct StructureFrame{
+			enum Status{PLACEABLE, NOT_PLACEABLE, PLACED};
+
 			vb01::Model *model;
 			int id, type;
-			bool canPlace;
+			Status status;
 
 			StructureFrame(std::string, int, int);
 			~StructureFrame();
@@ -60,7 +62,7 @@ namespace battleship{
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9], selectedUnits;
 		std::vector<Order::Target> targets;
-        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, lookingAround = false, placingStructures = false;
+        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, lookingAround = false, placingStructures = false, rotatingStructure = false;
         int playerId, zooms = 0;
 	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;

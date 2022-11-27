@@ -17,7 +17,6 @@ namespace battleship{
 
 		if(pathPoints.empty()){
 			if(!order.targets[0].unit){
-				//TODO fix quaternion literal
 				player->addUnit(order.targets[0].unit);
 			}
 			else {
