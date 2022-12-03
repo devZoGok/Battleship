@@ -263,7 +263,12 @@ namespace battleship{
 	void InGameAppState::loadModels(){
 		LuaManager *lm = LuaManager::getSingleton();
 		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
+		lm->buildScript(vector<string>{
+				pathBase + "defPaths.lua",
+			   	pathBase + "unitData.lua",
+			   	pathBase + "vehicleData.lua",
+			   	pathBase + "structureData.lua"
+		});
 		int numUnits = lm->getInt("numUnits");
 		modelPaths.clear();
 
