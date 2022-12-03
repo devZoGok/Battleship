@@ -61,9 +61,6 @@ namespace battleship{
 		Unit::initProperties();
 
 		LuaManager *lm = LuaManager::getSingleton();
-		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "vehicleData.lua"});
-
         maxTurnAngle = lm->getFloatFromTable("maxTurnAngle", vector<Index>{Index(id + 1)});
         speed = lm->getFloatFromTable("speed", vector<Index>{Index(id + 1)});
 		anglePrecision = lm->getFloatFromTable("anglePrecision", vector<Index>{Index(id + 1)});

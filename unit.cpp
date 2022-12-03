@@ -40,9 +40,6 @@ namespace battleship{
 
 	void Unit::initProperties(){
 		LuaManager *lm = LuaManager::getSingleton();
-		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
-
         health = lm->getIntFromTable("health", vector<Index>{Index(id + 1)});
 		maxHealth = health;
 

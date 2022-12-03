@@ -44,9 +44,6 @@ namespace battleship{
 
 	void Projectile::initProperties(int weaponId){
 		LuaManager *lm = LuaManager::getSingleton();
-		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua", pathBase + "projectileData.lua"});
-
 		vector<Index> indices = vector<Index>{Index(id + 1), Index(weaponTypeId + 1), Index(weaponId + 1)};
         rayLength = lm->getFloatFromTable("rayLength", indices);
         damage = lm->getIntFromTable("damage", indices);

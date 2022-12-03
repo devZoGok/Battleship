@@ -2,6 +2,8 @@
 #define DEF_CONFIGS_H
 
 #include <string>
+#include <vector>
+
 #include <glfw3.h>
 
 #include <mapping.h>
@@ -22,6 +24,15 @@ namespace battleship{
   		const static int numConfBinds[numAppStates]{0, 1, 22};
 		const static int maxStaticBinds = 6;
 		const static int maxConfBinds = 22;
+		const static int numScripts = 5;
+
+		const static std::string scriptPathBase = GameManager::getSingleton()->getPath() + "Scripts/";
+		const static std::vector<std::string> scripts = std::vector<std::string>{
+			scriptPathBase + "options.lua",
+			scriptPathBase + "unitData.lua",
+			scriptPathBase + "vehicleData.lua",
+			scriptPathBase + "structureData.lua"
+		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{
   		    {

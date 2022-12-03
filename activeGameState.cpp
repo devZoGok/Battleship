@@ -219,8 +219,6 @@ namespace battleship{
 		int numVerts = 3 * meshData.numTris;
 
 		LuaManager *lm = LuaManager::getSingleton();
-		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua", pathBase + "structureData.lua"});
 		float maxUnevenness = lm->getFloat("maxUnevenness");
 		string table = "unitCornerPoints";
 

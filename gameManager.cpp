@@ -10,6 +10,7 @@
 
 #include "gameManager.h"
 #include "guiAppState.h"
+#include "defConfigs.h"
 
 using namespace std;
 using namespace vb01;
@@ -30,16 +31,18 @@ namespace battleship{
 		string pathBase = "../Assets/Scripts/";
 		luaManager->buildScript(vector<string>{pathBase + "defPaths.lua"});
 		path = luaManager->getString("PATH");
-
-		luaManager->buildScript(vector<string>{pathBase + "options.lua"});
-		string ind1 = "graphics", ind2 = "resolution";
-		width = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("x")});
-		height = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("y")});
     }
 
     GameManager::~GameManager() {}
 
 	void GameManager::start() {
+		LuaManager *luaManager = LuaManager::getSingleton();
+		luaManager->buildScript(configData::scripts);
+
+		string ind1 = "graphics", ind2 = "resolution";
+		width = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("x")});
+		height = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("y")});
+
 		Root *root = Root::getSingleton();
 		root->start(width, height, "../../vb01/", "Battleship");
 

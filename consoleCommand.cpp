@@ -63,8 +63,6 @@ namespace battleship{
 		int unitId = atoi(fullCommand[2].c_str());
 
 		LuaManager *lm = LuaManager::getSingleton();
-		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(vector<string>{pathBase + "defPaths.lua", pathBase + "unitData.lua"});
 
 		if(!(0 <= unitId && unitId <= lm->getInt("numUnits")))
 			return;
@@ -78,7 +76,6 @@ namespace battleship{
 		Vehicle *vehicle = nullptr;
 
 		LuaManager *luaManager = LuaManager::getSingleton();
-		luaManager->buildScript(vector<string>{gm->getPath() + "Scripts/unitData.lua"});
 		int unitClass = luaManager->getIntFromTable("unitClass", vector<Index>{Index(unitId + 1)});
 
 		switch((UnitClass)unitClass){
