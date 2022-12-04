@@ -1,6 +1,7 @@
 #include "player.h"
 
 using namespace vb01;
+using namespace std;
 
 namespace battleship{
     Player::Player(int difficulty, int faction, Vector3 spawnPoint) {
@@ -15,6 +16,19 @@ namespace battleship{
     void Player::update() {
     }
 
+	void Player::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool append){
+		Order order;
+		order.type = type;
+		order.targets = targets;
+
+		for(Unit *u : selectedUnits){
+			if(append)
+				u->addOrder(order);
+			else
+				u->setOrder(order);
+		}
+	}
+
     bool Player::isThisPlayersUnit(Unit *u) {
         bool foundUnit = false;
 
@@ -27,4 +41,16 @@ namespace battleship{
         } else
             return false;
     }
+
+	void Player::deselectUnit(int i){
+		selectedUnits[i]->toggleSelection(false);
+		selectedUnits.erase(selectedUnits.begin() + i);
+	}
+
+	void Player::deselectUnits(){
+		for(Unit *u : selectedUnits)
+			u->toggleSelection(false);
+
+		selectedUnits.clear();
+	}
 }

@@ -34,7 +34,6 @@ namespace battleship{
 		inline bool isPlacingStructures(){return placingStructures;}
         inline void setSelectingLaunchPoint(bool s){this->selectingGuidedMissileTarget=s;}
         inline Player* getPlayer(){return mainPlayer;}
-        inline std::vector<Unit*>& getSelectedUnits(){return selectedUnits;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
 		void initDragbox();
@@ -60,7 +59,7 @@ namespace battleship{
 		vb01::Vector2 clickPoint;
         std::vector<vb01::Vector2> unitScreenPosVec;
         std::vector<vb01::Node*> unitLightNodes;
-        std::vector<Unit*> unitGroups[9], selectedUnits;
+        std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;
         bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, lookingAround = false, placingStructures = false, rotatingStructure = false;
         int playerId, zooms = 0;

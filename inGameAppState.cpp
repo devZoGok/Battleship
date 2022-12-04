@@ -210,7 +210,7 @@ namespace battleship{
 		        u->update();
 		    else{
 		        int selectedId = -1;
-		        std::vector<Unit*> &units = p->getUnits(), &selectedUnits = activeState->getSelectedUnits();
+		        std::vector<Unit*> &units = p->getUnits(); 
 		        units.erase(units.begin() + i);
 		
 		        for(int j = 0; j < maxNumGroups; j++){
@@ -225,12 +225,14 @@ namespace battleship{
 		                group.erase(group.begin() + id);
 		        }
 		
+				const vector<Unit*> &selectedUnits = mainPlayer->getSelectedUnits();
+
 		        for(int j = 0; j < selectedUnits.size() && selectedId == -1; j++)
 		            if(selectedUnits[j] == u)
 		                selectedId = j;
 		
 		        if(selectedId != -1)
-		            selectedUnits.erase(selectedUnits.begin() + selectedId);
+					mainPlayer->deselectUnit(selectedId);
 		
 		        delete u;
 		    }

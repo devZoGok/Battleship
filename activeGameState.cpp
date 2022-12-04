@@ -122,11 +122,7 @@ namespace battleship{
     }
 
 	void ActiveGameState::deselectUnits(){
-		while(!selectedUnits.empty()){
-			selectedUnits[0]->toggleSelection(false);
-			selectedUnits.pop_back();
-		}
-
+		mainPlayer->deselectUnits();
 		removeStructtureFrames();
 		placingStructures = false;
 	}
@@ -153,7 +149,7 @@ namespace battleship{
                         if(!shiftPressed)
 							deselectUnits();
 
-                        selectedUnits.push_back(u);
+                        mainPlayer->selectUnit(u);
                 		u->toggleSelection(true);
                     }
                 }
@@ -329,24 +325,9 @@ namespace battleship{
 				targets[i + 1] = targets[i];
 
 		LineRenderer *lineRenderer = LineRenderer::getSingleton();
-		Map *map = Map::getSingleton();
 
-        for (int i = 0; i < selectedUnits.size(); ++i) {
-			Unit *u = selectedUnits[i];
-
-			if(u->getType() == UnitType::UNDERWATER && o.type == Order::TYPE::MOVE){
-				for(int j = 1; j < map->getNumTerrainObjects(); j++){
-					if(map->isPointWithinTerrainObject(u->getPos(), j) && map->isPointWithinTerrainObject(o.targets[i].pos, j)){
-						vector<Ray::CollisionResult> res;
-						Vector3 pos = u->getPos();
-						Ray::retrieveCollisions(Vector3(pos.x, map->getTerrainObject(0).size.y, pos.z), Vector3(0, -1, 0), map->getTerrainObject(0).node->getChild(0), res);
-						Ray::sortResults(res);
-						o.targets[i].pos.y = res[0].pos.y + depth * (map->getTerrainObject(j).pos.y - res[0].pos.y);
-						break;
-					}
-				}
-			}
-
+        for (int i = 0; i < mainPlayer->getNumSelectedUnits(); ++i) {
+			Unit *u = mainPlayer->getSelectedUnit(i);
 			lineRenderer->addLine(u->getPos(), o.targets[i].pos, color);
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
 			o.line = lines[lines.size() - 1];
@@ -391,6 +372,22 @@ namespace battleship{
 				mainPlayer->addUnit(unit);
 			}
 
+			Map *map = Map::getSingleton();
+
+			for(Unit *u : mainPlayer->getSelectedUnits())
+				if(u->getType() == UnitType::UNDERWATER){
+					for(int i = 1; i < map->getNumTerrainObjects(); i++){
+						if(map->isPointWithinTerrainObject(u->getPos(), i) && map->isPointWithinTerrainObject(results[0].pos, i)){
+							vector<Ray::CollisionResult> res;
+							Vector3 pos = u->getPos();
+							Ray::retrieveCollisions(Vector3(pos.x, map->getTerrainObject(0).size.y, pos.z), Vector3(0, -1, 0), map->getTerrainObject(0).node->getChild(0), res);
+							Ray::sortResults(res);
+							results[0].pos.y = res[0].pos.y + depth * (map->getTerrainObject(i).pos.y - res[0].pos.y);
+							break;
+						}
+					}
+				}
+
 			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : unit), results[0].pos));
 		}
     }
@@ -406,7 +403,7 @@ namespace battleship{
                 if (isPressed) {
 					clickPoint = getCursorPos();
 
-                    if (!selectedUnits.empty()){
+                    if (mainPlayer->getNumSelectedUnits() > 0){
                     	addTarget();
 
 						if(!(targets.empty() || selectingPatrolPoints)){
@@ -451,7 +448,7 @@ namespace battleship{
                 	lookingAround = isPressed;
                 break;
 			case Bind::HALT: 
-                for (Unit *u : selectedUnits)
+                for (Unit *u : mainPlayer->getSelectedUnits())
                     u->halt();
                 break;
 				//TODO reimplement submarine diving mechanic
@@ -493,13 +490,13 @@ namespace battleship{
                     int group = bind - Bind::GROUP_0;
 
                     if(controlPressed)
-                        unitGroups[group] = selectedUnits;
+                        unitGroups[group] = mainPlayer->getSelectedUnits();
                     else{
                         if(!shiftPressed)
-                            selectedUnits = unitGroups[group];
+                            mainPlayer->selectUnits(unitGroups[group]);
                         else
                             for(Unit *u : unitGroups[group])
-                                selectedUnits.push_back(u);
+                                mainPlayer->selectUnit(u);
                     }
                 }
 
@@ -509,7 +506,7 @@ namespace battleship{
 				if(isPressed){
 					bool engineersSelected = false;
 
-					for(Unit *u : selectedUnits)
+					for(Unit *u : mainPlayer->getSelectedUnits())
 						if(u->getUnitClass() == UnitClass::ENGINEER){
 							engineersSelected = true;
 							break;
