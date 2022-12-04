@@ -182,7 +182,7 @@ namespace battleship{
             }
 
             faction = factions[i][0] - 48;
-            Player *p = new Player(difficulty, faction);
+            Player *p = new Player(difficulty, faction, i);
             players.push_back(p);
             p->setId(players.size() - 1);
         }

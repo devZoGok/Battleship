@@ -31,7 +31,8 @@ namespace battleship{
 			scriptPathBase + "options.lua",
 			scriptPathBase + "unitData.lua",
 			scriptPathBase + "vehicleData.lua",
-			scriptPathBase + "structureData.lua"
+			scriptPathBase + "structureData.lua",
+			scriptPathBase + "player.lua"
 		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{

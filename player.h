@@ -10,7 +10,7 @@
 namespace battleship{
     class Player {
     public:
-        Player(int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO);
+        Player(int, int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO);
         ~Player();
         void update();
 		void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);

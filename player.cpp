@@ -1,19 +1,28 @@
 #include "player.h"
 
+#include <luaManager.h>
+
 using namespace vb01;
+using namespace gameBase;
 using namespace std;
 
 namespace battleship{
-    Player::Player(int difficulty, int faction, Vector3 spawnPoint) {
+    Player::Player(int difficulty, int faction, int id, Vector3 spawnPoint) {
         this->difficulty = difficulty;
         this->faction = faction;
-        this->spawnPoint=spawnPoint;
+        this->spawnPoint = spawnPoint;
+		this->id = id;
+
+		LuaManager *lm = LuaManager::getSingleton();
+		lm->executeCode("players[" + to_string(id + 1) + "] = Player:new({id = " + to_string(id + 1) + "})");
     }
 
     Player::~Player() {
     }
 
     void Player::update() {
+		LuaManager *lm = LuaManager::getSingleton();
+		lm->executeCode("players[" + to_string(id + 1) + "]:update()");
     }
 
 	void Player::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool append){

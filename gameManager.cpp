@@ -37,6 +37,7 @@ namespace battleship{
 
 	void GameManager::start() {
 		LuaManager *luaManager = LuaManager::getSingleton();
+		luaManager->buildScript(vector<string>{path + "Scripts/main.lua"});
 		luaManager->buildScript(configData::scripts);
 
 		string ind1 = "graphics", ind2 = "resolution";
