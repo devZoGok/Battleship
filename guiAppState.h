@@ -36,7 +36,7 @@ namespace battleship{
         void addTooltip(Tooltip*);
         void removeTooltip(Tooltip*);
         void removeSlider(vb01Gui::Slider*);
-        void removeAllButtons();
+        void removeAllButtons(std::vector<vb01Gui::Button*> = std::vector<vb01Gui::Button*>{});
         void removeAllListboxes();
         void removeAllCheckboxes();
         void removeAllSliders();

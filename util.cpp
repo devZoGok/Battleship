@@ -216,14 +216,71 @@ namespace battleship{
             };
         };
 
+				class NewMapButton : public Button{
+						public:
+								NewMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "New map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){}
+								void onClick(){
+										class OkButton : public Button{
+												public:
+														OkButton(Vector2 pos, Vector2 size, Textbox *sx, Textbox *sy) : Button(pos, size, "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){
+																this->sizeX = sx;
+																this->sizeY = sy;
+														}
+														void onClick(){
+														}
+												private:
+														Textbox *sizeX, *sizeY;
+										};
+
+										GameManager *gm = GameManager::getSingleton();
+										StateManager *stateManager = gm->getStateManager();
+										GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
+                    state->removeAllButtons(vector<Button*>{this});
+										
+										Vector2 size = Vector2(140, 20);
+
+										string fontPath = gm->getPath() + "Fonts/batang.ttf";
+										Textbox *name = new Textbox(Vector2(100, 150), size, fontPath);
+										Textbox *sizeX = new Textbox(Vector2(100, 150 + (size.y + 10)), size, fontPath);
+										Textbox *sizeY = new Textbox(Vector2(100, 150 + 2 * (size.y + 10)), size, fontPath);
+										state->addTextbox(name);
+										state->addTextbox(sizeX);
+										state->addTextbox(sizeY);
+
+										state->addButton(new OkButton(Vector2(200, gm->getHeight() - 150), Vector2(140, 50), sizeX, sizeY));
+
+                    state->removeButton(this);
+								}
+						private:
+				};
+
+				class LoadMapButton : public Button{
+						public:
+								LoadMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "Load map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){}
+								void onClick(){
+										StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+										GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
+                    state->removeAllButtons();
+								}
+						private:
+				};
+
 				GameManager *gm = GameManager::getSingleton();
 				string font = gm->getPath() + "Fonts/batang.ttf";
+				int width = gm->getWidth(), height = gm->getHeight();
+				Vector2 size = Vector2(150, 40);
+
 				AssetManager::getSingleton()->load(font);
-        SpButton *spButton = new SpButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12), Vector2(150, 40), "Singleplayer", true);
-        MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 2), Vector2(150, 40), "Options", true);
-        ExitButton *exitButton = new ExitButton(Vector2(gm->getWidth() / 16, gm->getHeight() / 12 * 3), Vector2(150, 40));
+
+        SpButton *spButton = new SpButton(state, Vector2(width / 16, height / 12), size, "Singleplayer", true);
+        MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(width / 16, height / 12 * 2), size, "Options", true);
+				NewMapButton *newMapButton = new NewMapButton(Vector2(width / 16, height / 12 * 3), size);
+				LoadMapButton *loadMapButton = new LoadMapButton(Vector2(width / 16, height / 12 * 4), size);
+        ExitButton *exitButton = new ExitButton(Vector2(width / 16, height / 12 * 5), size);
         state->addButton(spButton);
         state->addButton(optionsButton);
+        state->addButton(newMapButton);
+        state->addButton(loadMapButton);
         state->addButton(exitButton);
     }
 

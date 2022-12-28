@@ -1,4 +1,6 @@
 #include <sstream>
+#include <algorithm>
+
 #include <vector.h>
 #include <util.h>
 
@@ -327,12 +329,18 @@ namespace battleship{
         }
     }
 
-    void GuiAppState::removeAllButtons() {
-        while (buttons.size() > 0) {
-            delete buttons[buttons.size() - 1];
-            buttons.pop_back();
-        }
-    }
+		void GuiAppState::removeAllButtons(vector<Button*> exceptions){
+				int targetId = 0;
+				
+				while(targetId != buttons.size()){
+						if(find(exceptions.begin(), exceptions.end(), buttons[targetId]) == exceptions.end()){
+								delete buttons[targetId];
+								buttons.erase(buttons.begin() + targetId);
+						}
+						else
+								targetId++;
+				}
+		}
 
     void GuiAppState::removeAllListboxes() {
         while (listboxes.size() > 0) {
