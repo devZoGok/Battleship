@@ -20,7 +20,7 @@ namespace battleship{
 		const int maxNumGroups = 10;
 
   		const static int numAppStates = 4;
-  		const static int numStaticBinds[numAppStates]{6, 0, 5, 4};
+  		const static int numStaticBinds[numAppStates]{6, 0, 5, 5};
   		const static int numConfBinds[numAppStates]{0, 1, 22, 0};
 		const static int maxStaticBinds = 6;
 		const static int maxConfBinds = 22;
@@ -166,7 +166,7 @@ namespace battleship{
   		    {1, 1, 1, 1, 1, 1},
   		    {},
 			{0, 0, 0, 0, 1},
-			{}
+			{0, 0, 0, 0, 1}
   		};
   		const static bool isConfAction[numAppStates][maxConfBinds]{
 			{},

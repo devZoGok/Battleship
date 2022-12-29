@@ -91,12 +91,18 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::onAttached(){
+		AbstractAppState::onAttached();
 		mapEditor = new MapEditor(mapName, mapSize);
 	}
 
 	void MapEditorAppState::onDettached(){}
 
 	void MapEditorAppState::onAction(int bind, bool isPressed){
+		switch((Bind)bind){
+			case Bind::LOOK_AROUND:
+				CameraController::getSingleton()->setLookingAround(isPressed);
+                break;
+		}
 	}
 
 	void MapEditorAppState::onAnalog(int bind, float strength){
