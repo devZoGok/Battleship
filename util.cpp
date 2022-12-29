@@ -18,6 +18,7 @@
 #include "gameManager.h"
 #include "guiAppState.h"
 #include "inGameAppState.h"
+#include "mapEditorAppState.h"
 
 using namespace std;
 using namespace glm;
@@ -222,14 +223,28 @@ namespace battleship{
 								void onClick(){
 										class OkButton : public Button{
 												public:
-														OkButton(Vector2 pos, Vector2 size, Textbox *sx, Textbox *sy) : Button(pos, size, "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){
+														OkButton(Vector2 pos, Vector2 size, Textbox *name, Textbox *sx, Textbox *sy) : Button(pos, size, "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){
+																this->name = name;
 																this->sizeX = sx;
 																this->sizeY = sy;
 														}
 														void onClick(){
+																GameManager *gm = GameManager::getSingleton();
+																StateManager *stateManager = gm->getStateManager();
+
+																stateManager->attachAppState(new MapEditorAppState(
+																						wstringToString(name->getText()),
+																					 	Vector2(
+																								atof(wstringToString(sizeX->getText()).c_str()),
+																							 	atof(wstringToString(sizeY->getText()).c_str()))
+																						)
+																);
+
+																GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
+																state->removeAllButtons();
 														}
 												private:
-														Textbox *sizeX, *sizeY;
+														Textbox *name, *sizeX, *sizeY;
 										};
 
 										GameManager *gm = GameManager::getSingleton();
@@ -247,7 +262,7 @@ namespace battleship{
 										state->addTextbox(sizeX);
 										state->addTextbox(sizeY);
 
-										state->addButton(new OkButton(Vector2(200, gm->getHeight() - 150), Vector2(140, 50), sizeX, sizeY));
+										state->addButton(new OkButton(Vector2(200, gm->getHeight() - 150), Vector2(140, 50), name, sizeX, sizeY));
 
                     state->removeButton(this);
 								}

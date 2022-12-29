@@ -181,22 +181,24 @@ namespace battleship{
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
 	}
 
-    void Map::load(string mapName) {
-		this->mapName = mapName;
-		cellSize = Vector3(7, 6, 7);
-		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
+    void Map::load(string mapName, bool empty) {
+				this->mapName = mapName;
+				cellSize = Vector3(7, 6, 7);
+				Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
+				
+				preprareScene();
 
-		preprareScene();
-
-		LuaManager *lm = LuaManager::getSingleton();
-		lm->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
-		int numWaterbodies = lm->getIntFromTable(mapTable, vector<Index>{Index("numWaterBodies")});
-
-		loadSkybox(lm);
-		loadTerrainObject(lm, -1);
-
-		for(int i = 0; i < numWaterbodies; i++)
-			loadTerrainObject(lm, i);
+				if(!empty){
+						LuaManager *lm = LuaManager::getSingleton();
+						lm->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
+						int numWaterbodies = lm->getIntFromTable(mapTable, vector<Index>{Index("numWaterBodies")});
+						
+						loadSkybox(lm);
+						loadTerrainObject(lm, -1);
+						
+						for(int i = 0; i < numWaterbodies; i++)
+								loadTerrainObject(lm, i);
+				}
     }
 
     void Map::unload() {}

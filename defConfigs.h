@@ -19,9 +19,9 @@ namespace battleship{
   		const double camPanSpeed = .1;
 		const int maxNumGroups = 10;
 
-  		const static int numAppStates = 3;
-  		const static int numStaticBinds[numAppStates]{6, 0, 5};
-  		const static int numConfBinds[numAppStates]{0, 1, 22};
+  		const static int numAppStates = 4;
+  		const static int numStaticBinds[numAppStates]{6, 0, 5, 0};
+  		const static int numConfBinds[numAppStates]{0, 1, 22, 0};
 		const static int maxStaticBinds = 6;
 		const static int maxConfBinds = 22;
 		const static int numScripts = 5;
@@ -51,7 +51,8 @@ namespace battleship{
   		        Bind::LOOK_LEFT,
   		        Bind::LOOK_RIGHT,
   		        Bind::LOOK_AROUND,
-  		    }
+  		    },
+					{}
   		};
   		const static Bind confBinds[numAppStates][maxConfBinds]{
   		    {},
@@ -81,7 +82,8 @@ namespace battleship{
   		        Bind::GROUP_9,
   		        Bind::SELECT_STRUCTURE,
   		        Bind::DESELECT_STRUCTURE
-  		    }
+  		    },
+					{}
   		};
 
   		const static int staticTriggers[numAppStates][maxStaticBinds]{
@@ -100,7 +102,8 @@ namespace battleship{
 				Mapping::MOUSE_AXIS_LEFT,
 				Mapping::MOUSE_AXIS_RIGHT,
 				0
-  		    }
+  		    },
+					{}
   		};
   		const static int confTriggers[numAppStates][maxConfBinds]{
   		    {},
@@ -130,29 +133,34 @@ namespace battleship{
   		        GLFW_KEY_9,
   		        GLFW_KEY_B,
   		        GLFW_KEY_ESCAPE
-  		    }
+  		    },
+					{}
   		};
 
   		const static bool isStaticKey[numAppStates][maxStaticBinds]{
   		    {0, 1, 1, 1, 1, 1},
   		    {},
-			{0, 0, 0, 0, 1}
+			{0, 0, 0, 0, 1},
+			{}
   		};
   		const static bool isConfKey[numAppStates][maxConfBinds]{
 			{},
   		    {1},
-			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+			{}
   		};
 
   		const static bool isStaticAction[numAppStates][maxStaticBinds]{
   		    {1, 1, 1, 1, 1, 1},
   		    {},
-			{0, 0, 0, 0, 1}
+			{0, 0, 0, 0, 1},
+			{}
   		};
   		const static bool isConfAction[numAppStates][maxConfBinds]{
 			{},
   		    {1},
-			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+			{}
   		};
 
 		int calcSumStaticBinds(int, bool);

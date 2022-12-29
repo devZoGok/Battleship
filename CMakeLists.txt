@@ -7,7 +7,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(BUILD_TESTS ON)
 cmake_policy(SET CMP0015 NEW)
 
-set(STATES activeGameState.cpp inGameAppState.cpp guiAppState.cpp)
+set(STATES activeGameState.cpp inGameAppState.cpp guiAppState.cpp mapEditorAppState.cpp)
 set(UTIL util.cpp binds.h)
 set(GUI tooltip.cpp optionsButton.cpp exitButton.cpp consoleCommand.cpp)
 set(CORE gameManager.cpp defConfigs.cpp)

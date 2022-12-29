@@ -20,7 +20,7 @@ namespace battleship{
     typedef int s32;
     typedef long long s64;
 
-		enum AppStateType{GUI_STATE, IN_GAME_STATE, ACTIVE_STATE};
+		enum AppStateType{GUI_STATE, IN_GAME_STATE, ACTIVE_STATE, MAP_EDITOR};
     
     class GuiAppState;
     
