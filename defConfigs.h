@@ -20,7 +20,7 @@ namespace battleship{
 		const int maxNumGroups = 10;
 
   		const static int numAppStates = 4;
-  		const static int numStaticBinds[numAppStates]{6, 0, 5, 0};
+  		const static int numStaticBinds[numAppStates]{6, 0, 5, 4};
   		const static int numConfBinds[numAppStates]{0, 1, 22, 0};
 		const static int maxStaticBinds = 6;
 		const static int maxConfBinds = 22;
@@ -52,7 +52,13 @@ namespace battleship{
   		        Bind::LOOK_RIGHT,
   		        Bind::LOOK_AROUND,
   		    },
-					{}
+			{
+  		        Bind::LOOK_UP,
+  		        Bind::LOOK_DOWN,
+  		        Bind::LOOK_LEFT,
+  		        Bind::LOOK_RIGHT,
+  		        Bind::LOOK_AROUND,
+			}
   		};
   		const static Bind confBinds[numAppStates][maxConfBinds]{
   		    {},
@@ -83,7 +89,7 @@ namespace battleship{
   		        Bind::SELECT_STRUCTURE,
   		        Bind::DESELECT_STRUCTURE
   		    },
-					{}
+			{}
   		};
 
   		const static int staticTriggers[numAppStates][maxStaticBinds]{
@@ -103,7 +109,13 @@ namespace battleship{
 				Mapping::MOUSE_AXIS_RIGHT,
 				0
   		    },
-					{}
+			{
+				Mapping::MOUSE_AXIS_UP,
+				Mapping::MOUSE_AXIS_DOWN,
+				Mapping::MOUSE_AXIS_LEFT,
+				Mapping::MOUSE_AXIS_RIGHT,
+				0
+			}
   		};
   		const static int confTriggers[numAppStates][maxConfBinds]{
   		    {},
@@ -134,14 +146,14 @@ namespace battleship{
   		        GLFW_KEY_B,
   		        GLFW_KEY_ESCAPE
   		    },
-					{}
+			{}
   		};
 
   		const static bool isStaticKey[numAppStates][maxStaticBinds]{
   		    {0, 1, 1, 1, 1, 1},
   		    {},
 			{0, 0, 0, 0, 1},
-			{}
+			{0, 0, 0, 0, 1}
   		};
   		const static bool isConfKey[numAppStates][maxConfBinds]{
 			{},

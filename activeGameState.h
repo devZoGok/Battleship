@@ -40,13 +40,10 @@ namespace battleship{
 		void initDepthText();
 		void deselectUnits();
         void renderUnits();
-        void updateCameraPosition();
         void updateSelectionBox();
 		void updateStructureFrames();
         void addTarget();
         void issueOrder(Order::TYPE, bool);
-        void lookAround(bool);
-		void orientCamera(vb01::Vector3, double);
 		void removeStructtureFrames();
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
 
@@ -61,7 +58,7 @@ namespace battleship{
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;
-        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, lookingAround = false, placingStructures = false, rotatingStructure = false;
+        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, placingStructures = false, rotatingStructure = false;
         int playerId, zooms = 0;
 	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;

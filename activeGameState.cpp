@@ -20,6 +20,7 @@
 #include "structure.h"
 #include "util.h"
 #include "tooltip.h"
+#include "cameraController.h"
 
 using namespace vb01;
 using namespace vb01Gui;
@@ -114,8 +115,10 @@ namespace battleship{
 
         renderUnits();
 
-		if(!lookingAround)
-			updateCameraPosition();
+		CameraController *camCtr = CameraController::getSingleton();
+
+		if(!camCtr->isLookingAround())
+			camCtr->updateCameraPosition();
 
 		if(placingStructures)
 			updateStructureFrames();
@@ -270,32 +273,6 @@ namespace battleship{
 		}
 	}
 
-    void ActiveGameState::updateCameraPosition() {
-		GameManager *gm = GameManager::getSingleton();
-        Vector2 cursorPos = getCursorPos();
-
-		Camera *cam = Root::getSingleton()->getCamera();
-		Vector3 camDir = cam->getDirection();
-        Vector3 forwVec = Vector3(camDir.x, 0, camDir.z).norm();
-		Vector3 camLeft = cam->getLeft();
-		camLeft = Vector3(camLeft.x, 0, camLeft.z).norm();
-
-		int width, height;
-		glfwGetWindowSize(Root::getSingleton()->getWindow(), &width, &height);
-
-        if (cursorPos.x <= 0 && 0 < cursorPos.y && cursorPos.y < height) 
-            cam->setPosition(cam->getPosition() - camLeft * camPanSpeed);
-
-        if (cursorPos.x >= width && 0 < cursorPos.y && cursorPos.y < height) 
-            cam->setPosition(cam->getPosition() + camLeft * camPanSpeed);
-
-        if (cursorPos.y <= 0 && 0 < cursorPos.x && cursorPos.x < width) 
-            cam->setPosition(cam->getPosition() + forwVec * camPanSpeed);
-				
-        if (cursorPos.y >= height && 0 < cursorPos.x && cursorPos.x < width) 
-            cam->setPosition(cam->getPosition() - forwVec * camPanSpeed);
-    }
-
     void ActiveGameState::issueOrder(Order::TYPE type, bool addOrder) {
 		Vector3 color;
 
@@ -445,7 +422,7 @@ namespace battleship{
                 break;
 			case Bind::LOOK_AROUND:
 				if(!placingStructures)
-                	lookingAround = isPressed;
+					CameraController::getSingleton()->setLookingAround(isPressed);
                 break;
 			case Bind::HALT: 
                 for (Unit *u : mainPlayer->getSelectedUnits())
@@ -543,29 +520,23 @@ namespace battleship{
 		structureFrames.clear();
 	}
 
-	void ActiveGameState::orientCamera(Vector3 rotAxis, double str){
-		float minStr = .001;
-		Quaternion rotQuat = Quaternion(.5 * (fabs(str) > minStr ? str : 0), rotAxis);
-		Camera *cam = Root::getSingleton()->getCamera();
-		Vector3 dir = rotQuat * cam->getDirection(), up = rotQuat * cam->getUp();
-		cam->lookAt(dir, up);
-	}
-
     void ActiveGameState::onAnalog(int bind, float strength) {
+		CameraController *camCtr = CameraController::getSingleton();
+
 		switch((Bind)bind){
 			case Bind::LOOK_UP: 
 			case Bind::LOOK_DOWN: 
-				if(lookingAround) {
+				if(camCtr->isLookingAround()) {
 					Vector3 dirProj = Root::getSingleton()->getCamera()->getDirection();
 					dirProj = Vector3(dirProj.x, 0, dirProj.z).norm();
-					orientCamera(Vector3(0, 1, 0).cross(dirProj), strength);
+					CameraController::getSingleton()->orientCamera(Vector3(0, 1, 0).cross(dirProj), strength);
 				}
 
 				break;
 			case Bind::LOOK_LEFT: 
 			case Bind::LOOK_RIGHT: 
-				if(lookingAround)
-					orientCamera(Vector3(0, 1, 0), strength);
+				if(camCtr->isLookingAround())
+					CameraController::getSingleton()->orientCamera(Vector3(0, 1, 0), strength);
 				else if(placingStructures && rotatingStructure)
 					for(StructureFrame &s : structureFrames)
 						if(s.status != StructureFrame::PLACED){
