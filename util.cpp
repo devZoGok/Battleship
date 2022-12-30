@@ -26,7 +26,7 @@ using namespace vb01;
 using namespace vb01Gui;
 
 namespace battleship{
-		using namespace configData;
+	using namespace configData;
 
     void makeTitlescreenButtons(GuiAppState *state) {
 
@@ -115,24 +115,13 @@ namespace battleship{
                 factions.push_back("0");
                 factions.push_back("1");
 
-				tinydir_dir dir;
-				tinydir_open_sorted(&dir, (gm->getPath() + "Models/Maps").c_str());
-				vector<string> folders;
-				
-				for (int i = 0; i < dir.n_files; i++) {
-					tinydir_file file;
-					tinydir_readfile_n(&dir, &file, i);
 
-					if (file.is_dir && file.name[0] != '.')
-						folders.push_back(file.name);
-				}
-				
-				tinydir_close(&dir);
-
-								string font = gm->getPath() + "Fonts/batang.ttf";
+				string font = gm->getPath() + "Fonts/batang.ttf";
                 Listbox *cpuDifficulty = new Listbox(Vector2(pos.x, pos.y + 30), Vector2(100, 20), difficulties, 3, font);
                 Listbox *cpuFaction = new Listbox(Vector2(pos.x + 110, pos.y + 30), Vector2(100, 20), factions, 2, font);
                 Listbox *playerFaction = new Listbox(Vector2(pos.x + 110, pos.y), Vector2(100, 20), factions, 2, font);
+
+				vector<string> folders = readDir(gm->getPath() + "Models/Maps", true);
 				int numMinDirs = 3;
 				int numShowDirs = folders.size() < numMinDirs ? folders.size() : numMinDirs;
 				Listbox *map = new Listbox(Vector2(pos.x + 110, pos.y + 100), Vector2(100, 20), folders, numShowDirs, font);
@@ -231,6 +220,10 @@ namespace battleship{
 														void onClick(){
 																GameManager *gm = GameManager::getSingleton();
 																StateManager *stateManager = gm->getStateManager();
+																GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
+
+																state->removeAllTextboxes();
+                    											state->removeAllButtons(vector<Button*>{this});
 
 																stateManager->attachAppState(new MapEditorAppState(
 																						wstringToString(name->getText()),
@@ -240,8 +233,7 @@ namespace battleship{
 																						)
 																);
 
-																GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
-																state->removeAllButtons();
+																state->removeButton(this);
 														}
 												private:
 														Textbox *name, *sizeX, *sizeY;
@@ -298,6 +290,24 @@ namespace battleship{
         state->addButton(loadMapButton);
         state->addButton(exitButton);
     }
+
+	vector<string> readDir(string path, bool findFolders){
+		tinydir_dir dir;
+		tinydir_open_sorted(&dir, path.c_str());
+		vector<string> files;
+		
+		for (int i = 0; i < dir.n_files; i++) {
+			tinydir_file file;
+			tinydir_readfile_n(&dir, &file, i);
+
+			if (file.is_dir == findFolders && file.name[0] != '.')
+				files.push_back(file.name);
+		}
+		
+		tinydir_close(&dir);
+
+		return files;
+	}
 
 		Vector2 spaceToScreen(Vector3 pos){
 			Root *root = Root::getSingleton();

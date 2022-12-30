@@ -14,6 +14,10 @@ unitType = {
 	UnitType.LAND, UnitType.LAND 
 }
 
+isVehicle = {
+	true, true, true, false
+};
+
 health = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
 cost = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
 range = {15, 15, 14, 14, 13, 13, 12, 12, 15, 25}
@@ -247,7 +251,7 @@ unitAxisLength = {8, 8, 6, 6, 5, 5, 8, 8, 7, 2, 2}
 lineOfSight = {5, 8, 4, 4, 3, 3, 6, 6, 3, 3, 8}
 name = {
 	"Battleship", "Battleship", 
-	"Battleship", "Battleship", 
+	"Battleship", "Sample", 
 	"Cruiser", "Cruiser", 
 	"Aircraft carrier", "Aircraft carrier", 
 	"Submarine", 
