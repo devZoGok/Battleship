@@ -189,15 +189,15 @@ namespace battleship{
 
         mainPlayer = players[playerId];
 
-		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+		GameManager *gm = GameManager::getSingleton();
+		StateManager *stateManager = gm->getStateManager();
         guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
         activeState = new ActiveGameState(guiState, players, playerId);
         stateManager->attachAppState(activeState);
 
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(DEFAULT_TEXTURE);
-
-		loadModels();
+		assetManager->load(gm->getPath() + LuaManager::getSingleton()->getString("modelPrefix"), true);
     }
 
     void InGameAppState::onDettached() {}
@@ -262,22 +262,6 @@ namespace battleship{
 		updateProjectiles();
     }
 
-	void InGameAppState::loadModels(){
-		LuaManager *lm = LuaManager::getSingleton();
-		string pathBase = GameManager::getSingleton()->getPath() + "Scripts/";
-		lm->buildScript(configData::scripts);
-		int numUnits = lm->getInt("numUnits");
-		modelPaths.clear();
-
-		for(int i = 0; i < numUnits; ++i){
-			string basePath = lm->getStringFromTable("basePath", vector<Index>{Index(i + 1)});
-			string meshPath = lm->getStringFromTable("meshPath", vector<Index>{Index(i + 1)});
-			string modelPath = basePath + meshPath;
-			AssetManager::getSingleton()->load(modelPath);
-			modelPaths.push_back(modelPath);
-		}
-	}
-
     void InGameAppState::toggleMainMenu() {
 		GameManager *gm = GameManager::getSingleton();
 
@@ -312,7 +296,7 @@ namespace battleship{
             guiState->removeButton(exitButton);
             guiState->removeButton(resumeButton);
 
-			loadModels();
+			AssetManager::getSingleton()->load(gm->getPath() + LuaManager::getSingleton()->getString("modelPrefix"), true);
 
 			for(Player *p : players)
 				for(Unit *u : p->getUnits())
