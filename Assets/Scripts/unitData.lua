@@ -261,8 +261,9 @@ meshPath = {
 	"submarine.xml",
 	"jet00.xml", "jet01.xml"
 }
-vehiclePrefix = "Models/Units/Vehicles/"
-structurePrefix = "Models/Units/Structures/"
+modelPrefix = "Models/"
+vehiclePrefix = modelPrefix .. "Units/Vehicles/"
+structurePrefix = modelPrefix .. "Units/Structures/"
 basePath = {
 	PATH .. vehiclePrefix .. "Battleships/", PATH .. vehiclePrefix .. "Battleships/",
 	PATH .. vehiclePrefix .. "Battleships/", PATH .. structurePrefix .. "Sample/",

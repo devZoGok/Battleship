@@ -515,12 +515,11 @@ namespace battleship{
 					if(!engineersSelected)
 						break;
 
-					StateManager *sm = GameManager::getSingleton()->getStateManager();
-					InGameAppState *inGameState = (InGameAppState*)sm->getAppStateByType(int(AppStateType::IN_GAME_STATE));
-
 					//TODO fix the magic value
 					int id = 3;
-					structureFrames.push_back(StructureFrame(inGameState->getModelPath(id), id, (int)UnitType::LAND));
+					LuaManager *lm = LuaManager::getSingleton();
+					string modelPath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)}) + lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
+					structureFrames.push_back(StructureFrame(modelPath, id, (int)UnitType::LAND));
 
 					placingStructures = true;
 				}
