@@ -8,8 +8,11 @@
 #include "mesh.h"
 #include "util.h"
 
+#include <box.h>
 #include <node.h>
 #include <quad.h>
+#include <texture.h>
+#include <assetManager.h>
 
 #include <luaManager.h>
 
@@ -28,6 +31,10 @@ namespace battleship{
 
 		generatePlane(size);
 		prepareGui();
+
+		string basePath = GameManager::getSingleton()->getPath() + "Textures/";
+		prepareTextures(basePath + "Skyboxes/", true, skyTextures);
+		prepareTextures(basePath + "Landmass/", false, landmassTextures);
 	}
 
 	//TODO fix crash when using 100 side verts
@@ -111,13 +118,92 @@ namespace battleship{
 		Listbox *structuresListbox = new Listbox(startPos + offset, size, structures, (structures.size() > maxDisplay ? maxDisplay : structures.size()), fontPath);
 		state->addListbox(structuresListbox);
 
+		class SkyboxListbox : public Listbox{
+			public:
+				SkyboxListbox(Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
+
+				void onClose(){
+					Root *root = Root::getSingleton();
+					StateManager *sm = GameManager::getSingleton()->getStateManager();
+					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
+					Texture *skyTexture = mapEditor->getSkyTexture(selectedOption);
+
+					if(!root->getSkybox())
+						root->createSkybox(skyTexture);
+					else
+						root->getSkybox()->getMaterial()->setTexUniform("tex", skyTexture, true);
+
+				}
+			private:
+		};
+
 		vector<string> skyboxFolders = readDir(gm->getPath() + "Textures/Skyboxes", true);
-		Listbox *skyboxListbox = new Listbox(startPos + 2 * offset, size, skyboxFolders, (skyboxFolders.size() > maxDisplay ? maxDisplay : skyboxFolders.size()), fontPath);
+		SkyboxListbox *skyboxListbox = new SkyboxListbox(startPos + 2 * offset, size, skyboxFolders, (skyboxFolders.size() > maxDisplay ? maxDisplay : skyboxFolders.size()), fontPath);
 		state->addListbox(skyboxListbox);
 
+		class LandTexListbox : public Listbox{
+			public:
+				LandTexListbox(Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
+
+				void onClose(){
+					StateManager *sm = GameManager::getSingleton()->getStateManager();
+					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
+
+					Map *map = Map::getSingleton();
+					Material *mat = map->getTerrainObject(0).node->getMesh(0)->getMaterial();
+					Material::BoolUniform *texturingUniform = (Material::BoolUniform*)mat->getUniform("texturingEnabled");
+					Texture *landTex = mapEditor->getLandmassTexture(selectedOption);
+					string texUni = "textures[0]";
+
+					if(!texturingUniform->value){
+						texturingUniform->value = true;
+						mat->addTexUniform(texUni, landTex, false);
+					}
+					else
+						mat->setTexUniform(texUni, landTex, false);
+				}
+			private:
+		};
+
 		vector<string> landTextures = readDir(gm->getPath() + "Textures/Landmass", false);
-		Listbox *landTexListbox = new Listbox(startPos + 3 * offset, size, landTextures, (landTextures.size() > maxDisplay ? maxDisplay : landTextures.size()), fontPath);
+		LandTexListbox *landTexListbox = new LandTexListbox(startPos + 3 * offset, size, landTextures, (landTextures.size() > maxDisplay ? maxDisplay : landTextures.size()), fontPath);
 		state->addListbox(landTexListbox);
+	}
+
+	void MapEditorAppState::MapEditor::prepareTextures(string basePath, bool skybox, vector<Texture*> &textures){
+		AssetManager *assetManager = AssetManager::getSingleton();
+		assetManager->load(basePath, skybox);
+		vector<string> texturePaths;
+
+		for(int i = 0; i < assetManager->getNumAssets(); i++){
+			string assetPath = assetManager->getAsset(i)->path;
+
+			if(assetPath.length() >= basePath.length() && assetPath.substr(0, basePath.length()) == basePath)
+				texturePaths.push_back(assetPath);
+		}
+
+		if(skybox){
+			const int numTex = 6;
+
+			for(int i = 0; i < texturePaths.size() / numTex; i++){
+				string paths[]{
+					texturePaths[i * numTex],
+					texturePaths[i * numTex + 1],
+					texturePaths[i * numTex + 2],
+					texturePaths[i * numTex + 3],
+					texturePaths[i * numTex + 4],
+					texturePaths[i * numTex + 5],
+				};
+
+				textures.push_back(new Texture(paths, numTex, true));
+			}
+		}
+		else{
+			for(int i = 0; i < texturePaths.size(); i++){
+				string paths[]{texturePaths[i]};
+				textures.push_back(new Texture(paths, 1, false));
+			}
+		}
 	}
 
 	MapEditorAppState::MapEditorAppState(string name, Vector2 size) : AbstractAppState(
