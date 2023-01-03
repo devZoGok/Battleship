@@ -165,7 +165,8 @@ namespace battleship{
     void InGameAppState::onAttached() {
         AbstractAppState::onAttached();
 
-		Map::getSingleton()->load(mapName);
+		Map *map = Map::getSingleton();
+		map->load(mapName);
 
         for (int i = 0; i < factions.size(); i++) {
             int faction, difficulty;
@@ -183,16 +184,16 @@ namespace battleship{
 
             faction = factions[i][0] - 48;
             Player *p = new Player(difficulty, faction, i);
-            players.push_back(p);
-            p->setId(players.size() - 1);
+            p->setId(map->getNumPlayers() - 1);
+            map->addPlayer(p);
         }
 
-        mainPlayer = players[playerId];
+        mainPlayer = map->getPlayer(playerId);
 
 		GameManager *gm = GameManager::getSingleton();
 		StateManager *stateManager = gm->getStateManager();
         guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
-        activeState = new ActiveGameState(guiState, players, playerId);
+        activeState = new ActiveGameState(guiState, playerId);
         stateManager->attachAppState(activeState);
 
 		AssetManager *assetManager = AssetManager::getSingleton();
@@ -202,64 +203,8 @@ namespace battleship{
 
     void InGameAppState::onDettached() {}
 
-	void InGameAppState::updateUnits(Player *p){
-		for (int i = 0; i < p->getNumberOfUnits(); i++){
-		    Unit *u = p->getUnit(i);
-		
-		    if(u->isWorking())
-		        u->update();
-		    else{
-		        int selectedId = -1;
-		        std::vector<Unit*> &units = p->getUnits(); 
-		        units.erase(units.begin() + i);
-		
-		        for(int j = 0; j < maxNumGroups; j++){
-		            int id = -1;
-		            std::vector<Unit*> &group = activeState->getUnitGroup(j);
-		
-		            for(int k = 0; k < group.size() && id == -1; k++)
-		                if(group[k] == u)
-		                    id = k;
-		
-		            if(id != -1)
-		                group.erase(group.begin() + id);
-		        }
-		
-				const vector<Unit*> &selectedUnits = mainPlayer->getSelectedUnits();
-
-		        for(int j = 0; j < selectedUnits.size() && selectedId == -1; j++)
-		            if(selectedUnits[j] == u)
-		                selectedId = j;
-		
-		        if(selectedId != -1)
-					mainPlayer->deselectUnit(selectedId);
-		
-		        delete u;
-		    }
-		}
-	}
-
-	void InGameAppState::updateProjectiles(){
-        for(int i = 0; i < projectiles.size(); i++){
-            Projectile *p = projectiles[i];
-
-            if(!p->isExploded())
-                p->update();
-            else{
-                delete p;
-                projectiles.erase(projectiles.begin() + i);
-            }
-        }
-	}
-
     void InGameAppState::update() {
-        for (Player *p : players)
-            if (p) {
-                p->update();
-				updateUnits(p);
-            }
-
-		updateProjectiles();
+		Map::getSingleton()->update();
     }
 
     void InGameAppState::toggleMainMenu() {
@@ -298,7 +243,7 @@ namespace battleship{
 
 			AssetManager::getSingleton()->load(gm->getPath() + LuaManager::getSingleton()->getString("modelPrefix"), true);
 
-			for(Player *p : players)
+			for(Player *p : Map::getSingleton()->getPlayers())
 				for(Unit *u : p->getUnits())
 					u->reinitUnit();
         }

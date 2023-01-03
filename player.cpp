@@ -23,6 +23,9 @@ namespace battleship{
     void Player::update() {
 		LuaManager *lm = LuaManager::getSingleton();
 		lm->executeCode("players[" + to_string(id + 1) + "]:update()");
+
+		for(Unit *u : units)
+			u->update();
     }
 
 	void Player::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool append){

@@ -9,11 +9,12 @@
 #include <stateManager.h>
 #include <luaManager.h>
 
+#include "map.h"
+#include "unit.h"
+#include "util.h"
 #include "projectile.h"
 #include "defConfigs.h"
 #include "inGameAppState.h"
-#include "unit.h"
-#include "util.h"
 #include "explosion.h"
 
 using namespace std;
@@ -104,16 +105,15 @@ namespace battleship{
 
     void Projectile::explode(Node *collNode) {
         exploded = true;
-		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
-        vector<Player*> players = ((InGameAppState*) stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE))->getPlayers();
 
-        for (Player *p : players) {
+        for (Player *p : Map::getSingleton()->getPlayers()) {
             for (Unit *u : p->getUnits())
                 if (collNode == u->getNode())
                     u->takeDamage(damage);
         }
 
-        InGameAppState *inGameState = ((InGameAppState*)stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE));
+		StateManager *sm = GameManager::getSingleton()->getStateManager();
+        InGameAppState *inGameState = ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
         if(id == 8)
             detonateTorpedo(inGameState, pos);
