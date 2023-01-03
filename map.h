@@ -18,6 +18,8 @@ namespace vb01{
 }
 
 namespace battleship{
+	class Player;
+
 	struct Cell{
 		bool land, impassible;
 		vb01::Vector3 pos;
@@ -50,7 +52,7 @@ namespace battleship{
     public:
 		static Map* getSingleton();
         ~Map(){}
-        void update(){}
+        void update();
         void load(std::string, bool = false);
         void unload();
 		int getCellId(vb01::Vector3, int);
@@ -60,12 +62,17 @@ namespace battleship{
 		inline int getNumTerrainObjects(){return terrainObjects.size();}
 		inline vb01::Node* getNodeParent(){return nodeParent;}
 		inline vb01::Vector3 getCellSize(){return cellSize;}
+        inline std::vector<Player*> getPlayers() {return players;}
+		inline Player* getPlayer(int i){return players[i];}
+		inline void addPlayer(Player *p){players.push_back(p);}
+		inline int getNumPlayers(){return players.size();}
     private:
 		std::string mapTable = "map";
 		vb01::Node *nodeParent = nullptr;
 		std::string mapName;
 		std::vector<TerrainObject> terrainObjects;
 		vb01::Vector3 cellSize;
+        std::vector<Player*> players;
 
         Map(){}
 		void preprareScene();

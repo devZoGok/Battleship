@@ -24,7 +24,7 @@ namespace battleship{
 			~StructureFrame();
 		};
 
-        ActiveGameState(GuiAppState*, std::vector<Player*> players, int);
+        ActiveGameState(GuiAppState*, int);
         ~ActiveGameState();
         void onAttached();
         void onDettached();
@@ -48,7 +48,6 @@ namespace battleship{
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
 
         GuiAppState *guiState;
-        std::vector<Player*> players;
 		std::vector<StructureFrame> structureFrames;
         Player *mainPlayer;
 		vb01::Quad *dragbox = nullptr;

@@ -69,10 +69,7 @@ namespace battleship{
 	}
 
     void ConsoleCommand::executeAddUnit(int playerId, int unitId, Vector3 pos, Quaternion rot) {
-		GameManager *gm = GameManager::getSingleton();
-		StateManager *stateManager = gm->getStateManager();
-		InGameAppState *inGameState = (InGameAppState*)stateManager->getAppStateByType(AppStateType::IN_GAME_STATE);
-        vector<Player*> players = inGameState->getPlayers();
+        Player* player = Map::getSingleton()->getPlayer(playerId);
 		Vehicle *vehicle = nullptr;
 
 		LuaManager *luaManager = LuaManager::getSingleton();
@@ -80,13 +77,13 @@ namespace battleship{
 
 		switch((UnitClass)unitClass){
 			case UnitClass::ENGINEER:
-				vehicle = new Engineer(players[playerId], unitId, pos, rot);
+				vehicle = new Engineer(player, unitId, pos, rot);
 				break;
 			default:
-				vehicle = new Vehicle(players[playerId], unitId, pos, rot);
+				vehicle = new Vehicle(player, unitId, pos, rot);
 				break;
 		}
 
-        players[playerId]->addUnit(vehicle);
+        player->addUnit(vehicle);
     }
 }

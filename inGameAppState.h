@@ -28,7 +28,6 @@ namespace battleship{
         void onAction(int, bool);
         void onAnalog(int, float);
         std::vector<Unit*> getSelectedUnits(Player*);
-        inline std::vector<Player*> getPlayers() {return players;}
         inline std::vector<Projectile*>& getProjectiles(){return projectiles;}
         inline void addFx(Fx fx){this->fx.push_back(fx);}
         inline void addProjectile(Projectile *p){projectiles.push_back(p);}
@@ -98,7 +97,6 @@ namespace battleship{
         MainMenuButton *mainMenuButton;
         ExitButton *exitButton;
         bool isMainMenuActive = false;
-        std::vector<Player*> players;
         std::vector<std::string> difficultyLevels, factions, modelPaths;
         std::vector<Projectile*> projectiles;
         std::vector<Fx> fx;
@@ -109,8 +107,6 @@ namespace battleship{
         GuiAppState* guiState;
 
         void toggleMainMenu();
-		void updateUnits(Player*);
-		void updateProjectiles();
     public:
         inline void setResumeButton(ResumeButton *r){this->resumeButton = r;}
         inline void setConsoleButton(ConsoleButton *c){this->consoleButton = c;}

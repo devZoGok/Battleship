@@ -46,16 +46,15 @@ namespace battleship{
 	ActiveGameState::StructureFrame::~StructureFrame(){
 	}    
 
-    ActiveGameState::ActiveGameState(GuiAppState *guiState, vector<Player*> players, int playerId) : AbstractAppState(
+    ActiveGameState::ActiveGameState(GuiAppState *guiState, int playerId) : AbstractAppState(
 						AppStateType::ACTIVE_STATE,
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, true),
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, false),
 					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
         this->guiState = guiState;
-        this->players = players;
 
         this->playerId = playerId;
-        mainPlayer = players[playerId];
+        mainPlayer = Map::getSingleton()->getPlayer(playerId);
 
 		initDragbox();
 		initDepthText();
@@ -134,7 +133,7 @@ namespace battleship{
     void ActiveGameState::renderUnits() {
 		vector<Unit*> units;
 
-        for (Player *p : players)
+        for (Player *p : Map::getSingleton()->getPlayers())
             for (Unit *u : p->getUnits())
                 units.push_back(u);
 

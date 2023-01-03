@@ -7,6 +7,7 @@
 #include <luaManager.h>
 
 #include "map.h"
+#include "player.h"
 #include "pathfinder.h"
 #include "gameManager.h"
 #include "defConfigs.h"
@@ -25,6 +26,11 @@ namespace battleship{
 			map = new Map;
 
 		return map;
+	}
+
+	void Map::update(){
+		for(Player *p : players)
+			p->update();
 	}
 
 	void Map::loadSkybox(LuaManager *luaManager){
