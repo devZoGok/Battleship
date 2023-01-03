@@ -4,6 +4,7 @@
 #include "guiAppState.h"
 #include "defConfigs.h"
 #include "cameraController.h"
+#include "player.h"
 #include "map.h"
 #include "mesh.h"
 #include "util.h"
@@ -28,6 +29,8 @@ namespace battleship{
 	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size){
 		map = Map::getSingleton();
 		map->load(name, true);
+
+		map->addPlayer(new Player(0, 0, 0));
 
 		generatePlane(size);
 		prepareGui();

@@ -20,6 +20,7 @@
 #include "structure.h"
 #include "util.h"
 #include "tooltip.h"
+#include "unitFrameController.h"
 #include "cameraController.h"
 
 using namespace vb01;
@@ -29,22 +30,6 @@ using namespace std;
 namespace battleship{
 	using namespace configData;
 	using namespace gameBase;
-
-	ActiveGameState::StructureFrame::StructureFrame(string modelPath, int i, int t) : id(i), type(t) {
-		Root *root = Root::getSingleton();
-		Material *mat = new Material(root->getLibPath() + "texture");
-		mat->addBoolUniform("texturingEnabled", false);
-		mat->addBoolUniform("lightingEnabled", false);
-		mat->addVec4Uniform("diffuseColor", Vector4::VEC_ZERO);
-
-		model = new Model(modelPath);
-		model->setWireframe(true);
-		model->setMaterial(mat);
-		root->getRootNode()->attachChild(model);
-	}    
-
-	ActiveGameState::StructureFrame::~StructureFrame(){
-	}    
 
     ActiveGameState::ActiveGameState(GuiAppState *guiState, int playerId) : AbstractAppState(
 						AppStateType::ACTIVE_STATE,
@@ -119,14 +104,17 @@ namespace battleship{
 		if(!camCtr->isLookingAround())
 			camCtr->updateCameraPosition();
 
-		if(placingStructures)
-			updateStructureFrames();
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+
+		if(ufCtr->isPlacingFrames())
+			ufCtr->update();
     }
 
 	void ActiveGameState::deselectUnits(){
 		mainPlayer->deselectUnits();
-		removeStructtureFrames();
-		placingStructures = false;
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		ufCtr->removeUnitFrames();
+		ufCtr->setPlacingFrames(false);
 	}
 
 	//TODO fix fog of war for hostile units
@@ -209,69 +197,6 @@ namespace battleship{
 		dragboxNode->setPosition(Vector3(selectionBoxOrigin.x, selectionBoxOrigin.y, 0));
     }
 
-	//TODO implement terrain evenness check
-	void ActiveGameState::updateStructureFrames(){
-		Map *map = Map::getSingleton();
-		MeshData meshData = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMeshBase();
-		MeshData::Vertex *verts = meshData.vertices;
-		int numVerts = 3 * meshData.numTris;
-
-		LuaManager *lm = LuaManager::getSingleton();
-		float maxUnevenness = lm->getFloat("maxUnevenness");
-		string table = "unitCornerPoints";
-
-		for(StructureFrame s : structureFrames){
-			Camera *cam = Root::getSingleton()->getCamera();
-			Vector3 startPos = cam->getPosition();
-			Vector3 endPos = screenToSpace(getCursorPos());
-
-			vector<Ray::CollisionResult> results;
-			Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getTerrainObject(0).node, results);
-			Ray::sortResults(results);
-
-			if(!results.empty()){
-				if(!rotatingStructure)
-					s.model->setPosition(results[0].pos);
-
-       			float width = 
-					lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(1), Index("x")}) -
-				   	lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(2), Index("x")});
-       			float length = 
-					lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(4), Index("z")}) -
-				   	lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(1), Index("z")});
-
-				float unevenness = 0;
-
-				for(int i = 0; i < numVerts; i++){
-					float diffX = fabs(s.model->getPosition().x - verts[i].pos.x);
-					float diffY = fabs(s.model->getPosition().y - verts[i].pos.y);
-					float diffZ = fabs(s.model->getPosition().z - verts[i].pos.z);
-
-					if(diffX < 0.5 * width && diffZ < 0.5 * length && diffY > unevenness){
-						unevenness = diffY;
-
-						if(unevenness > maxUnevenness)
-							break;
-					}
-				}
-
-				Vector4 color;
-
-				if(unevenness > maxUnevenness){
-					color = Vector4(1, 0, 0, 1);
-					s.status = StructureFrame::NOT_PLACEABLE;
-				}
-				else{
-					color = Vector4(0, 1, 0, 1);
-					s.status = StructureFrame::PLACEABLE;
-				}
-
-				Material *mat = s.model->getMaterial();
-				mat->setVec4Uniform("diffuseColor", color);
-			}
-		}
-	}
-
     void ActiveGameState::issueOrder(Order::TYPE type, bool addOrder) {
 		Vector3 color;
 
@@ -342,9 +267,10 @@ namespace battleship{
 			std::map<Node*, Unit*>::iterator it = unitData.find(node);
 
 			Unit *unit = nullptr;
+			UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 
-			if(placingStructures){
-				unit = new Structure(mainPlayer, structureFrames[0].id, results[0].pos, structureFrames[0].model->getOrientation());
+			if(ufCtr->isPlacingFrames()){
+				unit = new Structure(mainPlayer, ufCtr->getUnitFrame(0).id, results[0].pos, ufCtr->getUnitFrame(0).model->getOrientation());
 				mainPlayer->addUnit(unit);
 			}
 
@@ -371,6 +297,7 @@ namespace battleship{
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameManager *gm = GameManager::getSingleton();
         InGameAppState *inGameState = (InGameAppState*) gm->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE);
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 
         switch((Bind)bind){
 			case Bind::DRAG_BOX: 
@@ -387,10 +314,10 @@ namespace battleship{
 						
 							if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getSide() != mainPlayer->getSide()))
 								type = Order::TYPE::ATTACK;
-							else if(placingStructures){
+							else if(ufCtr->isPlacingFrames()){
 								type = Order::TYPE::BUILD;
-								placingStructures = false;
-								removeStructtureFrames();
+								ufCtr->setPlacingFrames(false);
+								ufCtr->removeUnitFrames();
 							}
 						
 							issueOrder(type, shiftPressed);
@@ -400,7 +327,7 @@ namespace battleship{
 
                 break;
 			case Bind::DESELECT:
-				if(placingStructures) rotatingStructure = isPressed;
+				if(ufCtr->isPlacingFrames()) ufCtr->setRotatingFrames(isPressed);
                 if (!isPressed) deselectUnits();
                 break;
 			case Bind::TOGGLE_SUB:
@@ -420,7 +347,7 @@ namespace battleship{
                 }
                 break;
 			case Bind::LOOK_AROUND:
-				if(!placingStructures)
+				if(!ufCtr->isPlacingFrames())
 					CameraController::getSingleton()->setLookingAround(isPressed);
                 break;
 			case Bind::HALT: 
@@ -495,31 +422,23 @@ namespace battleship{
 					int id = 3;
 					LuaManager *lm = LuaManager::getSingleton();
 					string modelPath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)}) + lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
-					structureFrames.push_back(StructureFrame(modelPath, id, (int)UnitType::LAND));
+					ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
 
-					placingStructures = true;
+					ufCtr->setPlacingFrames(true);
 				}
 
 				break;
 			}
 			case Bind::DESELECT_STRUCTURE:
-				removeStructtureFrames();
-				placingStructures = false;
+				ufCtr->removeUnitFrames();
+				ufCtr->setPlacingFrames(false);
 				break;
         }
     }
 
-	void ActiveGameState::removeStructtureFrames(){
-		for(StructureFrame s : structureFrames){
-			Root::getSingleton()->getRootNode()->dettachChild(s.model);
-			delete s.model;
-		}
-
-		structureFrames.clear();
-	}
-
     void ActiveGameState::onAnalog(int bind, float strength) {
 		CameraController *camCtr = CameraController::getSingleton();
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 
 		switch((Bind)bind){
 			case Bind::LOOK_UP: 
@@ -535,12 +454,8 @@ namespace battleship{
 			case Bind::LOOK_RIGHT: 
 				if(camCtr->isLookingAround())
 					CameraController::getSingleton()->orientCamera(Vector3(0, 1, 0), strength);
-				else if(placingStructures && rotatingStructure)
-					for(StructureFrame &s : structureFrames)
-						if(s.status != StructureFrame::PLACED){
-							Quaternion rot = s.model->getOrientation();
-						   	s.model->setOrientation(Quaternion(100 * strength, Vector3::VEC_J) * rot);
-						}
+				else if(ufCtr->isPlacingFrames() && ufCtr->isRotatingFrames())
+					ufCtr->rotateUnitFrames(100 * strength);
 
 				break;
 		}

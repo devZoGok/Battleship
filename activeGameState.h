@@ -13,17 +13,6 @@ namespace vb01{
 namespace battleship{
     class ActiveGameState : public gameBase::AbstractAppState {
     public:
-		struct StructureFrame{
-			enum Status{PLACEABLE, NOT_PLACEABLE, PLACED};
-
-			vb01::Model *model;
-			int id, type;
-			Status status;
-
-			StructureFrame(std::string, int, int);
-			~StructureFrame();
-		};
-
         ActiveGameState(GuiAppState*, int);
         ~ActiveGameState();
         void onAttached();
@@ -31,8 +20,6 @@ namespace battleship{
         void update();
         void onAction(int, bool);
         void onAnalog(int, float);
-		inline bool isPlacingStructures(){return placingStructures;}
-        inline void setSelectingLaunchPoint(bool s){this->selectingGuidedMissileTarget=s;}
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
@@ -44,11 +31,9 @@ namespace battleship{
 		void updateStructureFrames();
         void addTarget();
         void issueOrder(Order::TYPE, bool);
-		void removeStructtureFrames();
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
 
         GuiAppState *guiState;
-		std::vector<StructureFrame> structureFrames;
         Player *mainPlayer;
 		vb01::Quad *dragbox = nullptr;
 		vb01::Node *dragboxNode = nullptr, *textNode = nullptr;
@@ -57,7 +42,7 @@ namespace battleship{
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;
-        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false, placingStructures = false, rotatingStructure = false;
+        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false;
         int playerId, zooms = 0;
 	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;

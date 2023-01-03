@@ -11,6 +11,7 @@
 #include "defConfigs.h"
 #include "inGameAppState.h"
 #include "consoleCommand.h"
+#include "unitFrameController.h"
 #include "vessel.h"
 
 using namespace vb01;
@@ -252,7 +253,7 @@ namespace battleship{
     void InGameAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
 			case Bind::TOGGLE_MAIN_MENU: 
-            	if(isPressed && !activeState->isPlacingStructures())
+            	if(isPressed && !UnitFrameController::getSingleton()->isPlacingFrames())
 					toggleMainMenu();
             break;
         }
