@@ -10,6 +10,7 @@
 #include "mesh.h"
 #include "util.h"
 
+#include <ray.h>
 #include <box.h>
 #include <node.h>
 #include <quad.h>
@@ -59,6 +60,33 @@ namespace battleship{
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(basePath + "Models/Units/", true);
 		assetManager->load(DEFAULT_TEXTURE);
+	}
+
+	void MapEditorAppState::MapEditor::updateCircleRadius(bool increase){
+		circleRadius += (increase ? INCREASE_RATE : -INCREASE_RATE);
+
+		if(circleRadius > MAX_RADIUS)
+			circleRadius = MAX_RADIUS;
+		else if(circleRadius < MIN_RADIUS)
+			circleRadius = MIN_RADIUS;
+	}
+
+	void MapEditorAppState::MapEditor::pushLandmassVerts(float strength){
+		Mesh *mesh = map->getTerrainObject(0).node->getChild(0)->getMesh(0);
+		MeshData meshData = mesh->getMeshBase();
+		MeshData::Vertex *verts = meshData.vertices;
+		int numVerts = meshData.numTris * 3;
+
+		for(int i = 0; i < numVerts; i++){
+			Vector3 distVec = verts[i].pos - pushPos;
+			distVec.y = 0;
+			float dist = distVec.getLength();
+
+			if(dist < circleRadius)
+				verts[i].pos.y += 10 * strength * dist / circleRadius;
+		}
+
+		mesh->updateVerts(meshData);
 	}
 
 	//TODO fix crash when using 100 side verts
@@ -240,9 +268,11 @@ namespace battleship{
 	}	
 
 	void MapEditorAppState::update(){
+		radiusText->setText(L"Radius: " + to_wstring(mapEditor->getCircleRadius()));
+
 		CameraController *camCtr = CameraController::getSingleton();
 
-		if(!camCtr->isLookingAround())
+		if(!(camCtr->isLookingAround() || mapEditor->isPushing()))
 			camCtr->updateCameraPosition();
 
 		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
@@ -254,6 +284,18 @@ namespace battleship{
 	void MapEditorAppState::onAttached(){
 		AbstractAppState::onAttached();
 		mapEditor = new MapEditor(mapName, mapSize);
+
+		Root *root = Root::getSingleton();
+		Material *mat = new Material(root->getLibPath() + "text");
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addVec4Uniform("diffuseColor", Vector4::VEC_IJKL);
+
+		radiusText = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"");
+		radiusText->setMaterial(mat);
+
+		Node *node = new Node(Vector3(0, 100, 0));
+		node->addText(radiusText);
+		root->getGuiNode()->attachChild(node);
 	}
 
 	void MapEditorAppState::onDettached(){}
@@ -276,6 +318,32 @@ namespace battleship{
 				ufCtr->removeUnitFrames();
 				ufCtr->setPlacingFrames(false);
 				break;
+			case Bind::INCREASE_RADIUS:
+				if(isPressed) mapEditor->updateCircleRadius(true);
+				break;
+			case Bind::DECREASE_RADIUS:
+				if(isPressed) mapEditor->updateCircleRadius(false);
+				break;
+			case Bind::LEFT_CLICK:
+				if(isPressed){
+					Camera *cam = Root::getSingleton()->getCamera();
+					Vector3 startPos = cam->getPosition();
+					Vector3 endPos = screenToSpace(getCursorPos());
+
+					vector<Ray::CollisionResult> results;
+					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Map::getSingleton()->getTerrainObject(0).node, results);
+					Ray::sortResults(results);
+
+					bool push = !results.empty();
+					mapEditor->setPushing(push);
+
+					if(push)
+						mapEditor->setPushPos(results[0].pos);
+				}
+				else
+					mapEditor->setPushing(false);
+
+				break;
 		}
 	}
 
@@ -288,7 +356,7 @@ namespace battleship{
 				if(camCtr->isLookingAround()){
 					Vector3 dirProj = Root::getSingleton()->getCamera()->getDirection();
 					dirProj = Vector3(dirProj.x, 0, dirProj.z).norm();
-					CameraController::getSingleton()->orientCamera(Vector3(0, 1, 0).cross(dirProj), strength);
+					camCtr->orientCamera(Vector3(0, 1, 0).cross(dirProj), strength);
 				}
 
 				break;
@@ -297,6 +365,10 @@ namespace battleship{
 				if(camCtr->isLookingAround())
 					camCtr->orientCamera(Vector3(0, 1, 0), strength);
 
+				break;
+			case Bind::PUSH_VERTS_UP:
+			case Bind::PUSH_VERTS_DOWN:
+				if(mapEditor->isPushing()) mapEditor->pushLandmassVerts(strength);
 				break;
 		}
 	}

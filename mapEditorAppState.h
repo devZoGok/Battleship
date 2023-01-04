@@ -30,6 +30,12 @@ namespace battleship{
 					};
 
 					MapEditor(std::string, vb01::Vector2);
+					void updateCircleRadius(bool);
+					void pushLandmassVerts(float);
+					inline float getCircleRadius(){return circleRadius;}
+					inline bool isPushing(){return pushing;}
+					inline void setPushing(bool p){pushing = p;}
+					inline void setPushPos(vb01::Vector3 p){pushPos = p;}
 				private:
 					void generatePlane(vb01::Vector2);
 					void prepareGui();
@@ -38,6 +44,10 @@ namespace battleship{
 					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
 
 					Map *map;
+					bool pushing = false;
+					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
+					float circleRadius = MIN_RADIUS;
+					vb01::Vector3 pushPos = vb01::Vector3::VEC_ZERO;
 					std::vector<vb01::Texture*> skyTextures, landmassTextures;
 					UnitListbox *vehicleListbox = nullptr, *structureListbox = nullptr;
 			};
@@ -53,6 +63,7 @@ namespace battleship{
 			MapEditor *mapEditor = nullptr;
 			std::string mapName;
 			vb01::Vector2 mapSize;
+			vb01::Text *radiusText = nullptr;
 	};
 }
 
