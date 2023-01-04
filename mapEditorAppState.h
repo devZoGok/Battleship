@@ -1,6 +1,8 @@
 #ifndef MAP_EDITOR_APP_STATE_H
 #define MAP_EDITOR_APP_STATE_H
 
+#include <listbox.h>
+
 #include <abstractAppState.h>
 
 #include <vector.h>
@@ -19,6 +21,14 @@ namespace battleship{
 		public:
 			class MapEditor{
 				public:
+					class UnitListbox : public vb01Gui::Listbox{
+						public:
+							UnitListbox(int, vb01::Vector2, vb01::Vector2, std::vector<std::string>, int, std::string);
+							void onClose();
+						private:
+							int startId;
+					};
+
 					MapEditor(std::string, vb01::Vector2);
 				private:
 					void generatePlane(vb01::Vector2);
@@ -29,6 +39,7 @@ namespace battleship{
 
 					Map *map;
 					std::vector<vb01::Texture*> skyTextures, landmassTextures;
+					UnitListbox *vehicleListbox = nullptr, *structureListbox = nullptr;
 			};
 
 			MapEditorAppState(std::string, vb01::Vector2);

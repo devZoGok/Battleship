@@ -4,6 +4,7 @@
 #include "guiAppState.h"
 #include "defConfigs.h"
 #include "cameraController.h"
+#include "unitFrameController.h"
 #include "player.h"
 #include "map.h"
 #include "mesh.h"
@@ -12,6 +13,7 @@
 #include <box.h>
 #include <node.h>
 #include <quad.h>
+#include <model.h>
 #include <texture.h>
 #include <assetManager.h>
 
@@ -26,6 +28,21 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace std;
 
+	MapEditorAppState::MapEditor::UnitListbox::UnitListbox(int startId, Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){
+		this->startId = startId;
+	}
+
+	void MapEditorAppState::MapEditor::UnitListbox::onClose(){
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		
+		int id = startId + selectedOption;
+		LuaManager *lm = LuaManager::getSingleton();
+		string modelPath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)}) + lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
+		ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
+
+		ufCtr->setPlacingFrames(true);
+	}
+
 	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size){
 		map = Map::getSingleton();
 		map->load(name, true);
@@ -35,9 +52,13 @@ namespace battleship{
 		generatePlane(size);
 		prepareGui();
 
-		string basePath = GameManager::getSingleton()->getPath() + "Textures/";
-		prepareTextures(basePath + "Skyboxes/", true, skyTextures);
-		prepareTextures(basePath + "Landmass/", false, landmassTextures);
+		string basePath = GameManager::getSingleton()->getPath();
+		prepareTextures(basePath + "Textures/Skyboxes/", true, skyTextures);
+		prepareTextures(basePath + "Textures/Landmass/", false, landmassTextures);
+
+		AssetManager *assetManager = AssetManager::getSingleton();
+		assetManager->load(basePath + "Models/Units/", true);
+		assetManager->load(DEFAULT_TEXTURE);
 	}
 
 	//TODO fix crash when using 100 side verts
@@ -87,11 +108,12 @@ namespace battleship{
 		mesh->construct();
 		mesh->setMaterial(mat);
 
-		Node *node = new Node();
+		Node *par = new Node(), *node = new Node();
 		node->attachMesh(mesh);
-		root->getRootNode()->attachChild(node);
+		par->attachChild(node);
+		root->getRootNode()->attachChild(par);
 
-		map->addTerrainObject(TerrainObject(Vector3(0, 0, 0), Vector3(size.x, 0, size.y), Vector3(14, 6, 14), TerrainObject::LANDMASS, node, 0, new Cell, new vb01::u32*));
+		map->addTerrainObject(TerrainObject(Vector3(0, 0, 0), Vector3(size.x, 0, size.y), Vector3(14, 6, 14), TerrainObject::LANDMASS, par, 0, new Cell, new vb01::u32*));
 	}
 
 	void MapEditorAppState::MapEditor::prepareGui(){
@@ -115,27 +137,26 @@ namespace battleship{
 			(vehicle ? vehicles : structures).push_back(name);
 		}
 
-		Listbox *vehicleListbox = new Listbox(startPos, size, vehicles, maxDisplay, fontPath);
+		vehicleListbox = new UnitListbox(0, startPos, size, vehicles, maxDisplay, fontPath);
 		state->addListbox(vehicleListbox);
 
-		Listbox *structuresListbox = new Listbox(startPos + offset, size, structures, (structures.size() > maxDisplay ? maxDisplay : structures.size()), fontPath);
-		state->addListbox(structuresListbox);
+		structureListbox = new UnitListbox(3, startPos + offset, size, structures, (structures.size() > maxDisplay ? maxDisplay : structures.size()), fontPath);
+		state->addListbox(structureListbox);
 
 		class SkyboxListbox : public Listbox{
 			public:
 				SkyboxListbox(Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
-
+				
 				void onClose(){
 					Root *root = Root::getSingleton();
 					StateManager *sm = GameManager::getSingleton()->getStateManager();
 					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
 					Texture *skyTexture = mapEditor->getSkyTexture(selectedOption);
-
+					
 					if(!root->getSkybox())
 						root->createSkybox(skyTexture);
 					else
-						root->getSkybox()->getMaterial()->setTexUniform("tex", skyTexture, true);
-
+						 root->getSkybox()->getMaterial()->setTexUniform("tex", skyTexture, true);
 				}
 			private:
 		};
@@ -153,7 +174,7 @@ namespace battleship{
 					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
 
 					Map *map = Map::getSingleton();
-					Material *mat = map->getTerrainObject(0).node->getMesh(0)->getMaterial();
+					Material *mat = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMaterial();
 					Material::BoolUniform *texturingUniform = (Material::BoolUniform*)mat->getUniform("texturingEnabled");
 					Texture *landTex = mapEditor->getLandmassTexture(selectedOption);
 					string texUni = "textures[0]";
@@ -223,6 +244,11 @@ namespace battleship{
 
 		if(!camCtr->isLookingAround())
 			camCtr->updateCameraPosition();
+
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+
+		if(ufCtr->isPlacingFrames())
+			ufCtr->update();
 	}
 
 	void MapEditorAppState::onAttached(){
@@ -233,10 +259,23 @@ namespace battleship{
 	void MapEditorAppState::onDettached(){}
 
 	void MapEditorAppState::onAction(int bind, bool isPressed){
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+
 		switch((Bind)bind){
 			case Bind::LOOK_AROUND:
-				CameraController::getSingleton()->setLookingAround(isPressed);
+				if(ufCtr->isPlacingFrames()){
+					Player *player = Map::getSingleton()->getPlayer(0);
+					UnitFrameController::UnitFrame &frame = ufCtr->getUnitFrame(0);
+					player->addUnit(new Unit(player, frame.id, frame.model->getPosition(), frame.model->getOrientation()));
+				}
+				else
+					CameraController::getSingleton()->setLookingAround(isPressed);
+
                 break;
+			case Bind::DESELECT_STRUCTURE:
+				ufCtr->removeUnitFrames();
+				ufCtr->setPlacingFrames(false);
+				break;
 		}
 	}
 
