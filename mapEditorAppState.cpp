@@ -72,7 +72,7 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::MapEditor::pushLandmassVerts(float strength){
-		Mesh *mesh = map->getTerrainObject(0).node->getChild(0)->getMesh(0);
+		Mesh *mesh = map->getTerrainObject(0).node->getMesh(0);
 		MeshData meshData = mesh->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = meshData.numTris * 3;
@@ -136,12 +136,11 @@ namespace battleship{
 		mesh->construct();
 		mesh->setMaterial(mat);
 
-		Node *par = new Node(), *node = new Node();
+		Node *node = new Node();
 		node->attachMesh(mesh);
-		par->attachChild(node);
-		root->getRootNode()->attachChild(par);
+		root->getRootNode()->attachChild(node);
 
-		map->addTerrainObject(TerrainObject(Vector3(0, 0, 0), Vector3(size.x, 0, size.y), Vector3(14, 6, 14), TerrainObject::LANDMASS, par, 0, new Cell, new vb01::u32*));
+		map->addTerrainObject(TerrainObject(Vector3(0, 0, 0), Vector3(size.x, 0, size.y), Vector3(14, 6, 14), TerrainObject::LANDMASS, node, 0, new Cell, new vb01::u32*));
 	}
 
 	void MapEditorAppState::MapEditor::prepareGui(){
@@ -202,7 +201,7 @@ namespace battleship{
 					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
 
 					Map *map = Map::getSingleton();
-					Material *mat = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMaterial();
+					Material *mat = map->getTerrainObject(0).node->getMesh(0)->getMaterial();
 					Material::BoolUniform *texturingUniform = (Material::BoolUniform*)mat->getUniform("texturingEnabled");
 					Texture *landTex = mapEditor->getLandmassTexture(selectedOption);
 					string texUni = "textures[0]";

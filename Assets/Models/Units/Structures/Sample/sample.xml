@@ -1,4 +1,4 @@
-<model>
+<node name="sample">
   <node name="Cube">
     <mesh name="CubeCube" num_faces="20" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="1.0" py="1.0" pz="-1.0" nx="0.6891885995864868" ny="-0.22369249165058136" nz="0.6891884207725525" />
@@ -75,4 +75,4 @@
       <vert id="8" uvx="0.8577794432640076" uvy="0.5406141877174377" tx="0.0" ty="0.0" tz="-1.0" bx="-0.3594110310077667" by="0.9331793189048767" bz="-0.0" />
     </mesh>
   </node>
-</model>
+</node>
