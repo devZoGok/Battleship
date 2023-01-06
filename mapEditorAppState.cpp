@@ -56,6 +56,7 @@ namespace battleship{
 		string basePath = GameManager::getSingleton()->getPath();
 		prepareTextures(basePath + "Textures/Skyboxes/", true, skyTextures);
 		prepareTextures(basePath + "Textures/Landmass/", false, landmassTextures);
+		prepareTextures(basePath + "Textures/Water/", false, waterTextures);
 
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(basePath + "Models/Units/", true);
@@ -69,6 +70,33 @@ namespace battleship{
 			circleRadius = MAX_RADIUS;
 		else if(circleRadius < MIN_RADIUS)
 			circleRadius = MIN_RADIUS;
+	}
+
+	void MapEditorAppState::MapEditor::toggleSelection(TerrainObject *obj, bool select){
+		obj->node->getMesh(0)->setWireframe(select);
+		selectedTerrainObject = (select ? obj : nullptr);
+	}
+
+	void MapEditorAppState::MapEditor::castSelectionRay(){
+		Camera *cam = Root::getSingleton()->getCamera();
+		Vector3 startPos = cam->getPosition();
+		Vector3 endPos = screenToSpace(getCursorPos());
+
+		vector<Ray::CollisionResult> results;
+		Map *map = Map::getSingleton();
+		Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getNodeParent(), results);
+		Ray::sortResults(results);
+
+		if(selectedTerrainObject)
+			toggleSelection(selectedTerrainObject, false);
+
+		if(!results.empty()){
+			for(int i = 0; i < map->getNumTerrainObjects(); i++)
+				if(map->getTerrainObject(i).node == results[i].mesh->getNode()){
+					toggleSelection(&map->getTerrainObject(i), true);
+					break;
+				}
+		}
 	}
 
 	void MapEditorAppState::MapEditor::pushLandmassVerts(float strength){
@@ -138,7 +166,6 @@ namespace battleship{
 
 		Node *node = new Node();
 		node->attachMesh(mesh);
-		root->getRootNode()->attachChild(node);
 
 		map->addTerrainObject(TerrainObject(Vector3(0, 0, 0), Vector3(size.x, 0, size.y), Vector3(14, 6, 14), TerrainObject::LANDMASS, node, 0, new Cell, new vb01::u32*));
 	}
@@ -149,7 +176,7 @@ namespace battleship{
 		GuiAppState *state = (GuiAppState*)sm->getAppStateByType((int)AppStateType::GUI_STATE);
 		string fontPath = gm->getPath() + "Fonts/batang.ttf";
 
-		Vector2 startPos = Vector2((float)gm->getWidth() / 16, (float)gm->getHeight() * .8);
+		Vector2 startPos = Vector2((float)gm->getWidth() / 16, gm->getHeight() - guiThreshold);
 		Vector2 size = Vector2(140, 20), offset = Vector2(size.x + 10, 0);
 		int maxDisplay = 2;
 
@@ -327,17 +354,25 @@ namespace battleship{
 				if(isPressed){
 					Camera *cam = Root::getSingleton()->getCamera();
 					Vector3 startPos = cam->getPosition();
-					Vector3 endPos = screenToSpace(getCursorPos());
+					Vector2 cursorPos = getCursorPos();
+					Vector3 endPos = screenToSpace(cursorPos);
 
 					vector<Ray::CollisionResult> results;
 					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Map::getSingleton()->getTerrainObject(0).node, results);
 					Ray::sortResults(results);
 
-					bool push = !results.empty();
-					mapEditor->setPushing(push);
 
-					if(push)
-						mapEditor->setPushPos(results[0].pos);
+					if(cursorPos.y < GameManager::getSingleton()->getHeight() - mapEditor->getGuiThreshold()){
+						bool push = !results.empty();
+						mapEditor->setPushing(push);
+
+						if(push)
+							mapEditor->setPushPos(results[0].pos);
+
+						mapEditor->castSelectionRay();
+					}
+					else
+						mapEditor->setPushing(false);
 				}
 				else
 					mapEditor->setPushing(false);

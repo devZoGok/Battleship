@@ -238,4 +238,9 @@ namespace battleship{
 
 		return within;
 	}
+
+	void Map::addTerrainObject(TerrainObject obj){
+		nodeParent->attachChild(obj.node);
+		terrainObjects.push_back(obj);
+	}
 }

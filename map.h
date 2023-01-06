@@ -57,8 +57,8 @@ namespace battleship{
         void unload();
 		int getCellId(vb01::Vector3, int);
 		bool isPointWithinTerrainObject(vb01::Vector3, int);
-		inline void addTerrainObject(TerrainObject obj){terrainObjects.push_back(obj);}
-		inline TerrainObject getTerrainObject(int i){return terrainObjects[i];}
+		void addTerrainObject(TerrainObject);
+		inline TerrainObject& getTerrainObject(int i){return terrainObjects[i];}
 		inline int getNumTerrainObjects(){return terrainObjects.size();}
 		inline vb01::Node* getNodeParent(){return nodeParent;}
 		inline vb01::Vector3 getCellSize(){return cellSize;}
