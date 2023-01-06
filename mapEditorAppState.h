@@ -29,27 +29,40 @@ namespace battleship{
 						private:
 							int startId;
 					};
+					enum MovementAxis{
+						X_AXIS,
+						Y_AXIS,
+						Z_AXIS
+					};
 
 					MapEditor(std::string, vb01::Vector2);
 					void updateCircleRadius(bool);
 					void pushLandmassVerts(float);
-					void toggleSelection(TerrainObject* ,bool);
 					void castSelectionRay();
+					void createWaterbody();
+					void moveTerrainObject(float);
+					inline TerrainObject* getSelectedTerrainObject(){return selectedTerrainObject;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
 					inline bool isPushing(){return pushing;}
 					inline void setPushing(bool p){pushing = p;}
 					inline void setPushPos(vb01::Vector3 p){pushPos = p;}
+					inline bool isMovingTerrainObject(){return movingTerrainObject;}
+					inline void setMovingTerrainObject(bool m){movingTerrainObject = m;}
+					inline MovementAxis getMovementAxis(){return movementAxis;}
+					inline void setMovementAxis(MovementAxis m){movementAxis = m;}
 				private:
 					void generatePlane(vb01::Vector2);
 					void prepareGui();
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
+					void toggleSelection(TerrainObject*, bool);
 					inline vb01::Texture* getSkyTexture(int i){return skyTextures[i];}
 					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
 
 					Map *map;
 					TerrainObject *selectedTerrainObject = nullptr;
-					bool pushing = false;
+					MovementAxis movementAxis = X_AXIS;
+					bool pushing = false, movingTerrainObject = false;
 					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
 					float circleRadius = MIN_RADIUS, guiThreshold = 200;
 					vb01::Vector3 pushPos = vb01::Vector3::VEC_ZERO;

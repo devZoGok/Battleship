@@ -99,6 +99,44 @@ namespace battleship{
 		}
 	}
 
+	void MapEditorAppState::MapEditor::createWaterbody(){
+		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+		mat->addBoolUniform("lightingEnabled", false);
+		mat->addBoolUniform("texturingEnabled", true);
+		mat->addTexUniform("textures[0]", waterTextures[0], false);
+
+		Vector3 size = Vector3(10, 10, 1);
+		Quad *quad = new Quad(size, true);
+		quad->setMaterial(mat);
+
+		Vector3 pos = 0.1 * Vector3::VEC_J;
+		Node *node = new Node(pos, Quaternion(-1.57, Vector3::VEC_I));
+		node->attachMesh(quad);
+
+		Map *map = Map::getSingleton();
+		map->addTerrainObject(TerrainObject(pos, size, Vector3(14, 7, 14), TerrainObject::RECT_WATERBODY, node, 0, nullptr, nullptr));
+		toggleSelection(&map->getTerrainObject(map->getNumTerrainObjects() - 1), true);
+	}
+
+	void MapEditorAppState::MapEditor::moveTerrainObject(float strength){
+		Vector3 pos = selectedTerrainObject->node->getPosition();
+
+		switch(movementAxis){
+			case MovementAxis::X_AXIS:
+				pos += strength * Vector3::VEC_I;
+				break;
+			case MovementAxis::Y_AXIS:
+				pos += strength * Vector3::VEC_J;
+				break;
+			case MovementAxis::Z_AXIS:
+				pos += strength * Vector3::VEC_K;
+				break;
+		}
+
+		selectedTerrainObject->node->setPosition(pos);
+		selectedTerrainObject->pos = pos;
+	}
+
 	void MapEditorAppState::MapEditor::pushLandmassVerts(float strength){
 		Mesh *mesh = map->getTerrainObject(0).node->getMesh(0);
 		MeshData meshData = mesh->getMeshBase();
@@ -378,6 +416,24 @@ namespace battleship{
 					mapEditor->setPushing(false);
 
 				break;
+			case Bind::CREATE_WATERBODY:
+				if(isPressed) mapEditor->createWaterbody();
+				break;
+			case Bind::MOVE_TERR_OBJ:
+				if(isPressed) mapEditor->setMovingTerrainObject(true);
+				break;
+			case Bind::STOP_TERR_OBJ:
+				if(isPressed) mapEditor->setMovingTerrainObject(false);
+				break;
+			case Bind::MOVE_X_AXIS:
+			case Bind::MOVE_Y_AXIS:
+			case Bind::MOVE_Z_AXIS:
+				if(isPressed && mapEditor->isMovingTerrainObject()){
+					MapEditor::MovementAxis axis = MapEditor::MovementAxis((int)bind - (int)Bind::MOVE_X_AXIS);
+					mapEditor->setMovementAxis(axis);
+				}
+
+				break;
 		}
 	}
 
@@ -403,6 +459,9 @@ namespace battleship{
 			case Bind::PUSH_VERTS_UP:
 			case Bind::PUSH_VERTS_DOWN:
 				if(mapEditor->isPushing()) mapEditor->pushLandmassVerts(strength);
+				else if(mapEditor->isMovingTerrainObject() && mapEditor->getSelectedTerrainObject() != &Map::getSingleton()->getTerrainObject(0)) 
+					mapEditor->moveTerrainObject(strength);
+
 				break;
 		}
 	}
