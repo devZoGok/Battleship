@@ -44,13 +44,15 @@ namespace battleship{
 		ufCtr->setPlacingFrames(true);
 	}
 
-	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size){
+	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size, bool newMap){
 		map = Map::getSingleton();
-		map->load(name, true);
+		map->load(name, newMap);
 
-		map->addPlayer(new Player(0, 0, 0));
+		if(newMap){
+			map->addPlayer(new Player(0, 0, 0));
+			generatePlane(size);
+		}
 
-		generatePlane(size);
 		prepareGui();
 
 		string basePath = GameManager::getSingleton()->getPath();
@@ -322,13 +324,14 @@ namespace battleship{
 		}
 	}
 
-	MapEditorAppState::MapEditorAppState(string name, Vector2 size) : AbstractAppState(
+	MapEditorAppState::MapEditorAppState(string name, Vector2 size, bool newMap) : AbstractAppState(
 					AppStateType::MAP_EDITOR,
 				 	configData::calcSumBinds(AppStateType::MAP_EDITOR, true),
 				 	configData::calcSumBinds(AppStateType::MAP_EDITOR, false),
 				 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
 		mapName = name;
 		mapSize = size;
+		this->newMap = newMap;
 	}	
 
 	void MapEditorAppState::update(){
@@ -347,7 +350,7 @@ namespace battleship{
 
 	void MapEditorAppState::onAttached(){
 		AbstractAppState::onAttached();
-		mapEditor = new MapEditor(mapName, mapSize);
+		mapEditor = new MapEditor(mapName, mapSize, newMap);
 
 		Root *root = Root::getSingleton();
 		Material *mat = new Material(root->getLibPath() + "text");

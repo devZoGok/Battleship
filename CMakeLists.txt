@@ -9,7 +9,7 @@ cmake_policy(SET CMP0015 NEW)
 
 set(STATES activeGameState.cpp inGameAppState.cpp guiAppState.cpp mapEditorAppState.cpp)
 set(UTIL util.cpp binds.h)
-set(GUI tooltip.cpp optionsButton.cpp exitButton.cpp consoleCommand.cpp)
+set(GUI tooltip.cpp mapEditorButton.cpp optionsButton.cpp exitButton.cpp consoleCommand.cpp)
 set(CONTROLLERS unitFrameController.cpp cameraController.cpp)
 set(CORE gameManager.cpp defConfigs.cpp ${CONTROLLERS})
 set(PROJECTILES projectile.cpp)

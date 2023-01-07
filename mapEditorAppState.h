@@ -35,7 +35,7 @@ namespace battleship{
 						Z_AXIS
 					};
 
-					MapEditor(std::string, vb01::Vector2);
+					MapEditor(std::string, vb01::Vector2, bool);
 					void updateCircleRadius(bool);
 					void pushLandmassVerts(float);
 					void castSelectionRay();
@@ -70,7 +70,7 @@ namespace battleship{
 					UnitListbox *vehicleListbox = nullptr, *structureListbox = nullptr;
 			};
 
-			MapEditorAppState(std::string, vb01::Vector2);
+			MapEditorAppState(std::string, vb01::Vector2, bool);
 			void update();
 			void onAttached();
 			void onDettached();
@@ -81,6 +81,7 @@ namespace battleship{
 			MapEditor *mapEditor = nullptr;
 			std::string mapName;
 			vb01::Vector2 mapSize;
+			bool newMap;
 			vb01::Text *radiusText = nullptr;
 	};
 }
