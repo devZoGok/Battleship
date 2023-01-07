@@ -29,20 +29,19 @@ namespace battleship{
 	using namespace configData;
 
     void makeTitlescreenButtons(GuiAppState *state) {
-
         class SpButton : public Button {
         public:
             SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_S, separate) {
                 this->state = state;
             }
 
-						void onMouseOver(){
-								setColor(Vector4(.8, .8, .8, 1));
-						}
+			void onMouseOver(){
+				setColor(Vector4(.8, .8, .8, 1));
+			}
 
-						void onMouseOff(){
-								setColor(Vector4(.6, .6, .6, 1));
-						}
+			void onMouseOff(){
+				setColor(Vector4(.6, .6, .6, 1));
+			}
 
             void onClick() {
                 vector<string> difficulties, factions;
@@ -60,7 +59,7 @@ namespace battleship{
                     }
 
                     void onClick() {
-												GameManager *gm = GameManager::getSingleton();
+						GameManager *gm = GameManager::getSingleton();
                         std::vector<string> difficulties, factions;
 
                         for(int i = 0; i < lengths[0]; i++)
@@ -73,7 +72,7 @@ namespace battleship{
                         delete[] difficultiesListboxes;
                         delete[] factionsListboxes;
 
-												StateManager *stateManager = gm->getStateManager();
+						StateManager *stateManager = gm->getStateManager();
 						int selectedMap = mapListbox->getSelectedOption();
 						string mapName = wstringToString(mapListbox->getContents()[selectedMap]);
                         stateManager->attachAppState(new InGameAppState(difficulties, factions, mapName));
@@ -107,7 +106,7 @@ namespace battleship{
                     GuiAppState *state;
                 };
 
-								GameManager *gm = GameManager::getSingleton();
+				GameManager *gm = GameManager::getSingleton();
                 Vector2 pos(gm->getWidth() / 8, gm->getHeight() / 8);
                 difficulties.push_back("Easy");
                 difficulties.push_back("Medium");
@@ -165,13 +164,13 @@ namespace battleship{
                 OptionsButton::onClick();
             }
 
-						void onMouseOver(){
-								setColor(Vector4(.8, .8, .8, 1));
-						}
+			void onMouseOver(){
+				setColor(Vector4(.8, .8, .8, 1));
+			}
 
-						void onMouseOff(){
-								setColor(Vector4(.6, .6, .6, 1));
-						}
+			void onMouseOff(){
+				setColor(Vector4(.6, .6, .6, 1));
+			}
         private:
             GuiAppState *state;
 
@@ -206,89 +205,89 @@ namespace battleship{
             };
         };
 
-				class NewMapButton : public Button{
+		class NewMapButton : public Button{
+			public:
+				NewMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "New map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){}
+				void onClick(){
+					class OkButton : public Button{
 						public:
-								NewMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "New map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){}
-								void onClick(){
-										class OkButton : public Button{
-												public:
-														OkButton(Vector2 pos, Vector2 size, Textbox *name, Textbox *sx, Textbox *sy) : Button(pos, size, "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){
-																this->name = name;
-																this->sizeX = sx;
-																this->sizeY = sy;
-														}
-														void onClick(){
-																GameManager *gm = GameManager::getSingleton();
-																StateManager *stateManager = gm->getStateManager();
-																GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
+							OkButton(Vector2 pos, Vector2 size, Textbox *name, Textbox *sx, Textbox *sy) : Button(pos, size, "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){
+								this->name = name;
+								this->sizeX = sx;
+								this->sizeY = sy;
+							}
+							void onClick(){
+								GameManager *gm = GameManager::getSingleton();
+								StateManager *stateManager = gm->getStateManager();
+								GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
 
-																state->removeAllTextboxes();
-                    											state->removeAllButtons(vector<Button*>{this});
+								state->removeAllTextboxes();
+            					state->removeAllButtons(vector<Button*>{this});
 
-																stateManager->attachAppState(new MapEditorAppState(
-																						wstringToString(name->getText()),
-																					 	Vector2(
-																								atof(wstringToString(sizeX->getText()).c_str()),
-																							 	atof(wstringToString(sizeY->getText()).c_str()))
-																						)
-																);
+								stateManager->attachAppState(new MapEditorAppState(
+									wstringToString(name->getText()),
+									Vector2(
+										atof(wstringToString(sizeX->getText()).c_str()),
+										atof(wstringToString(sizeY->getText()).c_str()))
+									)
+								);
 
-																state->removeButton(this);
-														}
-												private:
-														Textbox *name, *sizeX, *sizeY;
-										};
-
-										GameManager *gm = GameManager::getSingleton();
-										StateManager *stateManager = gm->getStateManager();
-										GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
-                    state->removeAllButtons(vector<Button*>{this});
-										
-										Vector2 size = Vector2(140, 20);
-
-										string fontPath = gm->getPath() + "Fonts/batang.ttf";
-										Textbox *name = new Textbox(Vector2(100, 150), size, fontPath);
-										Textbox *sizeX = new Textbox(Vector2(100, 150 + (size.y + 10)), size, fontPath);
-										Textbox *sizeY = new Textbox(Vector2(100, 150 + 2 * (size.y + 10)), size, fontPath);
-										state->addTextbox(name);
-										state->addTextbox(sizeX);
-										state->addTextbox(sizeY);
-
-										state->addButton(new OkButton(Vector2(200, gm->getHeight() - 150), Vector2(140, 50), name, sizeX, sizeY));
-
-                    state->removeButton(this);
-								}
+								state->removeButton(this);
+							}
 						private:
-				};
+							Textbox *name, *sizeX, *sizeY;
+					};
 
-				class LoadMapButton : public Button{
-						public:
-								LoadMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "Load map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){}
-								void onClick(){
-										StateManager *stateManager = GameManager::getSingleton()->getStateManager();
-										GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
-                    state->removeAllButtons();
-								}
-						private:
-				};
+					GameManager *gm = GameManager::getSingleton();
+					StateManager *stateManager = gm->getStateManager();
+					GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
+            		state->removeAllButtons(vector<Button*>{this});
+							
+					Vector2 size = Vector2(140, 20);
 
-				GameManager *gm = GameManager::getSingleton();
-				string font = gm->getPath() + "Fonts/batang.ttf";
-				int width = gm->getWidth(), height = gm->getHeight();
-				Vector2 size = Vector2(150, 40);
+					string fontPath = gm->getPath() + "Fonts/batang.ttf";
+					Textbox *name = new Textbox(Vector2(100, 150), size, fontPath);
+					Textbox *sizeX = new Textbox(Vector2(100, 150 + (size.y + 10)), size, fontPath);
+					Textbox *sizeY = new Textbox(Vector2(100, 150 + 2 * (size.y + 10)), size, fontPath);
+					state->addTextbox(name);
+					state->addTextbox(sizeX);
+					state->addTextbox(sizeY);
 
-				AssetManager::getSingleton()->load(font);
+					state->addButton(new OkButton(Vector2(200, gm->getHeight() - 150), Vector2(140, 50), name, sizeX, sizeY));
 
-        SpButton *spButton = new SpButton(state, Vector2(width / 16, height / 12), size, "Singleplayer", true);
-        MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(width / 16, height / 12 * 2), size, "Options", true);
-				NewMapButton *newMapButton = new NewMapButton(Vector2(width / 16, height / 12 * 3), size);
-				LoadMapButton *loadMapButton = new LoadMapButton(Vector2(width / 16, height / 12 * 4), size);
-        ExitButton *exitButton = new ExitButton(Vector2(width / 16, height / 12 * 5), size);
-        state->addButton(spButton);
-        state->addButton(optionsButton);
-        state->addButton(newMapButton);
-        state->addButton(loadMapButton);
-        state->addButton(exitButton);
+            		state->removeButton(this);
+				}
+			private:
+		};
+
+		class LoadMapButton : public Button{
+			public:
+				LoadMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "Load map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){}
+				void onClick(){
+					StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+					GuiAppState *state = (GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE);
+            		state->removeAllButtons();
+				}
+			private:
+		};
+
+		GameManager *gm = GameManager::getSingleton();
+		string font = gm->getPath() + "Fonts/batang.ttf";
+		int width = gm->getWidth(), height = gm->getHeight();
+		Vector2 size = Vector2(150, 40);
+
+		AssetManager::getSingleton()->load(font);
+
+		SpButton *spButton = new SpButton(state, Vector2(width / 16, height / 12), size, "Singleplayer", true);
+		MainMenuOptionsButton *optionsButton = new MainMenuOptionsButton(state, Vector2(width / 16, height / 12 * 2), size, "Options", true);
+		NewMapButton *newMapButton = new NewMapButton(Vector2(width / 16, height / 12 * 3), size);
+		LoadMapButton *loadMapButton = new LoadMapButton(Vector2(width / 16, height / 12 * 4), size);
+		ExitButton *exitButton = new ExitButton(Vector2(width / 16, height / 12 * 5), size);
+		state->addButton(spButton);
+		state->addButton(optionsButton);
+		state->addButton(newMapButton);
+		state->addButton(loadMapButton);
+		state->addButton(exitButton);
     }
 
 	vector<string> readDir(string path, bool findFolders){
@@ -309,37 +308,37 @@ namespace battleship{
 		return files;
 	}
 
-		Vector2 spaceToScreen(Vector3 pos){
-			Root *root = Root::getSingleton();
-			Camera *cam = root->getCamera();
-			Vector3 dir = cam->getDirection(), up = cam->getUp();
-			Vector3 camPos = cam->getPosition();
-			mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
-			
-			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
-			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
+	Vector2 spaceToScreen(Vector3 pos){
+		Root *root = Root::getSingleton();
+		Camera *cam = root->getCamera();
+		Vector3 dir = cam->getDirection(), up = cam->getUp();
+		Vector3 camPos = cam->getPosition();
+		mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
+		
+		float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
+		mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
 
-			vec4 ndcPos = proj * view * vec4(pos.x, pos.y, pos.z, 1);
-			ndcPos.x /= ndcPos.w;
-			ndcPos.y /= ndcPos.w;
-			return Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
-		}
+		vec4 ndcPos = proj * view * vec4(pos.x, pos.y, pos.z, 1);
+		ndcPos.x /= ndcPos.w;
+		ndcPos.y /= ndcPos.w;
+		return Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
+	}
 
-		Vector3 screenToSpace(Vector2 pos){
-			Root *root = Root::getSingleton();
-			Camera *cam = root->getCamera();
-			Vector3 dir = cam->getDirection(), up = cam->getUp();
-			Vector3 camPos = cam->getPosition();
-			mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
-			
-			float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
-			mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
+	Vector3 screenToSpace(Vector2 pos){
+		Root *root = Root::getSingleton();
+		Camera *cam = root->getCamera();
+		Vector3 dir = cam->getDirection(), up = cam->getUp();
+		Vector3 camPos = cam->getPosition();
+		mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
+		
+		float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
+		mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
 
-			mat4 mat = proj * view;
-			float w = (mat * vec4(0, 0, 0, 1)).w;
-			vec4 ndcPos = vec4(pos.x * 2.0 / width - 1.0, pos.y * -(2.0 / height) + 1.0, -1, 1);
-			vec4 spacePos = inverse(mat) * ndcPos;
-			spacePos = vec4(spacePos.x / spacePos.w, spacePos.y / spacePos.w, spacePos.z / spacePos.w, spacePos.w);
-			return Vector3(spacePos.x, spacePos.y, spacePos.z);
-		}
+		mat4 mat = proj * view;
+		float w = (mat * vec4(0, 0, 0, 1)).w;
+		vec4 ndcPos = vec4(pos.x * 2.0 / width - 1.0, pos.y * -(2.0 / height) + 1.0, -1, 1);
+		vec4 spacePos = inverse(mat) * ndcPos;
+		spacePos = vec4(spacePos.x / spacePos.w, spacePos.y / spacePos.w, spacePos.z / spacePos.w, spacePos.w);
+		return Vector3(spacePos.x, spacePos.y, spacePos.z);
+	}
 }
