@@ -1,6 +1,22 @@
 map = {
 	numWaterBodies = 2,
 	impassibleNodeValue = 65535,
+	numPlayers = 2,
+	numSpawnPoints = 1,
+	spawnPoints = {
+		{x = 0, y = 0, z = 0}
+	},
+	players = {
+		{
+			spawnPointId = 0,
+			numUnits = 0
+		},
+		{
+			spawnPointId = 0,
+			numUnits = 1,
+			units = {{id = 0, pos = {x = 0, y = 0, z = 0}, rot = {w = 1, x = 0, y = 0, z = 0}}}
+		}
+	},
 	terrain = {
 		model = "a.xml",
 		albedoMap = "a.jpg",
@@ -16,7 +32,7 @@ weights = {
 		}
 	}
 	},
-	skybox = {left = "left.jpg", right = "right.jpg", up = "up.jpg", down = "down.jpg", front = "front.jpg", back = "back.jpg"},
+	skybox = "Skybox1",
 	waterBodies = {
 		{
 			pos = {x = -20.925153732299805, y = 11.0, z = -21.885021209716797},

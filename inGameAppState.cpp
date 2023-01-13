@@ -3,6 +3,8 @@
 #include <button.h>
 
 #include <util.h>
+#include <root.h>
+#include <camera.h>
 #include <assetManager.h>
 
 #include <stateManager.h>
@@ -154,7 +156,7 @@ namespace battleship{
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, true),
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, false),
 					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
-        this->playerId = 0;
+        this->playerId = 1;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;
 		this->mapName = mapName;
@@ -189,6 +191,10 @@ namespace battleship{
             map->addPlayer(p);
         }
 
+		Camera *cam = Root::getSingleton()->getCamera();
+		cam->setPosition(map->getSpawnPoint(playerId - 1) + Vector3(1, 1, 1) * 40);
+		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
+
         mainPlayer = map->getPlayer(playerId);
 
 		GameManager *gm = GameManager::getSingleton();
@@ -196,10 +202,6 @@ namespace battleship{
         guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
         activeState = new ActiveGameState(guiState, playerId);
         stateManager->attachAppState(activeState);
-
-		AssetManager *assetManager = AssetManager::getSingleton();
-		assetManager->load(DEFAULT_TEXTURE);
-		assetManager->load(gm->getPath() + LuaManager::getSingleton()->getString("modelPrefix"), true);
     }
 
     void InGameAppState::onDettached() {}

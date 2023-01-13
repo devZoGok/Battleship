@@ -15,7 +15,7 @@ set(CORE gameManager.cpp defConfigs.cpp ${CONTROLLERS})
 set(PROJECTILES projectile.cpp)
 set(FX explosion.cpp)
 set(VEHICLES vehicle.cpp engineer.cpp)
-set(UNITS unit.cpp structure.cpp ${VEHICLES})
+set(UNITS unitFactory.cpp unit.cpp structure.cpp ${VEHICLES})
 set(CONTENT player.cpp pathfinder.cpp map.cpp ${UNITS} ${PROJECTILES} ${FX})
 set(GAME_SRC ${STATES} ${GUI} ${CORE} ${CONTENT} ${UTIL})
 

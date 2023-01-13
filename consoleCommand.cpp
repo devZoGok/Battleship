@@ -9,7 +9,7 @@
 #include "consoleCommand.h"
 #include "inGameAppState.h"
 #include "player.h"
-#include "engineer.h"
+#include "unitFactory.h"
 
 using namespace std;
 using namespace vb01;
@@ -70,20 +70,6 @@ namespace battleship{
 
     void ConsoleCommand::executeAddUnit(int playerId, int unitId, Vector3 pos, Quaternion rot) {
         Player* player = Map::getSingleton()->getPlayer(playerId);
-		Vehicle *vehicle = nullptr;
-
-		LuaManager *luaManager = LuaManager::getSingleton();
-		int unitClass = luaManager->getIntFromTable("unitClass", vector<Index>{Index(unitId + 1)});
-
-		switch((UnitClass)unitClass){
-			case UnitClass::ENGINEER:
-				vehicle = new Engineer(player, unitId, pos, rot);
-				break;
-			default:
-				vehicle = new Vehicle(player, unitId, pos, rot);
-				break;
-		}
-
-        player->addUnit(vehicle);
+        player->addUnit(UnitFactory::createUnit(player, unitId, pos, rot));
     }
 }

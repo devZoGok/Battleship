@@ -66,18 +66,23 @@ namespace battleship{
 		inline Player* getPlayer(int i){return players[i];}
 		inline void addPlayer(Player *p){players.push_back(p);}
 		inline int getNumPlayers(){return players.size();}
+		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
+		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
     private:
 		std::string mapTable = "map";
 		vb01::Node *nodeParent = nullptr;
 		std::string mapName;
 		std::vector<TerrainObject> terrainObjects;
 		vb01::Vector3 cellSize;
+		std::vector<vb01::Vector3> spawnPoints;
         std::vector<Player*> players;
 
         Map(){}
 		void preprareScene();
-		void loadSkybox(gameBase::LuaManager*);
-		void loadTerrainObject(gameBase::LuaManager*, int);
+		void loadSpawnPoints();
+		void loadPlayers();
+		void loadSkybox();
+		void loadTerrainObject(int);
     };
 }
 
