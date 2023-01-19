@@ -157,51 +157,15 @@ namespace battleship{
 		mesh->updateVerts(meshData);
 	}
 
-	//TODO fix crash when using 100 side verts
 	void MapEditorAppState::MapEditor::generatePlane(Vector2 size){
-		int numSideVerts = 10, numIndices = 6 * (numSideVerts - 1) * (numSideVerts - 1);
-		MeshData::Vertex *vertices = new MeshData::Vertex[numSideVerts * numSideVerts];
-		u32 *indices = new u32[numIndices];
-
-		for(int i = 0; i < numSideVerts; i++){
-			for(int j = 0; j < numSideVerts; j++){
-				MeshData::Vertex vert;
-
-				float x = size.x * (2 * j - numSideVerts) / (2 * numSideVerts);
-				float z = size.y * (numSideVerts - 2 * i) / (2 * numSideVerts);
-
-				vert.pos = Vector3(x, 0, z);
-				vert.uv = Vector2((float)(j) / numSideVerts, (float)(i) / numSideVerts);
-				vert.tan = Vector3::VEC_I;
-				vert.biTan = Vector3::VEC_K;
-				vert.norm = vert.tan.cross(vert.biTan);
-
-				vertices[i * numSideVerts + j] = vert;
-			}
-		}
-
-		for(int i = 0; i < numSideVerts - 1; i++){
-			for(int j = 0; j < numSideVerts - 1; j++){
-				int id = (i * (numSideVerts - 1) + j) * 6;
-				indices[id] = i * numSideVerts + j;
-				indices[id + 1] = i * numSideVerts + j + 1;
-				indices[id + 2] = (i + 1) * numSideVerts + j + 1;
-
-				indices[id + 3] = (i + 1) * numSideVerts + j + 1;
-				indices[id + 4] = (i + 1) * numSideVerts + j;
-				indices[id + 5] = i * numSideVerts + j;
-			}
-		}
-
 		Root *root = Root::getSingleton();
 		Material *mat = new Material(root->getLibPath() +  "texture");
 		mat->addBoolUniform("texturingEnabled", false);
 		mat->addBoolUniform("lightingEnabled", false);
 		mat->addVec4Uniform("diffuseColor", Vector4(1, 0, 0, 1));
 
-		MeshData meshData(vertices, indices, numIndices / 3);
-		Mesh *mesh = new Mesh(meshData);
-		mesh->construct();
+		int numSubDivs = 100;
+		Quad *mesh = new Quad(Vector3(size.x, size.y, 0), true, numSubDivs, numSubDivs);
 		mesh->setMaterial(mat);
 
 		Node *node = new Node();

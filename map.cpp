@@ -166,7 +166,6 @@ namespace battleship{
 			node = new Node();
 			quad = new Quad(Vector3(size.x, size.z, 1), true);
 			node->attachMesh(quad);
-			node->setOrientation(Quaternion(-1.57, Vector3::VEC_I));
 
 			texPath += "Textures/Water/";
 		}
