@@ -41,6 +41,7 @@ namespace battleship{
 					void castSelectionRay();
 					void createWaterbody();
 					void moveTerrainObject(float);
+					void exportMap();
 					inline TerrainObject* getSelectedTerrainObject(){return selectedTerrainObject;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
@@ -56,16 +57,20 @@ namespace battleship{
 					void prepareGui();
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
 					void toggleSelection(TerrainObject*, bool);
+					void parseLandmass();
+					void generateWeights();
 					inline vb01::Texture* getSkyTexture(int i){return skyTextures[i];}
 					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
 
 					Map *map;
 					TerrainObject *selectedTerrainObject = nullptr;
 					MovementAxis movementAxis = X_AXIS;
-					bool pushing = false, movingTerrainObject = false;
+					bool pushing = false, movingTerrainObject = false, newMap;
 					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
+					const int NUM_SUBDIVS = 100;
 					float circleRadius = MIN_RADIUS, guiThreshold = 200;
 					vb01::Vector3 pushPos = vb01::Vector3::VEC_ZERO;
+					vb01::Vector2 size;
 					std::vector<vb01::Texture*> skyTextures, landmassTextures, waterTextures;
 					UnitListbox *vehicleListbox = nullptr, *structureListbox = nullptr;
 			};

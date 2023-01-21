@@ -22,7 +22,10 @@
 
 #include <listbox.h>
 
+#include <tinyxml2.h>
+
 namespace battleship{
+	using namespace tinyxml2;
 	using namespace configData;
 	using namespace gameBase;
 	using namespace vb01;
@@ -45,11 +48,15 @@ namespace battleship{
 	}
 
 	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size, bool newMap){
+		this->newMap = newMap;
+		this->size = size;
+
 		map = Map::getSingleton();
 		map->load(name, newMap);
 
 		if(newMap){
 			map->addPlayer(new Player(0, 0, 0));
+			map->addSpawnPoint(Vector3::VEC_ZERO);
 			generatePlane(size);
 		}
 
@@ -164,8 +171,7 @@ namespace battleship{
 		mat->addBoolUniform("lightingEnabled", false);
 		mat->addVec4Uniform("diffuseColor", Vector4(1, 0, 0, 1));
 
-		int numSubDivs = 100;
-		Quad *mesh = new Quad(Vector3(size.x, size.y, 0), true, numSubDivs, numSubDivs);
+		Quad *mesh = new Quad(Vector3(size.x, size.y, 0), true, NUM_SUBDIVS, NUM_SUBDIVS);
 		mesh->setMaterial(mat);
 
 		Node *node = new Node();
@@ -182,6 +188,19 @@ namespace battleship{
 
 		Vector2 startPos = Vector2((float)gm->getWidth() / 16, gm->getHeight() - guiThreshold);
 		Vector2 size = Vector2(140, 20), offset = Vector2(size.x + 10, 0);
+
+		class ExportButton : public Button{
+			public:
+				ExportButton(Vector2 pos, Vector2 size) : Button(pos, size, "Export", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"){}
+				void onClick(){
+					StateManager *sm = GameManager::getSingleton()->getStateManager();
+					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
+					mapEditor->exportMap();
+				}
+		};
+
+		state->addButton(new ExportButton(startPos, size));
+
 		int maxDisplay = 2;
 
 		vector<string> vehicles, structures;
@@ -195,10 +214,10 @@ namespace battleship{
 			(vehicle ? vehicles : structures).push_back(name);
 		}
 
-		vehicleListbox = new UnitListbox(0, startPos, size, vehicles, maxDisplay, fontPath);
+		vehicleListbox = new UnitListbox(0, startPos + offset, size, vehicles, maxDisplay, fontPath);
 		state->addListbox(vehicleListbox);
 
-		structureListbox = new UnitListbox(3, startPos + offset, size, structures, (structures.size() > maxDisplay ? maxDisplay : structures.size()), fontPath);
+		structureListbox = new UnitListbox(3, startPos + 2 * offset, size, structures, (structures.size() > maxDisplay ? maxDisplay : structures.size()), fontPath);
 		state->addListbox(structureListbox);
 
 		class SkyboxListbox : public Listbox{
@@ -220,7 +239,7 @@ namespace battleship{
 		};
 
 		vector<string> skyboxFolders = readDir(gm->getPath() + "Textures/Skyboxes", true);
-		SkyboxListbox *skyboxListbox = new SkyboxListbox(startPos + 2 * offset, size, skyboxFolders, (skyboxFolders.size() > maxDisplay ? maxDisplay : skyboxFolders.size()), fontPath);
+		SkyboxListbox *skyboxListbox = new SkyboxListbox(startPos + 3 * offset, size, skyboxFolders, (skyboxFolders.size() > maxDisplay ? maxDisplay : skyboxFolders.size()), fontPath);
 		state->addListbox(skyboxListbox);
 
 		class LandTexListbox : public Listbox{
@@ -248,7 +267,7 @@ namespace battleship{
 		};
 
 		vector<string> landTextures = readDir(gm->getPath() + "Textures/Landmass", false);
-		LandTexListbox *landTexListbox = new LandTexListbox(startPos + 3 * offset, size, landTextures, (landTextures.size() > maxDisplay ? maxDisplay : landTextures.size()), fontPath);
+		LandTexListbox *landTexListbox = new LandTexListbox(startPos + 4 * offset, size, landTextures, (landTextures.size() > maxDisplay ? maxDisplay : landTextures.size()), fontPath);
 		state->addListbox(landTexListbox);
 	}
 
@@ -286,6 +305,70 @@ namespace battleship{
 				textures.push_back(new Texture(paths, 1, false));
 			}
 		}
+	}
+
+	void MapEditorAppState::MapEditor::parseLandmass(){
+		XMLDocument *doc = new XMLDocument();
+
+		char *nodeTagName = "node";
+		XMLElement *rootEl = doc->NewElement(nodeTagName);
+		rootEl->SetAttribute("name", "terrain");
+		XMLNode *rootTag = doc->InsertEndChild(rootEl);
+
+		XMLElement *nodeEl = doc->NewElement(nodeTagName);
+		nodeEl->SetAttribute("name", "plane");
+		XMLNode *nodeTag = rootTag->InsertEndChild(nodeEl);
+
+		XMLElement *meshEl = doc->NewElement("mesh");
+		MeshData meshData = map->getTerrainObject(0).node->getMesh(0)->getMeshBase();
+		meshEl->SetAttribute("name", "mesh");
+		meshEl->SetAttribute("num_faces", meshData.numTris);
+		meshEl->SetAttribute("num_vertex_groups", 0);
+		meshEl->SetAttribute("num_shape_keys", 0);
+		XMLNode *meshTag = nodeTag->InsertEndChild(meshEl);
+
+		//TODO optimize vertex position extraction
+		/*
+		const int numSideQuads = NUM_SUBDIVS + 1, numSideVerts = numSideQuads + 1;
+		Vector2 subQuadSize = Vector2(size.x / numSideQuads, size.y / numSideQuads);
+		*/
+		int numVerts = 3 * meshData.numTris;
+
+		for(int i = 0; i < numVerts; i++){
+			XMLElement *vertEl = doc->NewElement("vertdata");
+			vertEl->SetAttribute("px", meshData.vertices[i].pos.x);
+			vertEl->SetAttribute("py", meshData.vertices[i].pos.y);
+			vertEl->SetAttribute("pz", meshData.vertices[i].pos.z);
+			vertEl->SetAttribute("nx", meshData.vertices[i].norm.x);
+			vertEl->SetAttribute("ny", meshData.vertices[i].norm.y);
+			vertEl->SetAttribute("nz", meshData.vertices[i].norm.z);
+			XMLNode *vertNode = meshTag->InsertEndChild(vertEl);
+		}
+
+		for(int i = 0; i < numVerts; i++){
+			XMLElement *vertEl = doc->NewElement("vert");
+			vertEl->SetAttribute("id", i);
+			vertEl->SetAttribute("uvx", meshData.vertices[i].uv.x);
+			vertEl->SetAttribute("uvy", meshData.vertices[i].uv.y);
+			vertEl->SetAttribute("tx", meshData.vertices[i].tan.x);
+			vertEl->SetAttribute("ty", meshData.vertices[i].tan.y);
+			vertEl->SetAttribute("tz", meshData.vertices[i].tan.z);
+			vertEl->SetAttribute("bx", meshData.vertices[i].biTan.x);
+			vertEl->SetAttribute("by", meshData.vertices[i].biTan.y);
+			vertEl->SetAttribute("bz", meshData.vertices[i].biTan.z);
+			XMLNode *vertTag = meshTag->InsertEndChild(vertEl);
+		}
+
+		string name = GameManager::getSingleton()->getPath() + "Models/Maps/" + map->getMapName() + "/" + map->getMapName() + ".xml";
+		doc->SaveFile(name.c_str());
+	}
+
+	void MapEditorAppState::MapEditor::generateWeights(){
+	}
+
+	void MapEditorAppState::MapEditor::exportMap(){
+		parseLandmass();
+		generateWeights();
 	}
 
 	MapEditorAppState::MapEditorAppState(string name, Vector2 size, bool newMap) : AbstractAppState(
