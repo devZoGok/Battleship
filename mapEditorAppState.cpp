@@ -363,7 +363,15 @@ namespace battleship{
 		doc->SaveFile(name.c_str());
 	}
 
+	void MapEditorAppState::MapEditor::deleteWeights(){
+		weightsGenerated = false;
+	}
+
 	void MapEditorAppState::MapEditor::generateWeights(){
+		if(weightsGenerated)
+			deleteWeights();
+
+		weightsGenerated = true;
 	}
 
 	void MapEditorAppState::MapEditor::exportMap(){
@@ -383,6 +391,7 @@ namespace battleship{
 
 	void MapEditorAppState::update(){
 		radiusText->setText(L"Radius: " + to_wstring(mapEditor->getCircleRadius()));
+		weightsText->setText(L"Weights generated: " + to_wstring(mapEditor->isWeightsGenerated()));
 
 		CameraController *camCtr = CameraController::getSingleton();
 
@@ -404,12 +413,19 @@ namespace battleship{
 		mat->addBoolUniform("texturingEnabled", false);
 		mat->addVec4Uniform("diffuseColor", Vector4::VEC_IJKL);
 
-		radiusText = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"");
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
+		radiusText = new Text(fontPath, L"");
 		radiusText->setMaterial(mat);
+		weightsText = new Text(fontPath, L"");
+		weightsText->setMaterial(mat);
 
-		Node *node = new Node(Vector3(0, 100, 0));
-		node->addText(radiusText);
-		root->getGuiNode()->attachChild(node);
+		Node *radiusNode = new Node(Vector3(0, 100, 0));
+		radiusNode->addText(radiusText);
+		root->getGuiNode()->attachChild(radiusNode);
+
+		Node *weightsNode = new Node(Vector3(0, 200, 0));
+		weightsNode->addText(weightsText);
+		root->getGuiNode()->attachChild(weightsNode);
 	}
 
 	void MapEditorAppState::onDettached(){}
@@ -483,6 +499,9 @@ namespace battleship{
 					mapEditor->setMovementAxis(axis);
 				}
 
+				break;
+			case Bind::GENERATE_WEIGHTS:
+				mapEditor->generateWeights();
 				break;
 		}
 	}

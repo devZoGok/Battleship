@@ -53,6 +53,7 @@ mappings = {
 		{bind = 41, trigger = 89, action = true, bindType = 0, inOptions = false},
 		{bind = 42, trigger = 88, action = true, bindType = 0, inOptions = false},
 		{bind = 43, trigger = 87, action = true, bindType = 0, inOptions = false},
+		{bind = 44, trigger = 72, action = true, bindType = 0, inOptions = false},
 }
 graphics = {
 	resolution = {x = 1920, y = 1080}

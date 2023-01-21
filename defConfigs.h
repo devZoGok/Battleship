@@ -20,7 +20,7 @@ namespace battleship{
 		const int maxNumGroups = 10;
 
   		const static int numAppStates = 4;
-  		const static int numStaticBinds[numAppStates]{6, 0, 5, 17};
+  		const static int numStaticBinds[numAppStates]{6, 0, 5, 18};
   		const static int numConfBinds[numAppStates]{0, 1, 22, 0};
 		const static int maxStaticBinds = 17;
 		const static int maxConfBinds = 22;

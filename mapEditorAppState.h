@@ -42,6 +42,7 @@ namespace battleship{
 					void createWaterbody();
 					void moveTerrainObject(float);
 					void exportMap();
+					void generateWeights();
 					inline TerrainObject* getSelectedTerrainObject(){return selectedTerrainObject;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
@@ -52,20 +53,21 @@ namespace battleship{
 					inline void setMovingTerrainObject(bool m){movingTerrainObject = m;}
 					inline MovementAxis getMovementAxis(){return movementAxis;}
 					inline void setMovementAxis(MovementAxis m){movementAxis = m;}
+					inline bool isWeightsGenerated(){return weightsGenerated;}
 				private:
 					void generatePlane(vb01::Vector2);
 					void prepareGui();
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
 					void toggleSelection(TerrainObject*, bool);
 					void parseLandmass();
-					void generateWeights();
+					void deleteWeights();
 					inline vb01::Texture* getSkyTexture(int i){return skyTextures[i];}
 					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
 
 					Map *map;
 					TerrainObject *selectedTerrainObject = nullptr;
 					MovementAxis movementAxis = X_AXIS;
-					bool pushing = false, movingTerrainObject = false, newMap;
+					bool pushing = false, movingTerrainObject = false, weightsGenerated = false, newMap;
 					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
 					const int NUM_SUBDIVS = 100;
 					float circleRadius = MIN_RADIUS, guiThreshold = 200;
@@ -87,7 +89,7 @@ namespace battleship{
 			std::string mapName;
 			vb01::Vector2 mapSize;
 			bool newMap;
-			vb01::Text *radiusText = nullptr;
+			vb01::Text *radiusText = nullptr, *weightsText = nullptr;
 	};
 }
 

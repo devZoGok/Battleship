@@ -46,7 +46,8 @@ namespace battleship{
 		MOVE_X_AXIS,
 		MOVE_Y_AXIS,
 		MOVE_Z_AXIS,
-		CREATE_WATERBODY
+		CREATE_WATERBODY,
+		GENERATE_WEIGHTS
 	};
 }
 
