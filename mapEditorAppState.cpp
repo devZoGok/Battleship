@@ -19,6 +19,7 @@
 #include <assetManager.h>
 
 #include <luaManager.h>
+#include <util.h>
 
 #include <listbox.h>
 
@@ -49,7 +50,7 @@ namespace battleship{
 
 	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size, bool newMap){
 		this->newMap = newMap;
-		this->size = size;
+		this->mapSize = size;
 
 		map = Map::getSingleton();
 		map->load(name, newMap);
@@ -108,6 +109,7 @@ namespace battleship{
 		}
 	}
 
+
 	void MapEditorAppState::MapEditor::createWaterbody(){
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("lightingEnabled", false);
@@ -123,7 +125,8 @@ namespace battleship{
 		node->attachMesh(quad);
 
 		Map *map = Map::getSingleton();
-		map->addTerrainObject(TerrainObject(pos, size, Vector3(14, 7, 14), TerrainObject::RECT_WATERBODY, node, 0, nullptr, nullptr));
+		TerrainObject::Type type = TerrainObject::RECT_WATERBODY;
+		map->addTerrainObject(TerrainObject(pos, size, Vector3(14, 7, 14), type, node, 0, nullptr, nullptr));
 		toggleSelection(&map->getTerrainObject(map->getNumTerrainObjects() - 1), true);
 	}
 
@@ -177,7 +180,9 @@ namespace battleship{
 		Node *node = new Node();
 		node->attachMesh(mesh);
 
-		map->addTerrainObject(TerrainObject(Vector3(0, 0, 0), Vector3(size.x, 0, size.y), Vector3(14, 6, 14), TerrainObject::LANDMASS, node, 0, new Cell, new vb01::u32*));
+		TerrainObject::Type type = TerrainObject::LANDMASS;
+		Vector3 pos = Vector3::VEC_ZERO, s = Vector3(size.x, 0, size.y);
+		map->addTerrainObject(TerrainObject(pos, s, Vector3(14, 6, 14), type, node, 0, nullptr, nullptr));
 	}
 
 	void MapEditorAppState::MapEditor::prepareGui(){
@@ -367,16 +372,122 @@ namespace battleship{
 		weightsGenerated = false;
 	}
 
-	void MapEditorAppState::MapEditor::generateWeights(){
-		if(weightsGenerated)
-			deleteWeights();
+	void MapEditorAppState::MapEditor::prepareTerrainObject(u32 **weights, Cell *cells, int cellsByDim[3], float height, bool land){
+		const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
+		Vector3 initPos = -.5 * Vector3(mapSize.x, -height, mapSize.y);
+		
+		for(int i = 0; i < numCells; i++){
+		    int xId = i % cellsByDim[0];
+		    int yId = int(i / (cellsByDim[0] * cellsByDim[2]));
+		    int zId = (int(i / cellsByDim[0])) % cellsByDim[2];
+		    cells[i].pos = initPos + Vector3(xId * cellLength, -yId * cellDepth, zId * cellWidth);
+		}
 
-		weightsGenerated = true;
+		MeshData meshData = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMeshBase();
+		
+		for(int i = 0; i < numCells; i++){
+		    int waterbodyId = -1;
+		    bool impassible = false;
+			TerrainObject waterbody;
+		
+		    for(int j = 0; j < 3 * meshData.numTris; j++){
+		        Vector3 point = Vector3(float(meshData.vertices[j].pos.x), float(meshData.vertices[j].pos.y), float(meshData.vertices[j].pos.z));
+		
+		        for(int k = 1; k < map->getNumTerrainObjects(); k++){
+		            TerrainObject wb = map->getTerrainObject(k);
+		            bool diffX = (abs(point.x - wb.pos.x) < .5 * wb.size.x);
+		            bool diffY = (abs(point.y - wb.pos.z) < .5 * wb.size.z);
+		            bool diffZ = (abs(point.z + wb.pos.y) < .5 * wb.size.y);
+		            
+		            if(diffX && diffZ){
+		                waterbodyId = k;
+		                break;
+					}
+				}
+		
+		        if(waterbodyId != -1)
+		            waterbody = map->getTerrainObject(waterbodyId);
+		
+		        bool withinX = (abs(point.x - cells[i].pos.x) < 0.5 * cellLength);
+		        bool withinY = (!land ? (abs(point.y - cells[i].pos.y) < 0.5 * cellDepth) : true);
+		        bool withinZ = (abs(point.z - cells[i].pos.z) < 0.5 * cellWidth);
+		        bool pointWithin = (withinX && withinY && withinZ);
+		
+		        if(land && pointWithin && (waterbodyId != -1 && point.y < waterbody.pos.z))
+		            impassible = true;
+				else if(!land && pointWithin && waterbodyId != -1)
+		            impassible = true;
+			}
+		}
+		
+		for(int i = 0; i < numCells; i++){
+		    int xId = i % cellsByDim[0];
+		    int yId = i / (cellsByDim[0] * cellsByDim[2]);
+		    int zId = (i / cellsByDim[0]) % cellsByDim[2];
+		
+		    for(int j = 0; j < numCells; j++){
+		        bool adjacent = false;
+				
+		        if(xId == 0 && j - i == 1)
+		            adjacent = true;
+				else if(xId == cellsByDim[0] - 1 && j - i == -1)
+		            adjacent = true;
+				else if(0 < xId && xId < cellsByDim[0] - 1 && abs(j - i) == 1)
+		            adjacent = true;
+		        
+		        if(yId == 0 && j - i == cellsByDim[0] * cellsByDim[2])
+		            adjacent = true;
+				else if(0 < yId && yId < cellsByDim[1] - 1 && abs(j - i) == cellsByDim[0] * cellsByDim[2])
+		            adjacent = true;
+				else if(yId == cellsByDim[1] - 1 && j - i == -(cellsByDim[0] * cellsByDim[2]))
+		            adjacent = true;
+		        
+		        if(zId == 0 && j - i == cellsByDim[0])
+		            adjacent = true;
+				else if(zId == cellsByDim[2] - 1 && j - i == -cellsByDim[0])
+		            adjacent = true;
+				else if(0 < zId && zId < cellsByDim[2] - 1 && abs(j - i) == cellsByDim[0])
+		            adjacent = true;
+		
+		        weights[i][j] = IMPASS_NODE_VAL;
+		
+		        if(i == j)
+		            weights[i][j] = 0;
+				else if(adjacent)
+		            weights[i][j] = 1;
+			}
+		}
+	}
+
+	void MapEditorAppState::MapEditor::prepareTerrainObjects(){
+		for(int i = 0; i < map->getNumTerrainObjects(); i++){
+			TerrainObject obj = map->getTerrainObject(i);
+			Vector3 size = obj.size;
+			int cellsByDim[]{
+				int(size.x / cellLength),
+				cellDepth == 0 ? 1 : int(size.y / cellDepth),
+				int(size.z / cellWidth)
+			};
+			const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
+
+			Cell *cells = new Cell[numCells];
+
+			u32 **weights = new u32*[numCells];
+
+			for(int i = 0; i < numCells; i++)
+				weights[i] = new u32[numCells];
+
+			prepareTerrainObject(weights, cells, cellsByDim, (i > 0 ? obj.pos.y : 0), i == 0);
+		}
+	}
+
+	void MapEditorAppState::MapEditor::parseMapScript(){
 	}
 
 	void MapEditorAppState::MapEditor::exportMap(){
 		parseLandmass();
-		generateWeights();
+		prepareTerrainObjects();
+		parseMapScript();
 	}
 
 	MapEditorAppState::MapEditorAppState(string name, Vector2 size, bool newMap) : AbstractAppState(
@@ -501,7 +612,7 @@ namespace battleship{
 
 				break;
 			case Bind::GENERATE_WEIGHTS:
-				mapEditor->generateWeights();
+				mapEditor->prepareTerrainObjects();
 				break;
 		}
 	}

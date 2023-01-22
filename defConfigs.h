@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <util.h>
+
 #include <glfw3.h>
 
 #include <mapping.h>
@@ -16,8 +18,9 @@ namespace battleship{
 		using namespace gameBase;
 
   		const std::string DEFAULT_TEXTURE = GameManager::getSingleton()->getPath() + "Textures/defaultTexture.jpg";
-  		const double camPanSpeed = .1;
+  		const double camPanSpeed = .1, cellLength = 14, cellWidth = 14, cellDepth = 7;
 		const int maxNumGroups = 10;
+		const vb01::u32 IMPASS_NODE_VAL = 65535;
 
   		const static int numAppStates = 4;
   		const static int numStaticBinds[numAppStates]{6, 0, 5, 18};
