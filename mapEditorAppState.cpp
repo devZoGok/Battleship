@@ -128,7 +128,13 @@ namespace battleship{
 		Map *map = Map::getSingleton();
 		TerrainObject::Type type = TerrainObject::RECT_WATERBODY;
 		map->addTerrainObject(TerrainObject(pos, size, Vector3(14, 7, 14), type, node, 0, nullptr, nullptr));
-		toggleSelection(&map->getTerrainObject(map->getNumTerrainObjects() - 1), true);
+
+		int objId = map->getNumTerrainObjects() - 1;
+		TerrainObject &obj = map->getTerrainObject(objId); 
+		toggleSelection(&obj, true);
+
+		prepareTerrainObjects(objId - 1, 1);
+		prepareCellMarkers(obj);
 	}
 
 	void MapEditorAppState::MapEditor::moveTerrainObject(float strength){
@@ -184,6 +190,9 @@ namespace battleship{
 		TerrainObject::Type type = TerrainObject::LANDMASS;
 		Vector3 pos = Vector3::VEC_ZERO, s = Vector3(size.x, 0, size.y);
 		map->addTerrainObject(TerrainObject(pos, s, Vector3(14, 6, 14), type, node, 0, nullptr, nullptr));
+
+		prepareTerrainObjects(0, 1);
+		prepareCellMarkers(map->getTerrainObject(0));
 	}
 
 	void MapEditorAppState::MapEditor::prepareGui(){
@@ -460,8 +469,11 @@ namespace battleship{
 		}
 	}
 
-	void MapEditorAppState::MapEditor::prepareTerrainObjects(){
-		for(int i = 0; i < map->getNumTerrainObjects(); i++){
+	void MapEditorAppState::MapEditor::prepareTerrainObjects(int startId, int numObjs){
+		if(numObjs == -1)
+			numObjs = map->getNumTerrainObjects();
+
+		for(int i = startId; i < numObjs; i++){
 			TerrainObject &obj = map->getTerrainObject(i);
 			Vector3 size = obj.size;
 			int cellsByDim[]{
@@ -582,6 +594,34 @@ namespace battleship{
 		outFile.close();
 	}
 
+	void MapEditorAppState::MapEditor::toggleCellMarkers(){
+		cellMarkersVisible = !cellMarkersVisible;
+
+		for(Node *cm : cellMarkers)
+			cm->setVisible(cellMarkersVisible);
+	}
+
+	void MapEditorAppState::MapEditor::prepareCellMarkers(TerrainObject &obj){
+		Root *root = Root::getSingleton();
+		Node *rootNode = root->getRootNode();
+
+		for(int i = 0; i < obj.numCells; i++){
+			Material *mat = new Material(root->getLibPath() + "texture");
+			mat->addBoolUniform("lightingEnabled", false);
+			mat->addBoolUniform("texturingEnabled", false);
+			mat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 1));
+
+			Box *box = new Box(Vector3(1, 3, 1));
+			box->setMaterial(mat);
+
+			Node *cellMarker = new Node(obj.cells[i].pos);
+			cellMarker->attachMesh(box);
+			cellMarker->setVisible(cellMarkersVisible);
+			rootNode->attachChild(cellMarker);
+			cellMarkers.push_back(cellMarker);
+		}
+	}
+
 	void MapEditorAppState::MapEditor::exportMap(){
 		prepareTerrainObjects();
 		parseLandmass();
@@ -596,7 +636,7 @@ namespace battleship{
 		mapName = name;
 		mapSize = size;
 		this->newMap = newMap;
-	}	
+	}
 
 	void MapEditorAppState::update(){
 		radiusText->setText(L"Radius: " + to_wstring(mapEditor->getCircleRadius()));
@@ -711,6 +751,9 @@ namespace battleship{
 				break;
 			case Bind::GENERATE_WEIGHTS:
 				mapEditor->prepareTerrainObjects();
+				break;
+			case Bind::TOGGLE_CELL_MARKERS:
+				if(isPressed) mapEditor->toggleCellMarkers();
 				break;
 		}
 	}

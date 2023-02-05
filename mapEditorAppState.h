@@ -44,7 +44,8 @@ namespace battleship{
 					void createWaterbody();
 					void moveTerrainObject(float);
 					void exportMap();
-					void prepareTerrainObjects();
+					void prepareTerrainObjects(int = 0, int = -1);
+					void toggleCellMarkers();
 					inline TerrainObject* getSelectedTerrainObject(){return selectedTerrainObject;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
@@ -66,6 +67,7 @@ namespace battleship{
 					void parseMapScript();
 					void deleteWeights();
 					void prepareTerrainObject(vb01::u32**, Cell*, int[3], float, bool);
+					void prepareCellMarkers(TerrainObject&);
 					inline vb01::Texture* getSkyTexture(int i){return skyTextures[i];}
 					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
 
@@ -73,12 +75,13 @@ namespace battleship{
 					TerrainObject *selectedTerrainObject = nullptr;
 					MovementAxis movementAxis = X_AXIS;
 					vb01Gui::Listbox *skyListbox = nullptr;
-					bool pushing = false, movingTerrainObject = false, weightsGenerated = false, newMap;
+					bool pushing = false, movingTerrainObject = false, weightsGenerated = false, newMap, cellMarkersVisible = false;
 					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
 					const int NUM_SUBDIVS = 100;
 					float circleRadius = MIN_RADIUS, guiThreshold = 200;
 					vb01::Vector3 pushPos = vb01::Vector3::VEC_ZERO;
 					vb01::Vector2 mapSize;
+					std::vector<vb01::Node*> cellMarkers;
 					std::vector<vb01::Texture*> skyTextures, landmassTextures, waterTextures;
 					UnitListbox *vehicleListbox = nullptr, *structureListbox = nullptr;
 			};
