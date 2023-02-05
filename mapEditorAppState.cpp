@@ -385,15 +385,27 @@ namespace battleship{
 	void MapEditorAppState::MapEditor::prepareTerrainObject(u32 **weights, Cell *cells, int cellsByDim[3], float height, bool land){
 		const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
 		Vector3 initPos = -.5 * Vector3(mapSize.x, -height, mapSize.y);
+
+		Node *landmass = map->getTerrainObject(0).node;
 		
 		for(int i = 0; i < numCells; i++){
 		    int xId = i % cellsByDim[0];
 		    int yId = int(i / (cellsByDim[0] * cellsByDim[2]));
 		    int zId = (int(i / cellsByDim[0])) % cellsByDim[2];
+
 		    cells[i].pos = initPos + Vector3(xId * cellLength, -yId * cellDepth, zId * cellWidth);
+
+			if(land){
+				vector<Ray::CollisionResult> res;
+				Ray::retrieveCollisions(Vector3(cells[i].pos.x, 100, cells[i].pos.z), -Vector3::VEC_J, landmass, res);
+				Ray::sortResults(res);
+
+				if(!res.empty())
+					cells[i].pos.y = res[0].pos.y;
+			}
 		}
 
-		MeshData meshData = map->getTerrainObject(0).node->getMesh(0)->getMeshBase();
+		MeshData meshData = landmass->getMesh(0)->getMeshBase();
 		
 		for(int i = 0; i < numCells; i++){
 		    int waterbodyId = -1;
@@ -597,8 +609,9 @@ namespace battleship{
 	void MapEditorAppState::MapEditor::toggleCellMarkers(){
 		cellMarkersVisible = !cellMarkersVisible;
 
-		for(Node *cm : cellMarkers)
-			cm->setVisible(cellMarkersVisible);
+		for(TerrainObject &obj : map->getTerrainObjects())
+			for(Node *cellMarker : obj.cellMarkers)
+				cellMarker->setVisible(cellMarkersVisible);
 	}
 
 	void MapEditorAppState::MapEditor::prepareCellMarkers(TerrainObject &obj){
@@ -618,7 +631,7 @@ namespace battleship{
 			cellMarker->attachMesh(box);
 			cellMarker->setVisible(cellMarkersVisible);
 			rootNode->attachChild(cellMarker);
-			cellMarkers.push_back(cellMarker);
+			obj.cellMarkers.push_back(cellMarker);
 		}
 	}
 

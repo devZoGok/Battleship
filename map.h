@@ -33,6 +33,7 @@ namespace battleship{
 		vb01::Vector3 pos, size, cellSize;
 		Type type;
 		vb01::Node *node = nullptr;
+		std::vector<vb01::Node*> cellMarkers;
 		int numCells;
 		Cell *cells = nullptr;
 		vb01::u32 **weights = nullptr;
@@ -64,6 +65,7 @@ namespace battleship{
 		inline int getNumTerrainObjects(){return terrainObjects.size();}
 		inline vb01::Node* getNodeParent(){return nodeParent;}
 		inline vb01::Vector3 getCellSize(){return cellSize;}
+		inline std::vector<TerrainObject>& getTerrainObjects(){return terrainObjects;} 
         inline std::vector<Player*> getPlayers() {return players;}
 		inline Player* getPlayer(int i){return players[i];}
 		inline void addPlayer(Player *p){players.push_back(p);}

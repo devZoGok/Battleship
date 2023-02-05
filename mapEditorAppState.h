@@ -81,7 +81,6 @@ namespace battleship{
 					float circleRadius = MIN_RADIUS, guiThreshold = 200;
 					vb01::Vector3 pushPos = vb01::Vector3::VEC_ZERO;
 					vb01::Vector2 mapSize;
-					std::vector<vb01::Node*> cellMarkers;
 					std::vector<vb01::Texture*> skyTextures, landmassTextures, waterTextures;
 					UnitListbox *vehicleListbox = nullptr, *structureListbox = nullptr;
 			};
