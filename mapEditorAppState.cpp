@@ -19,9 +19,10 @@
 #include <assetManager.h>
 
 #include <luaManager.h>
-#include <util.h>
 
 #include <listbox.h>
+
+#include <fstream>
 
 #include <tinyxml2.h>
 
@@ -244,8 +245,8 @@ namespace battleship{
 		};
 
 		vector<string> skyboxFolders = readDir(gm->getPath() + "Textures/Skyboxes", true);
-		SkyboxListbox *skyboxListbox = new SkyboxListbox(startPos + 3 * offset, size, skyboxFolders, (skyboxFolders.size() > maxDisplay ? maxDisplay : skyboxFolders.size()), fontPath);
-		state->addListbox(skyboxListbox);
+		skyListbox = new SkyboxListbox(startPos + 3 * offset, size, skyboxFolders, (skyboxFolders.size() > maxDisplay ? maxDisplay : skyboxFolders.size()), fontPath);
+		state->addListbox(skyListbox);
 
 		class LandTexListbox : public Listbox{
 			public:
@@ -383,7 +384,7 @@ namespace battleship{
 		    cells[i].pos = initPos + Vector3(xId * cellLength, -yId * cellDepth, zId * cellWidth);
 		}
 
-		MeshData meshData = map->getTerrainObject(0).node->getChild(0)->getMesh(0)->getMeshBase();
+		MeshData meshData = map->getTerrainObject(0).node->getMesh(0)->getMeshBase();
 		
 		for(int i = 0; i < numCells; i++){
 		    int waterbodyId = -1;
@@ -461,11 +462,11 @@ namespace battleship{
 
 	void MapEditorAppState::MapEditor::prepareTerrainObjects(){
 		for(int i = 0; i < map->getNumTerrainObjects(); i++){
-			TerrainObject obj = map->getTerrainObject(i);
+			TerrainObject &obj = map->getTerrainObject(i);
 			Vector3 size = obj.size;
 			int cellsByDim[]{
 				int(size.x / cellLength),
-				cellDepth == 0 ? 1 : int(size.y / cellDepth),
+				i == 0 ? 1 : int(size.y / cellDepth),
 				int(size.z / cellWidth)
 			};
 			const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
@@ -477,16 +478,113 @@ namespace battleship{
 			for(int i = 0; i < numCells; i++)
 				weights[i] = new u32[numCells];
 
+			obj.cells = cells;
+			obj.numCells = numCells;
+			obj.weights = weights;
+
 			prepareTerrainObject(weights, cells, cellsByDim, (i > 0 ? obj.pos.y : 0), i == 0);
 		}
 	}
 
+	string MapEditorAppState::MapEditor::parseTerrainObject(TerrainObject &terrObj){
+		string terrObjStr = "{\n";
+
+		if(terrObj.type = TerrainObject::LANDMASS)
+			terrObjStr += "model = \"" + map->getMapName() + ".xml\",\n";
+
+		terrObjStr += "albedoMap = \"" + map->getMapName() + ".jpg\",\n";
+		terrObjStr += "size = {x = " + to_string(terrObj.pos.x) + ", y = " + to_string(terrObj.pos.y) + ", z = " + to_string(terrObj.pos.z) + "},\n";
+		terrObjStr += "nodes = {\n";
+		terrObjStr += "numCells = " + to_string(terrObj.numCells) + ",\n";
+		terrObjStr += "size = {x = " + to_string(cellLength) + ", y = " + to_string(cellDepth) + ", z = " + to_string(cellWidth) + "},\n";
+		terrObjStr += "pos = {\n";
+
+		for(int i = 0; i < terrObj.numCells; i++)
+			terrObjStr += "{x = " + to_string(terrObj.cells[i].pos.x) + ", y = " + to_string(terrObj.cells[i].pos.y) + ", z = " + to_string(terrObj.cells[i].pos.z) + "},\n";
+
+		terrObjStr += "},\nimpassible = {\n";
+
+		for(int i = 0; i < terrObj.numCells; i++){
+			terrObjStr += (terrObj.cells[i].impassible ? "true" : "false");
+			terrObjStr += ",\n";
+		}
+
+		terrObjStr += "},\nweights = {\n";
+
+		for(int i = 0; i < terrObj.numCells; i++)
+			for(int j = 0; j < terrObj.numCells; j++)
+				terrObjStr += to_string(terrObj.weights[i][j]) + ", ";
+
+		terrObjStr += "}\n}\n},\n";
+
+		return terrObjStr;
+	}
+
 	void MapEditorAppState::MapEditor::parseMapScript(){
+		int numTerrObjs = map->getNumTerrainObjects();
+		string mapScript = "map = {\nnumWaterBodies = " + to_string(numTerrObjs) + ",\n";
+		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
+		mapScript += "numPlayers = " + to_string(map->getNumPlayers()) + ",\n";
+
+		int numSpawnPoints = map->getNumSpawnPoints();
+		mapScript += "numSpawnPoints = " + to_string(numSpawnPoints) + ",\n";
+		mapScript += "spawnPoints = {\n";
+
+		for(int i = 0; i < numSpawnPoints; i++){
+			Vector3 sp = map->getSpawnPoint(i);
+			mapScript += "{x = " + to_string(sp.x) + ", y = " + to_string(sp.y) + ", z = " + to_string(sp.z) + "},\n";
+		}
+
+		mapScript += "},\nplayers = {\n";
+
+		for(int i = 0; i < map->getNumPlayers(); i++){
+			mapScript += "spawnPoint = 0,\n";
+
+			int numUnits = map->getPlayer(i)->getNumberOfUnits();
+			mapScript += "numUnits = " + to_string(numUnits) + ",\n";
+
+			if(numUnits > 0){
+				mapScript += "units = {\n";
+
+				for(int j = 0; j < numUnits; j++){
+					Unit *unit = map->getPlayer(i)->getUnit(j);
+
+					string idStr = "id = " + to_string(unit->getId());
+
+					Vector3 unitPos = unit->getPos();
+					string posStr = "pos = {x = " + to_string(unitPos.x) + ", y = " + to_string(unitPos.y) + ", z = " + to_string(unitPos.z) + "}";
+
+					Quaternion unitRot = unit->getRot();
+					string rotStr = "rot = {w = " + to_string(unitRot.w) + ", x = " + to_string(unitRot.x) + ", y = " + to_string(unitRot.y) + ", z = " + to_string(unitRot.z) + "}";
+
+					mapScript += "{" + idStr + ", " + posStr + ", " + rotStr + "},\n";
+				}
+
+				mapScript += "}\n,";
+				mapScript += "}";
+			}
+		}
+
+		mapScript += "},\n";
+		mapScript += "skybox = \"" + wstringToString(skyListbox->getContents()[skyListbox->getSelectedOption()]) + "\",\n";
+		mapScript += "terrain = " + parseTerrainObject(map->getTerrainObject(0));
+		mapScript += "waterbodies = {";
+
+		for(int i = 1; i < numTerrObjs; i++)
+			mapScript += parseTerrainObject(map->getTerrainObject(i));
+
+		mapScript += "}\n}";
+
+		string file = GameManager::getSingleton()->getPath() + "Models/Maps/" + map->getMapName() + "/" + map->getMapName() + ".lua";
+
+		std::ofstream outFile(file);
+		outFile << mapScript;
+		outFile.close();
 	}
 
 	void MapEditorAppState::MapEditor::exportMap(){
-		parseLandmass();
 		prepareTerrainObjects();
+		parseLandmass();
 		parseMapScript();
 	}
 

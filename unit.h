@@ -67,6 +67,7 @@ namespace battleship{
         inline vb01::Vector2 getScreenPos(){return screenPos;}
         inline vb01::Vector3 getPos() {return pos;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
+		inline vb01::Quaternion getRot(){return rot;}
         inline float getLineOfSight() {return lineOfSight;}
         inline float getWidth() {return width;}
         inline float getHeight() {return height;}

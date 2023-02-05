@@ -62,6 +62,7 @@ namespace battleship{
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
 					void toggleSelection(TerrainObject*, bool);
 					void parseLandmass();
+					std::string parseTerrainObject(TerrainObject&);
 					void parseMapScript();
 					void deleteWeights();
 					void prepareTerrainObject(vb01::u32**, Cell*, int[3], float, bool);
@@ -71,6 +72,7 @@ namespace battleship{
 					Map *map;
 					TerrainObject *selectedTerrainObject = nullptr;
 					MovementAxis movementAxis = X_AXIS;
+					vb01Gui::Listbox *skyListbox = nullptr;
 					bool pushing = false, movingTerrainObject = false, weightsGenerated = false, newMap;
 					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
 					const int NUM_SUBDIVS = 100;

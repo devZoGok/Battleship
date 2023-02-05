@@ -37,6 +37,7 @@ namespace battleship{
 		Cell *cells = nullptr;
 		vb01::u32 **weights = nullptr;
 
+		TerrainObject(){}
 		TerrainObject(vb01::Vector3 p, vb01::Vector3 s, vb01::Vector3 cs, Type t, vb01::Node *n, int num, Cell *c, vb01::u32 **w) :
 		   	pos(p),
 		   	size(s),
@@ -67,6 +68,7 @@ namespace battleship{
 		inline Player* getPlayer(int i){return players[i];}
 		inline void addPlayer(Player *p){players.push_back(p);}
 		inline int getNumPlayers(){return players.size();}
+		inline int getNumSpawnPoints(){return spawnPoints.size();}
 		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
     private:
