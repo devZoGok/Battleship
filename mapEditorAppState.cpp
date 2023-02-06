@@ -26,6 +26,8 @@
 
 #include <tinyxml2.h>
 
+#include <filesystem>
+
 namespace battleship{
 	using namespace tinyxml2;
 	using namespace configData;
@@ -33,6 +35,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace vb01Gui;
 	using namespace std;
+	using namespace std::filesystem;
 
 	MapEditorAppState::MapEditor::UnitListbox::UnitListbox(int startId, Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){
 		this->startId = startId;
@@ -636,6 +639,11 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::MapEditor::exportMap(){
+		string assetsPath = GameManager::getSingleton()->getPath();
+		string mapFolder = assetsPath + "Models/Maps/" + map->getMapName() + "/";
+		create_directory(mapFolder);
+		copy_file(DEFAULT_TEXTURE, mapFolder + map->getMapName() + ".jpg");
+
 		prepareTerrainObjects();
 		parseLandmass();
 		parseMapScript();

@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.9)
 set(GAME_NAME battleship)
 project(${GAME_NAME})
 
+set(CMAKE_CXX_STANDART 17)
 set(CMAKE_BUILD_TYPE Debug)
 set(BUILD_TESTS ON)
 cmake_policy(SET CMP0015 NEW)
