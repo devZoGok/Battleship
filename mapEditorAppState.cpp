@@ -125,7 +125,7 @@ namespace battleship{
 		quad->setMaterial(mat);
 
 		Vector3 pos = 0.1 * Vector3::VEC_J;
-		Node *node = new Node(pos, Quaternion(-1.57, Vector3::VEC_I));
+		Node *node = new Node(pos);
 		node->attachMesh(quad);
 
 		Map *map = Map::getSingleton();
