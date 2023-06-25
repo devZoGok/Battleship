@@ -4,27 +4,34 @@ gui = {
 		pos = {x = 210, y = 190},
 		size = {x = 360, y = 20},
 		guiType = GuiType.LISTBOX,
-		numMaxDisplay = 5
+		listboxType = ListboxType.RESOLUTION,
+		numMaxDisplay = 5,
+		numLines = 3,
+		lines = {
+			'640 x 480',
+			'800 x 600',
+			'1920 x 1080'
+		}
 	},
 	{
 		pos = {x = 110, y = 40},
-		buttonType = ButtonType.CHECKBOX
+		guiType = GuiType.CHECKBOX
 	},
 	{
 		pos = {x = 110, y = 70},
-		buttonType = ButtonType.CHECKBOX
+		guiType = GuiType.CHECKBOX
 	},
 	{
 		pos = {x = 110, y = 100},
-		buttonType = ButtonType.CHECKBOX
+		guiType = GuiType.CHECKBOX
 	},
 	{
 		pos = {x = 110, y = 130},
-		buttonType = ButtonType.CHECKBOX
+		guiType = GuiType.CHECKBOX
 	},
 	{
 		pos = {x = 110, y = 160},
-		buttonType = ButtonType.CHECKBOX
+		guiType = GuiType.CHECKBOX
 	},
 	{
 		pos = {x = 100, y = 400},

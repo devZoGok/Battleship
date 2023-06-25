@@ -14,3 +14,8 @@ ButtonType = {
 	AUDIO_TAB = 10,
 	MULTIPLAYER_TAB = 11
 }
+
+ListboxType = {
+	CONTROLS = 0,
+	RESOLUTION = 1
+}

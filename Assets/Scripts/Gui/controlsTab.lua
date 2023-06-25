@@ -4,8 +4,7 @@ gui = {
 		pos = {x = 110, y = 190},
 		size = {x = 360, y = 20},
 		guiType = GuiType.LISTBOX,
-		font = 'batang.ttf',
-		closable = false,
+		listboxType = ListboxType.CONTROLS,
 		numMaxDisplay = 5
 	},
 	{

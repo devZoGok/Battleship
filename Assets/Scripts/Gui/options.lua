@@ -10,35 +10,35 @@ gui = {
 		buttonType = ButtonType.CONTROLS_TAB
 	},
 	{
-		pos = {x = 230, y = 40},
+		pos = {x = 270, y = 40},
 		size = Size,
 		guiType = GuiType.BUTTON,
 		name = 'Mouse',
 		buttonType = ButtonType.MOUSE_TAB
 	},
 	{
-		pos = {x = 350, y = 40},
+		pos = {x = 430, y = 40},
 		size = Size,
 		guiType = GuiType.BUTTON,
 		name = 'Video',
 		buttonType = ButtonType.VIDEO_TAB
 	},
 	{
-		pos = {x = 480, y = 40},
+		pos = {x = 590, y = 40},
 		size = Size,
 		guiType = GuiType.BUTTON,
 		name = 'Audio',
 		buttonType = ButtonType.AUDIO_TAB
 	},
 	{
-		pos = {x = 590, y = 40},
+		pos = {x = 750, y = 40},
 		size = Size,
 		guiType = GuiType.BUTTON,
 		name = 'Multiplayer',
 		buttonType = ButtonType.MULTIPLAYER_TAB
 	},
 	{
-		pos = {x = 110, y = 100},
+		pos = {x = 910, y = 100},
 		size = Size,
 		guiType = GuiType.BUTTON,
 		name = 'Back',
