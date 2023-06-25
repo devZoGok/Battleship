@@ -12,6 +12,7 @@ namespace battleship{
 	using namespace gameBase;
 
 	void MapEditorButton::onClick(){
+		/*
 		class NewMapButton : public Button{
 			public:
 				NewMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "New map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"){}
@@ -64,7 +65,6 @@ namespace battleship{
 				}
 			private:
 		};
-		
 		class LoadMapButton : public Button{
 			public:
 				LoadMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "Load map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"){}
@@ -107,7 +107,10 @@ namespace battleship{
 				}
 			private:
 		};
+		 */
+		
 
+		/*
 		GameManager *gm = GameManager::getSingleton();
 		GuiAppState *guiState = (GuiAppState*)gm->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE);
 		guiState->removeAllButtons(vector<Button*>{this});
@@ -120,5 +123,6 @@ namespace battleship{
 		guiState->addButton(newMapButton);
 		guiState->addButton(loadMapButton);
 		guiState->removeButton(this);
+		*/
 	}
 }

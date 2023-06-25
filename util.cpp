@@ -29,6 +29,7 @@ namespace battleship{
 	using namespace configData;
 
     void makeTitlescreenButtons(GuiAppState *state) {
+		/*
         class SpButton : public Button {
         public:
             SpButton(GuiAppState *state, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_S, separate) {
@@ -220,6 +221,7 @@ namespace battleship{
 		state->addButton(optionsButton);
 		state->addButton(editorButton);
 		state->addButton(exitButton);
+		 */
     }
 
 	vector<string> readDir(string path, bool findFolders){

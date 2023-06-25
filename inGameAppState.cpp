@@ -42,6 +42,7 @@ namespace battleship{
     }
 
     void InGameAppState::ConsoleButton::onClick() {
+		/*
         vector<string> list;
         int emptyEntries = 20;
 
@@ -76,6 +77,7 @@ namespace battleship{
 			   	true
 				);
         guiState->addButton(entryButton);
+		 */
     }
 
 		InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
@@ -95,6 +97,7 @@ namespace battleship{
 
 	//TODO: replace string literals removeButton() lines
     void InGameAppState::InGameOptionsButton::ReturnButton::onClick() {
+		/*
         guiState->removeAllCheckboxes();
         guiState->removeAllListboxes();
         guiState->removeAllSliders();
@@ -125,6 +128,7 @@ namespace battleship{
         guiState->addButton(exitButton);
 
         guiState->removeButton("Back");
+		 */
     }
 
     InGameAppState::InGameOptionsButton::InGameOptionsButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : OptionsButton(pos, size, "Options", true) {
@@ -133,6 +137,7 @@ namespace battleship{
     }
 
     void InGameAppState::InGameOptionsButton::onClick() {
+		/*
         returnButton = new ReturnButton(guiState, inGameState, Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(150, 50), "Back", true);
         guiState->addButton(returnButton);
         guiState->removeButton(inGameState->getResumeButton());
@@ -140,6 +145,7 @@ namespace battleship{
         guiState->removeButton(inGameState->getMainMenuButton());
         guiState->removeButton(inGameState->getExitButton());
         OptionsButton::onClick();
+		 */
     }
 
     InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : Button(pos, size, "Main menu", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
@@ -212,7 +218,7 @@ namespace battleship{
 
     void InGameAppState::toggleMainMenu() {
 		GameManager *gm = GameManager::getSingleton();
-
+		/*
         if (!isMainMenuActive) {
             isMainMenuActive = true;
             gm->getStateManager()->dettachAppState(activeState);
@@ -250,6 +256,8 @@ namespace battleship{
 				for(Unit *u : p->getUnits())
 					u->reinitUnit();
         }
+		 */
+
     }
 
     void InGameAppState::onAction(int bind, bool isPressed) {
