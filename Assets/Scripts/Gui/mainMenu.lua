@@ -1,5 +1,3 @@
-dofile("main.lua")
-
 Size = {x = 150, y = 40}
 
 numGui = 4

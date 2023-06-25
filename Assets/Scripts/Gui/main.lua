@@ -4,5 +4,13 @@ ButtonType = {
 	SINGLE_PLAYER = 0,
 	MAP_EDITOR = 1,
 	OPTIONS = 2,
-	EXIT = 3
+	EXIT = 3,
+	OK = 4,
+	DEFAULTS = 5,
+	BACK = 6,
+	CONTROLS_TAB = 7,
+	MOUSE_TAB = 8,
+	VIDEO_TAB = 9,
+	AUDIO_TAB = 10,
+	MULTIPLAYER_TAB = 11
 }

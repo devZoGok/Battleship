@@ -7,7 +7,20 @@
 
 namespace battleship{
 	enum GuiElementType {BUTTON, LISTBOX, CHECKBOX, SLIDER, TEXTBOX};
-	enum ButtonType {SINGLE_PLAYER, EDITOR, OPTIONS, EXIT};
+	enum ButtonType {
+		SINGLE_PLAYER,
+	   	EDITOR,
+	   	OPTIONS,
+	   	EXIT,
+		OK,
+		DEFAULTS,
+		BACK,
+		CONTROLS_TAB,
+		MOUSE_TAB,
+		VIDEO_TAB,
+		AUDIO_TAB,
+		MULTIPLAYER_TAB
+	};
 
 	class ConcreteGuiManager : public vb01Gui::AbstractGuiManager{
 		public:

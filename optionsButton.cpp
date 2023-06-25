@@ -2,6 +2,7 @@
 #include "util.h"
 #include "defConfigs.h"
 #include "gameManager.h"
+#include "concreteGuiManager.h"
 
 #include <stateManager.h>
 
@@ -12,49 +13,7 @@ using namespace std;
 namespace battleship{
 	using namespace configData;
 
-    OptionsButton::OkButton::OkButton() : Button(Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-        this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
-    }
-    void OptionsButton::OkButton::onClick() {
-
-    }
-
-    OptionsButton::DefaultsButton::DefaultsButton() : Button(Vector2(200, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Restore defaults", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-        this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
-    }
-    void OptionsButton::DefaultsButton::onClick() {
-        
-    }
-
-    OptionsButton::BackButton::BackButton() : Button(Vector2(350, GameManager::getSingleton()->getHeight() - 150), Vector2(140, 50), "Back", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-        this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
-    }
-    void OptionsButton::BackButton::onClick() {
-				GameManager *gm = GameManager::getSingleton();
-        state->removeAllListboxes();
-        state->removeAllCheckboxes();
-        state->removeAllSliders();
-        state->removeAllTextboxes();
-        state->removeButton("Ok");
-        state->removeButton("Restore defaults");
-        OptionsButton *optionsButton = new OptionsButton(Vector2(), Vector2(), "Options", true);
-        optionsButton->onClick();
-        state->removeButton("Back");
-    }
-
-    OptionsButton::TabButton::TabButton(Vector2 pos, Vector2 size, string name) :Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-        this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE));
-    }
-    void OptionsButton::TabButton::onClick() {
-        state->removeButton("Back");
-        OkButton *okButton = new OkButton();
-        DefaultsButton *defaultsButton = new DefaultsButton();
-        BackButton *returnButton = new BackButton();
-        state->addButton(okButton);
-        state->addButton(defaultsButton);
-        state->addButton(returnButton);
-    }
-
+	/*
     OptionsButton::ControlsTab::ControlsTab() : TabButton(
 						Vector2(GameManager::getSingleton()->getWidth() / 4, GameManager::getSingleton()->getHeight() / 10),
 					 	Vector2(100, 50),
@@ -179,20 +138,16 @@ namespace battleship{
         state->removeButton("Multiplayer");
     }
 
-    OptionsButton::OptionsButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
-        this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::GUI_STATE));
-    }
+	*/
+    OptionsButton::OptionsButton(Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {}
+
     void OptionsButton::onClick() {
-        ControlsTab *controlsTab = new ControlsTab();
-        MouseTab *mouseTab = new MouseTab();
-        VideoTab *videoTab = new VideoTab();
-        AudioTab *audioTab = new AudioTab();
-        MultiplayerTab *mupltiplayerTab = new MultiplayerTab();
-        state->addButton(controlsTab);
-        state->addButton(mouseTab);
-        state->addButton(videoTab);
-        state->addButton(audioTab);
-        state->addButton(mupltiplayerTab);
-        state->removeButton(this);
-    }
+		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+		guiManager->removeAllButtons();
+		guiManager->removeAllListboxes();
+		guiManager->removeAllCheckboxes();
+		guiManager->removeAllSliders();
+		guiManager->removeAllTextboxes();
+		guiManager->readLuaScreenScript("options.lua");
+	}
 }

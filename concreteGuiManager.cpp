@@ -6,6 +6,10 @@
 #include "mapEditorButton.h"
 #include "optionsButton.h"
 #include "exitButton.h"
+#include "tabButton.h"
+#include "okButton.h"
+#include "defaultsButton.h"
+#include "backButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -52,35 +56,115 @@ namespace battleship{
 			case EXIT:
 				button = new ExitButton(pos, size);
 				break;
+			case OK:
+				button = new OkButton(pos, size, name);
+				break;
+			case DEFAULTS:
+				button = new DefaultsButton(pos, size, name);
+				break;
+			case BACK: {
+				string screen = lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("screen")});
+				button = new BackButton(pos, size, name, screen);
+				break;
+			}
+			case CONTROLS_TAB:
+			case MOUSE_TAB:
+			case VIDEO_TAB:
+			case AUDIO_TAB:
+			case MULTIPLAYER_TAB: {
+				string screens[]{
+					"controlsTab.lua",
+					"mouseTab.lua",
+					"videoTab.lua",
+					"audioTab.lua",
+					"multiplayerTab.lua"
+				};
+				int diff = ((int)type - (int)CONTROLS_TAB);
+				button = new TabButton(pos, size, name, screens[diff]);
+				break;
+			}
 		}
 
 		return button;
 	}
 
 	Listbox* createListbox(int guiId){
-		Listbox *listbox = nullptr;
+		LuaManager *lm = LuaManager::getSingleton();
+
+		string guiTable = "gui", posTable = "pos", sizeTable = "size";
+		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
+		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
+		Vector2 pos = Vector2(posX, posY);
+
+		float sizeX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("x")});
+		float sizeY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("y")});
+		Vector2 size = Vector2(sizeX, sizeY);
+
+		int numMaxDisplay = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numMaxDisplay")});
+		string fontFile = lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("font")});
+		bool closable = lm->getBoolFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("closable")});
+
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
+		Listbox *listbox = new Listbox(pos, size, vector<string>{"a", "b"}, 2, fontPath, closable);
 		return listbox;
 	}
 
 	Checkbox* createCheckbox(int guiId){
-		Checkbox *checkbox = nullptr;
+		LuaManager *lm = LuaManager::getSingleton();
+
+		string guiTable = "gui", posTable = "pos", sizeTable = "size";
+		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
+		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
+		Vector2 pos = Vector2(posX, posY);
+
+		string fontFile = "batang.ttf";
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
+		Checkbox *checkbox = new Checkbox(pos, fontPath);
 		return checkbox;
 	}
 
 	Slider* createSlider(int guiId){
-		Slider *slider = nullptr;
+		LuaManager *lm = LuaManager::getSingleton();
+
+		string guiTable = "gui", posTable = "pos", sizeTable = "size";
+		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
+		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
+		Vector2 pos = Vector2(posX, posY);
+
+		float sizeX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("x")});
+		float sizeY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("y")});
+		Vector2 size = Vector2(sizeX, sizeY);
+
+		float minVal = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("minValue")});
+		float maxVal = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("maxValue")});
+
+		Slider *slider = new Slider(pos, size, minVal, maxVal);
 		return slider;
 	}
 
 	Textbox* createTextbox(int guiId){
-		Textbox *textbox = nullptr;
+		LuaManager *lm = LuaManager::getSingleton();
+
+		string guiTable = "gui", posTable = "pos", sizeTable = "size";
+		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
+		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
+		Vector2 pos = Vector2(posX, posY);
+
+		float sizeX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("x")});
+		float sizeY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("y")});
+		Vector2 size = Vector2(sizeX, sizeY);
+
+		string fontFile = "batang.ttf";
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
+		Textbox *textbox = new Textbox(pos, size, fontPath);
+
 		return textbox;
 	}
 
 	void ConcreteGuiManager::readLuaScreenScript(string script){
 		LuaManager *lm = LuaManager::getSingleton();
-		string path = GameManager::getSingleton()->getPath() + "Scripts/Gui/" + script;
-		lm->buildScript(vector<string>{path});
+		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";
+		lm->buildScript(vector<string>{basePath + "main.lua", basePath + script});
 
 		int numGuiElements = lm->getInt("numGui");
 
