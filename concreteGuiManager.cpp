@@ -101,11 +101,36 @@ namespace battleship{
 		Vector2 size = Vector2(sizeX, sizeY);
 
 		int numMaxDisplay = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numMaxDisplay")});
-		string fontFile = lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("font")});
-		bool closable = lm->getBoolFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("closable")});
+		ListboxType listboxType = (ListboxType)lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("listboxType")});
 
-		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
-		Listbox *listbox = new Listbox(pos, size, vector<string>{"a", "b"}, 2, fontPath, closable);
+		vector<string> lines;
+		int maxDisplay, numLines;
+		bool closable;
+
+		switch(listboxType){
+			case CONTROLS:{
+				numLines = 6;
+				closable = false;
+
+				for(int i = 0; i < numLines; i++)
+					lines.push_back(to_string(i));
+			}
+				break;
+			case RESOLUTION:{
+				numLines = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numLines")});
+
+				for(int i = 0; i < numLines; i++)
+					lines.push_back(lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("lines"), Index(i + 1)}));
+
+				closable = true;
+			}
+				break;
+		}
+
+		maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
+		Listbox *listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
+
 		return listbox;
 	}
 

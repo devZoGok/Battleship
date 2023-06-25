@@ -21,6 +21,10 @@ namespace battleship{
 		AUDIO_TAB,
 		MULTIPLAYER_TAB
 	};
+	enum ListboxType {
+		CONTROLS,
+		RESOLUTION
+	};
 
 	class ConcreteGuiManager : public vb01Gui::AbstractGuiManager{
 		public:
