@@ -1,22 +1,26 @@
 #include "util.h"
 #include "gameManager.h"
 #include "guiAppState.h"
+#include "concreteGuiManager.h"
 
 #include <stateManager.h>
+
+#include <assetManager.h>
 
 using namespace battleship;
 using namespace vb01;
 
 int main() {
-    GameManager *gameManager = GameManager::getSingleton();
-	gameManager->start();
-    GuiAppState *state = new GuiAppState();
-    gameManager->getStateManager()->attachAppState(state);
+    GameManager *gm = GameManager::getSingleton();
+	gm->start();
+    gm->getStateManager()->attachAppState(new GuiAppState());
 
-    makeTitlescreenButtons(state);
+	AssetManager::getSingleton()->load(gm->getPath() + "Fonts/batang.ttf");
+
+	ConcreteGuiManager::getSingleton()->readLuaScreenScript("mainMenu.lua");
 
 	while(true){
-		gameManager->update();
+		gm->update();
 	}
 
     return 0;
