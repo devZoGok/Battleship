@@ -1,0 +1,8 @@
+GuiType = {BUTTON = 0, LISTBOX = 1, CHECKBOX = 2, SLIDER = 3, TEXTBOX = 4}
+
+ButtonType = {
+	SINGLE_PLAYER = 0,
+	MAP_EDITOR = 1,
+	OPTIONS = 2,
+	EXIT = 3
+}
