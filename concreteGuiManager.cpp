@@ -10,6 +10,8 @@
 #include "okButton.h"
 #include "defaultsButton.h"
 #include "backButton.h"
+#include "newMapButton.h"
+#include "loadMapButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -83,6 +85,18 @@ namespace battleship{
 				button = new TabButton(pos, size, name, screens[diff]);
 				break;
 			}
+			case NEW_MAP:
+				button = new NewMapButton(pos, size);
+				break;
+			case NEW_MAP_OK:
+				button = new NewMapButton::OkButton(pos, size, nullptr, nullptr, nullptr);
+				break;
+			case LOAD_MAP:
+				button = new LoadMapButton(pos, size);
+				break;
+			case LOAD_MAP_OK:
+				button = new LoadMapButton::OkButton(pos, size, nullptr);
+				break;
 		}
 
 		return button;
@@ -124,6 +138,11 @@ namespace battleship{
 
 				closable = true;
 			}
+				break;
+			case MAPS:
+				lines = readDir(GameManager::getSingleton()->getPath() + "Models/Maps/", true);
+				numLines = lines.size();
+				closable = true;
 				break;
 		}
 

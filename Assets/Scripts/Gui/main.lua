@@ -12,10 +12,15 @@ ButtonType = {
 	MOUSE_TAB = 8,
 	VIDEO_TAB = 9,
 	AUDIO_TAB = 10,
-	MULTIPLAYER_TAB = 11
+	MULTIPLAYER_TAB = 11,
+	NEW_MAP = 12,
+	NEW_MAP_OK = 13,
+	LOAD_MAP = 14,
+	LOAD_MAP_OK = 15
 }
 
 ListboxType = {
 	CONTROLS = 0,
-	RESOLUTION = 1
+	RESOLUTION = 1,
+	MAPS = 2
 }

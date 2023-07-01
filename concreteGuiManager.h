@@ -19,11 +19,16 @@ namespace battleship{
 		MOUSE_TAB,
 		VIDEO_TAB,
 		AUDIO_TAB,
-		MULTIPLAYER_TAB
+		MULTIPLAYER_TAB,
+		NEW_MAP,
+		NEW_MAP_OK,
+		LOAD_MAP,
+		LOAD_MAP_OK
 	};
 	enum ListboxType {
 		CONTROLS,
-		RESOLUTION
+		RESOLUTION,
+		MAPS
 	};
 
 	class ConcreteGuiManager : public vb01Gui::AbstractGuiManager{
