@@ -65,8 +65,6 @@ namespace battleship{
 			generatePlane(size);
 		}
 
-		prepareGui();
-
 		string basePath = GameManager::getSingleton()->getPath();
 		prepareTextures(basePath + "Textures/Skyboxes/", true, skyTextures);
 		prepareTextures(basePath + "Textures/Landmass/", false, landmassTextures);
@@ -198,8 +196,8 @@ namespace battleship{
 		prepareCellMarkers(map->getTerrainObject(0));
 	}
 
-	void MapEditorAppState::MapEditor::prepareGui(){
 		/*
+	void MapEditorAppState::MapEditor::prepareGui(){
 		GameManager *gm = GameManager::getSingleton();
 		StateManager *sm = gm->getStateManager();
 		GuiAppState *state = (GuiAppState*)sm->getAppStateByType((int)AppStateType::GUI_STATE);
@@ -288,8 +286,8 @@ namespace battleship{
 		vector<string> landTextures = readDir(gm->getPath() + "Textures/Landmass", false);
 		LandTexListbox *landTexListbox = new LandTexListbox(startPos + 4 * offset, size, landTextures, (landTextures.size() > maxDisplay ? maxDisplay : landTextures.size()), fontPath);
 		state->addListbox(landTexListbox);
-		 */
 	}
+		 */
 
 	void MapEditorAppState::MapEditor::prepareTextures(string basePath, bool skybox, vector<Texture*> &textures){
 		AssetManager *assetManager = AssetManager::getSingleton();

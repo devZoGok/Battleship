@@ -12,6 +12,9 @@
 #include "backButton.h"
 #include "newMapButton.h"
 #include "loadMapButton.h"
+#include "exportButton.h"
+#include "skyboxTextureListbox.h"
+#include "landTextureListbox.h"
 
 namespace battleship{
 	using namespace std;
@@ -108,6 +111,9 @@ namespace battleship{
 				button = new LoadMapButton::OkButton(pos, size, (Listbox*)guiElements[lid].second);
 				break;
 			}
+			case EXPORT:
+				button = new ExportButton(pos, size);
+				break;
 		}
 
 		int typeArr[2]{(int)GuiElementType::BUTTON, (int)type};
@@ -134,6 +140,9 @@ namespace battleship{
 		vector<string> lines;
 		int maxDisplay, numLines;
 		bool closable;
+		Listbox *listbox = nullptr;
+
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
 
 		switch(listboxType){
 			case CONTROLS:{
@@ -142,8 +151,12 @@ namespace battleship{
 
 				for(int i = 0; i < numLines; i++)
 					lines.push_back(to_string(i));
-			}
+
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
+				
 				break;
+			}
 			case RESOLUTION:{
 				numLines = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numLines")});
 
@@ -151,18 +164,58 @@ namespace battleship{
 					lines.push_back(lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("lines"), Index(i + 1)}));
 
 				closable = true;
-			}
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+
+				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
+
 				break;
+			}
 			case MAPS:
 				lines = readDir(GameManager::getSingleton()->getPath() + "Models/Maps/", true);
 				numLines = lines.size();
 				closable = true;
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+
+				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
+				break;
+			case UNITS:{
+				bool vehicles = lm->getBoolFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("vehicles")});
+				int numUnits = lm->getInt("numUnits");
+
+				for(int i = 0; i < numUnits; i++){
+					bool v = lm->getBoolFromTable("isVehicle", vector<Index>{Index(i + 1)});
+
+					if(v == vehicles){
+						string name = lm->getStringFromTable("name", vector<Index>{Index(i + 1)});
+						lines.push_back(name);
+					}
+
+				}
+
+				numLines = lines.size();
+				closable = true;
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+
+				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
+				break;
+			}
+			case SKYBOX_TEXTURES:
+				lines = readDir(GameManager::getSingleton()->getPath() + "Textures/Skyboxes", true);
+				numLines = lines.size();
+				closable = true;
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+
+				listbox = new SkyboxTextureListbox(pos, size, lines, maxDisplay, fontPath);
+				break;
+			case LAND_TEXTURES:
+				lines = readDir(GameManager::getSingleton()->getPath() + "Textures/Landmass", false);
+				numLines = lines.size();
+				closable = true;
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+
+				listbox = new LandTextureListbox(pos, size, lines, maxDisplay, fontPath);
 				break;
 		}
-
-		maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
-		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
-		Listbox *listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
 
 		int typeArr[2]{(int)GuiElementType::LISTBOX, (int)listboxType};
 	 	guiElements.push_back(make_pair(typeArr, (void*)listbox));
@@ -234,6 +287,8 @@ namespace battleship{
 	}
 
 	void ConcreteGuiManager::readLuaScreenScript(string script){
+		removeAllGuiElements();
+
 		guiElements.clear();
 
 		LuaManager *lm = LuaManager::getSingleton();

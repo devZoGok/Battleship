@@ -1,6 +1,6 @@
 Size = {x = 150, y = 40}
 
-numGui = 2
+numGui = 3
 gui = {
 	{
 		pos = {x = 110, y = 40},
@@ -15,5 +15,13 @@ gui = {
 		guiType = GuiType.BUTTON,
 		name = 'Load map',
 		buttonType = ButtonType.LOAD_MAP
+	},
+	{
+		pos = {x = 110, y = 140},
+		size = Size,
+		guiType = GuiType.BUTTON,
+		name = 'Back',
+		buttonType = ButtonType.BACK,
+		screen = 'mainMenu.lua'
 	}
 }

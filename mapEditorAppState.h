@@ -57,9 +57,10 @@ namespace battleship{
 					inline MovementAxis getMovementAxis(){return movementAxis;}
 					inline void setMovementAxis(MovementAxis m){movementAxis = m;}
 					inline bool isWeightsGenerated(){return weightsGenerated;}
+					inline vb01::Texture* getSkyTexture(int i){return skyTextures[i];}
+					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
 				private:
 					void generatePlane(vb01::Vector2);
-					void prepareGui();
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
 					void toggleSelection(TerrainObject*, bool);
 					void parseLandmass();
@@ -68,8 +69,6 @@ namespace battleship{
 					void deleteWeights();
 					void prepareTerrainObject(vb01::u32**, Cell*, int[3], float, bool);
 					void prepareCellMarkers(TerrainObject&);
-					inline vb01::Texture* getSkyTexture(int i){return skyTextures[i];}
-					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
 
 					Map *map;
 					TerrainObject *selectedTerrainObject = nullptr;

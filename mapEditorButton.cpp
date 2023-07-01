@@ -13,13 +13,7 @@ namespace battleship{
 	using namespace gameBase;
 
 	void MapEditorButton::onClick(){
-		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
-		guiManager->removeAllButtons();
-		guiManager->removeAllListboxes();
-		guiManager->removeAllCheckboxes();
-		guiManager->removeAllSliders();
-		guiManager->removeAllTextboxes();
-		guiManager->readLuaScreenScript("mapEditorMenu.lua");
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript("mapEditorMenu.lua");
 		/*
 		GameManager *gm = GameManager::getSingleton();
 		GuiAppState *guiState = (GuiAppState*)gm->getStateManager()->getAppStateByType((int)AppStateType::GUI_STATE);

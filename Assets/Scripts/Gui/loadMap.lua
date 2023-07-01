@@ -1,4 +1,4 @@
-numGui = 2
+numGui = 3
 gui = {
 	{
 		pos = {x = 110, y = 190},
@@ -17,5 +17,13 @@ gui = {
 		dependencies = {
 			{dep = 0}
 		}
+	},
+	{
+		pos = {x = 420, y = 400},
+		size = {x = 150, y = 50},
+		guiType = GuiType.BUTTON,
+		name = 'Back',
+		buttonType = ButtonType.BACK,
+		screen = 'mapEditorMenu.lua'
 	}
 }

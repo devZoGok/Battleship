@@ -16,11 +16,15 @@ ButtonType = {
 	NEW_MAP = 12,
 	NEW_MAP_OK = 13,
 	LOAD_MAP = 14,
-	LOAD_MAP_OK = 15
+	LOAD_MAP_OK = 15,
+	EXPORT = 16
 }
 
 ListboxType = {
 	CONTROLS = 0,
 	RESOLUTION = 1,
-	MAPS = 2
+	MAPS = 2,
+	UNITS = 3,
+	SKYBOX_TEXTURES = 4,
+	LAND_TEXTURES = 5
 }

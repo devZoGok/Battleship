@@ -1,11 +1,18 @@
 #include "newMapButton.h"
-#include "concreteGuiManager.h"
 #include "gameManager.h"
+#include "mapEditorAppState.h"
+#include "concreteGuiManager.h"
+
+#include <stateManager.h>
+
+#include <util.h>
+#include <textbox.h>
 
 namespace battleship{
 	using namespace std;
 	using namespace vb01;
 	using namespace vb01Gui;
+	using namespace gameBase;
 
 	NewMapButton::OkButton::OkButton(vb01::Vector2 pos, vb01::Vector2 size, vb01Gui::Textbox *name, vb01Gui::Textbox *sx, vb01Gui::Textbox *sy) : Button(pos, size, "Ok", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true){
 		this->name = name;
@@ -14,6 +21,14 @@ namespace battleship{
 	}
 
 	void NewMapButton::OkButton::onClick(){
+		Vector2 size = Vector2(
+					atof(wstringToString(sizeX->getText()).c_str()),
+					atof(wstringToString(sizeY->getText()).c_str())
+				);
+		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+		stateManager->attachAppState(new MapEditorAppState(wstringToString(name->getText()), size, true));
+
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript("mapEditor.lua");
 		/*
 		GameManager *gm = GameManager::getSingleton();
 		StateManager *stateManager = gm->getStateManager();
@@ -35,13 +50,7 @@ namespace battleship{
 	NewMapButton::NewMapButton(Vector2 pos, Vector2 size) : Button(pos, size, "New map", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"){}
 
 	void NewMapButton::onClick(){
-		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
-		guiManager->removeAllButtons();
-		guiManager->removeAllListboxes();
-		guiManager->removeAllCheckboxes();
-		guiManager->removeAllSliders();
-		guiManager->removeAllTextboxes();
-		guiManager->readLuaScreenScript("newMap.lua");
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript("newMap.lua");
 		/*
 	
 		GameManager *gm = GameManager::getSingleton();
