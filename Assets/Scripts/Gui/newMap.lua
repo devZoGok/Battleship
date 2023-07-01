@@ -22,6 +22,12 @@ gui = {
 		size = {x = 150, y = 50},
 		guiType = GuiType.BUTTON,
 		name = 'Ok',
-		buttonType = ButtonType.NEW_MAP_OK
+		buttonType = ButtonType.NEW_MAP_OK,
+		numDependencies = 3,
+		dependencies = {
+			{id = 0},
+			{id = 1},
+			{id = 2}
+		}
 	}
 }

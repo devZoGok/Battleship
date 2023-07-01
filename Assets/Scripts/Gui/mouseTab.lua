@@ -1,16 +1,20 @@
 numGui = 6
 gui = {
 	{
+		pos = {x = 110, y = 80},
+		size = {x = 300, y = 10},
+		guiType = GuiType.TEXTBOX
+	},
+	{
 		pos = {x = 110, y = 40},
 		size = {x = 300, y = 10},
 		minVal = 0,
 		maxVal = 2,
-		guiType = GuiType.SLIDER
-	},
-	{
-		pos = {x = 110, y = 80},
-		size = {x = 300, y = 10},
-		guiType = GuiType.TEXTBOX
+		guiType = GuiType.SLIDER,
+		numDependencies = 1,
+		dependencies = {
+			{id = 0}
+		}
 	},
 	{
 		pos = {x = 110, y = 110},

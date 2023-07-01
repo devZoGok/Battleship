@@ -4,6 +4,8 @@
 #include <abstractGuiManager.h>
 
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace battleship{
 	enum GuiElementType {BUTTON, LISTBOX, CHECKBOX, SLIDER, TEXTBOX};
@@ -39,9 +41,11 @@ namespace battleship{
 			ConcreteGuiManager(){}
 			vb01Gui::Button* parseButton(int);
 			vb01Gui::Listbox* parseListbox(int);
-			vb01Gui::Checkbox parseCheckbox(int);
+			vb01Gui::Checkbox* parseCheckbox(int);
 			vb01Gui::Slider* parseSlider(int);
 			vb01Gui::Textbox* parseTextbox(int);
+
+			std::vector<std::pair<int*, void*>> guiElements;
 	};
 }
 

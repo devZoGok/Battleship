@@ -28,7 +28,7 @@ namespace battleship{
 		return concreteGuiManager;
 	}
 
-	Button* createButton(int guiId){
+	Button* ConcreteGuiManager::parseButton(int guiId){
 		LuaManager *lm = LuaManager::getSingleton();
 
 		string guiTable = "gui", posTable = "pos", sizeTable = "size";
@@ -88,21 +88,35 @@ namespace battleship{
 			case NEW_MAP:
 				button = new NewMapButton(pos, size);
 				break;
-			case NEW_MAP_OK:
-				button = new NewMapButton::OkButton(pos, size, nullptr, nullptr, nullptr);
+			case NEW_MAP_OK:{
+				int numTextboxes = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numDependencies")});
+				vector<Textbox*> t;
+
+				for(int i = 0; i < numTextboxes; i++){
+					int tid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(i + 1), Index("id")});
+					t.push_back((Textbox*)guiElements[tid].second);
+				}
+
+				button = new NewMapButton::OkButton(pos, size, t[0], t[1], t[2]);
 				break;
+			}
 			case LOAD_MAP:
 				button = new LoadMapButton(pos, size);
 				break;
-			case LOAD_MAP_OK:
-				button = new LoadMapButton::OkButton(pos, size, nullptr);
+			case LOAD_MAP_OK:{
+				int lid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(1), Index("id")});
+				button = new LoadMapButton::OkButton(pos, size, (Listbox*)guiElements[lid].second);
 				break;
+			}
 		}
+
+		int typeArr[2]{(int)GuiElementType::BUTTON, (int)type};
+	 	guiElements.push_back(make_pair(typeArr, (void*)button));
 
 		return button;
 	}
 
-	Listbox* createListbox(int guiId){
+	Listbox* ConcreteGuiManager::parseListbox(int guiId){
 		LuaManager *lm = LuaManager::getSingleton();
 
 		string guiTable = "gui", posTable = "pos", sizeTable = "size";
@@ -150,10 +164,13 @@ namespace battleship{
 		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
 		Listbox *listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
 
+		int typeArr[2]{(int)GuiElementType::LISTBOX, (int)listboxType};
+	 	guiElements.push_back(make_pair(typeArr, (void*)listbox));
+
 		return listbox;
 	}
 
-	Checkbox* createCheckbox(int guiId){
+	Checkbox* ConcreteGuiManager::parseCheckbox(int guiId){
 		LuaManager *lm = LuaManager::getSingleton();
 
 		string guiTable = "gui", posTable = "pos", sizeTable = "size";
@@ -164,10 +181,14 @@ namespace battleship{
 		string fontFile = "batang.ttf";
 		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
 		Checkbox *checkbox = new Checkbox(pos, fontPath);
+
+		int typeArr[2]{(int)GuiElementType::CHECKBOX, -1};
+	 	guiElements.push_back(make_pair(typeArr, (void*)checkbox));
+
 		return checkbox;
 	}
 
-	Slider* createSlider(int guiId){
+	Slider* ConcreteGuiManager::parseSlider(int guiId){
 		LuaManager *lm = LuaManager::getSingleton();
 
 		string guiTable = "gui", posTable = "pos", sizeTable = "size";
@@ -183,10 +204,14 @@ namespace battleship{
 		float maxVal = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("maxValue")});
 
 		Slider *slider = new Slider(pos, size, minVal, maxVal);
+
+		int typeArr[2]{(int)GuiElementType::SLIDER, -1};
+	 	guiElements.push_back(make_pair(typeArr, (void*)slider));
+
 		return slider;
 	}
 
-	Textbox* createTextbox(int guiId){
+	Textbox* ConcreteGuiManager::parseTextbox(int guiId){
 		LuaManager *lm = LuaManager::getSingleton();
 
 		string guiTable = "gui", posTable = "pos", sizeTable = "size";
@@ -202,10 +227,15 @@ namespace battleship{
 		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
 		Textbox *textbox = new Textbox(pos, size, fontPath);
 
+		int typeArr[2]{(int)GuiElementType::TEXTBOX, -1};
+	 	guiElements.push_back(make_pair(typeArr, (void*)textbox));
+
 		return textbox;
 	}
 
 	void ConcreteGuiManager::readLuaScreenScript(string script){
+		guiElements.clear();
+
 		LuaManager *lm = LuaManager::getSingleton();
 		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";
 		lm->buildScript(vector<string>{basePath + "main.lua", basePath + script});
@@ -214,22 +244,24 @@ namespace battleship{
 
 		for(int i = 0; i < numGuiElements; i++){
 			int guiTypeId = lm->getIntFromTable("gui", vector<Index>{Index(i + 1), Index("guiType")});
+			vector<Index> indices = vector<Index>{Index(i + 1)};
+			void *element = nullptr;
 
 			switch((GuiElementType)guiTypeId){
 				case BUTTON:
-					addButton(createButton(i));
+					addButton(parseButton(i));
 					break;
 				case LISTBOX:
-					addListbox(createListbox(i));
+					addListbox(parseListbox(i));
 					break;
 				case CHECKBOX:
-					addCheckbox(createCheckbox(i));
+					addCheckbox(parseCheckbox(i));
 					break;
 				case SLIDER:
-					addSlider(createSlider(i));
+					addSlider(parseSlider(i));
 					break;
 				case TEXTBOX:
-					addTextbox(createTextbox(i));
+					addTextbox(parseTextbox(i));
 					break;
 			}
 		}

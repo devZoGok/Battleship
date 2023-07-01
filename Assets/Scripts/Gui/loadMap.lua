@@ -12,6 +12,10 @@ gui = {
 		size = {x = 140, y = 40},
 		guiType = GuiType.BUTTON,
 		name = 'Ok',
-		buttonType = ButtonType.LOAD_MAP_OK
+		buttonType = ButtonType.LOAD_MAP_OK,
+		numDependencies = 1,
+		dependencies = {
+			{dep = 0}
+		}
 	}
 }

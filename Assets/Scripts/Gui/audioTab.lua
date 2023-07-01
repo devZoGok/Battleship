@@ -1,14 +1,18 @@
 numGui = 5
 gui = {
 	{
-		pos = {x = 110, y = 40},
-		size = {x = 100, y = 10},
-		guiType = GuiType.SLIDER,
-	},
-	{
 		pos = {x = 110, y = 90},
 		size = {x = 100, y = 10},
 		guiType = GuiType.TEXTBOX,
+	},
+	{
+		pos = {x = 110, y = 40},
+		size = {x = 100, y = 10},
+		guiType = GuiType.SLIDER,
+		numDependencies = 1,
+		dependencies = {
+			{id = 0}
+		}
 	},
 	{
 		pos = {x = 100, y = 400},
