@@ -593,7 +593,21 @@ namespace battleship{
 		}
 
 		mapScript += "},\n";
-		mapScript += "skybox = \"" + wstringToString(skyListbox->getContents()[skyListbox->getSelectedOption()]) + "\",\n";
+
+		Root *root = Root::getSingleton();
+		string skyboxPath = "";
+
+		if(root->getSkybox()){
+			Texture *tex = ((Material::TextureUniform*)root->getSkybox()->getMaterial()->getUniform("tex"))->value;
+			string path = tex->getPath()[0];
+			int slashId = path.find_last_of('/');
+			skyboxPath = path.substr(0, slashId);
+
+			slashId = skyboxPath.find_last_of('/');
+			skyboxPath = skyboxPath.substr(slashId + 1);
+		}
+
+		mapScript += "skybox = \"" + skyboxPath + "\",\n";
 		mapScript += "terrain = " + parseTerrainObject(map->getTerrainObject(0));
 		mapScript += "waterbodies = {";
 
