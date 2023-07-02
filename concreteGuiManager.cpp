@@ -16,6 +16,7 @@
 #include "skyboxTextureListbox.h"
 #include "landTextureListbox.h"
 #include "unitListbox.h"
+#include "playButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -32,6 +33,7 @@ namespace battleship{
 		return concreteGuiManager;
 	}
 
+	//TODO refactor player difficulty and faction listbox selection
 	Button* ConcreteGuiManager::parseButton(int guiId){
 		LuaManager *lm = LuaManager::getSingleton();
 
@@ -115,6 +117,24 @@ namespace battleship{
 			case EXPORT:
 				button = new ExportButton(pos, size);
 				break;
+			case PLAY:{
+				int did = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(1), Index("id")});
+				vector<Listbox*> difficultyListboxes = vector<Listbox*>{(Listbox*)guiElements[did].second};
+
+				vector<Listbox*> factionsListboxes;
+				int numPlayers = 2;
+
+				for(int i = 0; i < numPlayers; i++){
+					int fid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(i + 2), Index("id")});
+					factionsListboxes.push_back((Listbox*)guiElements[fid].second);
+				}
+
+				int mid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(4), Index("id")});
+				Listbox *mapListbox = (Listbox*)guiElements[mid].second;
+
+				button = new PlayButton(difficultyListboxes, factionsListboxes, mapListbox, pos, size, name, true);
+				break;
+			}
 		}
 
 		int typeArr[2]{(int)GuiElementType::BUTTON, (int)type};
@@ -215,6 +235,22 @@ namespace battleship{
 				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
 
 				listbox = new LandTextureListbox(pos, size, lines, maxDisplay, fontPath);
+				break;
+			case CPU_DIFFICULTIES:
+				lines = vector<string>{"Easy", "Medium", "Hard"};
+				numLines = lines.size();
+				closable = true;
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+
+				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath);
+				break;
+			case FACTIONS:
+				lines = vector<string>{"Empire", "Mutants", "Shapeshifters"};
+				numLines = lines.size();
+				closable = true;
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
+
+				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath);
 				break;
 		}
 

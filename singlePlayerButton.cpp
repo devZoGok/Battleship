@@ -1,6 +1,7 @@
 #include "singlePlayerButton.h"
 #include "gameManager.h"
 #include "inGameAppState.h"
+#include "concreteGuiManager.h"
 
 #include <stateManager.h>
 
@@ -28,45 +29,8 @@ namespace battleship{
 	void SinglePlayerButton::onClick() {
 	    vector<string> difficulties, factions;
 	
-	    class PlayButton : public Button {
-	    public:
-	        PlayButton(Listbox **difficulties, Listbox **factions, Listbox *mapListbox, int lengths[2], Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
-	            this->state = ((GuiAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::GUI_STATE));
-	            this->lengths[0] = lengths[0];
-	            this->lengths[1] = lengths[1];
 	
-	            difficultiesListboxes = difficulties;
-	            factionsListboxes = factions;
-				this->mapListbox = mapListbox;
-	        }
-	
-	        void onClick() {
-				GameManager *gm = GameManager::getSingleton();
-	            std::vector<string> difficulties, factions;
-	
-	            for(int i = 0; i < lengths[0]; i++)
-	                difficulties.push_back(wstringToString(difficultiesListboxes[i]->getContents()[difficultiesListboxes[i]->getSelectedOption()]));
-	
-	            for(int i = 0; i < lengths[1]; i++)
-	                factions.push_back(to_string(factionsListboxes[i]->getSelectedOption()));
-	
-	
-	            delete[] difficultiesListboxes;
-	            delete[] factionsListboxes;
-	
-				StateManager *stateManager = gm->getStateManager();
-				int selectedMap = mapListbox->getSelectedOption();
-				string mapName = wstringToString(mapListbox->getContents()[selectedMap]);
-	            stateManager->attachAppState(new InGameAppState(difficulties, factions, mapName));
-	            state->removeAllListboxes();
-	            state->removeButton("Back");
-	            state->removeButton("Play");
-	        }
-	    private:
-	        GuiAppState *state;
-	        Listbox **difficultiesListboxes, **factionsListboxes, *mapListbox = nullptr;
-	        int lengths[2];
-	    };
+		/*
 	
 	    class ReturnButton : public Button {
 	    public:
@@ -87,8 +51,7 @@ namespace battleship{
 	    private:
 	        GuiAppState *state;
 	    };
-	
-		/*
+
 		GameManager *gm = GameManager::getSingleton();
 	    Vector2 pos(gm->getWidth() / 8, gm->getHeight() / 8);
 	    difficulties.push_back("Easy");
@@ -127,6 +90,6 @@ namespace battleship{
 	    state->removeButton("Exit");
 	    state->removeButton("Singleplayer");
 		*/
-	
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript("singlePlayerMenu.lua");
 	}
 }

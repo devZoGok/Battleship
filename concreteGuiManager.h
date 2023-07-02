@@ -26,7 +26,8 @@ namespace battleship{
 		NEW_MAP_OK,
 		LOAD_MAP,
 		LOAD_MAP_OK,
-		EXPORT
+		EXPORT,
+		PLAY
 	};
 	enum ListboxType {
 		CONTROLS,
@@ -34,7 +35,9 @@ namespace battleship{
 		MAPS,
 		UNITS,
 		SKYBOX_TEXTURES,
-		LAND_TEXTURES
+		LAND_TEXTURES,
+		CPU_DIFFICULTIES,
+		FACTIONS
 	};
 
 	class ConcreteGuiManager : public vb01Gui::AbstractGuiManager{

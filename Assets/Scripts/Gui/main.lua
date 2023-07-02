@@ -17,7 +17,8 @@ ButtonType = {
 	NEW_MAP_OK = 13,
 	LOAD_MAP = 14,
 	LOAD_MAP_OK = 15,
-	EXPORT = 16
+	EXPORT = 16,
+	PLAY = 17
 }
 
 ListboxType = {
@@ -26,5 +27,7 @@ ListboxType = {
 	MAPS = 2,
 	UNITS = 3,
 	SKYBOX_TEXTURES = 4,
-	LAND_TEXTURES = 5
+	LAND_TEXTURES = 5,
+	CPU_DIFFICULTIES = 6,
+	FACTIONS = 7
 }
