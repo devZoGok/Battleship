@@ -34,8 +34,8 @@ set(GAME_BASE_DIR external/gameBase)
 add_executable(${GAME_NAME} main.cpp ${GAME_SRC})
 
 include_directories(external/tinydir)
-include_directories(external/vb01Gui/external/vb01/external/glm)
-include_directories(external/vb01Gui/external/vb01/external/glm/glm)
+include_directories(external/vb01/external/glm)
+include_directories(external/vb01/external/glm/glm)
 
 add_subdirectory(${VB01_DIR})
 set(VB01_LIB_DIR ${VB01_DIR}/build)
