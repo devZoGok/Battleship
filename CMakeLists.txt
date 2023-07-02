@@ -9,7 +9,7 @@ set(BUILD_TESTS ON)
 cmake_policy(SET CMP0015 NEW)
 
 set(BUTTONS singlePlayerButton.cpp mapEditorButton.cpp newMapButton.cpp loadMapButton.cpp optionsButton.cpp exitButton.cpp tabButton.cpp okButton.cpp defaultsButton.cpp backButton.cpp consoleCommand.cpp exportButton.cpp)
-set(LISTBOXES skyboxTextureListbox.cpp landTextureListbox.cpp)
+set(LISTBOXES skyboxTextureListbox.cpp landTextureListbox.cpp unitListbox.cpp)
 set(GUI tooltip.cpp concreteGuiManager.cpp ${BUTTONS} ${LISTBOXES})
 
 set(STATES activeGameState.cpp inGameAppState.cpp guiAppState.cpp mapEditorAppState.cpp)

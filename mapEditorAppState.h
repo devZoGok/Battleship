@@ -24,13 +24,6 @@ namespace battleship{
 		public:
 			class MapEditor{
 				public:
-					class UnitListbox : public vb01Gui::Listbox{
-						public:
-							UnitListbox(int, vb01::Vector2, vb01::Vector2, std::vector<std::string>, int, std::string);
-							void onClose();
-						private:
-							int startId;
-					};
 					enum MovementAxis{
 						X_AXIS,
 						Y_AXIS,
@@ -81,7 +74,6 @@ namespace battleship{
 					vb01::Vector3 pushPos = vb01::Vector3::VEC_ZERO;
 					vb01::Vector2 mapSize;
 					std::vector<vb01::Texture*> skyTextures, landmassTextures, waterTextures;
-					UnitListbox *vehicleListbox = nullptr, *structureListbox = nullptr;
 			};
 
 			MapEditorAppState(std::string, vb01::Vector2, bool);

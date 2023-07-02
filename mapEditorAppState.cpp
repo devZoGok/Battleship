@@ -37,21 +37,6 @@ namespace battleship{
 	using namespace std;
 	using namespace std::filesystem;
 
-	MapEditorAppState::MapEditor::UnitListbox::UnitListbox(int startId, Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){
-		this->startId = startId;
-	}
-
-	void MapEditorAppState::MapEditor::UnitListbox::onClose(){
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
-		
-		int id = startId + selectedOption;
-		LuaManager *lm = LuaManager::getSingleton();
-		string modelPath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)}) + lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
-		ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
-
-		ufCtr->setPlacingFrames(true);
-	}
-
 	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size, bool newMap){
 		this->newMap = newMap;
 		this->mapSize = size;
@@ -110,7 +95,6 @@ namespace battleship{
 				}
 		}
 	}
-
 
 	void MapEditorAppState::MapEditor::createWaterbody(){
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");

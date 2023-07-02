@@ -15,6 +15,7 @@
 #include "exportButton.h"
 #include "skyboxTextureListbox.h"
 #include "landTextureListbox.h"
+#include "unitListbox.h"
 
 namespace battleship{
 	using namespace std;
@@ -196,7 +197,7 @@ namespace battleship{
 				closable = true;
 				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
 
-				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
+				listbox = new UnitListbox(pos, size, lines, maxDisplay, fontPath);
 				break;
 			}
 			case SKYBOX_TEXTURES:
