@@ -12,15 +12,6 @@ namespace battleship{
 	}
 
     void TabButton::onClick() {
-		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
-		guiManager->removeAllButtons(vector<Button*>{this});
-		guiManager->removeAllListboxes();
-		guiManager->removeAllCheckboxes();
-		guiManager->removeAllSliders();
-		guiManager->removeAllTextboxes();
-
-		guiManager->readLuaScreenScript(screenScript);
-
-		guiManager->removeButton(this);
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript(screenScript);
     }
 }

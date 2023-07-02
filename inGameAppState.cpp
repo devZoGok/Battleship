@@ -35,119 +35,16 @@ namespace battleship{
 
     void InGameAppState::ConsoleButton::onClick() {
 		ConcreteGuiManager::getSingleton()->readLuaScreenScript("console.lua");
-		/*
-        vector<string> list;
-        int emptyEntries = 20;
-
-        for (int i = 0; i < emptyEntries; i++)
-            list.push_back("");
-
-        Vector2 pos = Vector2(300, 100);
-        Listbox *consoleListbox = new Listbox(
-				Vector2(pos.x, pos.y),
-			   	Vector2(420, 20),
-			   	list,
-			   	20,
-			   	GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"
-				);
-        consoleListbox->openUp();
-        guiState->addListbox(consoleListbox);
-
-        Textbox *consoleTextbox = new Textbox(
-				Vector2(pos.x, pos.y + 20 * (emptyEntries + 1)),
-			   	Vector2(300, 20),
-			   	GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"
-				);
-        guiState->addTextbox(consoleTextbox);
-		
-        entryButton = new ConsoleCommandEntryButton(
-				inGameState,
-			   	consoleTextbox,
-			   	consoleListbox,
-			   	Vector2(pos.x + 320, pos.y + 20 * (emptyEntries + 1)),
-			   	Vector2(100, 20),
-			   	"Enter",
-			   	true
-				);
-        guiState->addButton(entryButton);
-		 */
     }
 
-		InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-	        textbox = t;
-	        listbox = l;
-	    }
+	InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
+	    textbox = t;
+	    listbox = l;
+	}
 	
-		void InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::onClick() {
-			ConsoleCommand::execute(wstringToString(textbox->getText()));
-	    }
-
-    InGameAppState::InGameOptionsButton::ReturnButton::ReturnButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
-        this->guiState = guiState;
-        this->inGameState = inGameState;
-    }
-
-	//TODO: replace string literals removeButton() lines
-    void InGameAppState::InGameOptionsButton::ReturnButton::onClick() {
-		/*
-        guiState->removeAllCheckboxes();
-        guiState->removeAllListboxes();
-        guiState->removeAllSliders();
-        guiState->removeAllTextboxes();
-        guiState->removeButton("Controls");
-        guiState->removeButton("Mouse");
-        guiState->removeButton("Video");
-        guiState->removeButton("Audio");
-        guiState->removeButton("Multiplayer");
-
-        Vector2 pos = Vector2(100, 100), size = Vector2(150, 50);
-        ResumeButton *resumeButton = new ResumeButton(guiState, inGameState, Vector2(pos.x, pos.y), size);
-        ConsoleButton *consoleButton = new ConsoleButton(guiState, inGameState, Vector2(pos.x, pos.y + 60), size);
-        InGameOptionsButton *optionsButton = new InGameOptionsButton(guiState, inGameState, Vector2(pos.x, pos.y + 120), size);
-        MainMenuButton *mainMenuButton = new MainMenuButton(guiState, inGameState, Vector2(pos.x, pos.y + 180), size);
-        ExitButton *exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), size);
-
-        inGameState->setResumeButton(resumeButton);
-        inGameState->setConsoleButton(consoleButton);
-        inGameState->setOptionsButton(optionsButton);
-        inGameState->setMainMenuButton(mainMenuButton);
-        inGameState->setExitButton(exitButton);
-
-        guiState->addButton(resumeButton);
-        guiState->addButton(consoleButton);
-        guiState->addButton(optionsButton);
-        guiState->addButton(mainMenuButton);
-        guiState->addButton(exitButton);
-
-        guiState->removeButton("Back");
-		 */
-    }
-
-    InGameAppState::InGameOptionsButton::InGameOptionsButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : OptionsButton(pos, size, "Options", true) {
-        this->guiState = guiState;
-        this->inGameState = inGameState;
-    }
-
-    void InGameAppState::InGameOptionsButton::onClick() {
-		/*
-        returnButton = new ReturnButton(guiState, inGameState, Vector2(50, GameManager::getSingleton()->getHeight() - 150), Vector2(150, 50), "Back", true);
-        guiState->addButton(returnButton);
-        guiState->removeButton(inGameState->getResumeButton());
-        guiState->removeButton(inGameState->getConsoleButton());
-        guiState->removeButton(inGameState->getMainMenuButton());
-        guiState->removeButton(inGameState->getExitButton());
-        OptionsButton::onClick();
-		 */
-    }
-
-    InGameAppState::MainMenuButton::MainMenuButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : Button(pos, size, "Main menu", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-        this->guiState = guiState;
-        this->inGameState = inGameState;
-    }
-
-    void InGameAppState::MainMenuButton::onClick() {
-
-    }
+	void InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::onClick() {
+		ConsoleCommand::execute(wstringToString(textbox->getText()));
+	}
 
     InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions, string mapName) : AbstractAppState(
 						AppStateType::IN_GAME_STATE,
@@ -197,7 +94,7 @@ namespace battleship{
 
 		GameManager *gm = GameManager::getSingleton();
 		StateManager *stateManager = gm->getStateManager();
-        guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
+        GuiAppState *guiState = ((GuiAppState*)stateManager->getAppStateByType((int)AppStateType::GUI_STATE));
         activeState = new ActiveGameState(guiState, playerId);
         stateManager->attachAppState(activeState);
     }

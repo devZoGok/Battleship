@@ -1,7 +1,5 @@
 #include "mapEditorAppState.h"
 #include "gameManager.h"
-#include "stateManager.h"
-#include "guiAppState.h"
 #include "defConfigs.h"
 #include "cameraController.h"
 #include "unitFrameController.h"
@@ -12,6 +10,7 @@
 
 #include <ray.h>
 #include <box.h>
+#include <text.h>
 #include <node.h>
 #include <quad.h>
 #include <model.h>
@@ -23,10 +22,9 @@
 #include <listbox.h>
 
 #include <fstream>
+#include <filesystem>
 
 #include <tinyxml2.h>
-
-#include <filesystem>
 
 namespace battleship{
 	using namespace tinyxml2;
@@ -179,99 +177,6 @@ namespace battleship{
 		prepareTerrainObjects(0, 1);
 		prepareCellMarkers(map->getTerrainObject(0));
 	}
-
-		/*
-	void MapEditorAppState::MapEditor::prepareGui(){
-		GameManager *gm = GameManager::getSingleton();
-		StateManager *sm = gm->getStateManager();
-		GuiAppState *state = (GuiAppState*)sm->getAppStateByType((int)AppStateType::GUI_STATE);
-		string fontPath = gm->getPath() + "Fonts/batang.ttf";
-
-		Vector2 startPos = Vector2((float)gm->getWidth() / 16, gm->getHeight() - guiThreshold);
-		Vector2 size = Vector2(140, 20), offset = Vector2(size.x + 10, 0);
-
-		class ExportButton : public Button{
-			public:
-				ExportButton(Vector2 pos, Vector2 size) : Button(pos, size, "Export", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf"){}
-				void onClick(){
-					StateManager *sm = GameManager::getSingleton()->getStateManager();
-					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
-					mapEditor->exportMap();
-				}
-		};
-
-		state->addButton(new ExportButton(startPos, size));
-
-		int maxDisplay = 2;
-
-		vector<string> vehicles, structures;
-
-		LuaManager *lm = LuaManager::getSingleton();
-		int numUnits = lm->getInt("numUnits");
-
-		for(int i = 0; i < numUnits; i++){
-			bool vehicle = lm->getBoolFromTable("isVehicle", vector<Index>{Index(i + 1)});
-			string name = lm->getStringFromTable("name", vector<Index>{Index(i + 1)});
-			(vehicle ? vehicles : structures).push_back(name);
-		}
-
-		vehicleListbox = new UnitListbox(0, startPos + offset, size, vehicles, maxDisplay, fontPath);
-		state->addListbox(vehicleListbox);
-
-		structureListbox = new UnitListbox(3, startPos + 2 * offset, size, structures, (structures.size() > maxDisplay ? maxDisplay : structures.size()), fontPath);
-		state->addListbox(structureListbox);
-
-		class SkyboxListbox : public Listbox{
-			public:
-				SkyboxListbox(Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
-				
-				void onClose(){
-					Root *root = Root::getSingleton();
-					StateManager *sm = GameManager::getSingleton()->getStateManager();
-					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
-					Texture *skyTexture = mapEditor->getSkyTexture(selectedOption);
-					
-					if(!root->getSkybox())
-						root->createSkybox(skyTexture);
-					else
-						 root->getSkybox()->getMaterial()->setTexUniform("tex", skyTexture, true);
-				}
-			private:
-		};
-
-		vector<string> skyboxFolders = readDir(gm->getPath() + "Textures/Skyboxes", true);
-		skyListbox = new SkyboxListbox(startPos + 3 * offset, size, skyboxFolders, (skyboxFolders.size() > maxDisplay ? maxDisplay : skyboxFolders.size()), fontPath);
-		state->addListbox(skyListbox);
-
-		class LandTexListbox : public Listbox{
-			public:
-				LandTexListbox(Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
-
-				void onClose(){
-					StateManager *sm = GameManager::getSingleton()->getStateManager();
-					MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
-
-					Map *map = Map::getSingleton();
-					Material *mat = map->getTerrainObject(0).node->getMesh(0)->getMaterial();
-					Material::BoolUniform *texturingUniform = (Material::BoolUniform*)mat->getUniform("texturingEnabled");
-					Texture *landTex = mapEditor->getLandmassTexture(selectedOption);
-					string texUni = "textures[0]";
-
-					if(!texturingUniform->value){
-						texturingUniform->value = true;
-						mat->addTexUniform(texUni, landTex, false);
-					}
-					else
-						mat->setTexUniform(texUni, landTex, false);
-				}
-			private:
-		};
-
-		vector<string> landTextures = readDir(gm->getPath() + "Textures/Landmass", false);
-		LandTexListbox *landTexListbox = new LandTexListbox(startPos + 4 * offset, size, landTextures, (landTextures.size() > maxDisplay ? maxDisplay : landTextures.size()), fontPath);
-		state->addListbox(landTexListbox);
-	}
-		 */
 
 	void MapEditorAppState::MapEditor::prepareTextures(string basePath, bool skybox, vector<Texture*> &textures){
 		AssetManager *assetManager = AssetManager::getSingleton();

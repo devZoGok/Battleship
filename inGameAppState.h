@@ -55,39 +55,6 @@ namespace battleship{
         inline void addFx(Fx fx){this->fx.push_back(fx);}
         inline void addProjectile(Projectile *p){projectiles.push_back(p);}
     private:
-        class MainMenuButton : public vb01Gui::Button {
-        public:
-            MainMenuButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2);
-            void onClick();
-        private:
-            GuiAppState *guiState;
-            InGameAppState *inGameState;
-        };
-
-        class InGameOptionsButton : public OptionsButton {
-        public:
-            InGameOptionsButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2);
-            void onClick();
-        private:
-            class ReturnButton : public vb01Gui::Button {
-            public:
-                ReturnButton(GuiAppState*, InGameAppState*, vb01::Vector2, vb01::Vector2, std::string, bool);
-                void onClick();
-            private:
-                GuiAppState *guiState;
-                InGameAppState *inGameState;
-            };
-
-            GuiAppState *guiState;
-            InGameAppState *inGameState;
-            ReturnButton *returnButton;
-        };
-
-        ResumeButton *resumeButton;
-        ConsoleButton *consoleButton;
-        InGameOptionsButton *optionsButton;
-        MainMenuButton *mainMenuButton;
-        ExitButton *exitButton;
         bool isMainMenuActive = false;
         std::vector<std::string> difficultyLevels, factions, modelPaths;
         std::vector<Projectile*> projectiles;
@@ -96,20 +63,8 @@ namespace battleship{
         Player *mainPlayer;
         int playerId;
         ActiveGameState* activeState;
-        GuiAppState* guiState;
 
         void toggleMainMenu();
-    public:
-        inline void setResumeButton(ResumeButton *r){this->resumeButton = r;}
-        inline void setConsoleButton(ConsoleButton *c){this->consoleButton = c;}
-        inline void setOptionsButton(InGameOptionsButton *o){this->optionsButton = o;}
-        inline void setMainMenuButton(MainMenuButton *m){this->mainMenuButton = m;}
-        inline void setExitButton(ExitButton *e){this->exitButton = e;}
-        inline ResumeButton* getResumeButton(){return resumeButton;}
-        inline ConsoleButton* getConsoleButton(){return consoleButton;}
-        inline InGameOptionsButton* getOptionsButton(){return optionsButton;}
-        inline MainMenuButton* getMainMenuButton(){return mainMenuButton;}
-        inline ExitButton* getExitButton(){return exitButton;}
     };
 }
 

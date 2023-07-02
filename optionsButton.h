@@ -4,9 +4,6 @@
 
 #include <button.h>
 
-#include "guiAppState.h"
-#include "gameManager.h"
-
 namespace battleship {
     class OptionsButton : public vb01Gui::Button {
     public:
