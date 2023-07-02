@@ -17,6 +17,8 @@
 #include "landTextureListbox.h"
 #include "unitListbox.h"
 #include "playButton.h"
+#include "inGameAppState.h"
+#include "mainMenuButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -135,6 +137,25 @@ namespace battleship{
 				button = new PlayButton(difficultyListboxes, factionsListboxes, mapListbox, pos, size, name, true);
 				break;
 			}
+			case RESUME:
+				button = new InGameAppState::ResumeButton(pos, size);
+				break;
+			case CONSOLE_SCREEN:
+				button = new InGameAppState::ConsoleButton(pos, size);
+				break;
+			case MAIN_MENU:
+				button = new MainMenuButton(pos, size, name);
+				break;
+			case CONSOLE_COMMAND_OK:{
+				int lid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(1), Index("id")});
+				Listbox *listbox = (Listbox*)guiElements[lid].second;
+
+				int tid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(2), Index("id")});
+				Textbox *textbox = (Textbox*)guiElements[tid].second;
+
+				button = new InGameAppState::ConsoleButton::ConsoleCommandEntryButton(textbox, listbox, pos, size, name);
+				break;
+			}
 		}
 
 		int typeArr[2]{(int)GuiElementType::BUTTON, (int)type};
@@ -251,6 +272,15 @@ namespace battleship{
 				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
 
 				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath);
+				break;
+			case CONSOLE:{
+				for(int i = 0; i < numMaxDisplay; i++)
+					lines.push_back("");
+
+				closable = false;
+
+				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
+			}
 				break;
 		}
 

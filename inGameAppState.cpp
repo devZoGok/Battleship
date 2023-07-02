@@ -14,6 +14,7 @@
 #include "inGameAppState.h"
 #include "consoleCommand.h"
 #include "unitFrameController.h"
+#include "concreteGuiManager.h"
 #include "vessel.h"
 
 using namespace vb01;
@@ -23,25 +24,17 @@ using namespace std;
 namespace battleship{
 	using namespace configData;
 
-    InGameAppState::ResumeButton::ResumeButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : Button(pos, size, "Resume", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-        this->guiState = guiState;
-        this->inGameState = inGameState;
-    }
+    InGameAppState::ResumeButton::ResumeButton(Vector2 pos, Vector2 size) : Button(pos, size, "Resume", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {}
 
     void InGameAppState::ResumeButton::onClick() {
-        inGameState->toggleMainMenu();
+		StateManager *sm = GameManager::getSingleton()->getStateManager();
+        ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE))->toggleMainMenu();
     }
 
-    GuiAppState* InGameAppState::ResumeButton::getGuiState() {
-        return guiState;
-    }
-
-    InGameAppState::ConsoleButton::ConsoleButton(GuiAppState *guiState, InGameAppState *inGameState, Vector2 pos, Vector2 size) : Button(pos, size, "Console", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
-        this->guiState = guiState;
-        this->inGameState = inGameState;
-    }
+    InGameAppState::ConsoleButton::ConsoleButton(Vector2 pos, Vector2 size) : Button(pos, size, "Console", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) { }
 
     void InGameAppState::ConsoleButton::onClick() {
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript("console.lua");
 		/*
         vector<string> list;
         int emptyEntries = 20;
@@ -80,8 +73,7 @@ namespace battleship{
 		 */
     }
 
-		InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(InGameAppState *inGameState, Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, separate) {
-	        this->inGameState = inGameState;
+		InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
 	        textbox = t;
 	        listbox = l;
 	    }
@@ -218,46 +210,26 @@ namespace battleship{
 
     void InGameAppState::toggleMainMenu() {
 		GameManager *gm = GameManager::getSingleton();
-		/*
+		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+
         if (!isMainMenuActive) {
             isMainMenuActive = true;
             gm->getStateManager()->dettachAppState(activeState);
 						
-            Vector2 pos = Vector2(100, 100);
-            resumeButton = new ResumeButton(guiState, this, Vector2(pos.x, pos.y), Vector2(150, 50));
-            consoleButton = new ConsoleButton(guiState, this, Vector2(pos.x, pos.y + 60), Vector2(150, 50));
-            optionsButton = new InGameOptionsButton(guiState, this, Vector2(pos.x, pos.y + 120), Vector2(150, 50));
-            mainMenuButton = new MainMenuButton(guiState, this, Vector2(pos.x, pos.y + 180), Vector2(150, 50));
-            exitButton = new ExitButton(Vector2(pos.x, pos.y + 240), Vector2(150, 50));
-            guiState->addButton(resumeButton);
-            guiState->addButton(consoleButton);
-            guiState->addButton(optionsButton);
-            guiState->addButton(mainMenuButton);
-            guiState->addButton(exitButton);
+			guiManager->readLuaScreenScript("gamePaused.lua");
         } 
         else {
             isMainMenuActive = false;
             gm->getStateManager()->attachAppState(activeState);
 						
-            guiState->removeAllCheckboxes();
-            guiState->removeAllListboxes();
-            guiState->removeAllSliders();
-            guiState->removeAllTextboxes();
-            guiState->removeButton(consoleButton->getEntryButton());
-            guiState->removeButton(consoleButton);
-            guiState->removeButton(mainMenuButton);
-            guiState->removeButton(optionsButton);
-            guiState->removeButton(exitButton);
-            guiState->removeButton(resumeButton);
-
 			AssetManager::getSingleton()->load(gm->getPath() + LuaManager::getSingleton()->getString("modelPrefix"), true);
+
+			guiManager->readLuaScreenScript("inGame.lua");
 
 			for(Player *p : Map::getSingleton()->getPlayers())
 				for(Unit *u : p->getUnits())
 					u->reinitUnit();
         }
-		 */
-
     }
 
     void InGameAppState::onAction(int bind, bool isPressed) {

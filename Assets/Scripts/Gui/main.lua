@@ -18,7 +18,11 @@ ButtonType = {
 	LOAD_MAP = 14,
 	LOAD_MAP_OK = 15,
 	EXPORT = 16,
-	PLAY = 17
+	PLAY = 17,
+	RESUME = 18,
+	CONSOLE = 19,
+	MAIN_MENU = 20,
+	CONSOLE_COMMAND_OK = 21
 }
 
 ListboxType = {
@@ -29,5 +33,6 @@ ListboxType = {
 	SKYBOX_TEXTURES = 4,
 	LAND_TEXTURES = 5,
 	CPU_DIFFICULTIES = 6,
-	FACTIONS = 7
+	FACTIONS = 7,
+	CONSOLE = 8
 }
