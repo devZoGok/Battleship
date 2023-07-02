@@ -42,11 +42,6 @@ set(VB01_LIB_DIR ${VB01_DIR}/build)
 target_include_directories(${GAME_NAME} PUBLIC ${VB01_DIR})
 target_link_directories(${GAME_NAME} PUBLIC ${VB01_LIB_DIR})
 
-add_subdirectory(${VB01_GUI_DIR})
-set(VB01_GUI_LIB_DIR build/${VB01_GUI_DIR})
-target_include_directories(${GAME_NAME} PUBLIC ${VB01_GUI_DIR})
-target_link_directories(${GAME_NAME} PUBLIC ${VB01_GUI_LIB_DIR})
-
 add_subdirectory(${GAME_BASE_DIR})
 set(GAME_BASE_LIB_DIR build/${GAME_BASE_DIR}/src)
 target_include_directories(${GAME_NAME} PUBLIC ${GAME_BASE_DIR})
@@ -57,7 +52,7 @@ set(SFML_LIB_DIR build/${SFML_DIR}/src)
 target_include_directories(${GAME_NAME} PUBLIC ${SFML_DIR}/include)
 target_link_directories(${GAME_NAME} PUBLIC ${SFML_LIB_DIR})
 
-set(DEPS vb01 vb01Gui gameBase sfml-system sfml-audio)
+set(DEPS vb01 gameBase sfml-system sfml-audio)
 target_link_libraries(${GAME_NAME} ${DEPS})
 
 if(BUILD_TESTS)

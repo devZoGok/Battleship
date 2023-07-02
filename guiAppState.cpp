@@ -60,9 +60,11 @@ namespace battleship{
 				if(l) l->scrollDown();
             	break;
 			}
-			case Bind::DELETE_CHAR:
-				backspacePressed = isPressed;
+			case Bind::DELETE_CHAR:{
+				Textbox *t = getOpenTextbox();
+				if(t)t->setDeleteCharacters(isPressed);
 				break;
+			}
         }
     }
 
