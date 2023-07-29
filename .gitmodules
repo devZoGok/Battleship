@@ -7,9 +7,6 @@
 [submodule "external/vb01"]
 	path = external/vb01
 	url = https://github.com/devZoGok/vb01
-[submodule "external/lua"]
-	path = external/lua
-	url = https://github.com/lua/lua
 [submodule "external/tinydir"]
 	path = external/tinydir
 	url = https://github.com/cxong/tinydir
