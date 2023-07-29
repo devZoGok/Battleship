@@ -77,7 +77,7 @@ namespace battleship{
 		string libPath = root->getLibPath();
 
 		Material *mat = new Material(libPath + "texture");
-		string f[]{configData::DEFAULT_TEXTURE};
+		string f[]{GameManager::getSingleton()->getPath() + configData::DEFAULT_TEXTURE};
         Texture *diffuseTexture = new Texture(f, 1, false);
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addBoolUniform("lightingEnabled", false);

@@ -211,9 +211,10 @@ namespace battleship{
 	//TODO simplify the dubplicatory field extraction statements
 	void Map::loadPlayers(){
 		AssetManager *assetManager = AssetManager::getSingleton();
-		assetManager->load(DEFAULT_TEXTURE);
+		string path = GameManager::getSingleton()->getPath();
+		assetManager->load(path + DEFAULT_TEXTURE);
 		LuaManager *lm = LuaManager::getSingleton();
-		assetManager->load(GameManager::getSingleton()->getPath() + lm->getString("modelPrefix"), true);
+		assetManager->load(path + lm->getString("modelPrefix"), true);
 
 		int numPlayers = lm->getIntFromTable(mapTable, vector<Index>{Index("numPlayers")});
 		string playerInd = "players", unitInd = "units", spawnPointInd = "spawnPointId", posInd = "pos", rotInd = "rot";
