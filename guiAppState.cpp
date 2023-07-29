@@ -92,6 +92,8 @@ namespace battleship{
         for (int i = 0; i < textboxes.size(); i++)
             if (textboxes[i]->isEnabled())
                 return textboxes[i];
+
+		return nullptr;
     }
 
     Listbox* GuiAppState::getOpenListbox() {
@@ -100,6 +102,8 @@ namespace battleship{
         for (int i = 0; i < listboxes.size(); i++)
             if (listboxes[i]->isOpen())
 				return listboxes[i];
+
+		return nullptr;
     }
 
     void GuiAppState::onAnalog(int bind, float strength) {}
