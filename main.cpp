@@ -14,6 +14,7 @@ using namespace vb01;
 using namespace std;
 
 int main(int argc, char **argv) {
+  try{
     GameManager *gm = GameManager::getSingleton();
 
 	string gamePath = string(argv[0]);
@@ -28,6 +29,12 @@ int main(int argc, char **argv) {
 	while(true){
 		gm->update();
 	}
+      }
 
+  catch(...){
+    cerr << "Unexpected termination of the program\n";
+
+  }
+  
     return 0;
 }
