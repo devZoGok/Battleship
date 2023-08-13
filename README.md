@@ -20,6 +20,7 @@
 - copy the DLLs, built from dependencies of `Battleship`, to the `build` subdirectory with `battleship.exe`
 
 ## Contrib guide
+The Gitflow shall be used.
 
 1. create an issue, representing a change you wish to implement using one of these labels:
     * `feature` 
