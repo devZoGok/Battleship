@@ -217,6 +217,9 @@ namespace battleship{
 				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
 				break;
 			case UNITS:{
+				string path = GameManager::getSingleton()->getPath();
+				SOL_LUA_STATE.script("PATH = \"" + path + "\";");
+				SOL_LUA_STATE.script_file(path + "Scripts/unitData.lua");
 				bool vehicles = guiTable["vehicles"];
 				int numUnits = SOL_LUA_STATE["numUnits"];
 
