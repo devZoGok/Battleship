@@ -16,6 +16,7 @@ namespace vb01{
 
 namespace battleship{
 	class Player;
+	struct Cell;
 
     class Map {
     public:

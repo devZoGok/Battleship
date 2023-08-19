@@ -74,6 +74,7 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::MapEditor::castSelectionRay(){
+	/*
 		Camera *cam = Root::getSingleton()->getCamera();
 		Vector3 startPos = cam->getPosition();
 		Vector3 endPos = screenToSpace(getCursorPos());
@@ -93,6 +94,7 @@ namespace battleship{
 					break;
 				}
 		}
+	*/
 	}
 
 	void MapEditorAppState::MapEditor::createWaterbody(){
@@ -574,12 +576,14 @@ namespace battleship{
 			case Bind::CREATE_WATERBODY:
 				if(isPressed) mapEditor->createWaterbody();
 				break;
+				/*
 			case Bind::MOVE_TERR_OBJ:
 				if(isPressed) mapEditor->setMovingTerrainObject(true);
 				break;
 			case Bind::STOP_TERR_OBJ:
 				if(isPressed) mapEditor->setMovingTerrainObject(false);
 				break;
+				 */
 			case Bind::MOVE_X_AXIS:
 			case Bind::MOVE_Y_AXIS:
 			case Bind::MOVE_Z_AXIS:
@@ -611,6 +615,7 @@ namespace battleship{
 					camCtr->orientCamera(Vector3(0, 1, 0), strength);
 
 				break;
+				/*
 			case Bind::PUSH_VERTS_UP:
 			case Bind::PUSH_VERTS_DOWN:
 				if(mapEditor->isPushing()) mapEditor->pushLandmassVerts(strength);
@@ -618,6 +623,7 @@ namespace battleship{
 					mapEditor->moveTerrainObject(strength);
 
 				break;
+				 */
 		}
 	}
 }
