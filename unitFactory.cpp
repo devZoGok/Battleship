@@ -3,7 +3,7 @@
 #include "vehicle.h"
 #include "engineer.h"
 
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include <vector>
 
@@ -13,10 +13,8 @@ namespace battleship{
 	using namespace gameBase;
 
 	Unit* UnitFactory::createUnit(Player *player, int id, Vector3 pos, Quaternion rot){
+		int unitClass = SOL_LUA_STATE["unitClass"][id + 1];
 		Unit *unit = nullptr;
-
-		LuaManager *luaManager = LuaManager::getSingleton();
-		int unitClass = luaManager->getIntFromTable("unitClass", vector<Index>{Index(id + 1)});
 
 		switch((UnitClass)unitClass){
 			case UnitClass::ENGINEER:

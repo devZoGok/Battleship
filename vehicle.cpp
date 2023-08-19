@@ -5,7 +5,7 @@
 #include <model.h>
 #include <quaternion.h>
 
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include "vehicle.h"
 #include "pathfinder.h"
@@ -60,10 +60,9 @@ namespace battleship{
 	void Vehicle::initProperties(){
 		Unit::initProperties();
 
-		LuaManager *lm = LuaManager::getSingleton();
-        maxTurnAngle = lm->getFloatFromTable("maxTurnAngle", vector<Index>{Index(id + 1)});
-        speed = lm->getFloatFromTable("speed", vector<Index>{Index(id + 1)});
-		anglePrecision = lm->getFloatFromTable("anglePrecision", vector<Index>{Index(id + 1)});
+        maxTurnAngle = SOL_LUA_STATE["maxTurnAngle"][id + 1];
+        speed = SOL_LUA_STATE["speed"][id + 1];
+		anglePrecision = SOL_LUA_STATE["anglePrecision"][id + 1];
 	}
 
 	void Vehicle::navigate(Order order, float destOffset){

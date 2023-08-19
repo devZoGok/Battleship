@@ -9,6 +9,8 @@ gui = {
 		pos = {x = 110, y = 40},
 		size = {x = 100, y = 10},
 		guiType = GuiType.SLIDER,
+		minValue = 0,
+		maxValue = 100,
 		numDependencies = 1,
 		dependencies = {
 			{id = 0}

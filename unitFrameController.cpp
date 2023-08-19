@@ -9,7 +9,7 @@
 #include <root.h>
 #include <ray.h>
 
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include <string>
 
@@ -47,9 +47,7 @@ namespace battleship{
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = 3 * meshData.numTris;
 
-		LuaManager *lm = LuaManager::getSingleton();
-		float maxUnevenness = lm->getFloat("maxUnevenness");
-		string table = "unitCornerPoints";
+		float maxUnevenness = SOL_LUA_STATE["maxUnevenness"];
 
 		Camera *cam = Root::getSingleton()->getCamera();
 		Vector3 startPos = cam->getPosition();
@@ -64,12 +62,9 @@ namespace battleship{
 				if(!rotatingStructure)
 					s.model->setPosition(results[0].pos);
 
-    			float width = 
-					lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(1), Index("x")}) -
-				   	lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(2), Index("x")});
-    			float length = 
-					lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(4), Index("z")}) -
-				   	lm->getFloatFromTable(table, vector<Index>{Index(s.id + 1), Index(1), Index("z")});
+				sol::table unitTable = SOL_LUA_STATE["unitCornerPoints"][s.id + 1]; 
+    			float width = (int)unitTable[1]["x"] - (int)unitTable[2]["x"];
+    			float length = (int)unitTable[4]["z"] - (int)unitTable[1]["z"];
 
 				float unevenness = 0;
 

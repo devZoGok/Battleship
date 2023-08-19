@@ -15,7 +15,7 @@ gui = {
 		buttonType = ButtonType.LOAD_MAP_OK,
 		numDependencies = 1,
 		dependencies = {
-			{dep = 0}
+			{id = 0}
 		}
 	},
 	{

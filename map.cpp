@@ -4,7 +4,7 @@
 #include <material.h>
 #include <assetManager.h>
 
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include "map.h"
 #include "player.h"
@@ -35,9 +35,7 @@ namespace battleship{
 	}
 
 	void Map::loadSkybox(){
-		LuaManager *lm = LuaManager::getSingleton();
-
-		string skyboxName = lm->getStringFromTable(mapTable, vector<Index>{Index("skybox")});
+		string skyboxName = SOL_LUA_STATE[mapTable]["skybox"];
 		string basePath = GameManager::getSingleton()->getPath() + "Textures/Skyboxes/" + skyboxName;
 
 		const int numPaths = 6;
@@ -57,6 +55,7 @@ namespace battleship{
 	}
 
 	void Map::loadTerrainObject(int id){
+		/*
 		LuaManager *luaManager = LuaManager::getSingleton();
 		string terrainTable = (id == -1 ? "terrain" : "waterBodies");
 		vector<Index> baseIndices = (id == -1 ? vector<Index>{Index(terrainTable)} : vector<Index>{Index(terrainTable), Index(id + 1)});
@@ -193,18 +192,15 @@ namespace battleship{
 			quad->setMaterial(mat);
 
 		terrainObjects.push_back(TerrainObject(pos, size, Vector3(cellSize.x, (id == -1 ? 0 : cellSize.y), cellSize.z), type, node, numCells, cells, weights));
+		*/
 	}
 
 	void Map::loadSpawnPoints(){
-		LuaManager *lm = LuaManager::getSingleton();
-		int numSpawnPoints = lm->getIntFromTable(mapTable, vector<Index>{Index("numSpawnPoints")});
-		string spawnPointInd = "spawnPoints";
+		int numSpawnPoints = SOL_LUA_STATE[mapTable]["numSpawnPoints"];
 
 		for(int i = 0; i < numSpawnPoints; i++){
-			float x = lm->getFloatFromTable(mapTable, vector<Index>{Index(spawnPointInd), Index(i + 1), Index("x")});
-			float y = lm->getFloatFromTable(mapTable, vector<Index>{Index(spawnPointInd), Index(i + 1), Index("y")});
-			float z = lm->getFloatFromTable(mapTable, vector<Index>{Index(spawnPointInd), Index(i + 1), Index("z")});
-			spawnPoints.push_back(Vector3(x, y, z));
+			sol::table posTable = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1];
+			spawnPoints.push_back(Vector3(posTable["x"], posTable["y"], posTable["z"]));
 		}
 	}
 
@@ -213,31 +209,27 @@ namespace battleship{
 		AssetManager *assetManager = AssetManager::getSingleton();
 		string path = GameManager::getSingleton()->getPath();
 		assetManager->load(path + DEFAULT_TEXTURE);
-		LuaManager *lm = LuaManager::getSingleton();
-		assetManager->load(path + lm->getString("modelPrefix"), true);
+		assetManager->load(path + (string)SOL_LUA_STATE["modelPrefix"], true);
 
-		int numPlayers = lm->getIntFromTable(mapTable, vector<Index>{Index("numPlayers")});
-		string playerInd = "players", unitInd = "units", spawnPointInd = "spawnPointId", posInd = "pos", rotInd = "rot";
+		int numPlayers = SOL_LUA_STATE[mapTable]["numPlayers"];
+		string playerInd = "players";
 
 		for(int i = 0; i < numPlayers; i++){
-			int spawnPointId = lm->getIntFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(spawnPointId)});
-			int numUnits = lm->getIntFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index("numUnits")});
+			int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
+			int numUnits = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numUnits"];
 			
 			players.push_back(new Player(0, 0, 0, spawnPoints[i]));
 
 			for(int j = 0; j < numUnits; j++){
-				float posX = lm->getFloatFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index(j + 1), Index(posInd), Index("x")});
-				float posY = lm->getFloatFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index(j + 1), Index(posInd), Index("y")});
-				float posZ = lm->getFloatFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index(j + 1), Index(posInd), Index("z")});
-				Vector3 pos = Vector3(posX, posY, posZ);
+				sol::table unitTable = SOL_LUA_STATE[mapTable][playerInd][i + 1]["units"][j + 1];
 
-				float rotW = lm->getFloatFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index(j + 1), Index(rotInd), Index("w")});
-				float rotX = lm->getFloatFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index(j + 1), Index(rotInd), Index("x")});
-				float rotY = lm->getFloatFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index(j + 1), Index(rotInd), Index("y")});
-				float rotZ = lm->getFloatFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index(j + 1), Index(rotInd), Index("z")});
-				Quaternion rot = Quaternion(rotW, rotX, rotY, rotZ);
+	   			string posInd = "pos";
+				Vector3 pos = Vector3(unitTable[posInd]["x"], unitTable[posInd]["y"], unitTable[posInd]["z"]);
 
-				int id = lm->getIntFromTable(mapTable, vector<Index>{Index(playerInd), Index(i + 1), Index(unitInd), Index("id")});
+				string rotInd = "rot";
+				Quaternion rot = Quaternion(unitTable[rotInd]["w"], unitTable[rotInd]["x"], unitTable[rotInd]["x"], unitTable[rotInd]["x"]);
+
+				int id = unitTable["id"];
 				
 				players[i]->addUnit(UnitFactory::createUnit(players[i], id, pos, rot));
 			}
@@ -255,25 +247,24 @@ namespace battleship{
 	}
 
     void Map::load(string mapName, bool empty) {
-				this->mapName = mapName;
-				cellSize = Vector3(7, 6, 7);
-				Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
-				
-				preprareScene();
+		this->mapName = mapName;
+		cellSize = Vector3(7, 6, 7);
+		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
+		
+		preprareScene();
 
-				if(!empty){
-						LuaManager *lm = LuaManager::getSingleton();
-						lm->buildScript(vector<string>{GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua"});
-						int numWaterbodies = lm->getIntFromTable(mapTable, vector<Index>{Index("numWaterBodies")});
-						
-						loadSpawnPoints();
-						loadPlayers();
-						loadSkybox();
-						loadTerrainObject(-1);
-						
-						for(int i = 0; i < numWaterbodies; i++)
-								loadTerrainObject(i);
-				}
+		if(!empty){
+			SOL_LUA_STATE.script_file(GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua");
+			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
+			
+			loadSpawnPoints();
+			loadPlayers();
+			loadSkybox();
+			loadTerrainObject(-1);
+			
+			for(int i = 0; i < numWaterbodies; i++)
+				loadTerrainObject(i);
+		}
     }
 
     void Map::unload() {}

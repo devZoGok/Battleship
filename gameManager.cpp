@@ -6,7 +6,7 @@
 #include <assetManager.h>
 #include <root.h>
 
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include "gameManager.h"
 #include "guiAppState.h"
@@ -29,20 +29,17 @@ namespace battleship{
 	void GameManager::start(string gameDir) {
 		path = gameDir + "Assets/";
 
-		LuaManager *luaManager = LuaManager::getSingleton();
-		luaManager->executeCode("PATH = \"" + path + "\";");
+		gameBase::SOL_LUA_STATE.script("PATH = \"" + path + "\";");
 
 		vector<string> files = configData::scripts;
 		files.emplace(files.begin(), "Scripts/main.lua");
 
 		for(string &f : files)
-			f = path + f;
+			gameBase::SOL_LUA_STATE.script_file(path + f);
 
-		luaManager->buildScript(files);
-
-		string ind1 = "graphics", ind2 = "resolution";
-		width = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("x")});
-		height = luaManager->getIntFromTable(ind1, vector<Index>{Index(ind2), Index("y")});
+		sol::table resTable = SOL_LUA_STATE["graphics"]["resolution"]; 
+		width = resTable["x"];
+		height = resTable["y"];
 
 		Root *root = Root::getSingleton();
 		root->start(width, height, path + "../external/vb01/", "Battleship");

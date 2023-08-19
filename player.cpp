@@ -1,6 +1,6 @@
 #include "player.h"
 
-#include <luaManager.h>
+#include <solUtil.h>
 
 using namespace vb01;
 using namespace gameBase;
@@ -13,16 +13,14 @@ namespace battleship{
         this->spawnPoint = spawnPoint;
 		this->id = id;
 
-		LuaManager *lm = LuaManager::getSingleton();
-		lm->executeCode("players[" + to_string(id + 1) + "] = Player:new({id = " + to_string(id + 1) + "})");
+		SOL_LUA_STATE.script("players[" + to_string(id + 1) + "] = Player:new({id = " + to_string(id + 1) + "})");
     }
 
     Player::~Player() {
     }
 
     void Player::update() {
-		LuaManager *lm = LuaManager::getSingleton();
-		lm->executeCode("players[" + to_string(id + 1) + "]:update()");
+		SOL_LUA_STATE.script("players[" + to_string(id + 1) + "]:update()");
 
 		for(Unit *u : units)
 			u->update();

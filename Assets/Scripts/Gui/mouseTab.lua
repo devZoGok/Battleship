@@ -8,8 +8,8 @@ gui = {
 	{
 		pos = {x = 110, y = 40},
 		size = {x = 300, y = 10},
-		minVal = 0,
-		maxVal = 2,
+		minValue = 0,
+		maxValue = 2,
 		guiType = GuiType.SLIDER,
 		numDependencies = 1,
 		dependencies = {

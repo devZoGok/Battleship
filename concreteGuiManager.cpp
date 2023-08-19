@@ -1,4 +1,4 @@
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include "concreteGuiManager.h"
 #include "gameManager.h"
@@ -37,19 +37,16 @@ namespace battleship{
 
 	//TODO refactor player difficulty and faction listbox selection
 	Button* ConcreteGuiManager::parseButton(int guiId){
-		LuaManager *lm = LuaManager::getSingleton();
+		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
-		string guiTable = "gui", posTable = "pos", sizeTable = "size";
-		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
-		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
-		Vector2 pos = Vector2(posX, posY);
+		sol::table posTable = guiTable["pos"];
+		Vector2 pos = Vector2(posTable["x"], posTable["y"]);
 
-		float sizeX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("x")});
-		float sizeY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("y")});
-		Vector2 size = Vector2(sizeX, sizeY);
+		sol::table sizeTable = guiTable["size"];
+		Vector2 size = Vector2(sizeTable["x"], sizeTable["y"]);
 
-		string name = lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("name")});
-		ButtonType type = (ButtonType)lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("buttonType")});
+		string name = guiTable["name"];
+		ButtonType type = (ButtonType)guiTable["buttonType"];
 
 		Button *button = nullptr;
 
@@ -73,7 +70,7 @@ namespace battleship{
 				button = new DefaultsButton(pos, size, name);
 				break;
 			case BACK: {
-				string screen = lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("screen")});
+				string screen = guiTable["screen"];
 				button = new BackButton(pos, size, name, screen);
 				break;
 			}
@@ -97,11 +94,11 @@ namespace battleship{
 				button = new NewMapButton(pos, size);
 				break;
 			case NEW_MAP_OK:{
-				int numTextboxes = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numDependencies")});
+				int numTextboxes = guiTable["numDependencies"];
 				vector<Textbox*> t;
 
 				for(int i = 0; i < numTextboxes; i++){
-					int tid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(i + 1), Index("id")});
+					int tid = guiTable["dependencies"][i + 1]["id"];
 					t.push_back((Textbox*)guiElements[tid].second);
 				}
 
@@ -112,7 +109,7 @@ namespace battleship{
 				button = new LoadMapButton(pos, size);
 				break;
 			case LOAD_MAP_OK:{
-				int lid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(1), Index("id")});
+				int lid = guiTable["dependencies"][1]["id"];
 				button = new LoadMapButton::OkButton(pos, size, (Listbox*)guiElements[lid].second);
 				break;
 			}
@@ -120,18 +117,18 @@ namespace battleship{
 				button = new ExportButton(pos, size);
 				break;
 			case PLAY:{
-				int did = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(1), Index("id")});
+				int did = guiTable["dependencies"][1]["id"];
 				vector<Listbox*> difficultyListboxes = vector<Listbox*>{(Listbox*)guiElements[did].second};
 
 				vector<Listbox*> factionsListboxes;
 				int numPlayers = 2;
 
 				for(int i = 0; i < numPlayers; i++){
-					int fid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(i + 2), Index("id")});
-					factionsListboxes.push_back((Listbox*)guiElements[fid].second);
+					int did = guiTable["dependencies"][i + 2]["id"];
+					factionsListboxes.push_back((Listbox*)guiElements[did].second);
 				}
 
-				int mid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(4), Index("id")});
+				int mid = guiTable["dependencies"][4]["id"];
 				Listbox *mapListbox = (Listbox*)guiElements[mid].second;
 
 				button = new PlayButton(difficultyListboxes, factionsListboxes, mapListbox, pos, size, name, true);
@@ -147,10 +144,10 @@ namespace battleship{
 				button = new MainMenuButton(pos, size, name);
 				break;
 			case CONSOLE_COMMAND_OK:{
-				int lid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(1), Index("id")});
+				int lid = guiTable["dependencies"][1]["id"];
 				Listbox *listbox = (Listbox*)guiElements[lid].second;
 
-				int tid = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("dependencies"), Index(2), Index("id")});
+				int tid = guiTable["dependencies"][2]["id"];
 				Textbox *textbox = (Textbox*)guiElements[tid].second;
 
 				button = new InGameAppState::ConsoleButton::ConsoleCommandEntryButton(textbox, listbox, pos, size, name);
@@ -165,19 +162,16 @@ namespace battleship{
 	}
 
 	Listbox* ConcreteGuiManager::parseListbox(int guiId){
-		LuaManager *lm = LuaManager::getSingleton();
+		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
-		string guiTable = "gui", posTable = "pos", sizeTable = "size";
-		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
-		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
-		Vector2 pos = Vector2(posX, posY);
+		string posTable = "pos";
+		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
 
-		float sizeX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("x")});
-		float sizeY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("y")});
-		Vector2 size = Vector2(sizeX, sizeY);
+		string sizeTable = "size";
+		Vector2 size = Vector2(guiTable[sizeTable]["x"], guiTable[sizeTable]["y"]);
 
-		int numMaxDisplay = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numMaxDisplay")});
-		ListboxType listboxType = (ListboxType)lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("listboxType")});
+		int numMaxDisplay = guiTable["numMaxDisplay"];
+		ListboxType listboxType = (ListboxType)guiTable["listboxType"];
 
 		vector<string> lines;
 		int maxDisplay, numLines;
@@ -200,10 +194,10 @@ namespace battleship{
 				break;
 			}
 			case RESOLUTION:{
-				numLines = lm->getIntFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("numLines")});
+				numLines = guiTable["numLines"];
 
 				for(int i = 0; i < numLines; i++)
-					lines.push_back(lm->getStringFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("lines"), Index(i + 1)}));
+					lines.push_back(guiTable["lines"][i + 1]);
 
 				closable = true;
 				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
@@ -221,17 +215,14 @@ namespace battleship{
 				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
 				break;
 			case UNITS:{
-				bool vehicles = lm->getBoolFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("vehicles")});
-				int numUnits = lm->getInt("numUnits");
+				bool vehicles = guiTable["vehicles"];
+				int numUnits = SOL_LUA_STATE["numUnits"];
 
 				for(int i = 0; i < numUnits; i++){
-					bool v = lm->getBoolFromTable("isVehicle", vector<Index>{Index(i + 1)});
+					bool v = SOL_LUA_STATE["isVehicle"][i + 1];
 
-					if(v == vehicles){
-						string name = lm->getStringFromTable("name", vector<Index>{Index(i + 1)});
-						lines.push_back(name);
-					}
-
+					if(v == vehicles)
+						lines.push_back(SOL_LUA_STATE["name"][i + 1]);
 				}
 
 				numLines = lines.size();
@@ -291,15 +282,12 @@ namespace battleship{
 	}
 
 	Checkbox* ConcreteGuiManager::parseCheckbox(int guiId){
-		LuaManager *lm = LuaManager::getSingleton();
+		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
-		string guiTable = "gui", posTable = "pos", sizeTable = "size";
-		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
-		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
-		Vector2 pos = Vector2(posX, posY);
+		string posTable = "pos";
+		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
 
-		string fontFile = "batang.ttf";
-		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
 		Checkbox *checkbox = new Checkbox(pos, fontPath);
 
 		int typeArr[2]{(int)GuiElementType::CHECKBOX, -1};
@@ -309,21 +297,13 @@ namespace battleship{
 	}
 
 	Slider* ConcreteGuiManager::parseSlider(int guiId){
-		LuaManager *lm = LuaManager::getSingleton();
+		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
-		string guiTable = "gui", posTable = "pos", sizeTable = "size";
-		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
-		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
-		Vector2 pos = Vector2(posX, posY);
+		string posTable = "pos", sizeTable = "size";
+		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
+		Vector2 size = Vector2(guiTable[sizeTable]["x"], guiTable[sizeTable]["y"]);
 
-		float sizeX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("x")});
-		float sizeY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("y")});
-		Vector2 size = Vector2(sizeX, sizeY);
-
-		float minVal = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("minValue")});
-		float maxVal = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index("maxValue")});
-
-		Slider *slider = new Slider(pos, size, minVal, maxVal);
+		Slider *slider = new Slider(pos, size, guiTable["minValue"], guiTable["maxValue"]);
 
 		int typeArr[2]{(int)GuiElementType::SLIDER, -1};
 	 	guiElements.push_back(make_pair(typeArr, (void*)slider));
@@ -332,19 +312,13 @@ namespace battleship{
 	}
 
 	Textbox* ConcreteGuiManager::parseTextbox(int guiId){
-		LuaManager *lm = LuaManager::getSingleton();
+		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
-		string guiTable = "gui", posTable = "pos", sizeTable = "size";
-		float posX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("x")});
-		float posY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(posTable), Index("y")});
-		Vector2 pos = Vector2(posX, posY);
+		string posTable = "pos", sizeTable = "size";
+		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
+		Vector2 size = Vector2(guiTable[sizeTable]["x"], guiTable[sizeTable]["y"]);
 
-		float sizeX = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("x")});
-		float sizeY = lm->getFloatFromTable(guiTable, vector<Index>{Index(guiId + 1), Index(sizeTable), Index("y")});
-		Vector2 size = Vector2(sizeX, sizeY);
-
-		string fontFile = "batang.ttf";
-		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/" + fontFile;
+		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
 		Textbox *textbox = new Textbox(pos, size, fontPath);
 
 		int typeArr[2]{(int)GuiElementType::TEXTBOX, -1};
@@ -358,16 +332,14 @@ namespace battleship{
 
 		guiElements.clear();
 
-		LuaManager *lm = LuaManager::getSingleton();
 		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";
-		lm->buildScript(vector<string>{basePath + "main.lua", basePath + script});
+		SOL_LUA_STATE.script_file(basePath + "main.lua");
+		SOL_LUA_STATE.script_file(basePath + script);
 
-		int numGuiElements = lm->getInt("numGui");
+		int numGuiElements = SOL_LUA_STATE["numGui"];
 
 		for(int i = 0; i < numGuiElements; i++){
-			int guiTypeId = lm->getIntFromTable("gui", vector<Index>{Index(i + 1), Index("guiType")});
-			vector<Index> indices = vector<Index>{Index(i + 1)};
-			void *element = nullptr;
+			int guiTypeId = SOL_LUA_STATE["gui"][i + 1]["guiType"];
 
 			switch((GuiElementType)guiTypeId){
 				case BUTTON:

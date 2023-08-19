@@ -2,7 +2,7 @@
 #include "unit.h"
 #include "unitFrameController.h"
 
-#include <luaManager.h>
+#include <solUtil.h>
 
 namespace battleship{
 	using namespace std;
@@ -17,8 +17,7 @@ namespace battleship{
 		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 		
 		int id = selectedOption;
-		LuaManager *lm = LuaManager::getSingleton();
-		string modelPath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)}) + lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
+		string modelPath = (string)SOL_LUA_STATE["basePath"][id + 1] + (string)SOL_LUA_STATE["meshPath"][id + 1];
 		ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
 
 		ufCtr->setPlacingFrames(true);
