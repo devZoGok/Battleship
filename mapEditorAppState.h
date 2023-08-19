@@ -18,7 +18,6 @@ namespace vb01{
 
 namespace battleship{
 	class MapEditor;
-	class TerrainObject;
 
 	class MapEditorAppState : public gameBase::AbstractAppState{
 		public:
@@ -39,7 +38,7 @@ namespace battleship{
 					void exportMap();
 					void prepareTerrainObjects(int = 0, int = -1);
 					void toggleCellMarkers();
-					inline TerrainObject* getSelectedTerrainObject(){return selectedTerrainObject;}
+					inline vb01::Node* getSelectedNode(){return selectedTerrainNode;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
 					inline bool isPushing(){return pushing;}
@@ -55,16 +54,16 @@ namespace battleship{
 				private:
 					void generatePlane(vb01::Vector2);
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
-					void toggleSelection(TerrainObject*, bool);
+					//void toggleSelection(TerrainObject*, bool);
 					void parseLandmass();
-					std::string parseTerrainObject(TerrainObject&);
+					//std::string parseTerrainObject(TerrainObject&);
 					void parseMapScript();
 					void deleteWeights();
 					void prepareTerrainObject(vb01::u32**, Cell*, int[3], float, bool);
-					void prepareCellMarkers(TerrainObject&);
+					//void prepareCellMarkers(TerrainObject&);
 
 					Map *map;
-					TerrainObject *selectedTerrainObject = nullptr;
+					vb01::Node *selectedTerrainNode = nullptr;
 					MovementAxis movementAxis = X_AXIS;
 					vb01Gui::Listbox *skyListbox = nullptr;
 					bool pushing = false, movingTerrainObject = false, weightsGenerated = false, newMap, cellMarkersVisible = false;

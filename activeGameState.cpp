@@ -276,6 +276,7 @@ namespace battleship{
 
 			Map *map = Map::getSingleton();
 
+			/*
 			for(Unit *u : mainPlayer->getSelectedUnits())
 				if(u->getType() == UnitType::UNDERWATER){
 					for(int i = 1; i < map->getNumTerrainObjects(); i++){
@@ -289,6 +290,7 @@ namespace battleship{
 						}
 					}
 				}
+			*/
 
 			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : unit), results[0].pos));
 		}

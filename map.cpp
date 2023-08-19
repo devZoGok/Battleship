@@ -240,9 +240,9 @@ namespace battleship{
 	}
 
 	void Map::preprareScene(){
-		nodeParent = new Node();
+		terrainNode = new Node();
 		Root *root = Root::getSingleton();
-		root->getRootNode()->attachChild(nodeParent);
+		root->getRootNode()->attachChild(terrainNode);
 
 		Camera *cam = root->getCamera();
 		cam->setPosition(Vector3(1, 1, 1) * 40);
@@ -251,7 +251,6 @@ namespace battleship{
 
     void Map::load(string mapName, bool empty) {
 		this->mapName = mapName;
-		cellSize = Vector3(7, 6, 7);
 		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
 		
 		preprareScene();
@@ -274,6 +273,7 @@ namespace battleship{
     void Map::unload() {}
 
 	int Map::getCellId(Vector3 pos, int id){
+		/*
 		Vector3 regionSize = terrainObjects[id].size;
 		Vector3 regionPos = terrainObjects[id].pos;
 		Vector3 cellSize = terrainObjects[id].cellSize;
@@ -287,24 +287,7 @@ namespace battleship{
 		int z = fabs(pos.z - initPos.z) / cellSize.z;
 
 		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
-	}
-
-	bool Map::isPointWithinTerrainObject(Vector3 p, int id){
-		bool within;
-		Vector3 pos = terrainObjects[id].pos, size = terrainObjects[id].size;
-
-		if(terrainObjects[id].type == TerrainObject::RECT_WATERBODY)
-			within = (fabs(pos.x - p.x) < 0.5 * size.x && fabs(pos.z - p.z) < 0.5 * size.z);
-		else if(terrainObjects[id].type == TerrainObject::ROUND_WATERBODY)
-			within = Vector2(pos.x, pos.z).getDistanceFrom(Vector2(p.x, p.z)) < size.x;
-		else
-			within = true;
-
-		return within;
-	}
-
-	void Map::addTerrainObject(TerrainObject obj){
-		nodeParent->attachChild(obj.node);
-		terrainObjects.push_back(obj);
+		*/
+		return 0;
 	}
 }

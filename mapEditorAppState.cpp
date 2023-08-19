@@ -67,12 +67,15 @@ namespace battleship{
 			circleRadius = MIN_RADIUS;
 	}
 
+	/*
 	void MapEditorAppState::MapEditor::toggleSelection(TerrainObject *obj, bool select){
 		obj->node->getMesh(0)->setWireframe(select);
 		selectedTerrainObject = (select ? obj : nullptr);
 	}
+	*/
 
 	void MapEditorAppState::MapEditor::castSelectionRay(){
+	/*
 		Camera *cam = Root::getSingleton()->getCamera();
 		Vector3 startPos = cam->getPosition();
 		Vector3 endPos = screenToSpace(getCursorPos());
@@ -92,9 +95,11 @@ namespace battleship{
 					break;
 				}
 		}
+	*/
 	}
 
 	void MapEditorAppState::MapEditor::createWaterbody(){
+		/*
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("lightingEnabled", false);
 		mat->addBoolUniform("texturingEnabled", true);
@@ -118,10 +123,11 @@ namespace battleship{
 
 		prepareTerrainObjects(objId - 1, 1);
 		prepareCellMarkers(obj);
+		*/
 	}
 
 	void MapEditorAppState::MapEditor::moveTerrainObject(float strength){
-		Vector3 pos = selectedTerrainObject->node->getPosition();
+		Vector3 pos = selectedTerrainNode->getPosition();
 
 		switch(movementAxis){
 			case MovementAxis::X_AXIS:
@@ -135,12 +141,11 @@ namespace battleship{
 				break;
 		}
 
-		selectedTerrainObject->node->setPosition(pos);
-		selectedTerrainObject->pos = pos;
+		selectedTerrainNode->setPosition(pos);
 	}
 
 	void MapEditorAppState::MapEditor::pushLandmassVerts(float strength){
-		Mesh *mesh = map->getTerrainObject(0).node->getMesh(0);
+		Mesh *mesh = map->getNodeParent()->getChild(0)->getMesh(0);
 		MeshData meshData = mesh->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = meshData.numTris * 3;
@@ -169,13 +174,16 @@ namespace battleship{
 
 		Node *node = new Node();
 		node->attachMesh(mesh);
+		map->getNodeParent()->attachChild(node);
 
+		/*
 		TerrainObject::Type type = TerrainObject::LANDMASS;
 		Vector3 pos = Vector3::VEC_ZERO, s = Vector3(size.x, 0, size.y);
 		map->addTerrainObject(TerrainObject(pos, s, Vector3(14, 6, 14), type, node, 0, nullptr, nullptr));
 
 		prepareTerrainObjects(0, 1);
 		prepareCellMarkers(map->getTerrainObject(0));
+		*/
 	}
 
 	void MapEditorAppState::MapEditor::prepareTextures(string basePath, bool skybox, vector<Texture*> &textures){
@@ -227,7 +235,7 @@ namespace battleship{
 		XMLNode *nodeTag = rootTag->InsertEndChild(nodeEl);
 
 		XMLElement *meshEl = doc->NewElement("mesh");
-		MeshData meshData = map->getTerrainObject(0).node->getMesh(0)->getMeshBase();
+		MeshData meshData;
 		meshEl->SetAttribute("name", "mesh");
 		meshEl->SetAttribute("num_faces", meshData.numTris);
 		meshEl->SetAttribute("num_vertex_groups", 0);
@@ -275,6 +283,7 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::MapEditor::prepareTerrainObject(u32 **weights, Cell *cells, int cellsByDim[3], float height, bool land){
+		/*
 		const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
 		Vector3 initPos = -.5 * Vector3(mapSize.x, -height, mapSize.y);
 
@@ -371,9 +380,11 @@ namespace battleship{
 		            weights[i][j] = 1;
 			}
 		}
+		*/
 	}
 
 	void MapEditorAppState::MapEditor::prepareTerrainObjects(int startId, int numObjs){
+		/*
 		if(numObjs == -1)
 			numObjs = map->getNumTerrainObjects();
 
@@ -400,8 +411,10 @@ namespace battleship{
 
 			prepareTerrainObject(weights, cells, cellsByDim, (i > 0 ? obj.pos.y : 0), i == 0);
 		}
+		*/
 	}
 
+		/*
 	string MapEditorAppState::MapEditor::parseTerrainObject(TerrainObject &terrObj){
 		string terrObjStr = "{\n";
 
@@ -435,8 +448,10 @@ namespace battleship{
 
 		return terrObjStr;
 	}
+		*/
 
 	void MapEditorAppState::MapEditor::parseMapScript(){
+		/*
 		int numTerrObjs = map->getNumTerrainObjects();
 		string mapScript = "map = {\nnumWaterBodies = " + to_string(numTerrObjs) + ",\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
@@ -510,16 +525,20 @@ namespace battleship{
 		std::ofstream outFile(file);
 		outFile << mapScript;
 		outFile.close();
+		*/
 	}
 
 	void MapEditorAppState::MapEditor::toggleCellMarkers(){
+		/*
 		cellMarkersVisible = !cellMarkersVisible;
 
 		for(TerrainObject &obj : map->getTerrainObjects())
 			for(Node *cellMarker : obj.cellMarkers)
 				cellMarker->setVisible(cellMarkersVisible);
+		 */
 	}
 
+	/*
 	void MapEditorAppState::MapEditor::prepareCellMarkers(TerrainObject &obj){
 		Root *root = Root::getSingleton();
 		Node *rootNode = root->getRootNode();
@@ -540,6 +559,7 @@ namespace battleship{
 			obj.cellMarkers.push_back(cellMarker);
 		}
 	}
+	*/
 
 	void MapEditorAppState::MapEditor::exportMap(){
 		string assetsPath = GameManager::getSingleton()->getPath();
@@ -635,7 +655,7 @@ namespace battleship{
 					Vector3 endPos = screenToSpace(cursorPos);
 
 					vector<Ray::CollisionResult> results;
-					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Map::getSingleton()->getTerrainObject(0).node, results);
+					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Root::getSingleton()->getRootNode(), results);
 					Ray::sortResults(results);
 
 
@@ -658,12 +678,14 @@ namespace battleship{
 			case Bind::CREATE_WATERBODY:
 				if(isPressed) mapEditor->createWaterbody();
 				break;
+				/*
 			case Bind::MOVE_TERR_OBJ:
 				if(isPressed) mapEditor->setMovingTerrainObject(true);
 				break;
 			case Bind::STOP_TERR_OBJ:
 				if(isPressed) mapEditor->setMovingTerrainObject(false);
 				break;
+				 */
 			case Bind::MOVE_X_AXIS:
 			case Bind::MOVE_Y_AXIS:
 			case Bind::MOVE_Z_AXIS:
@@ -701,6 +723,7 @@ namespace battleship{
 					camCtr->orientCamera(Vector3(0, 1, 0), strength);
 
 				break;
+				/*
 			case Bind::PUSH_VERTS_UP:
 			case Bind::PUSH_VERTS_DOWN:
 				if(mapEditor->isPushing()) mapEditor->pushLandmassVerts(strength);
@@ -708,6 +731,7 @@ namespace battleship{
 					mapEditor->moveTerrainObject(strength);
 
 				break;
+				 */
 		}
 	}
 }

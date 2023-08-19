@@ -43,7 +43,7 @@ namespace battleship{
 	//TODO implement terrain evenness check
 	void UnitFrameController::update(){
 		Map *map = Map::getSingleton();
-		MeshData meshData = map->getTerrainObject(0).node->getMesh(0)->getMeshBase();
+		MeshData meshData;
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = 3 * meshData.numTris;
 
@@ -56,7 +56,7 @@ namespace battleship{
 
 		for(UnitFrame &s : unitFrames){
 			vector<Ray::CollisionResult> results;
-			Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getTerrainObject(0).node, results);
+			Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getNodeParent()->getChild(0), results);
 			Ray::sortResults(results);
 
 			if(!results.empty()){
