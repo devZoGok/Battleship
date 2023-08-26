@@ -272,8 +272,9 @@ namespace battleship{
 				Ray::sortResults(res);
 
 				if(res.empty()){
-					cout << "Missed map from " << rayPos.x << " " << rayPos.y << " " << rayPos.z << "\n";
-			   		continue;
+					Ray::CollisionResult r;
+					r.pos = Vector3(rayPos.x, 0, rayPos.z);
+					res.push_back(r);
 				}
 				
 				Map::Cell::Type type = Map::Cell::Type::LAND;
