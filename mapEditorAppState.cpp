@@ -492,7 +492,7 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::MapEditor::generateMapScript(){
-		int numTerrObjs = map->getNodeParent()->getNumChildren();
+		int numTerrObjs = 0;
 		string mapScript = "map = {\nnumWaterBodies = " + to_string(numTerrObjs) + ",\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(map->getNumPlayers()) + ",\n";
@@ -537,12 +537,13 @@ namespace battleship{
 			mapScript += "}\n";
 		}
 
-		mapScript += "},\ncells = {\n";
 		vector<Map::Cell> cells = generateMapCells();
+		mapScript += "},\nnumCells = " + to_string(cells.size()) + ",\n";
+		mapScript += "cells = {\n";
 
 		for(Map::Cell cell : cells){
 			Vector3 p = cell.pos;
-			mapScript += "{type = '" + to_string((int)cell.type) + "', pos = {x = " + to_string(p.x) + ", y = " + to_string(p.y) + ", z = " + to_string(p.z) + "}, edges = {";
+			mapScript += "{type = " + to_string((int)cell.type) + ", pos = {x = " + to_string(p.x) + ", y = " + to_string(p.y) + ", z = " + to_string(p.z) + "}, numEdges = " + to_string(cell.edges.size()) + ", edges = {";
 
 			for(Map::Edge edge : cell.edges)
 				mapScript += "{srcCellId = " + to_string(edge.srcCellId) + ", destCellId = "  + to_string(edge.destCellId) + ", weight = "  + to_string(edge.weight) + "}, ";
@@ -566,7 +567,7 @@ namespace battleship{
 		}
 
 		mapScript += "skybox = \"" + skyboxPath + "\",\n";
-		//mapScript += "terrain = " + parseTerrainObject(map->getTerrainObject(0));
+		mapScript += "terrain = {model = \"" + map->getMapName()  + ".xml\", albedo = \"" + map->getMapName() + ".jpg\"},\n";
 		mapScript += "waterbodies = {";
 
 		for(int i = 1; i < numTerrObjs; i++){}

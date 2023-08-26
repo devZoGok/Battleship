@@ -56,104 +56,14 @@ namespace battleship{
 	}
 
 	void Map::loadTerrainObject(int id){
-		/*
-		LuaManager *luaManager = LuaManager::getSingleton();
-		string terrainTable = (id == -1 ? "terrain" : "waterBodies");
-		vector<Index> baseIndices = (id == -1 ? vector<Index>{Index(terrainTable)} : vector<Index>{Index(terrainTable), Index(id + 1)});
-		Vector3 pos = Vector3::VEC_ZERO, size = Vector3::VEC_ZERO;
-		Index terrInd = Index("terrain"),
-			  waterInd = Index("waterBodies"),
-			  idIndex = Index(id + 1),
-			  posInd = Index("pos"),
-			  sizeInd = Index("size"),
-			  xInd = Index("x"),
-			  yInd = Index("y"),
-			  zInd = Index("z"),
-			  nodeInd = Index("nodes");
-
-		vector<Index> sizeBaseInd;
-
-		if(id == -1){
-			sizeBaseInd.push_back(terrInd);
-		}
-		else{
-			float x = luaManager->getFloatFromTable(mapTable, vector<Index>{waterInd, idIndex, posInd, xInd});
-			float y = luaManager->getFloatFromTable(mapTable, vector<Index>{waterInd, idIndex, posInd, yInd});
-			float z = luaManager->getFloatFromTable(mapTable, vector<Index>{waterInd, idIndex, posInd, zInd});
-			pos = Vector3(x, y, z);
-
-			sizeBaseInd = vector<Index>{waterInd, idIndex};
-		}
-
-		sizeBaseInd.push_back(sizeInd);
-		vector<Index> indVecX = sizeBaseInd;
-		vector<Index> indVecY = sizeBaseInd;
-		vector<Index> indVecZ = sizeBaseInd;
-		indVecX.push_back(xInd);
-		indVecY.push_back(yInd);
-		indVecZ.push_back(zInd);
-		float x = luaManager->getFloatFromTable(mapTable, indVecX);
-		float y = luaManager->getFloatFromTable(mapTable, indVecY);
-		float z = luaManager->getFloatFromTable(mapTable, indVecZ);
-		size = Vector3(x, y, z);
-
-		vector<Index> baseNodeInd = baseIndices;
-		baseNodeInd.push_back(nodeInd);
-
-		vector<Index> ind = baseNodeInd;
-		ind.push_back(Index("numCells"));
-		int numCells = luaManager->getIntFromTable(mapTable, ind);
-
-		u32 **weights = new u32*[numCells];
-		Cell *cells = new Cell[numCells];
-
-		for(int i = 0; i < numCells; i++){
-			weights[i] = new u32[numCells];
-
-			for(int j = 0; j < numCells; j++){
-				int wid = i * numCells + j;
-				ind = baseNodeInd;
-				ind.push_back(Index("weights"));
-				ind.push_back(Index(wid + 1));
-				u32 w = luaManager->getIntFromTable(mapTable, ind);
-				weights[i][j] = w;
-			}
-
-			ind = baseNodeInd;
-			ind.push_back(Index("impassible"));
-			ind.push_back(Index(i + 1));
-			bool impassible = luaManager->getFloatFromTable(mapTable, ind);
-
-			vector<Index> posBaseInd = baseNodeInd;
-			posBaseInd.push_back(posInd);
-			posBaseInd.push_back(Index(i + 1));
-
-			vector<Index> indVecX = posBaseInd;
-			vector<Index> indVecY = posBaseInd;
-			vector<Index> indVecZ = posBaseInd;
-			indVecX.push_back(xInd);
-			indVecY.push_back(yInd);
-			indVecZ.push_back(zInd);
-			float x = luaManager->getFloatFromTable(mapTable, indVecX);
-			float y = luaManager->getFloatFromTable(mapTable, indVecY);
-			float z = luaManager->getFloatFromTable(mapTable, indVecZ);
-			cells[i] = Cell(Vector3(x, y, z), (id == -1), impassible);
-		}
-
-		Node *node = nullptr;
+		string texPath = "", basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
 		Quad *quad = nullptr;
-		TerrainObject::Type type;
-		string basePath = GameManager::getSingleton()->getPath();
-		string texPath = basePath;
+		Node *node = nullptr;
 
-		//TODO remove this quick fix for landmass model loading
 		if(id == -1){
-			type = TerrainObject::LANDMASS;
+			texPath = basePath + (string)SOL_LUA_STATE[mapTable]["terrain"]["albedo"];
 
-			string mapPathSuffix = "Models/Maps/" + mapName + "/";
-			texPath += mapPathSuffix;
-			string terrainFile = basePath + mapPathSuffix + luaManager->getStringFromTable(mapTable, vector<Index>{terrInd, Index("model")});
-
+			string terrainFile = basePath + (string)SOL_LUA_STATE[mapTable]["terrain"]["model"];
 			AssetManager::getSingleton()->load(terrainFile);
 			node = (Model*)((new Model(terrainFile))->getChild(0));
 
@@ -162,24 +72,20 @@ namespace battleship{
 			delete par;
 		}
 		else{
-			type = TerrainObject::RECT_WATERBODY;
-			node = new Node();
-			quad = new Quad(Vector3(size.x, size.z, 1), true);
-			node->attachMesh(quad);
+			sol::table waterBodyTable = SOL_LUA_STATE[mapTable]["waterbodies"][id + 1], posTable = waterBodyTable["pos"];
+			texPath = basePath + (string)waterBodyTable["albedo"];
 
-			texPath += "Textures/Water/";
+			quad = new Quad(Vector3(waterBodyTable["size"]["x"], waterBodyTable["size"]["z"], 1), true);
+			Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+			node = new Node(pos);
+			node->attachMesh(quad);
 		}
 
-		nodeParent->attachChild(node);
-		node->setPosition(pos);
+		terrainNode->attachChild(node);
 
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addBoolUniform("lightingEnabled", false);
-
-		ind = baseIndices;
-		ind.push_back(Index("albedoMap"));
-		texPath += luaManager->getStringFromTable(mapTable, ind);
 
 		string fr[]{texPath};
 		AssetManager::getSingleton()->load(fr[0]);
@@ -191,9 +97,6 @@ namespace battleship{
 			((Model*)node)->setMaterial(mat);
 		else
 			quad->setMaterial(mat);
-
-		terrainObjects.push_back(TerrainObject(pos, size, Vector3(cellSize.x, (id == -1 ? 0 : cellSize.y), cellSize.z), type, node, numCells, cells, weights));
-		*/
 	}
 
 	void Map::loadSpawnPoints(){
@@ -206,7 +109,6 @@ namespace battleship{
 		}
 	}
 
-	//TODO simplify the dubplicatory field extraction statements
 	void Map::loadPlayers(){
 		AssetManager *assetManager = AssetManager::getSingleton();
 		string path = GameManager::getSingleton()->getPath();
@@ -240,13 +142,56 @@ namespace battleship{
 	}
 
 	void Map::preprareScene(){
-		terrainNode = new Node();
 		Root *root = Root::getSingleton();
-		root->getRootNode()->attachChild(terrainNode);
+		Node *rootNode = root->getRootNode();
+		string libPath = root->getLibPath();
+		terrainNode = new Node();
+		rootNode->attachChild(terrainNode);
+
+		cellNode = new Node();
+		cellNode->setVisible(false);
+		rootNode->attachChild(cellNode);
+		landCellMat = new Material(libPath + "texture");
+		landCellMat->addBoolUniform("lightingEnabled", false);
+		landCellMat->addBoolUniform("texturingEnabled", false);
+		landCellMat->addVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
+		waterCellMat = new Material(libPath + "texture");
+		waterCellMat->addBoolUniform("lightingEnabled", false);
+		waterCellMat->addBoolUniform("texturingEnabled", false);
+		waterCellMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 1));
 
 		Camera *cam = root->getCamera();
 		cam->setPosition(Vector3(1, 1, 1) * 40);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
+	}
+
+	void Map::loadCells(){
+		int numCells = SOL_LUA_STATE[mapTable]["numCells"];
+		sol::table cellsTable = SOL_LUA_STATE[mapTable]["cells"];
+
+		for(int i = 0; i < numCells; i++){
+			sol::table cellTable = cellsTable[i + 1], posTable = cellTable["pos"];
+			int numEdges = cellTable["numEdges"];
+			vector<Edge> edges;
+
+			for(int j = 0; j < numEdges; j++){
+				sol::table edgeTable = cellTable["edges"][j + 1];
+				edges.push_back(Edge(edgeTable["weight"], edgeTable["srcCellId"], edgeTable["destCellId"]));
+			}
+
+			Vector3 cellPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+			Cell::Type cellType = (Cell::Type)cellTable["type"];
+
+			Quad *quad = new Quad(Vector3(CELL_SIZE.x, CELL_SIZE.z, 0));
+			quad->setWireframe(true);
+			quad->setMaterial(cellType == Cell::Type::LAND ? landCellMat : waterCellMat);
+
+			Node *node = new Node(cellPos + Vector3::VEC_J * .1);
+			node->attachMesh(quad);
+			cellNode->attachChild(node);
+
+			cells.push_back(Cell(cellPos, cellType, edges));
+		}
 	}
 
     void Map::load(string mapName, bool empty) {
@@ -267,6 +212,7 @@ namespace battleship{
 			loadSpawnPoints();
 			loadPlayers();
 			loadSkybox();
+			loadCells();
 			loadTerrainObject(-1);
 			
 			for(int i = 0; i < numWaterbodies; i++)

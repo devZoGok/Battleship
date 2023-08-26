@@ -10,6 +10,7 @@
 
 namespace vb01{
 	class Model;
+	class Material;
 	class Node;
 }
 
@@ -55,7 +56,8 @@ namespace battleship{
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
     private:
 		std::string mapTable = "map";
-		vb01::Node *terrainNode = nullptr;
+		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
+		vb01::Material *landCellMat = nullptr, *waterCellMat = nullptr;
 		std::string mapName;
 		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7);
 		std::vector<vb01::Vector3> spawnPoints;
@@ -67,6 +69,7 @@ namespace battleship{
 		void loadSpawnPoints();
 		void loadPlayers();
 		void loadSkybox();
+		void loadCells();
 		void loadTerrainObject(int);
     };
 }
