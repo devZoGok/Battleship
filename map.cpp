@@ -207,7 +207,6 @@ namespace battleship{
 		preprareScene();
 
 		if(!empty){
-			sol::state_view SOL_LUA_STATE = generateView();
 			SOL_LUA_STATE.script_file(GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua");
 			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
 			
