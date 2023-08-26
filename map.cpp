@@ -56,11 +56,12 @@ namespace battleship{
 	}
 
 	void Map::loadTerrainObject(int id){
-		string texPath = "", basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
+		string texPath = "";
 		Quad *quad = nullptr;
 		Node *node = nullptr;
 
 		if(id == -1){
+			string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
 			texPath = basePath + (string)SOL_LUA_STATE[mapTable]["terrain"]["albedo"];
 
 			string terrainFile = basePath + (string)SOL_LUA_STATE[mapTable]["terrain"]["model"];
@@ -73,9 +74,9 @@ namespace battleship{
 		}
 		else{
 			sol::table waterBodyTable = SOL_LUA_STATE[mapTable]["waterbodies"][id + 1], posTable = waterBodyTable["pos"];
-			texPath = basePath + (string)waterBodyTable["albedo"];
+			texPath = GameManager::getSingleton()->getPath() + "Textures/Water/" + (string)waterBodyTable["albedo"];
 
-			quad = new Quad(Vector3(waterBodyTable["size"]["x"], waterBodyTable["size"]["z"], 1), true);
+			quad = new Quad(Vector3(waterBodyTable["size"]["x"], waterBodyTable["size"]["y"], 1), true);
 			Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 			node = new Node(pos);
 			node->attachMesh(quad);

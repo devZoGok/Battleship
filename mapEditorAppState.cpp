@@ -67,15 +67,12 @@ namespace battleship{
 			circleRadius = MIN_RADIUS;
 	}
 
-	/*
-	void MapEditorAppState::MapEditor::toggleSelection(TerrainObject *obj, bool select){
-		obj->node->getMesh(0)->setWireframe(select);
-		selectedTerrainObject = (select ? obj : nullptr);
+	void MapEditorAppState::MapEditor::toggleSelection(Node *terrNode, bool select){
+		terrNode->getMesh(0)->setWireframe(select);
+		selectedTerrainNode = (select ? terrNode : nullptr);
 	}
-	*/
 
 	void MapEditorAppState::MapEditor::castSelectionRay(){
-	/*
 		Camera *cam = Root::getSingleton()->getCamera();
 		Vector3 startPos = cam->getPosition();
 		Vector3 endPos = screenToSpace(getCursorPos());
@@ -85,21 +82,19 @@ namespace battleship{
 		Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getNodeParent(), results);
 		Ray::sortResults(results);
 
-		if(selectedTerrainObject)
-			toggleSelection(selectedTerrainObject, false);
+		if(selectedTerrainNode)
+			toggleSelection(selectedTerrainNode, false);
 
 		if(!results.empty()){
-			for(int i = 0; i < map->getNumTerrainObjects(); i++)
-				if(map->getTerrainObject(i).node == results[i].mesh->getNode()){
-					toggleSelection(&map->getTerrainObject(i), true);
+			for(int i = 0; i < map->getNodeParent()->getNumChildren(); i++)
+				if(map->getNodeParent()->getChild(i) == results[i].mesh->getNode()){
+					toggleSelection(map->getNodeParent()->getChild(i), true);
 					break;
 				}
 		}
-	*/
 	}
 
 	void MapEditorAppState::MapEditor::createWaterbody(){
-		/*
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("lightingEnabled", false);
 		mat->addBoolUniform("texturingEnabled", true);
@@ -114,16 +109,9 @@ namespace battleship{
 		node->attachMesh(quad);
 
 		Map *map = Map::getSingleton();
-		TerrainObject::Type type = TerrainObject::RECT_WATERBODY;
-		map->addTerrainObject(TerrainObject(pos, size, Vector3(14, 7, 14), type, node, 0, nullptr, nullptr));
-
-		int objId = map->getNumTerrainObjects() - 1;
-		TerrainObject &obj = map->getTerrainObject(objId); 
-		toggleSelection(&obj, true);
-
-		prepareTerrainObjects(objId - 1, 1);
-		prepareCellMarkers(obj);
-		*/
+		Node *terrNodeParent = map->getNodeParent();
+		terrNodeParent->attachChild(node);
+		toggleSelection(node, true);
 	}
 
 	void MapEditorAppState::MapEditor::moveTerrainObject(float strength){
@@ -175,15 +163,6 @@ namespace battleship{
 		Node *node = new Node();
 		node->attachMesh(mesh);
 		map->getNodeParent()->attachChild(node);
-
-		/*
-		TerrainObject::Type type = TerrainObject::LANDMASS;
-		Vector3 pos = Vector3::VEC_ZERO, s = Vector3(size.x, 0, size.y);
-		map->addTerrainObject(TerrainObject(pos, s, Vector3(14, 6, 14), type, node, 0, nullptr, nullptr));
-
-		prepareTerrainObjects(0, 1);
-		prepareCellMarkers(map->getTerrainObject(0));
-		*/
 	}
 
 	void MapEditorAppState::MapEditor::prepareTextures(string basePath, bool skybox, vector<Texture*> &textures){
@@ -278,189 +257,18 @@ namespace battleship{
 		doc->SaveFile(name.c_str());
 	}
 
-	void MapEditorAppState::MapEditor::deleteWeights(){
-		weightsGenerated = false;
-	}
-
-	void MapEditorAppState::MapEditor::prepareTerrainObject(u32 **weights, Map::Cell *cells, int cellsByDim[3], float height, bool land){
-		/*
-		const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
-		Vector3 initPos = -.5 * Vector3(mapSize.x, -height, mapSize.y);
-
-		Node *landmass = map->getTerrainObject(0).node;
-		
-		for(int i = 0; i < numCells; i++){
-		    int xId = i % cellsByDim[0];
-		    int yId = int(i / (cellsByDim[0] * cellsByDim[2]));
-		    int zId = (int(i / cellsByDim[0])) % cellsByDim[2];
-
-		    cells[i].pos = initPos + Vector3(xId * cellLength, -yId * cellDepth, zId * cellWidth);
-
-			if(land){
-				vector<Ray::CollisionResult> res;
-				Ray::retrieveCollisions(Vector3(cells[i].pos.x, 100, cells[i].pos.z), -Vector3::VEC_J, landmass, res);
-				Ray::sortResults(res);
-
-				if(!res.empty())
-					cells[i].pos.y = res[0].pos.y;
-			}
-		}
-
-		MeshData meshData = landmass->getMesh(0)->getMeshBase();
-		
-		for(int i = 0; i < numCells; i++){
-		    int waterbodyId = -1;
-		    bool impassible = false;
-			TerrainObject waterbody;
-		
-		    for(int j = 0; j < 3 * meshData.numTris; j++){
-		        Vector3 point = Vector3(float(meshData.vertices[j].pos.x), float(meshData.vertices[j].pos.y), float(meshData.vertices[j].pos.z));
-		
-		        for(int k = 1; k < map->getNumTerrainObjects(); k++){
-		            TerrainObject wb = map->getTerrainObject(k);
-		            bool diffX = (abs(point.x - wb.pos.x) < .5 * wb.size.x);
-		            bool diffY = (abs(point.y - wb.pos.z) < .5 * wb.size.z);
-		            bool diffZ = (abs(point.z + wb.pos.y) < .5 * wb.size.y);
-		            
-		            if(diffX && diffZ){
-		                waterbodyId = k;
-		                break;
-					}
-				}
-		
-		        if(waterbodyId != -1)
-		            waterbody = map->getTerrainObject(waterbodyId);
-		
-		        bool withinX = (abs(point.x - cells[i].pos.x) < 0.5 * cellLength);
-		        bool withinY = (!land ? (abs(point.y - cells[i].pos.y) < 0.5 * cellDepth) : true);
-		        bool withinZ = (abs(point.z - cells[i].pos.z) < 0.5 * cellWidth);
-		        bool pointWithin = (withinX && withinY && withinZ);
-		
-		        if(land && pointWithin && (waterbodyId != -1 && point.y < waterbody.pos.z))
-		            impassible = true;
-				else if(!land && pointWithin && waterbodyId != -1)
-		            impassible = true;
-			}
-		}
-		
-		for(int i = 0; i < numCells; i++){
-		    int xId = i % cellsByDim[0];
-		    int yId = i / (cellsByDim[0] * cellsByDim[2]);
-		    int zId = (i / cellsByDim[0]) % cellsByDim[2];
-		
-		    for(int j = 0; j < numCells; j++){
-		        bool adjacent = false;
-				
-		        if(xId == 0 && j - i == 1)
-		            adjacent = true;
-				else if(xId == cellsByDim[0] - 1 && j - i == -1)
-		            adjacent = true;
-				else if(0 < xId && xId < cellsByDim[0] - 1 && abs(j - i) == 1)
-		            adjacent = true;
-		        
-		        if(yId == 0 && j - i == cellsByDim[0] * cellsByDim[2])
-		            adjacent = true;
-				else if(0 < yId && yId < cellsByDim[1] - 1 && abs(j - i) == cellsByDim[0] * cellsByDim[2])
-		            adjacent = true;
-				else if(yId == cellsByDim[1] - 1 && j - i == -(cellsByDim[0] * cellsByDim[2]))
-		            adjacent = true;
-		        
-		        if(zId == 0 && j - i == cellsByDim[0])
-		            adjacent = true;
-				else if(zId == cellsByDim[2] - 1 && j - i == -cellsByDim[0])
-		            adjacent = true;
-				else if(0 < zId && zId < cellsByDim[2] - 1 && abs(j - i) == cellsByDim[0])
-		            adjacent = true;
-		
-		        weights[i][j] = IMPASS_NODE_VAL;
-		
-		        if(i == j)
-		            weights[i][j] = 0;
-				else if(adjacent)
-		            weights[i][j] = 1;
-			}
-		}
-		*/
-	}
-
-	void MapEditorAppState::MapEditor::prepareTerrainObjects(int startId, int numObjs){
-		/*
-		if(numObjs == -1)
-			numObjs = map->getNumTerrainObjects();
-
-		for(int i = startId; i < numObjs; i++){
-			TerrainObject &obj = map->getTerrainObject(i);
-			Vector3 size = obj.size;
-			int cellsByDim[]{
-				int(size.x / cellLength),
-				i == 0 ? 1 : int(size.y / cellDepth),
-				int(size.z / cellWidth)
-			};
-			const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
-
-			Cell *cells = new Cell[numCells];
-
-			u32 **weights = new u32*[numCells];
-
-			for(int i = 0; i < numCells; i++)
-				weights[i] = new u32[numCells];
-
-			obj.cells = cells;
-			obj.numCells = numCells;
-			obj.weights = weights;
-
-			prepareTerrainObject(weights, cells, cellsByDim, (i > 0 ? obj.pos.y : 0), i == 0);
-		}
-		*/
-	}
-
-		/*
-	string MapEditorAppState::MapEditor::parseTerrainObject(TerrainObject &terrObj){
-		string terrObjStr = "{\n";
-
-		if(terrObj.type = TerrainObject::LANDMASS)
-			terrObjStr += "model = \"" + map->getMapName() + ".xml\",\n";
-
-		terrObjStr += "albedoMap = \"" + map->getMapName() + ".jpg\",\n";
-		terrObjStr += "size = {x = " + to_string(terrObj.pos.x) + ", y = " + to_string(terrObj.pos.y) + ", z = " + to_string(terrObj.pos.z) + "},\n";
-		terrObjStr += "nodes = {\n";
-		terrObjStr += "numCells = " + to_string(terrObj.numCells) + ",\n";
-		terrObjStr += "size = {x = " + to_string(cellLength) + ", y = " + to_string(cellDepth) + ", z = " + to_string(cellWidth) + "},\n";
-		terrObjStr += "pos = {\n";
-
-		for(int i = 0; i < terrObj.numCells; i++)
-			terrObjStr += "{x = " + to_string(terrObj.cells[i].pos.x) + ", y = " + to_string(terrObj.cells[i].pos.y) + ", z = " + to_string(terrObj.cells[i].pos.z) + "},\n";
-
-		terrObjStr += "},\nimpassible = {\n";
-
-		for(int i = 0; i < terrObj.numCells; i++){
-			terrObjStr += (terrObj.cells[i].impassible ? "true" : "false");
-			terrObjStr += ",\n";
-		}
-
-		terrObjStr += "},\nweights = {\n";
-
-		for(int i = 0; i < terrObj.numCells; i++)
-			for(int j = 0; j < terrObj.numCells; j++)
-				terrObjStr += to_string(terrObj.weights[i][j]) + ", ";
-
-		terrObjStr += "}\n}\n},\n";
-
-		return terrObjStr;
-	}
-		*/
-
 	vector<Map::Cell> MapEditorAppState::MapEditor::generateMapCells(){
 		Vector3 startPos = -.49 * Vector3(mapSize.x, 0, mapSize.y), cellSize = map->getCellSize();
 		int numHorCells = int(mapSize.x / cellSize.x);
 		int numVertCells = int(mapSize.y / cellSize.z);
 		vector<Map::Cell> cells;
+		Node *terrainNode = map->getNodeParent();
 
 		for(int i = 0; i < numVertCells; i++)
 			for(int j = 0; j < numHorCells; j++){
 				vector<Ray::CollisionResult> res;
 				Vector3 rayPos = startPos + Vector3(cellSize.x * j, 100, cellSize.z * i);
-				Ray::retrieveCollisions(rayPos, -Vector3::VEC_J, map->getNodeParent()->getChild(0), res);
+				Ray::retrieveCollisions(rayPos, -Vector3::VEC_J, terrainNode->getChild(0), res);
 				Ray::sortResults(res);
 
 				if(res.empty()){
@@ -468,7 +276,17 @@ namespace battleship{
 			   		continue;
 				}
 				
-				//TODO implement logic to check if point is within water body
+				Map::Cell::Type type = Map::Cell::Type::LAND;
+
+				for(int k = 1; k < terrainNode->getNumChildren(); k++){
+					Vector3 waterPos = terrainNode->getChild(k)->getPosition();
+					Vector3 waterSize = ((Quad*)terrainNode->getChild(k)->getMesh(0))->getSize();
+
+					if(fabs(res[0].pos.x - waterPos.x) < .5 * cellSize.x && fabs(res[0].pos.z - waterPos.z) < .5 * cellSize.z){
+						type = Map::Cell::Type::WATER;
+						break;
+					}
+				}
 
 				vector<Map::Edge> edges;
 				int weight = 1;
@@ -485,15 +303,15 @@ namespace battleship{
 				if(i < numVertCells - 1)
 					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
 
-				cells.push_back(Map::Cell(res[0].pos, Map::Cell::Type::LAND, edges));
+				cells.push_back(Map::Cell(res[0].pos, type, edges));
 			}
 
 		return cells;
 	}
 
 	void MapEditorAppState::MapEditor::generateMapScript(){
-		int numTerrObjs = 0;
-		string mapScript = "map = {\nnumWaterBodies = " + to_string(numTerrObjs) + ",\n";
+		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
+		string mapScript = "map = {\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(map->getNumPlayers()) + ",\n";
 
@@ -568,10 +386,16 @@ namespace battleship{
 
 		mapScript += "skybox = \"" + skyboxPath + "\",\n";
 		mapScript += "terrain = {model = \"" + map->getMapName()  + ".xml\", albedo = \"" + map->getMapName() + ".jpg\"},\n";
-		mapScript += "waterbodies = {";
+		mapScript += "waterbodies = {\n";
 
-		for(int i = 1; i < numTerrObjs; i++){}
-			//mapScript += parseTerrainObject(map->getTerrainObject(i));
+		for(int i = 0; i < numWaterBodies; i++){
+			Node *waterNode = map->getNodeParent()->getChild(i + 1);
+			Vector3 pos = waterNode->getPosition();
+			Vector3 size = ((Quad*)waterNode->getMesh(0))->getSize();
+			mapScript += 
+				"{pos = {x = " + to_string(pos.x) + ", y = " + to_string(pos.y) + ", z = " + to_string(pos.z) + "},\
+				size = {x = " + to_string(size.x) + ", y = " + to_string(size.y) + "}, albedo = \"water.jpg\"},";
+		}
 
 		mapScript += "}\n}";
 
@@ -581,39 +405,6 @@ namespace battleship{
 		outFile << mapScript;
 		outFile.close();
 	}
-
-	void MapEditorAppState::MapEditor::toggleCellMarkers(){
-		/*
-		cellMarkersVisible = !cellMarkersVisible;
-
-		for(TerrainObject &obj : map->getTerrainObjects())
-			for(Node *cellMarker : obj.cellMarkers)
-				cellMarker->setVisible(cellMarkersVisible);
-		 */
-	}
-
-	/*
-	void MapEditorAppState::MapEditor::prepareCellMarkers(TerrainObject &obj){
-		Root *root = Root::getSingleton();
-		Node *rootNode = root->getRootNode();
-
-		for(int i = 0; i < obj.numCells; i++){
-			Material *mat = new Material(root->getLibPath() + "texture");
-			mat->addBoolUniform("lightingEnabled", false);
-			mat->addBoolUniform("texturingEnabled", false);
-			mat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 1));
-
-			Box *box = new Box(Vector3(1, 3, 1));
-			box->setMaterial(mat);
-
-			Node *cellMarker = new Node(obj.cells[i].pos);
-			cellMarker->attachMesh(box);
-			cellMarker->setVisible(cellMarkersVisible);
-			rootNode->attachChild(cellMarker);
-			obj.cellMarkers.push_back(cellMarker);
-		}
-	}
-	*/
 
 	void MapEditorAppState::MapEditor::exportMap(){
 		string assetsPath = GameManager::getSingleton()->getPath();
@@ -731,14 +522,12 @@ namespace battleship{
 			case Bind::CREATE_WATERBODY:
 				if(isPressed) mapEditor->createWaterbody();
 				break;
-				/*
 			case Bind::MOVE_TERR_OBJ:
 				if(isPressed) mapEditor->setMovingTerrainObject(true);
 				break;
 			case Bind::STOP_TERR_OBJ:
 				if(isPressed) mapEditor->setMovingTerrainObject(false);
 				break;
-				 */
 			case Bind::MOVE_X_AXIS:
 			case Bind::MOVE_Y_AXIS:
 			case Bind::MOVE_Z_AXIS:
@@ -747,12 +536,6 @@ namespace battleship{
 					mapEditor->setMovementAxis(axis);
 				}
 
-				break;
-			case Bind::GENERATE_WEIGHTS:
-				mapEditor->prepareTerrainObjects();
-				break;
-			case Bind::TOGGLE_CELL_MARKERS:
-				if(isPressed) mapEditor->toggleCellMarkers();
 				break;
 		}
 	}
@@ -776,15 +559,13 @@ namespace battleship{
 					camCtr->orientCamera(Vector3(0, 1, 0), strength);
 
 				break;
-				/*
 			case Bind::PUSH_VERTS_UP:
 			case Bind::PUSH_VERTS_DOWN:
 				if(mapEditor->isPushing()) mapEditor->pushLandmassVerts(strength);
-				else if(mapEditor->isMovingTerrainObject() && mapEditor->getSelectedTerrainObject() != &Map::getSingleton()->getTerrainObject(0)) 
+				else if(mapEditor->isMovingTerrainObject() && mapEditor->getSelectedNode() != Map::getSingleton()->getNodeParent()->getChild(0)) 
 					mapEditor->moveTerrainObject(strength);
 
 				break;
-				 */
 		}
 	}
 }

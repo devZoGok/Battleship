@@ -37,7 +37,6 @@ namespace battleship{
 					void moveTerrainObject(float);
 					void exportMap();
 					void prepareTerrainObjects(int = 0, int = -1);
-					void toggleCellMarkers();
 					inline vb01::Node* getSelectedNode(){return selectedTerrainNode;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
@@ -54,14 +53,11 @@ namespace battleship{
 				private:
 					void generatePlane(vb01::Vector2);
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
-					//void toggleSelection(TerrainObject*, bool);
+					void toggleSelection(vb01::Node*, bool);
 					std::vector<Map::Cell> generateMapCells();
 					void generateLandmassXml();
-					//std::string parseTerrainObject(TerrainObject&);
 					void generateMapScript();
-					void deleteWeights();
 					void prepareTerrainObject(vb01::u32**, Map::Cell*, int[3], float, bool);
-					//void prepareCellMarkers(TerrainObject&);
 
 					Map *map;
 					vb01::Node *selectedTerrainNode = nullptr;
