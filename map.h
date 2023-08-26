@@ -15,26 +15,27 @@ namespace vb01{
 
 namespace battleship{
 	class Player;
-	struct Cell;
-
-	struct Edge{
-		Cell *cellA, *cellB;
-		int weight;
-	};
-
-	struct Cell{
-		enum Type{LAND, WATER};
-
-		Type type;
-		vb01::Vector3 pos;
-		std::vector<Edge> edges;
-
-		Cell(){}
-		Cell(vb01::Vector3 p, Type t): pos(p), type(t){}
-	};
 
     class Map {
     public:
+		struct Cell;
+		
+		struct Edge{
+			Edge(vb01::s64 w, vb01::s64 src, vb01::s64 dest) : weight(w), srcCellId(src), destCellId(dest){}
+			vb01::s64 weight, srcCellId, destCellId;
+		};
+		
+		struct Cell{
+			enum Type{LAND, WATER};
+		
+			Type type;
+			vb01::Vector3 pos;
+			std::vector<Edge> edges;
+		
+			Cell(){}
+			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}): pos(p), type(t), edges(e){}
+		};
+
 		static Map* getSingleton();
         ~Map(){}
         void update();

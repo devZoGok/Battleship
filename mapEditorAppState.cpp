@@ -222,7 +222,7 @@ namespace battleship{
 		}
 	}
 
-	void MapEditorAppState::MapEditor::parseLandmass(){
+	void MapEditorAppState::MapEditor::generateLandmassXml(){
 		XMLDocument *doc = new XMLDocument();
 
 		char *nodeTagName = "node";
@@ -235,7 +235,7 @@ namespace battleship{
 		XMLNode *nodeTag = rootTag->InsertEndChild(nodeEl);
 
 		XMLElement *meshEl = doc->NewElement("mesh");
-		MeshData meshData;
+		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
 		meshEl->SetAttribute("name", "mesh");
 		meshEl->SetAttribute("num_faces", meshData.numTris);
 		meshEl->SetAttribute("num_vertex_groups", 0);
@@ -282,7 +282,7 @@ namespace battleship{
 		weightsGenerated = false;
 	}
 
-	void MapEditorAppState::MapEditor::prepareTerrainObject(u32 **weights, Cell *cells, int cellsByDim[3], float height, bool land){
+	void MapEditorAppState::MapEditor::prepareTerrainObject(u32 **weights, Map::Cell *cells, int cellsByDim[3], float height, bool land){
 		/*
 		const int numCells = cellsByDim[0] * cellsByDim[1] * cellsByDim[2];
 		Vector3 initPos = -.5 * Vector3(mapSize.x, -height, mapSize.y);
@@ -450,9 +450,45 @@ namespace battleship{
 	}
 		*/
 
-	void MapEditorAppState::MapEditor::parseMapScript(){
-		/*
-		int numTerrObjs = map->getNumTerrainObjects();
+	vector<Map::Cell> MapEditorAppState::MapEditor::generateMapCells(){
+		Vector3 startPos = -.5 * Vector3(mapSize.x, 0, mapSize.y), cellSize = map->getCellSize();
+		int numHorCells = int(mapSize.x / cellSize.x);
+		int numVertCells = int(mapSize.y / cellSize.z);
+		vector<Map::Cell> cells;
+
+		for(int i = 0; i < numVertCells; i++)
+			for(int j = 0; j < numHorCells; j++){
+				vector<Ray::CollisionResult> res;
+				Ray::retrieveCollisions(startPos + Vector3(cellSize.x * i, 100, cellSize.z * j), -Vector3::VEC_J, map->getNodeParent()->getChild(0), res);
+				Ray::sortResults(res);
+
+				if(res.empty()) continue;
+				
+				//TODO implement logic to check if point is within water body
+
+				vector<Map::Edge> edges;
+				int weight = 1;
+
+				if(j > 0)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j - 1));
+
+				if(j < numHorCells - 1)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j + 1));
+
+				if(i > 0)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j));
+
+				if(i < numVertCells - 1)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
+
+				cells.push_back(Map::Cell(res[0].pos, Map::Cell::Type::LAND, edges));
+			}
+
+		return cells;
+	}
+
+	void MapEditorAppState::MapEditor::generateMapScript(){
+		int numTerrObjs = map->getNodeParent()->getNumChildren();
 		string mapScript = "map = {\nnumWaterBodies = " + to_string(numTerrObjs) + ",\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(map->getNumPlayers()) + ",\n";
@@ -495,6 +531,20 @@ namespace battleship{
 				mapScript += "}";
 			}
 		}
+		mapScript += "\ncells = {\n";
+		vector<Map::Cell> cells = generateMapCells();
+
+		for(Map::Cell cell : cells){
+			Vector3 p = cell.pos;
+			mapScript += "{type = '" + to_string((int)cell.type) + "', pos = {x = " + to_string(p.x) + ", y = " + to_string(p.y) + ", z = " + to_string(p.z) + "}, edges = {";
+
+			for(Map::Edge edge : cell.edges)
+				mapScript += "{srcCellId = " + to_string(edge.srcCellId) + ", destCellId = "  + to_string(edge.destCellId) + ", weight = "  + to_string(edge.weight) + "}, ";
+
+			mapScript += "}\n},\n";
+		}
+
+		mapScript += "}\n";
 
 		mapScript += "},\n";
 
@@ -512,11 +562,11 @@ namespace battleship{
 		}
 
 		mapScript += "skybox = \"" + skyboxPath + "\",\n";
-		mapScript += "terrain = " + parseTerrainObject(map->getTerrainObject(0));
+		//mapScript += "terrain = " + parseTerrainObject(map->getTerrainObject(0));
 		mapScript += "waterbodies = {";
 
-		for(int i = 1; i < numTerrObjs; i++)
-			mapScript += parseTerrainObject(map->getTerrainObject(i));
+		for(int i = 1; i < numTerrObjs; i++){}
+			//mapScript += parseTerrainObject(map->getTerrainObject(i));
 
 		mapScript += "}\n}";
 
@@ -525,7 +575,6 @@ namespace battleship{
 		std::ofstream outFile(file);
 		outFile << mapScript;
 		outFile.close();
-		*/
 	}
 
 	void MapEditorAppState::MapEditor::toggleCellMarkers(){
@@ -565,11 +614,10 @@ namespace battleship{
 		string assetsPath = GameManager::getSingleton()->getPath();
 		string mapFolder = assetsPath + "Models/Maps/" + map->getMapName() + "/";
 		create_directory(mapFolder);
-		copy_file(DEFAULT_TEXTURE, mapFolder + map->getMapName() + ".jpg");
+		copy_file(assetsPath + DEFAULT_TEXTURE, mapFolder + map->getMapName() + ".jpg");
 
-		prepareTerrainObjects();
-		parseLandmass();
-		parseMapScript();
+		generateLandmassXml();
+		generateMapScript();
 	}
 
 	MapEditorAppState::MapEditorAppState(string name, Vector2 size, bool newMap) : AbstractAppState(

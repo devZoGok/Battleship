@@ -55,11 +55,12 @@ namespace battleship{
 					void generatePlane(vb01::Vector2);
 					void prepareTextures(std::string, bool, std::vector<vb01::Texture*>&);
 					//void toggleSelection(TerrainObject*, bool);
-					void parseLandmass();
+					std::vector<Map::Cell> generateMapCells();
+					void generateLandmassXml();
 					//std::string parseTerrainObject(TerrainObject&);
-					void parseMapScript();
+					void generateMapScript();
 					void deleteWeights();
-					void prepareTerrainObject(vb01::u32**, Cell*, int[3], float, bool);
+					void prepareTerrainObject(vb01::u32**, Map::Cell*, int[3], float, bool);
 					//void prepareCellMarkers(TerrainObject&);
 
 					Map *map;
