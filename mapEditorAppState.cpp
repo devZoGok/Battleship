@@ -21,7 +21,8 @@
 
 #include <listbox.h>
 
-#include <fstream>
+#include <map>
+#include <filesystem>
 #include <filesystem>
 
 #include <tinyxml2.h>
@@ -262,6 +263,7 @@ namespace battleship{
 		int numHorCells = int(mapSize.x / cellSize.x);
 		int numVertCells = int(mapSize.y / cellSize.z);
 		vector<Map::Cell> cells;
+		vector<pair<int, float>> waterBodyBedPoints;
 		Node *terrainNode = map->getNodeParent();
 
 		for(int i = 0; i < numVertCells; i++)
@@ -278,6 +280,7 @@ namespace battleship{
 				}
 				
 				Map::Cell::Type type = Map::Cell::Type::LAND;
+				Vector3 pos = res[0].pos;
 
 				for(int k = 1; k < terrainNode->getNumChildren(); k++){
 					Vector3 waterPos = terrainNode->getChild(k)->getPosition();
@@ -285,6 +288,8 @@ namespace battleship{
 
 					if(fabs(res[0].pos.x - waterPos.x) < .5 * cellSize.x && fabs(res[0].pos.z - waterPos.z) < .5 * cellSize.z){
 						type = Map::Cell::Type::WATER;
+						pos.y = waterPos.y;
+						waterBodyBedPoints.push_back(pair(numVertCells * i + j, res[0].pos.y));
 						break;
 					}
 				}
@@ -304,8 +309,41 @@ namespace battleship{
 				if(i < numVertCells - 1)
 					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
 
-				cells.push_back(Map::Cell(res[0].pos, type, edges));
+				cells.push_back(Map::Cell(pos, type, edges));
 			}
+
+		std::map<int, vector<int>> waterCellMap;
+		int currUnderWaterCellId = cells.size();
+		int weight = 2;
+
+		for(pair<int, float> p : waterBodyBedPoints){
+			int numUnderWaterCells = (int)((cells[p.first].pos.y - p.second) / cellSize.y);
+			vector<int> underWaterCellIds;
+
+			if(numUnderWaterCells)
+				cells[p.first].edges.push_back(Map::Edge(weight, p.first, currUnderWaterCellId));
+
+			for(int i = 0; i < numUnderWaterCells; i++, currUnderWaterCellId++)
+				underWaterCellIds.push_back(currUnderWaterCellId);
+
+			waterCellMap[p.first] = underWaterCellIds;
+		}
+
+
+		for(std::map<int, vector<int>>::iterator it = waterCellMap.begin(); it != waterCellMap.end(); ++it){
+			for(int i = 0; i < waterCellMap[it->first].size(); i++){
+				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCellMap[it->first][i], it->first)};
+
+				for(Map::Edge edge : cells[it->first].edges){
+					if(cells[edge.destCellId].type == Map::Cell::Type::WATER && waterCellMap[edge.destCellId].size() >= i){
+						edges.push_back(Map::Edge(weight, waterCellMap[it->first][i], waterCellMap[edge.destCellId][i]));
+					}
+				}
+
+				Vector3 cellPos = cells[it->first].pos - Vector3::VEC_J * cellSize.y * (i + 1);
+				cells.push_back(Map::Cell(cellPos, Map::Cell::Type::WATER, edges));
+			}
+		}
 
 		return cells;
 	}
