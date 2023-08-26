@@ -201,7 +201,7 @@ namespace battleship{
 		int numSpawnPoints = SOL_LUA_STATE[mapTable]["numSpawnPoints"];
 
 		for(int i = 0; i < numSpawnPoints; i++){
-			sol::table posTable = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1];
+			sol::table posTable = SOL_LUA_STATE[mapTable]["spawnPoints"][i + 1];
 			spawnPoints.push_back(Vector3(posTable["x"], posTable["y"], posTable["z"]));
 		}
 	}
@@ -218,7 +218,7 @@ namespace battleship{
 		string playerInd = "players";
 
 		for(int i = 0; i < numPlayers; i++){
-			int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
+			//int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
 			int numUnits = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numUnits"];
 			
 			players.push_back(new Player(0, 0, 0, spawnPoints[i]));
@@ -251,7 +251,11 @@ namespace battleship{
 
     void Map::load(string mapName, bool empty) {
 		this->mapName = mapName;
+
 		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
+		string path = GameManager::getSingleton()->getPath();
+		SOL_LUA_STATE.script("PATH = \"" + path + "\"");
+		SOL_LUA_STATE.script_file(path + configData::scripts[1]);
 		
 		preprareScene();
 

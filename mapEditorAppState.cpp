@@ -451,7 +451,7 @@ namespace battleship{
 		*/
 
 	vector<Map::Cell> MapEditorAppState::MapEditor::generateMapCells(){
-		Vector3 startPos = -.5 * Vector3(mapSize.x, 0, mapSize.y), cellSize = map->getCellSize();
+		Vector3 startPos = -.49 * Vector3(mapSize.x, 0, mapSize.y), cellSize = map->getCellSize();
 		int numHorCells = int(mapSize.x / cellSize.x);
 		int numVertCells = int(mapSize.y / cellSize.z);
 		vector<Map::Cell> cells;
@@ -459,10 +459,14 @@ namespace battleship{
 		for(int i = 0; i < numVertCells; i++)
 			for(int j = 0; j < numHorCells; j++){
 				vector<Ray::CollisionResult> res;
-				Ray::retrieveCollisions(startPos + Vector3(cellSize.x * i, 100, cellSize.z * j), -Vector3::VEC_J, map->getNodeParent()->getChild(0), res);
+				Vector3 rayPos = startPos + Vector3(cellSize.x * j, 100, cellSize.z * i);
+				Ray::retrieveCollisions(rayPos, -Vector3::VEC_J, map->getNodeParent()->getChild(0), res);
 				Ray::sortResults(res);
 
-				if(res.empty()) continue;
+				if(res.empty()){
+					cout << "Missed map from " << rayPos.x << " " << rayPos.y << " " << rayPos.z << "\n";
+			   		continue;
+				}
 				
 				//TODO implement logic to check if point is within water body
 
@@ -505,7 +509,7 @@ namespace battleship{
 		mapScript += "},\nplayers = {\n";
 
 		for(int i = 0; i < map->getNumPlayers(); i++){
-			mapScript += "spawnPoint = 0,\n";
+			mapScript += "{\nspawnPoint = 0,\n";
 
 			int numUnits = map->getPlayer(i)->getNumberOfUnits();
 			mapScript += "numUnits = " + to_string(numUnits) + ",\n";
@@ -528,10 +532,12 @@ namespace battleship{
 				}
 
 				mapScript += "}\n,";
-				mapScript += "}";
 			}
+
+			mapScript += "}\n";
 		}
-		mapScript += "\ncells = {\n";
+
+		mapScript += "},\ncells = {\n";
 		vector<Map::Cell> cells = generateMapCells();
 
 		for(Map::Cell cell : cells){
@@ -543,8 +549,6 @@ namespace battleship{
 
 			mapScript += "}\n},\n";
 		}
-
-		mapScript += "}\n";
 
 		mapScript += "},\n";
 
