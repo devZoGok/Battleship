@@ -286,7 +286,7 @@ namespace battleship{
 					Vector3 waterPos = terrainNode->getChild(k)->getPosition();
 					Vector3 waterSize = ((Quad*)terrainNode->getChild(k)->getMesh(0))->getSize();
 
-					if(fabs(res[0].pos.x - waterPos.x) < .5 * cellSize.x && fabs(res[0].pos.z - waterPos.z) < .5 * cellSize.z){
+					if(fabs(res[0].pos.x - waterPos.x) < .5 * waterSize.x && fabs(res[0].pos.z - waterPos.z) < .5 * waterSize.y){
 						type = Map::Cell::Type::WATER;
 						pos.y = waterPos.y;
 						waterBodyBedPoints.push_back(pair(numVertCells * i + j, res[0].pos.y));
@@ -296,18 +296,31 @@ namespace battleship{
 
 				vector<Map::Edge> edges;
 				int weight = 1;
+				bool up = (i > 0), right = (j < numHorCells - 1), down = (i < numVertCells - 1), left = (j > 0);
 
-				if(j > 0)
+				if(left)
 					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j - 1));
 
-				if(j < numHorCells - 1)
+				if(right)
 					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j + 1));
 
-				if(i > 0)
+				if(up)
 					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j));
 
-				if(i < numVertCells - 1)
+				if(down)
 					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
+
+				if(up && left)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j - 1));
+
+				if(up && right)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j + 1));
+
+				if(down && left)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j - 1));
+
+				if(down && right)
+					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j + 1));
 
 				cells.push_back(Map::Cell(pos, type, edges));
 			}
