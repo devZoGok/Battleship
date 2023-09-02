@@ -53,8 +53,7 @@ namespace battleship{
 				break;
 		}
 		
-		pos = pos + dir * speed;
-		model->setPosition(pos);
+		placeUnit(pos + dir * speed);
 	}
 
 	void Vehicle::initProperties(){
@@ -136,41 +135,18 @@ namespace battleship{
 			removeOrder(0);
     }
 
+	//TODO add hover unit type
 	void Vehicle::preparePathpoints(Order order){
-		int srcObjId = 0, destObjId = 0;
 		Map *map = Map::getSingleton();
+		int source = map->getCellId(pos);
+		int dest = map->getCellId(order.targets[0].pos);
 
-		/*
-		for(int i = 1; i < map->getNumTerrainObjects(); i++){
-			if(map->isPointWithinTerrainObject(pos, i))
-				srcObjId = i;
-
-			if(map->isPointWithinTerrainObject(order.targets[0].pos, i))
-				destObjId = i;
-		}
-		 */
-
-		if(srcObjId != destObjId)
-			return;
-
-		int source = map->getCellId(pos, srcObjId);
-		int dest = map->getCellId(order.targets[0].pos, destObjId);
-
-		/*
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		u32 **weights = map->getTerrainObject(srcObjId).weights;
-		vector<int> path = pathfinder->findPath(weights, map->getTerrainObject(srcObjId).numCells, source, dest);
-
-		bool impassibleNodePresent = false;
+		vector<Map::Cell> &cells = map->getCells();
+		vector<int> path = pathfinder->findPath(cells, source, dest);
 		pathPoints.clear();
 
-		for(int i = 1; i < path.size(); i++)
-			if(!impassibleNodePresent && weights[path[i - 1]][path[i]] == pathfinder->getImpassibleNodeVal())
-				impassibleNodePresent = true;
-
-		if(!(impassibleNodePresent || path.empty()))
-			for(int p : path)
-				pathPoints.push_back(map->getTerrainObject(srcObjId).cells[p].pos);
-		*/
+		for(int p : path)
+			pathPoints.push_back(cells[p].pos);
 	}
 }
