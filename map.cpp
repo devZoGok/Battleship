@@ -234,22 +234,40 @@ namespace battleship{
 
     void Map::unload() {}
 
-	int Map::getCellId(Vector3 pos, int id){
-		/*
-		Vector3 regionSize = terrainObjects[id].size;
-		Vector3 regionPos = terrainObjects[id].pos;
-		Vector3 cellSize = terrainObjects[id].cellSize;
+	template<typename T> int Map::bsearch(vector<T> haystack, T needle, float eps){
+		T haystackMidVal;
+		bool sizeHaystackEven = (haystack.size() % 2 == 0);
+		int midValId = haystack.size() / 2;
 
-		int numCellsX = regionSize.x / cellSize.x;
-		int numCellsZ = regionSize.z / cellSize.z;
+		if(sizeHaystackEven)
+			haystackMidVal = (haystack[midValId - 1] + haystack[midValId]) / 2;
+		else
+			haystackMidVal = haystack[midValId];
 
-		Vector3 initPos = regionPos - Vector3(regionSize.x, 0, regionSize.z) * 0.5;
-		int x = fabs(pos.x - initPos.x) / cellSize.x;
-		int y = (cellSize.y > 0 ? (fabs(pos.y - initPos.y) / cellSize.y) : 0);
-		int z = fabs(pos.z - initPos.z) / cellSize.z;
+		int beginId, endId;
 
-		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
-		*/
+		if(fabs(haystackMidVal - needle) > eps){
+			if(fabs(haystackMidVal - needle) < eps){
+				beginId = 0;
+				endId = (midValId - 1);
+			}
+			else{
+				endId = haystack.size() - 1;
+				endId = (midValId + 1);
+			}
+			
+			return bsearch(vector<T>(haystack.begin() + beginId, haystack.begin() + endId), needle);
+		}
+		else{
+			if(sizeHaystackEven)
+				return midValId - (needle > haystackMidVal ? 0 : 1);
+			else
+				return midValId;
+		}
+	}
+
+	int Map::getCellId(Vector3 pos){
+
 		return 0;
 	}
 }

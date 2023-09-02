@@ -44,7 +44,7 @@ namespace battleship{
         void update();
         void load(std::string, bool = false);
         void unload();
-		int getCellId(vb01::Vector3, int);
+		int getCellId(vb01::Vector3);
 		bool isPointWithinTerrainObject(vb01::Vector3, int);
 		inline std::string getMapName(){return mapName;}
 		inline vb01::Node* getNodeParent(){return terrainNode;}
@@ -56,12 +56,13 @@ namespace battleship{
 		inline int getNumSpawnPoints(){return spawnPoints.size();}
 		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
+		inline std::vector<Map::Cell>& getCells(){return cells;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
 		vb01::Material *landCellMat = nullptr, *waterCellMat = nullptr;
 		std::string mapName;
-		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7);
+		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7), mapSize;
 		std::vector<vb01::Vector3> spawnPoints;
         std::vector<Player*> players;
 		std::vector<Cell> cells;
@@ -73,6 +74,7 @@ namespace battleship{
 		void loadSkybox();
 		void loadCells();
 		void loadTerrainObject(int);
+		template<typename T> int bsearch(std::vector<T>, T, float);
     };
 }
 
