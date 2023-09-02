@@ -36,6 +36,7 @@ namespace battleship{
 		
 			Cell(){}
 			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}): pos(p), type(t), edges(e){}
+			int getEdgeWeight(int);
 		};
 
 		static Map* getSingleton();

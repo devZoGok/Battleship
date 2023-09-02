@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "pathfinder.h"
-#include "map.h"
 
 namespace battleship{
 		using namespace std;
@@ -20,20 +19,14 @@ namespace battleship{
 		Pathfinder::Pathfinder(){
 		}
 
-		vector<int> Pathfinder::findPath(u32 **weights, int size, int source, int dest){
+		vector<int> Pathfinder::findPath(vector<Map::Cell> &cells, int source, int dest){
+			int size = cells.size();
 				u32 distances[size];
 				vector<int> paths[size];
 				paths[source].push_back(source);
 
-				for(int i = 0; i < size; i++){
+				for(int i = 0; i < size; i++)
 					distances[i] = (i == source ? 0 : impassibleNodeVal);
-
-					for(int j = 0; j < size; j++)
-						if(weights[i][j] > impassibleNodeVal){
-							cout << "Node val higher than allowed max value\n";
-							exit(-1);
-						}
-				}
 
 				vector<int> checkedNodes;
 
@@ -60,8 +53,8 @@ namespace battleship{
 					for(int i = 0; i < size; i++){
 						bool isChecked = find(checkedNodes.begin(), checkedNodes.end(), i) != checkedNodes.end();
 
-						if(!isChecked && (distances[vertStrich] + weights[vertStrich][i] < distances[i])){
-							distances[i] = distances[vertStrich] + weights[vertStrich][i];
+						if(!isChecked && (distances[vertStrich] + cells[vertStrich].getEdgeWeight(i) < distances[i])){
+							distances[i] = distances[vertStrich] + cells[vertStrich].getEdgeWeight(i);
 							paths[i] = paths[vertStrich];
 							paths[i].push_back(i);
 						}
