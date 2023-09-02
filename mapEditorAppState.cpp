@@ -55,7 +55,7 @@ namespace battleship{
 
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(basePath + "Models/Units/", true);
-		assetManager->load(DEFAULT_TEXTURE);
+		assetManager->load(basePath + DEFAULT_TEXTURE);
 	}
 
 	void MapEditorAppState::MapEditor::updateCircleRadius(bool increase){

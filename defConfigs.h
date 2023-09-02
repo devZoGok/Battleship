@@ -17,7 +17,7 @@ namespace battleship{
 	namespace configData{
 		using namespace gameBase;
 
-  		const std::string DEFAULT_TEXTURE = GameManager::getSingleton()->getPath() + "Textures/defaultTexture.jpg";
+  		const std::string DEFAULT_TEXTURE = "Textures/defaultTexture.jpg";
   		const double camPanSpeed = .1, cellLength = 14, cellWidth = 14, cellDepth = 7;
 		const int maxNumGroups = 10;
 		const vb01::u32 IMPASS_NODE_VAL = 65535;
@@ -29,13 +29,13 @@ namespace battleship{
 		const static int maxConfBinds = 22;
 		const static int numScripts = 5;
 
-		const static std::string scriptPathBase = GameManager::getSingleton()->getPath() + "Scripts/";
+		const static std::string scriptPathBase = "Scripts/";
 		const static std::vector<std::string> scripts = std::vector<std::string>{
-			scriptPathBase + "options.lua",
-			scriptPathBase + "unitData.lua",
-			scriptPathBase + "vehicleData.lua",
-			scriptPathBase + "structureData.lua",
-			scriptPathBase + "player.lua"
+			"Scripts/options.lua",
+			"Scripts/unitData.lua",
+			"Scripts/vehicleData.lua",
+			"Scripts/structureData.lua",
+			"Scripts/player.lua"
 		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{

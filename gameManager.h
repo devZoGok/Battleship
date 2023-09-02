@@ -18,7 +18,7 @@ namespace battleship{
     class GameManager {
     public:
 		static GameManager* getSingleton();
-		void start();
+		void start(std::string);
         void update();
         inline int getWidth(){return width;}
         inline int getHeight(){return height;}
@@ -27,8 +27,8 @@ namespace battleship{
         inline bool isServerSide(){return serverSide;}
 		inline gameBase::StateManager* getStateManager(){return stateManager;}
     private:
-        GameManager();
-        ~GameManager();
+        GameManager(){}
+        ~GameManager(){}
 
 		gameBase::StateManager *stateManager = nullptr;
 		gameBase::InputManager *inputManager = nullptr;
