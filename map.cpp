@@ -208,6 +208,7 @@ namespace battleship{
 		}
 	}
 
+	//TODO implement map size calculation when exporting maps
     void Map::load(string mapName, bool empty) {
 		this->mapName = mapName;
 
@@ -218,7 +219,9 @@ namespace battleship{
 		preprareScene();
 
 		if(!empty){
-			SOL_LUA_STATE.script_file(GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua");
+			SOL_LUA_STATE.script_file(path + "Models/Maps/" + mapName + "/" + mapName + ".lua");
+			sol::table sizeTable = SOL_LUA_STATE[mapTable]["size"];
+			mapSize = Vector3(sizeTable["x"], sizeTable["y"], sizeTable["z"]);
 			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
 			
 			loadSpawnPoints();
@@ -266,8 +269,25 @@ namespace battleship{
 		}
 	}
 
+	//TODO replace search with binary search
+	//TODO implement search for underwater cells
 	int Map::getCellId(Vector3 pos){
+		int numHorCells = int(mapSize.x / CELL_SIZE.x), horId = -1;
 
-		return 0;
+		for(int i = 0; i < numHorCells; i++)
+			if(fabs(cells[i].pos.x - pos.x) < .5 * CELL_SIZE.x){
+				horId = i;
+				break;
+			}
+
+		int numVertCells = int(mapSize.z / CELL_SIZE.z), vertId = -1;
+
+		for(int i = 0; i < numVertCells; i++)
+			if(fabs(cells[i * numHorCells].pos.z - pos.z) < .5 * CELL_SIZE.z){
+				vertId = i;
+				break;
+			}
+
+		return vertId * numHorCells + horId;
 	}
 }

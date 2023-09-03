@@ -5,7 +5,7 @@ gui = {
 		size = {x = 300, y = 20},
 		guiType = GuiType.LISTBOX,
 		listboxType = ListboxType.CONSOLE,
-		numMaxDisplay = 20,
+		numMaxDisplay = 10,
 		closable = false
 	},
 	{

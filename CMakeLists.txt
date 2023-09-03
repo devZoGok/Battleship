@@ -5,7 +5,7 @@ project(${GAME_NAME})
 
 set(CMAKE_CXX_STANDART 17)
 set(CMAKE_BUILD_TYPE Debug)
-set(BUILD_TESTS OFF)
+set(BUILD_TESTS ON)
 cmake_policy(SET CMP0015 NEW)
 
 set(OPTIONS_BUTTONS optionsButton.cpp tabButton.cpp okButton.cpp defaultsButton.cpp)

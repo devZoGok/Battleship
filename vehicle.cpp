@@ -4,6 +4,7 @@
 
 #include <util.h>
 #include <ray.h>
+#include <box.h>
 #include <model.h>
 #include <quaternion.h>
 
@@ -18,6 +19,11 @@ using namespace std;
 namespace battleship{
 	Vehicle::Vehicle(Player *player, int id, Vector3 pos, Quaternion rot) : Unit(player, id, pos, rot){
 		initProperties();
+
+		debugMat = new Material(Root::getSingleton()->getLibPath() + "texture");
+		debugMat->addBoolUniform("lightingEnabled", false);
+		debugMat->addBoolUniform("texturingEnabled", false);
+		debugMat->addVec4Uniform("diffuseColor", Vector4::VEC_IJKL);
 	}
 
 	void Vehicle::halt(){
@@ -136,6 +142,7 @@ namespace battleship{
     }
 
 	//TODO add hover unit type
+	//TODO cleanup debug pathpoint removal
 	void Vehicle::preparePathpoints(Order order){
 		Map *map = Map::getSingleton();
 		int source = map->getCellId(pos);
@@ -144,9 +151,24 @@ namespace battleship{
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		vector<Map::Cell> &cells = map->getCells();
 		vector<int> path = pathfinder->findPath(cells, source, dest);
+
+		Node *rootNode = Root::getSingleton()->getRootNode();
+
+		for(Node *node : debugPathPoints)
+			rootNode->dettachChild(node);
+
+		debugPathPoints.clear();
 		pathPoints.clear();
 
-		for(int p : path)
+		for(int p : path){
 			pathPoints.push_back(cells[p].pos);
+
+			Box *b = new Box(Vector3::VEC_IJK);
+			b->setMaterial(debugMat);
+			Node *n = new Node(cells[p].pos);
+			n->attachMesh(b);
+			rootNode->attachChild(n);
+			debugPathPoints.push_back(n);
+		}
 	}
 }
