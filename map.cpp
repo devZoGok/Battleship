@@ -59,6 +59,7 @@ namespace battleship{
 		string texPath = "";
 		Quad *quad = nullptr;
 		Node *node = nullptr;
+		sol::state_view SOL_LUA_STATE = generateView();
 
 		if(id == -1){
 			string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
@@ -167,6 +168,7 @@ namespace battleship{
 	}
 
 	void Map::loadCells(){
+		sol::state_view SOL_LUA_STATE = generateView();
 		int numCells = SOL_LUA_STATE[mapTable]["numCells"];
 		sol::table cellsTable = SOL_LUA_STATE[mapTable]["cells"];
 
@@ -200,13 +202,12 @@ namespace battleship{
 
 		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
 		string path = GameManager::getSingleton()->getPath();
-		SOL_LUA_STATE.script("PATH = \"" + path + "\"");
-		SOL_LUA_STATE.script_file(path + configData::scripts[1]);
+		sol::state_view SOL_LUA_STATE = generateView();
 		
 		preprareScene();
 
 		if(!empty){
-		sol::state_view SOL_LUA_STATE = generateView();
+			sol::state_view SOL_LUA_STATE = generateView();
 			SOL_LUA_STATE.script_file(GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua");
 			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
 			
