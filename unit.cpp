@@ -5,7 +5,7 @@
 #include <ray.h>
 
 #include <stateManager.h>
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include <glm.hpp>
 #include <ext.hpp>
@@ -39,22 +39,20 @@ namespace battleship{
     }
 
 	void Unit::initProperties(){
-		LuaManager *lm = LuaManager::getSingleton();
-        health = lm->getIntFromTable("health", vector<Index>{Index(id + 1)});
+		sol::state_view SOL_LUA_STATE = generateView();
+        health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
-        range = lm->getFloatFromTable("range", vector<Index>{Index(id + 1)});
-        lineOfSight = lm->getFloatFromTable("lineOfSight", vector<Index>{Index(id + 1)});
-        unitClass = (UnitClass)lm->getIntFromTable("unitClass", vector<Index>{Index(id + 1)});
-		type = (UnitType)lm->getIntFromTable("unitType", vector<Index>{Index(id + 1)});
+        range = SOL_LUA_STATE["range"][id + 1];
+        lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
+        unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
+		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
 
 		string cornerInd = "unitCornerPoints";
 
 		for(int i = 0; i < 8; i++){
-			float x = lm->getFloatFromTable(cornerInd, vector<Index>{Index(id + 1), Index(i + 1), Index("x")});
-			float y = lm->getFloatFromTable(cornerInd, vector<Index>{Index(id + 1), Index(i + 1), Index("y")});
-			float z = lm->getFloatFromTable(cornerInd, vector<Index>{Index(id + 1), Index(i + 1), Index("z")});
-			corners[i] = Vector3(x, y, z);
+			sol::table cornerTable = SOL_LUA_STATE[cornerInd][id + 1][i + 1];
+			corners[i] = Vector3(cornerTable["x"], cornerTable["y"], cornerTable["z"]);
 		}
 
         width = corners[0].x - corners[1].x;
@@ -68,9 +66,9 @@ namespace battleship{
 	}
 
 	void Unit::initModel(){
-		LuaManager *lm = LuaManager::getSingleton();
-		string basePath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)});
-		string meshPath = lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
+		sol::state_view SOL_LUA_STATE = generateView();
+		string basePath = SOL_LUA_STATE["basePath"][id + 1];
+		string meshPath = SOL_LUA_STATE["meshPath"][id + 1];
 
 		model = new Model(basePath + meshPath);
 		Root *root = Root::getSingleton();
@@ -94,8 +92,8 @@ namespace battleship{
 	}
 
 	void Unit::initSound(){
-		LuaManager *lm = LuaManager::getSingleton();
-		string name = lm->getStringFromTable("name", vector<Index>{Index(id + 1)});
+		sol::state_view SOL_LUA_STATE = generateView();
+		string name = SOL_LUA_STATE["name"][id + 1];
         selectionSfxBuffer = new sf::SoundBuffer();
         string p = GameManager::getSingleton()->getPath() + "Sounds/" + name + "s/selection.ogg";
 

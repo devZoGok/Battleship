@@ -1,5 +1,6 @@
 #ifndef DEF_CONFIGS_H
 #define DEF_CONFIGS_H
+#define SOL_ALL_SAFETIES_ON 1
 
 #include <string>
 #include <vector>
@@ -9,6 +10,7 @@
 #include <glfw3.h>
 
 #include <mapping.h>
+#include <sol/sol.hpp>
 
 #include "binds.h"
 #include "gameManager.h"
@@ -31,6 +33,8 @@ namespace battleship{
 
 		const static std::string scriptPathBase = "Scripts/";
 		const static std::vector<std::string> scripts = std::vector<std::string>{
+			"Scripts/main.lua",
+			"Scripts/Gui/main.lua",
 			"Scripts/options.lua",
 			"Scripts/unitData.lua",
 			"Scripts/vehicleData.lua",

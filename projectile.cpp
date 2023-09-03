@@ -7,7 +7,6 @@
 #include <ray.h>
 
 #include <stateManager.h>
-#include <luaManager.h>
 
 #include "map.h"
 #include "unit.h"
@@ -44,24 +43,22 @@ namespace battleship{
     }
 
 	void Projectile::initProperties(int weaponId){
-		LuaManager *lm = LuaManager::getSingleton();
-		vector<Index> indices = vector<Index>{Index(id + 1), Index(weaponTypeId + 1), Index(weaponId + 1)};
-        rayLength = lm->getFloatFromTable("rayLength", indices);
-        damage = lm->getIntFromTable("damage", indices);
-        speed = lm->getFloatFromTable("speed", indices);
+		sol::state_view SOL_LUA_STATE = generateView();
+        rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
+        damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
+        speed = SOL_LUA_STATE["speed"][id + 1][weaponTypeId + 1][weaponId + 1];
 	}
 
 	void Projectile::initModel(Node *node){
         if(!node){
-			LuaManager *lm = LuaManager::getSingleton();
-			vector<Index> indices = vector<Index>{Index(id + 1), Index(weaponTypeId + 1)};
-			string meshPath = lm->getStringFromTable("meshPath", indices);
+			sol::state_view SOL_LUA_STATE = generateView();
+			string meshPath = SOL_LUA_STATE["meshPath"][id + 1][weaponTypeId + 1];
 			this->node = new Model(meshPath);
 
 			Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 			mat->addBoolUniform("lightingEnabled", false);
 
-			string diffTexPath = lm->getStringFromTable("diffuseMapTextPath", indices);
+			string diffTexPath = SOL_LUA_STATE["diffuseMapTextPath"][id + 1][weaponTypeId + 1];
 			string f[]{diffTexPath};
             Texture *diffuseTexture = new Texture(f, 1, false);
 			mat->addTexUniform("textures[0]", diffuseTexture, true);
@@ -74,10 +71,10 @@ namespace battleship{
 
 	void Projectile::initSound(){
 		GameManager *gm = GameManager::getSingleton();
-		LuaManager *lm = LuaManager::getSingleton();
 
-		string unitName = lm->getStringFromTable("name", vector<Index>{Index(id + 1)});
-		string projectileName = lm->getStringFromTable("projectileName", vector<Index>{Index(id + 1), Index(weaponTypeId + 1)});
+		sol::state_view SOL_LUA_STATE = generateView();
+		string unitName = SOL_LUA_STATE["name"][id + 1];
+		string projectileName = SOL_LUA_STATE["projectileName"][id + 1][weaponTypeId + 1];
         string p1 = gm->getPath() + "Sounds/" + unitName + "s/" + projectileName + ".ogg";
         string p2 = gm->getPath() + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
 

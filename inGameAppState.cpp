@@ -8,7 +8,6 @@
 #include <assetManager.h>
 
 #include <stateManager.h>
-#include <luaManager.h>
 
 #include "defConfigs.h"
 #include "inGameAppState.h"
@@ -119,7 +118,7 @@ namespace battleship{
             isMainMenuActive = false;
             gm->getStateManager()->attachAppState(activeState);
 						
-			AssetManager::getSingleton()->load(gm->getPath() + LuaManager::getSingleton()->getString("modelPrefix"), true);
+			AssetManager::getSingleton()->load(gm->getPath() + (string)generateView()["modelPrefix"], true);
 
 			guiManager->readLuaScreenScript("inGame.lua");
 

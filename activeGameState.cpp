@@ -7,7 +7,7 @@
 #include <ray.h>
 
 #include <stateManager.h>
-#include <luaManager.h>
+#include <solUtil.h>
 
 #include <algorithm>
 #include <ctype.h>
@@ -420,8 +420,8 @@ namespace battleship{
 
 					//TODO fix the magic value
 					int id = 3;
-					LuaManager *lm = LuaManager::getSingleton();
-					string modelPath = lm->getStringFromTable("basePath", vector<Index>{Index(id + 1)}) + lm->getStringFromTable("meshPath", vector<Index>{Index(id + 1)});
+					sol::state_view SOL_LUA_STATE = generateView();
+					string modelPath = (string)SOL_LUA_STATE["basePath"][id + 1] + (string)SOL_LUA_STATE["meshPath"][id + 1];
 					ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
 
 					ufCtr->setPlacingFrames(true);
