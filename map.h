@@ -33,6 +33,7 @@ namespace battleship{
 			Type type;
 			vb01::Vector3 pos;
 			std::vector<Edge> edges;
+			std::vector<int> underWaterCellIds;
 		
 			Cell(){}
 			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}): pos(p), type(t), edges(e){}

@@ -327,35 +327,37 @@ namespace battleship{
 				cells.push_back(Map::Cell(pos, type, edges));
 			}
 
-		std::map<int, vector<int>> waterCellMap;
+		vector<Map::Cell> waterCells;
 		int currUnderWaterCellId = cells.size();
 		int weight = 2;
 
 		for(pair<int, float> p : waterBodyBedPoints){
 			int numUnderWaterCells = (int)((cells[p.first].pos.y - p.second) / cellSize.y);
-			vector<int> underWaterCellIds;
 
-			if(numUnderWaterCells)
+			if(numUnderWaterCells > 0){
 				cells[p.first].edges.push_back(Map::Edge(weight, p.first, currUnderWaterCellId));
 
-			for(int i = 0; i < numUnderWaterCells; i++, currUnderWaterCellId++)
-				underWaterCellIds.push_back(currUnderWaterCellId);
+				for(int i = 0; i < numUnderWaterCells; i++, currUnderWaterCellId++)
+					cells[p.first].underWaterCellIds.push_back(currUnderWaterCellId);
 
-			waterCellMap[p.first] = underWaterCellIds;
+				waterCells.push_back(cells[p.first]);
+			}
 		}
 
+		for(int i = 0; i < waterCells.size(); i++){
+			for(int j = 0; j < waterCells[i].underWaterCellIds.size(); j++){
+				int aboveCellId = (j == 0 ? waterCells[i].edges[0].srcCellId : j - 1);
+				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCells[i].underWaterCellIds[j], aboveCellId)};
 
-		for(std::map<int, vector<int>>::iterator it = waterCellMap.begin(); it != waterCellMap.end(); ++it){
-			for(int i = 0; i < waterCellMap[it->first].size(); i++){
-				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCellMap[it->first][i], it->first)};
+				for(int k = 0; k < waterCells[i].edges.size(); k++){
+					Map::Cell adjacentUnderwaterCell = cells[waterCells[i].edges[k].destCellId]; 
 
-				for(Map::Edge edge : cells[it->first].edges){
-					if(cells[edge.destCellId].type == Map::Cell::Type::WATER && waterCellMap[edge.destCellId].size() >= i){
-						edges.push_back(Map::Edge(weight, waterCellMap[it->first][i], waterCellMap[edge.destCellId][i]));
+					if(adjacentUnderwaterCell.underWaterCellIds.size() >= j - 1){
+						edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], adjacentUnderwaterCell.underWaterCellIds[j]));
 					}
 				}
 
-				Vector3 cellPos = cells[it->first].pos - Vector3::VEC_J * cellSize.y * (i + 1);
+				Vector3 cellPos = waterCells[i].pos - Vector3::VEC_J * cellSize.y * (j + 1);
 				cells.push_back(Map::Cell(cellPos, Map::Cell::Type::WATER, edges));
 			}
 		}
