@@ -37,6 +37,7 @@ namespace battleship{
 
 	//TODO refactor player difficulty and faction listbox selection
 	Button* ConcreteGuiManager::parseButton(int guiId){
+		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		sol::table posTable = guiTable["pos"];
@@ -162,6 +163,7 @@ namespace battleship{
 	}
 
 	Listbox* ConcreteGuiManager::parseListbox(int guiId){
+		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos";
@@ -282,6 +284,7 @@ namespace battleship{
 	}
 
 	Checkbox* ConcreteGuiManager::parseCheckbox(int guiId){
+		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos";
@@ -297,6 +300,7 @@ namespace battleship{
 	}
 
 	Slider* ConcreteGuiManager::parseSlider(int guiId){
+		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos", sizeTable = "size";
@@ -312,6 +316,7 @@ namespace battleship{
 	}
 
 	Textbox* ConcreteGuiManager::parseTextbox(int guiId){
+		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos", sizeTable = "size";
@@ -333,7 +338,7 @@ namespace battleship{
 		guiElements.clear();
 
 		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";
-		SOL_LUA_STATE.script_file(basePath + "main.lua");
+		sol::state_view SOL_LUA_STATE = generateView();
 		SOL_LUA_STATE.script_file(basePath + script);
 
 		int numGuiElements = SOL_LUA_STATE["numGui"];

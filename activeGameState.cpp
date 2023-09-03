@@ -420,6 +420,7 @@ namespace battleship{
 
 					//TODO fix the magic value
 					int id = 3;
+					sol::state_view SOL_LUA_STATE = generateView();
 					string modelPath = (string)SOL_LUA_STATE["basePath"][id + 1] + (string)SOL_LUA_STATE["meshPath"][id + 1];
 					ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
 

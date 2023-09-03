@@ -3,8 +3,8 @@
 #include <cmath>
 #include <vector.h>
 
-#include <stateManager.h>
 #include <solUtil.h>
+#include <stateManager.h>
 
 #include "consoleCommand.h"
 #include "inGameAppState.h"
@@ -62,7 +62,7 @@ namespace battleship{
 
 		int unitId = atoi(fullCommand[2].c_str());
 
-		if(!(0 <= unitId && unitId <= (int)SOL_LUA_STATE["numUnits"]))
+		if(!(0 <= unitId && unitId <= (int)generateView()["numUnits"]))
 			return;
 	}
 

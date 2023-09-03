@@ -2,11 +2,10 @@
 
 #include <stateManager.h>
 #include <inputManager.h>
+#include <solUtil.h>
 
 #include <assetManager.h>
 #include <root.h>
-
-#include <solUtil.h>
 
 #include "gameManager.h"
 #include "guiAppState.h"
@@ -29,13 +28,11 @@ namespace battleship{
 	void GameManager::start(string gameDir) {
 		path = gameDir + "Assets/";
 
-		gameBase::SOL_LUA_STATE.script("PATH = \"" + path + "\";");
+		sol::state_view SOL_LUA_STATE = generateView();
+		SOL_LUA_STATE.script("PATH = \"" + path + "\";");
 
-		vector<string> files = configData::scripts;
-		files.emplace(files.begin(), "Scripts/main.lua");
-
-		for(string &f : files)
-			gameBase::SOL_LUA_STATE.script_file(path + f);
+		for(string f : configData::scripts)
+			SOL_LUA_STATE.script_file(path + f);
 
 		sol::table resTable = SOL_LUA_STATE["graphics"]["resolution"]; 
 		width = resTable["x"];

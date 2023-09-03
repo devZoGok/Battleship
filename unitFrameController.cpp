@@ -1,3 +1,5 @@
+#include <solUtil.h>
+
 #include "unitFrameController.h"
 #include "util.h"
 #include "map.h"
@@ -8,8 +10,6 @@
 #include <model.h>
 #include <root.h>
 #include <ray.h>
-
-#include <solUtil.h>
 
 #include <string>
 
@@ -47,6 +47,7 @@ namespace battleship{
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = 3 * meshData.numTris;
 
+		sol::state_view SOL_LUA_STATE = generateView();
 		float maxUnevenness = SOL_LUA_STATE["maxUnevenness"];
 
 		Camera *cam = Root::getSingleton()->getCamera();

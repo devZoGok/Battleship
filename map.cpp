@@ -35,6 +35,7 @@ namespace battleship{
 	}
 
 	void Map::loadSkybox(){
+		sol::state_view SOL_LUA_STATE = generateView();
 		string skyboxName = SOL_LUA_STATE[mapTable]["skybox"];
 		string basePath = GameManager::getSingleton()->getPath() + "Textures/Skyboxes/" + skyboxName;
 
@@ -196,6 +197,7 @@ namespace battleship{
 	}
 
 	void Map::loadSpawnPoints(){
+		sol::state_view SOL_LUA_STATE = generateView();
 		int numSpawnPoints = SOL_LUA_STATE[mapTable]["numSpawnPoints"];
 
 		for(int i = 0; i < numSpawnPoints; i++){
@@ -209,6 +211,7 @@ namespace battleship{
 		AssetManager *assetManager = AssetManager::getSingleton();
 		string path = GameManager::getSingleton()->getPath();
 		assetManager->load(path + DEFAULT_TEXTURE);
+		sol::state_view SOL_LUA_STATE = generateView();
 		assetManager->load(path + (string)SOL_LUA_STATE["modelPrefix"], true);
 
 		int numPlayers = SOL_LUA_STATE[mapTable]["numPlayers"];
@@ -254,6 +257,7 @@ namespace battleship{
 		preprareScene();
 
 		if(!empty){
+		sol::state_view SOL_LUA_STATE = generateView();
 			SOL_LUA_STATE.script_file(GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua");
 			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
 			

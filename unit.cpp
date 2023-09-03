@@ -39,6 +39,7 @@ namespace battleship{
     }
 
 	void Unit::initProperties(){
+		sol::state_view SOL_LUA_STATE = generateView();
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
@@ -65,6 +66,7 @@ namespace battleship{
 	}
 
 	void Unit::initModel(){
+		sol::state_view SOL_LUA_STATE = generateView();
 		string basePath = SOL_LUA_STATE["basePath"][id + 1];
 		string meshPath = SOL_LUA_STATE["meshPath"][id + 1];
 
@@ -90,6 +92,7 @@ namespace battleship{
 	}
 
 	void Unit::initSound(){
+		sol::state_view SOL_LUA_STATE = generateView();
 		string name = SOL_LUA_STATE["name"][id + 1];
         selectionSfxBuffer = new sf::SoundBuffer();
         string p = GameManager::getSingleton()->getPath() + "Sounds/" + name + "s/selection.ogg";

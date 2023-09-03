@@ -7,7 +7,6 @@
 #include <ray.h>
 
 #include <stateManager.h>
-#include <solUtil.h>
 
 #include "map.h"
 #include "unit.h"
@@ -44,6 +43,7 @@ namespace battleship{
     }
 
 	void Projectile::initProperties(int weaponId){
+		sol::state_view SOL_LUA_STATE = generateView();
         rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
         damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
         speed = SOL_LUA_STATE["speed"][id + 1][weaponTypeId + 1][weaponId + 1];
@@ -51,6 +51,7 @@ namespace battleship{
 
 	void Projectile::initModel(Node *node){
         if(!node){
+			sol::state_view SOL_LUA_STATE = generateView();
 			string meshPath = SOL_LUA_STATE["meshPath"][id + 1][weaponTypeId + 1];
 			this->node = new Model(meshPath);
 
@@ -71,6 +72,7 @@ namespace battleship{
 	void Projectile::initSound(){
 		GameManager *gm = GameManager::getSingleton();
 
+		sol::state_view SOL_LUA_STATE = generateView();
 		string unitName = SOL_LUA_STATE["name"][id + 1];
 		string projectileName = SOL_LUA_STATE["projectileName"][id + 1][weaponTypeId + 1];
         string p1 = gm->getPath() + "Sounds/" + unitName + "s/" + projectileName + ".ogg";

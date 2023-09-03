@@ -1,11 +1,11 @@
 #include <cmath>
 
+#include <solUtil.h>
+
 #include <util.h>
 #include <ray.h>
 #include <model.h>
 #include <quaternion.h>
-
-#include <solUtil.h>
 
 #include "vehicle.h"
 #include "pathfinder.h"
@@ -60,6 +60,7 @@ namespace battleship{
 	void Vehicle::initProperties(){
 		Unit::initProperties();
 
+		sol::state_view SOL_LUA_STATE = generateView();
         maxTurnAngle = SOL_LUA_STATE["maxTurnAngle"][id + 1];
         speed = SOL_LUA_STATE["speed"][id + 1];
 		anglePrecision = SOL_LUA_STATE["anglePrecision"][id + 1];
