@@ -108,6 +108,7 @@ namespace battleship{
 	}
 
 	void Vehicle::alignToSurface(){
+		/*
 		Map *map = Map::getSingleton();
 		TerrainObject terr = map->getTerrainObject(0);
 		vector<Ray::CollisionResult> res;
@@ -122,6 +123,7 @@ namespace battleship{
 			Quaternion rotQuat = Quaternion(angle, axis);
 			orientUnit(rotQuat * rot);
 		}
+		*/
 	}
 
     void Vehicle::move(Order order) {
@@ -138,6 +140,7 @@ namespace battleship{
 		int srcObjId = 0, destObjId = 0;
 		Map *map = Map::getSingleton();
 
+		/*
 		for(int i = 1; i < map->getNumTerrainObjects(); i++){
 			if(map->isPointWithinTerrainObject(pos, i))
 				srcObjId = i;
@@ -145,6 +148,7 @@ namespace battleship{
 			if(map->isPointWithinTerrainObject(order.targets[0].pos, i))
 				destObjId = i;
 		}
+		 */
 
 		if(srcObjId != destObjId)
 			return;
@@ -152,6 +156,7 @@ namespace battleship{
 		int source = map->getCellId(pos, srcObjId);
 		int dest = map->getCellId(order.targets[0].pos, destObjId);
 
+		/*
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		u32 **weights = map->getTerrainObject(srcObjId).weights;
 		vector<int> path = pathfinder->findPath(weights, map->getTerrainObject(srcObjId).numCells, source, dest);
@@ -166,5 +171,6 @@ namespace battleship{
 		if(!(impassibleNodePresent || path.empty()))
 			for(int p : path)
 				pathPoints.push_back(map->getTerrainObject(srcObjId).cells[p].pos);
+		*/
 	}
 }

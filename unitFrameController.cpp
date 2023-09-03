@@ -43,7 +43,7 @@ namespace battleship{
 	//TODO implement terrain evenness check
 	void UnitFrameController::update(){
 		Map *map = Map::getSingleton();
-		MeshData meshData = map->getTerrainObject(0).node->getMesh(0)->getMeshBase();
+		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = 3 * meshData.numTris;
 
@@ -56,7 +56,7 @@ namespace battleship{
 
 		for(UnitFrame &s : unitFrames){
 			vector<Ray::CollisionResult> results;
-			Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getTerrainObject(0).node, results);
+			Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getNodeParent()->getChild(0), results);
 			Ray::sortResults(results);
 
 			if(!results.empty()){
@@ -64,8 +64,8 @@ namespace battleship{
 					s.model->setPosition(results[0].pos);
 
 				sol::table unitTable = SOL_LUA_STATE["unitCornerPoints"][s.id + 1]; 
-    			float width = (int)unitTable[1]["x"] - (int)unitTable[2]["x"];
-    			float length = (int)unitTable[4]["z"] - (int)unitTable[1]["z"];
+    			float width = (float)unitTable[1]["x"] - (float)unitTable[2]["x"];
+    			float length = (float)unitTable[4]["z"] - (float)unitTable[1]["z"];
 
 				float unevenness = 0;
 

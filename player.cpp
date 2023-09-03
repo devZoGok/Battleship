@@ -13,16 +13,14 @@ namespace battleship{
         this->spawnPoint = spawnPoint;
 		this->id = id;
 
-		sol::state_view SOL_LUA_STATE = generateView();
-		SOL_LUA_STATE.script("players[" + to_string(id + 1) + "] = Player:new({id = " + to_string(id + 1) + "})");
+		//SOL_LUA_STATE.script("players[" + to_string(id + 1) + "] = Player:new({id = " + to_string(id + 1) + "})");
     }
 
     Player::~Player() {
     }
 
     void Player::update() {
-		sol::state_view SOL_LUA_STATE = generateView();
-		SOL_LUA_STATE.script("players[" + to_string(id + 1) + "]:update()");
+		//SOL_LUA_STATE.script("players[" + to_string(id + 1) + "]:update()");
 
 		for(Unit *u : units)
 			u->update();

@@ -22,7 +22,7 @@ namespace battleship{
 		MapEditorAppState::MapEditor *mapEditor = ((MapEditorAppState*)sm->getAppStateByType((int)AppStateType::MAP_EDITOR))->getMapEditor();
 	
 		Map *map = Map::getSingleton();
-		Material *mat = map->getTerrainObject(0).node->getMesh(0)->getMaterial();
+		Material *mat = map->getNodeParent()->getChild(0)->getMesh(0)->getMaterial();
 		Material::BoolUniform *texturingUniform = (Material::BoolUniform*)mat->getUniform("texturingEnabled");
 		Texture *landTex = mapEditor->getLandmassTexture(selectedOption);
 		string texUni = "textures[0]";

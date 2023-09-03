@@ -8,50 +8,35 @@
 #include <vector.h>
 #include <util.h>
 
-namespace gameBase{
-	class LuaManager;
-}
-
 namespace vb01{
 	class Model;
+	class Material;
 	class Node;
 }
 
 namespace battleship{
 	class Player;
 
-	struct Cell{
-		bool land, impassible;
-		vb01::Vector3 pos;
-
-		Cell(){}
-		Cell(vb01::Vector3 p, bool l, bool i): pos(p), land(l), impassible(i){}
-	};
-
-	struct TerrainObject{
-		enum Type{LANDMASS, RECT_WATERBODY, ROUND_WATERBODY};
-		vb01::Vector3 pos, size, cellSize;
-		Type type;
-		vb01::Node *node = nullptr;
-		std::vector<vb01::Node*> cellMarkers;
-		int numCells;
-		Cell *cells = nullptr;
-		vb01::u32 **weights = nullptr;
-
-		TerrainObject(){}
-		TerrainObject(vb01::Vector3 p, vb01::Vector3 s, vb01::Vector3 cs, Type t, vb01::Node *n, int num, Cell *c, vb01::u32 **w) :
-		   	pos(p),
-		   	size(s),
-		   	cellSize(cs),
-		   	type(t),
-		   	node(n),
-		   	numCells(num),
-		   	cells(c),
-		   	weights(w){}
-	};
-
     class Map {
     public:
+		struct Cell;
+		
+		struct Edge{
+			Edge(vb01::s64 w, vb01::s64 src, vb01::s64 dest) : weight(w), srcCellId(src), destCellId(dest){}
+			vb01::s64 weight, srcCellId, destCellId;
+		};
+		
+		struct Cell{
+			enum Type{LAND, WATER};
+		
+			Type type;
+			vb01::Vector3 pos;
+			std::vector<Edge> edges;
+		
+			Cell(){}
+			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}): pos(p), type(t), edges(e){}
+		};
+
 		static Map* getSingleton();
         ~Map(){}
         void update();
@@ -59,13 +44,9 @@ namespace battleship{
         void unload();
 		int getCellId(vb01::Vector3, int);
 		bool isPointWithinTerrainObject(vb01::Vector3, int);
-		void addTerrainObject(TerrainObject);
 		inline std::string getMapName(){return mapName;}
-		inline TerrainObject& getTerrainObject(int i){return terrainObjects[i];}
-		inline int getNumTerrainObjects(){return terrainObjects.size();}
-		inline vb01::Node* getNodeParent(){return nodeParent;}
-		inline vb01::Vector3 getCellSize(){return cellSize;}
-		inline std::vector<TerrainObject>& getTerrainObjects(){return terrainObjects;} 
+		inline vb01::Node* getNodeParent(){return terrainNode;}
+		inline vb01::Vector3 getCellSize(){return CELL_SIZE;}
         inline std::vector<Player*> getPlayers() {return players;}
 		inline Player* getPlayer(int i){return players[i];}
 		inline void addPlayer(Player *p){players.push_back(p);}
@@ -75,18 +56,20 @@ namespace battleship{
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
     private:
 		std::string mapTable = "map";
-		vb01::Node *nodeParent = nullptr;
+		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
+		vb01::Material *landCellMat = nullptr, *waterCellMat = nullptr;
 		std::string mapName;
-		std::vector<TerrainObject> terrainObjects;
-		vb01::Vector3 cellSize;
+		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7);
 		std::vector<vb01::Vector3> spawnPoints;
         std::vector<Player*> players;
+		std::vector<Cell> cells;
 
         Map(){}
 		void preprareScene();
 		void loadSpawnPoints();
 		void loadPlayers();
 		void loadSkybox();
+		void loadCells();
 		void loadTerrainObject(int);
     };
 }
