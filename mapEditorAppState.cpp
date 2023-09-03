@@ -352,7 +352,7 @@ namespace battleship{
 				for(int k = 0; k < waterCells[i].edges.size(); k++){
 					Map::Cell adjacentUnderwaterCell = cells[waterCells[i].edges[k].destCellId]; 
 
-					if(adjacentUnderwaterCell.underWaterCellIds.size() >= j - 1){
+					if(adjacentUnderwaterCell.underWaterCellIds.size() >= j + 1){
 						edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], adjacentUnderwaterCell.underWaterCellIds[j]));
 					}
 				}
@@ -368,6 +368,7 @@ namespace battleship{
 	void MapEditorAppState::MapEditor::generateMapScript(){
 		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
 		string mapScript = "map = {\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
+		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.y) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(map->getNumPlayers()) + ",\n";
 
