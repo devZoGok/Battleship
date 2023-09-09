@@ -193,6 +193,12 @@ namespace battleship{
 				edges.push_back(Edge(edgeTable["weight"], edgeTable["srcCellId"], edgeTable["destCellId"]));
 			}
 
+			int numUnderWaterCells = cellTable["numUnderWaterCells"];
+			vector<int> underWaterCellIds;
+
+			for(int j = 0; j < numUnderWaterCells; j++)
+				underWaterCellIds.push_back((int)cellTable["underWaterCellId"][j + 1]);
+
 			Vector3 cellPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 			Cell::Type cellType = (Cell::Type)cellTable["type"];
 
@@ -204,7 +210,7 @@ namespace battleship{
 			node->attachMesh(quad);
 			cellNode->attachChild(node);
 
-			cells.push_back(Cell(cellPos, cellType, edges));
+			cells.push_back(Cell(cellPos, cellType, edges, underWaterCellIds));
 		}
 	}
 
@@ -270,7 +276,6 @@ namespace battleship{
 	}
 
 	//TODO replace search with binary search
-	//TODO implement search for underwater cells
 	int Map::getCellId(Vector3 pos){
 		int numHorCells = int(mapSize.x / CELL_SIZE.x), horId = -1;
 
@@ -288,6 +293,19 @@ namespace battleship{
 				break;
 			}
 
-		return vertId * numHorCells + horId;
+		int surfaceCellId = vertId * numHorCells + horId;
+
+		if(cells[surfaceCellId].type == Cell::Type::WATER && !cells[surfaceCellId].underWaterCellIds.empty()){
+			int cellId = surfaceCellId;
+
+			for(int i = 0; i <= cells[surfaceCellId].underWaterCellIds.size(); i++){
+				cellId = (i == 0 ? surfaceCellId : cells[surfaceCellId].underWaterCellIds[i - 1]);
+
+				if(fabs(cells[cellId].pos.y - pos.y) < .5 * CELL_SIZE.y)
+					return cellId;
+			}
+		}
+		else
+			return surfaceCellId;
 	}
 }

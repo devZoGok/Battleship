@@ -103,11 +103,11 @@ namespace battleship{
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addTexUniform("textures[0]", waterTextures[0], false);
 
-		Vector3 size = Vector3(10, 10, 1);
+		Vector3 size = Vector3(30, 30, 1);
 		Quad *quad = new Quad(size, true);
 		quad->setMaterial(mat);
 
-		Vector3 pos = 0.1 * Vector3::VEC_J;
+		Vector3 pos = 12 * Vector3::VEC_J;
 		Node *node = new Node(pos);
 		node->attachMesh(quad);
 
@@ -349,6 +349,9 @@ namespace battleship{
 				int aboveCellId = (j == 0 ? waterCells[i].edges[0].srcCellId : j - 1);
 				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCells[i].underWaterCellIds[j], aboveCellId)};
 
+				if(waterCells[i].underWaterCellIds.size() > j + 1)
+					edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], waterCells[i].underWaterCellIds[j + 1]));
+
 				for(int k = 0; k < waterCells[i].edges.size(); k++){
 					Map::Cell adjacentUnderwaterCell = cells[waterCells[i].edges[k].destCellId]; 
 
@@ -422,6 +425,18 @@ namespace battleship{
 
 			for(Map::Edge edge : cell.edges)
 				mapScript += "{srcCellId = " + to_string(edge.srcCellId) + ", destCellId = "  + to_string(edge.destCellId) + ", weight = "  + to_string(edge.weight) + "}, ";
+
+			int numSubCells = cell.underWaterCellIds.size();
+			mapScript += "}, numUnderWaterCells = " + to_string(numSubCells) + ",";
+
+			if(numSubCells > 0){
+				mapScript += "underWaterCellId = {";
+
+				for(int subCellId : cell.underWaterCellIds)
+					mapScript += to_string(subCellId) + ", ";
+
+				mapScript += "}";
+			}
 
 			mapScript += "}\n},\n";
 		}

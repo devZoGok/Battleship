@@ -36,7 +36,7 @@ namespace battleship{
 			std::vector<int> underWaterCellIds;
 		
 			Cell(){}
-			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}): pos(p), type(t), edges(e){}
+			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}, std::vector<int> uc = std::vector<int>{}): pos(p), type(t), edges(e), underWaterCellIds(uc){}
 			int getEdgeWeight(int);
 		};
 
