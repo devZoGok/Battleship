@@ -48,13 +48,14 @@ mappings = {
 		{bind = 36, trigger = 312, action = false, bindType = 2, inOptions = false},
 		{bind = 37, trigger = 313, action = false, bindType = 2, inOptions = false},
 		{bind = 38, trigger = 71, action = true, bindType = 0, inOptions = false},
-		{bind = 39, trigger = 256, action = true, bindType = 0, inOptions = false},
-		{bind = 40, trigger = 90, action = true, bindType = 0, inOptions = false},
-		{bind = 41, trigger = 89, action = true, bindType = 0, inOptions = false},
-		{bind = 42, trigger = 88, action = true, bindType = 0, inOptions = false},
-		{bind = 43, trigger = 87, action = true, bindType = 0, inOptions = false},
-		{bind = 44, trigger = 72, action = true, bindType = 0, inOptions = false},
-		{bind = 45, trigger = 68, action = true, bindType = 0, inOptions = false},
+		{bind = 39, trigger = 83, action = true, bindType = 0, inOptions = false},
+		{bind = 40, trigger = 256, action = true, bindType = 0, inOptions = false},
+		{bind = 41, trigger = 90, action = true, bindType = 0, inOptions = false},
+		{bind = 42, trigger = 89, action = true, bindType = 0, inOptions = false},
+		{bind = 43, trigger = 88, action = true, bindType = 0, inOptions = false},
+		{bind = 44, trigger = 87, action = true, bindType = 0, inOptions = false},
+		{bind = 45, trigger = 72, action = true, bindType = 0, inOptions = false},
+		{bind = 46, trigger = 68, action = true, bindType = 0, inOptions = false},
 }
 graphics = {
 	resolution = {x = 1920, y = 1080}

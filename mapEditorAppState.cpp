@@ -118,21 +118,44 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::MapEditor::moveTerrainObject(float strength){
-		Vector3 pos = selectedTerrainNode->getPosition();
+		if(fabs(strength) < .00001) return;
 
-		switch(movementAxis){
-			case MovementAxis::X_AXIS:
-				pos += strength * Vector3::VEC_I;
+		Vector3 axis;
+
+		switch(transformAxis){
+			case TransformAxis::X_AXIS:
+				axis = Vector3::VEC_I;
 				break;
-			case MovementAxis::Y_AXIS:
-				pos += strength * Vector3::VEC_J;
+			case TransformAxis::Y_AXIS:
+				axis = -Vector3::VEC_J;
 				break;
-			case MovementAxis::Z_AXIS:
-				pos += strength * Vector3::VEC_K;
+			case TransformAxis::Z_AXIS:
+				axis = Vector3::VEC_K;
 				break;
 		}
 
+		Vector3 pos = selectedTerrainNode->getPosition() + 10 * strength * axis;
 		selectedTerrainNode->setPosition(pos);
+	}
+
+	void MapEditorAppState::MapEditor::scaleTerrainObject(float strength){
+		if(fabs(strength) < .00001) return;
+
+		Vector2 axis;
+
+		switch(transformAxis){
+			case TransformAxis::X_AXIS:
+				axis = Vector2::VEC_I;
+				break;
+			case TransformAxis::Z_AXIS:
+				axis = Vector2::VEC_J;
+				break;
+		}
+
+		Quad *quad = (Quad*)selectedTerrainNode->getMesh(0);
+		Vector3 size = quad->getSize() + 10 * strength * Vector3(axis.x, axis.y, 0);
+		quad->setSize(Vector3(size.x, size.y, 1));
+		quad->updateVerts(quad->getMeshBase());
 	}
 
 	void MapEditorAppState::MapEditor::pushLandmassVerts(float strength){
@@ -140,6 +163,7 @@ namespace battleship{
 		MeshData meshData = mesh->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = meshData.numTris * 3;
+		pushPos.y += 10 * strength;
 
 		for(int i = 0; i < numVerts; i++){
 			Vector3 distVec = verts[i].pos - pushPos;
@@ -147,7 +171,7 @@ namespace battleship{
 			float dist = distVec.getLength();
 
 			if(dist < circleRadius)
-				verts[i].pos.y += 10 * strength * dist / circleRadius;
+				verts[i].pos.y = oldLandmassVertHeights[i] + pushPos.y - (pushPos.y / circleRadius) * dist;
 		}
 
 		mesh->updateVerts(meshData);
@@ -166,6 +190,8 @@ namespace battleship{
 		Node *node = new Node();
 		node->attachMesh(mesh);
 		map->getNodeParent()->attachChild(node);
+
+		oldLandmassVertHeights = new float[3 * mesh->getMeshBase().numTris];
 	}
 
 	void MapEditorAppState::MapEditor::prepareTextures(string basePath, bool skybox, vector<Texture*> &textures){
@@ -488,6 +514,18 @@ namespace battleship{
 		generateMapScript();
 	}
 
+	void MapEditorAppState::MapEditor::togglePush(bool push){
+		this->pushing = push;
+
+		if(push){
+			MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
+			int numVerts = 3 * meshData.numTris;
+
+			for(int i = 0; i < numVerts; i++)
+				oldLandmassVertHeights[i] = meshData.vertices[i].pos.y;
+		}
+	}
+
 	MapEditorAppState::MapEditorAppState(string name, Vector2 size, bool newMap) : AbstractAppState(
 					AppStateType::MAP_EDITOR,
 				 	configData::calcSumBinds(AppStateType::MAP_EDITOR, true),
@@ -574,10 +612,9 @@ namespace battleship{
 					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Root::getSingleton()->getRootNode(), results);
 					Ray::sortResults(results);
 
-
 					if(cursorPos.y < GameManager::getSingleton()->getHeight() - mapEditor->getGuiThreshold()){
 						bool push = !results.empty();
-						mapEditor->setPushing(push);
+						mapEditor->togglePush(push);
 
 						if(push)
 							mapEditor->setPushPos(results[0].pos);
@@ -585,27 +622,39 @@ namespace battleship{
 						mapEditor->castSelectionRay();
 					}
 					else
-						mapEditor->setPushing(false);
+						mapEditor->togglePush(false);
 				}
 				else
-					mapEditor->setPushing(false);
+					mapEditor->togglePush(false);
 
 				break;
 			case Bind::CREATE_WATERBODY:
 				if(isPressed) mapEditor->createWaterbody();
 				break;
 			case Bind::MOVE_TERR_OBJ:
-				if(isPressed) mapEditor->setMovingTerrainObject(true);
-				break;
+				if(isPressed){
+					mapEditor->setMovingTerrainObject(true);
+					mapEditor->setScalingTerrainObject(false);
+					break;
+				}
+			case Bind::SCALE_TERR_OBJ:
+				if(isPressed){
+					mapEditor->setMovingTerrainObject(false);
+					mapEditor->setScalingTerrainObject(true);
+					break;
+				}
 			case Bind::STOP_TERR_OBJ:
-				if(isPressed) mapEditor->setMovingTerrainObject(false);
-				break;
-			case Bind::MOVE_X_AXIS:
-			case Bind::MOVE_Y_AXIS:
-			case Bind::MOVE_Z_AXIS:
-				if(isPressed && mapEditor->isMovingTerrainObject()){
-					MapEditor::MovementAxis axis = MapEditor::MovementAxis((int)bind - (int)Bind::MOVE_X_AXIS);
-					mapEditor->setMovementAxis(axis);
+				if(isPressed){
+					mapEditor->setMovingTerrainObject(false);
+					mapEditor->setScalingTerrainObject(false);
+					break;
+				}
+			case Bind::ENABLE_X_AXIS:
+			case Bind::ENABLE_Y_AXIS:
+			case Bind::ENABLE_Z_AXIS:
+				if(isPressed && (mapEditor->isMovingTerrainObject() || mapEditor->isScalingTerrainObject())){
+					MapEditor::TransformAxis axis = MapEditor::TransformAxis((int)bind - (int)Bind::ENABLE_X_AXIS);
+					mapEditor->setTransformAxis(axis);
 				}
 
 				break;
@@ -634,8 +683,12 @@ namespace battleship{
 			case Bind::PUSH_VERTS_UP:
 			case Bind::PUSH_VERTS_DOWN:
 				if(mapEditor->isPushing()) mapEditor->pushLandmassVerts(strength);
-				else if(mapEditor->isMovingTerrainObject() && mapEditor->getSelectedNode() != Map::getSingleton()->getNodeParent()->getChild(0)) 
-					mapEditor->moveTerrainObject(strength);
+				else if(mapEditor->getSelectedNode() != Map::getSingleton()->getNodeParent()->getChild(0)){
+					if(mapEditor->isScalingTerrainObject())
+						mapEditor->scaleTerrainObject(strength);
+					else if(mapEditor->isMovingTerrainObject())
+						mapEditor->moveTerrainObject(strength);
+				}
 
 				break;
 		}
