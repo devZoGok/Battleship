@@ -464,7 +464,7 @@ namespace battleship{
 				mapScript += "}";
 			}
 
-			mapScript += "}\n},\n";
+			mapScript += "},\n";
 		}
 
 		mapScript += "},\n";
