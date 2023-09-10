@@ -161,6 +161,7 @@ namespace battleship{
 		MeshData meshData = mesh->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = meshData.numTris * 3;
+		pushPos.y += 10 * strength;
 
 		for(int i = 0; i < numVerts; i++){
 			Vector3 distVec = verts[i].pos - pushPos;
@@ -168,7 +169,7 @@ namespace battleship{
 			float dist = distVec.getLength();
 
 			if(dist < circleRadius)
-				verts[i].pos.y += 10 * strength * dist / circleRadius;
+				verts[i].pos.y = oldLandmassVertHeights[i] + pushPos.y - (pushPos.y / circleRadius) * dist;
 		}
 
 		mesh->updateVerts(meshData);
@@ -187,6 +188,8 @@ namespace battleship{
 		Node *node = new Node();
 		node->attachMesh(mesh);
 		map->getNodeParent()->attachChild(node);
+
+		oldLandmassVertHeights = new float[3 * mesh->getMeshBase().numTris];
 	}
 
 	void MapEditorAppState::MapEditor::prepareTextures(string basePath, bool skybox, vector<Texture*> &textures){
@@ -491,6 +494,18 @@ namespace battleship{
 		generateMapScript();
 	}
 
+	void MapEditorAppState::MapEditor::togglePush(bool push){
+		this->pushing = push;
+
+		if(push){
+			MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
+			int numVerts = 3 * meshData.numTris;
+
+			for(int i = 0; i < numVerts; i++)
+				oldLandmassVertHeights[i] = meshData.vertices[i].pos.y;
+		}
+	}
+
 	MapEditorAppState::MapEditorAppState(string name, Vector2 size, bool newMap) : AbstractAppState(
 					AppStateType::MAP_EDITOR,
 				 	configData::calcSumBinds(AppStateType::MAP_EDITOR, true),
@@ -577,10 +592,9 @@ namespace battleship{
 					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Root::getSingleton()->getRootNode(), results);
 					Ray::sortResults(results);
 
-
 					if(cursorPos.y < GameManager::getSingleton()->getHeight() - mapEditor->getGuiThreshold()){
 						bool push = !results.empty();
-						mapEditor->setPushing(push);
+						mapEditor->togglePush(push);
 
 						if(push)
 							mapEditor->setPushPos(results[0].pos);
@@ -588,10 +602,10 @@ namespace battleship{
 						mapEditor->castSelectionRay();
 					}
 					else
-						mapEditor->setPushing(false);
+						mapEditor->togglePush(false);
 				}
 				else
-					mapEditor->setPushing(false);
+					mapEditor->togglePush(false);
 
 				break;
 			case Bind::CREATE_WATERBODY:

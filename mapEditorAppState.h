@@ -38,11 +38,11 @@ namespace battleship{
 					void scaleTerrainObject(float);
 					void exportMap();
 					void prepareTerrainObjects(int = 0, int = -1);
+					void togglePush(bool);
 					inline vb01::Node* getSelectedNode(){return selectedTerrainNode;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
 					inline bool isPushing(){return pushing;}
-					inline void setPushing(bool p){pushing = p;}
 					inline void setPushPos(vb01::Vector3 p){pushPos = p;}
 					inline bool isMovingTerrainObject(){return movingTerrainObject;}
 					inline void setMovingTerrainObject(bool m){movingTerrainObject = m;}
@@ -66,6 +66,7 @@ namespace battleship{
 					vb01::Node *selectedTerrainNode = nullptr;
 					TransformAxis transformAxis = X_AXIS;
 					vb01Gui::Listbox *skyListbox = nullptr;
+					float *oldLandmassVertHeights = nullptr;
 					bool pushing = false, movingTerrainObject = false, scalingTerrainObject = false, weightsGenerated = false, newMap, cellMarkersVisible = false;
 					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
 					const int NUM_SUBDIVS = 100;
