@@ -150,8 +150,10 @@ namespace battleship{
 				break;
 		}
 
-		Vector3 scale = selectedTerrainNode->getScale() + 10 * strength * Vector3(axis.x, 1, axis.y);
-		selectedTerrainNode->setScale(scale);
+		Quad *quad = (Quad*)selectedTerrainNode->getMesh(0);
+		Vector3 size = quad->getSize() + 10 * strength * Vector3(axis.x, axis.y, 0);
+		quad->setSize(Vector3(size.x, size.y, 1));
+		quad->updateVerts(quad->getMeshBase());
 	}
 
 	void MapEditorAppState::MapEditor::pushLandmassVerts(float strength){
