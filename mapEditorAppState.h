@@ -23,7 +23,7 @@ namespace battleship{
 		public:
 			class MapEditor{
 				public:
-					enum MovementAxis{
+					enum TransformAxis{
 						X_AXIS,
 						Y_AXIS,
 						Z_AXIS
@@ -35,6 +35,7 @@ namespace battleship{
 					void castSelectionRay();
 					void createWaterbody();
 					void moveTerrainObject(float);
+					void scaleTerrainObject(float);
 					void exportMap();
 					void prepareTerrainObjects(int = 0, int = -1);
 					void togglePush(bool);
@@ -45,8 +46,10 @@ namespace battleship{
 					inline void setPushPos(vb01::Vector3 p){pushPos = p;}
 					inline bool isMovingTerrainObject(){return movingTerrainObject;}
 					inline void setMovingTerrainObject(bool m){movingTerrainObject = m;}
-					inline MovementAxis getMovementAxis(){return movementAxis;}
-					inline void setMovementAxis(MovementAxis m){movementAxis = m;}
+					inline bool isScalingTerrainObject(){return scalingTerrainObject;}
+					inline void setScalingTerrainObject(bool s){scalingTerrainObject = s;}
+					inline TransformAxis getTransformAxis(){return transformAxis;}
+					inline void setTransformAxis(TransformAxis m){transformAxis = m;}
 					inline bool isWeightsGenerated(){return weightsGenerated;}
 					inline vb01::Texture* getSkyTexture(int i){return skyTextures[i];}
 					inline vb01::Texture* getLandmassTexture(int i){return landmassTextures[i];}
@@ -61,10 +64,10 @@ namespace battleship{
 
 					Map *map;
 					vb01::Node *selectedTerrainNode = nullptr;
-					MovementAxis movementAxis = X_AXIS;
+					TransformAxis transformAxis = X_AXIS;
 					vb01Gui::Listbox *skyListbox = nullptr;
 					float *oldLandmassVertHeights = nullptr;
-					bool pushing = false, movingTerrainObject = false, weightsGenerated = false, newMap, cellMarkersVisible = false;
+					bool pushing = false, movingTerrainObject = false, scalingTerrainObject = false, weightsGenerated = false, newMap, cellMarkersVisible = false;
 					const float MIN_RADIUS = 1, MAX_RADIUS = 100, INCREASE_RATE = 1;
 					const int NUM_SUBDIVS = 100;
 					float circleRadius = MIN_RADIUS, guiThreshold = 200;
