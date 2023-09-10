@@ -1,7 +1,7 @@
 #include <algorithm>
-#include <iostream>
 
 #include "pathfinder.h"
+#include "unit.h"
 
 namespace battleship{
 		using namespace std;
@@ -19,7 +19,7 @@ namespace battleship{
 		Pathfinder::Pathfinder(){
 		}
 
-		vector<int> Pathfinder::findPath(vector<Map::Cell> &cells, int source, int dest){
+		vector<int> Pathfinder::findPath(vector<Map::Cell> &cells, int source, int dest, int unitType){
 			int size = cells.size();
 				u32 distances[size];
 				vector<int> paths[size];
@@ -52,8 +52,13 @@ namespace battleship{
 
 					for(int i = 0; i < size; i++){
 						bool isChecked = find(checkedNodes.begin(), checkedNodes.end(), i) != checkedNodes.end();
+						bool canMoveToStrichCell = true;
+						bool ship = ((UnitType)unitType == UnitType::UNDERWATER || (UnitType)unitType == UnitType::SEA_LEVEL);
 
-						if(!isChecked && (distances[vertStrich] + cells[vertStrich].getEdgeWeight(i) < distances[i])){
+						if((ship && cells[vertStrich].type != Map::Cell::WATER) || ((UnitType)unitType == UnitType::LAND && cells[vertStrich].type != Map::Cell::LAND))
+							canMoveToStrichCell = false;
+
+						if(!isChecked && (canMoveToStrichCell && distances[vertStrich] + cells[vertStrich].getEdgeWeight(i) < distances[i])){
 							distances[i] = distances[vertStrich] + cells[vertStrich].getEdgeWeight(i);
 							paths[i] = paths[vertStrich];
 							paths[i].push_back(i);

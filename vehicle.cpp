@@ -153,8 +153,15 @@ namespace battleship{
 		int source = map->getCellId(pos);
 		int dest = map->getCellId(order.targets[0].pos);
 
+		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL || type == UnitType::LAND){
+			Map::Cell::Type cellType = (type == UnitType::LAND ? Map::Cell::LAND : Map::Cell::WATER);
+			bool canReach = (cells[source].type == cellType && cells[dest].type == cellType);
+
+			if(!canReach) return;
+		}
+
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		vector<int> path = pathfinder->findPath(cells, source, dest);
+		vector<int> path = pathfinder->findPath(cells, source, dest, (int)type);
 		Node *rootNode = Root::getSingleton()->getRootNode();
 
 		for(int p : path){
