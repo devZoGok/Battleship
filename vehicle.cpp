@@ -28,6 +28,7 @@ namespace battleship{
 
 	void Vehicle::halt(){
 		Unit::halt();
+		removeAllPathpoints();
 		patrolPointId = 0;
 	}
 
@@ -106,9 +107,9 @@ namespace battleship{
 			}
 
 			if(type != UnitType::UNDERWATER && pos.getDistanceFrom(linDest) <= destOffset)
-				pathPoints.erase(pathPoints.begin());
+				removePathpoint();
 			else if(type == UnitType::UNDERWATER && fabs(pos.y - pathPoints[0].y) < 0.5 * height && pos.getDistanceFrom(linDest) <= destOffset)
-				pathPoints.erase(pathPoints.begin());
+				removePathpoint();
 		}
 	}
 
@@ -144,21 +145,17 @@ namespace battleship{
 	//TODO add hover unit type
 	//TODO cleanup debug pathpoint removal
 	void Vehicle::preparePathpoints(Order order){
+		removeAllPathpoints();
+
 		Map *map = Map::getSingleton();
+		vector<Map::Cell> &cells = map->getCells();
+
 		int source = map->getCellId(pos);
 		int dest = map->getCellId(order.targets[0].pos);
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		vector<Map::Cell> &cells = map->getCells();
 		vector<int> path = pathfinder->findPath(cells, source, dest);
-
 		Node *rootNode = Root::getSingleton()->getRootNode();
-
-		for(Node *node : debugPathPoints)
-			rootNode->dettachChild(node);
-
-		debugPathPoints.clear();
-		pathPoints.clear();
 
 		for(int p : path){
 			pathPoints.push_back(cells[p].pos);
@@ -170,5 +167,23 @@ namespace battleship{
 			rootNode->attachChild(n);
 			debugPathPoints.push_back(n);
 		}
+	}
+
+	void Vehicle::removePathpoint(int i){
+		Node *rootNode = Root::getSingleton()->getRootNode();
+		Node *debugPathPointNode = debugPathPoints[i];
+		rootNode->dettachChild(debugPathPointNode);
+
+		Mesh *mesh = debugPathPointNode->getMesh(0);
+		mesh->setMaterial(nullptr);
+		debugPathPoints.erase(debugPathPoints.begin() + i);
+		delete debugPathPointNode;
+
+		pathPoints.erase(pathPoints.begin() + i);
+	}
+
+	void Vehicle::removeAllPathpoints(){
+		while(!pathPoints.empty())
+			removePathpoint();
 	}
 }
