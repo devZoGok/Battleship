@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include <vector.h>
+
 namespace vb01{
 	class Model;
 }
@@ -25,19 +27,27 @@ namespace battleship{
 
 			static UnitFrameController* getSingleton();
 			void update();
+			void removeUnitFrame(int);
 			void removeUnitFrames();
 			void rotateUnitFrames(float);
+			inline int getNumUnitFrames(){return unitFrames.size();}
 			inline void addUnitFrame(UnitFrame u){unitFrames.push_back(u);}
 			inline UnitFrame& getUnitFrame(int i){return unitFrames[i];}
 			inline bool isPlacingFrames(){return placingStructures;}
 			inline void setPlacingFrames(bool ps){placingStructures = ps;}
+			inline bool isPaintSelecting(){return paintSelecting;}
+			inline void setPaintSelecting(bool ps){paintSelecting = ps;}
 			inline bool isRotatingFrames(){return rotatingStructure;}
 			inline void setRotatingFrames(bool rs){rotatingStructure = rs;}
+			inline void setPaintSelectRowStart(vb01::Vector3 st){paintSelectRowStart = st;}
 		private:
 			UnitFrameController(){}
+			void paintSelect(vb01::Vector3, float, float);
+			void placeUnitFrame(int, vb01::Vector3, float, float);
 
 			std::vector<UnitFrame> unitFrames;
-	   		bool placingStructures = false, rotatingStructure = false;
+			vb01::Vector3 paintSelectRowStart, rowDir;
+	   		bool placingStructures = false, paintSelecting = false, rotatingStructure = false;
 	};
 }
 

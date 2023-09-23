@@ -107,9 +107,43 @@ namespace battleship{
 
 		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 
-		if(ufCtr->isPlacingFrames())
+		if(ufCtr->isPlacingFrames()){
 			ufCtr->update();
+		}
     }
+
+	void ActiveGameState::paintSelectUnitFrames(){
+		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		Vector3 rowStartPos = ufCtr->getUnitFrame(0).model->getPosition();
+
+		Camera *cam = Root::getSingleton()->getCamera();
+		Vector3 camPos = cam->getPosition(), rayDir = (screenToSpace(getCursorPos()) - camPos).norm();
+		Node *node = Map::getSingleton()->getNodeParent()->getChild(0);
+		vector<Ray::CollisionResult> results;
+		Ray::retrieveCollisions(camPos, rayDir, node, results);
+
+		if(results.empty()) return;
+
+		Vector3 rowDir = results[0].pos - rowStartPos;
+		float lenRow = rowDir.getLength();
+
+		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table cornerTable = SOL_LUA_STATE[buildableStructId];
+        float width = (float)cornerTable[0]["x"] - (float)cornerTable[1]["x"];
+        float length = (float)cornerTable[3]["z"] - (float)cornerTable[0]["z"];
+		float hypothenuse = sqrt(width * width + length * length);
+
+		int numStructsInRow = int(lenRow / hypothenuse);
+
+		if(numStructsInRow != ufCtr->getNumUnitFrames()){
+			ufCtr->removeUnitFrames();
+
+			for(int i = 0; i < numStructsInRow; i++){
+				string modelPath = (string)SOL_LUA_STATE["basePath"][buildableStructId + 1] + (string)SOL_LUA_STATE["meshPath"][buildableStructId + 1];
+				ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, buildableStructId, (int)UnitType::LAND));
+			}
+		}
+	}
 
 	void ActiveGameState::deselectUnits(){
 		mainPlayer->deselectUnits();
@@ -222,22 +256,21 @@ namespace battleship{
       	        break;
       	}
 
-        Order o;
-        o.type = type;
-        o.targets = targets;
 		targets.push_back(Order::Target());
 
-		if(o.type == Order::TYPE::PATROL)
+		if(type == Order::TYPE::PATROL)
 			for(int i = targets.size() - 2; i >= 0; i--)
 				targets[i + 1] = targets[i];
 
 		LineRenderer *lineRenderer = LineRenderer::getSingleton();
+		Order order;
 
         for (int i = 0; i < mainPlayer->getNumSelectedUnits(); ++i) {
 			Unit *u = mainPlayer->getSelectedUnit(i);
-			lineRenderer->addLine(u->getPos(), o.targets[i].pos, color);
+			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
-			o.line = lines[lines.size() - 1];
+			LineRenderer::Line line = lines[lines.size() - 1];
+        	order = Order(type, line, targets);
 
             if (type != Order::TYPE::LAUNCH) {
 				if(type == Order::TYPE::PATROL){
@@ -246,9 +279,9 @@ namespace battleship{
 				}
 
                 if (addOrder)
-                    u->addOrder(o);
+                    u->addOrder(order);
                 else
-                    u->setOrder(o);
+                    u->setOrder(order);
             }
         }
 
@@ -385,8 +418,26 @@ namespace battleship{
 				if(isPressed) depth -= 0.05;
                 break;
 			case Bind::LEFT_SHIFT:
-                shiftPressed = isPressed;
-				if(isPressed) depth += 0.05;
+			{
+        		shiftPressed = isPressed;
+
+				UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+				ufCtr->setPaintSelecting(shiftPressed);
+
+				if(isPressed){
+					depth += 0.05;
+					Camera *cam = Root::getSingleton()->getCamera();
+					Vector3 startPos = cam->getPosition();
+					Vector3 endPos = screenToSpace(getCursorPos());
+
+					vector<Ray::CollisionResult> results;
+					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);
+					Ray::sortResults(results);
+
+					if(!results.empty())
+						ufCtr->setPaintSelectRowStart(results[0].pos);
+				}
+			}
                 break;
 			case Bind::SELECT_PATROL_POINTS: 
                 selectingPatrolPoints = isPressed;

@@ -1,6 +1,7 @@
 #include <solUtil.h>
 
 #include "unitFrameController.h"
+#include "unit.h"
 #include "util.h"
 #include "map.h"
 
@@ -40,72 +41,100 @@ namespace battleship{
 		return unitFrameController;
 	}
 
+	void UnitFrameController::paintSelect(Vector3 rowEnd, float width, float length){
+		float lenRow = (rowEnd - paintSelectRowStart).getLength();
+		float hypothenuse = sqrt(width * width + length * length);
+		int numStructsInRow = int(lenRow / hypothenuse);
+		
+		while(unitFrames.size() > numStructsInRow)
+			removeUnitFrame(unitFrames.size() - 1);
+
+		if(unitFrames.size() < numStructsInRow){
+			int structureId = unitFrames[0].id;
+			sol::state_view SOL_LUA_STATE = generateView();
+			string modelPath = (string)SOL_LUA_STATE["basePath"][structureId + 1] + (string)SOL_LUA_STATE["meshPath"][structureId + 1];
+			addUnitFrame(UnitFrame(modelPath, structureId, (int)UnitType::LAND));
+		}
+	}
+
 	//TODO implement terrain evenness check
-	void UnitFrameController::update(){
+	void UnitFrameController::placeUnitFrame(int id, Vector3 newPos, float width, float length){
+		UnitFrame &s = unitFrames[id];
+		s.model->setPosition(newPos);
+
 		Map *map = Map::getSingleton();
 		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = 3 * meshData.numTris;
 
-		sol::state_view SOL_LUA_STATE = generateView();
-		float maxUnevenness = SOL_LUA_STATE["maxUnevenness"];
+		float maxUnevenness = generateView()["maxUnevenness"], unevenness = 0;
 
-		Camera *cam = Root::getSingleton()->getCamera();
-		Vector3 startPos = cam->getPosition();
-		Vector3 endPos = screenToSpace(getCursorPos());
+		for(int i = 0; i < numVerts; i++){
+			float diffX = fabs(s.model->getPosition().x - verts[i].pos.x);
+			float diffY = fabs(s.model->getPosition().y - verts[i].pos.y);
+			float diffZ = fabs(s.model->getPosition().z - verts[i].pos.z);
 
-		for(UnitFrame &s : unitFrames){
-			vector<Ray::CollisionResult> results;
-			Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getNodeParent()->getChild(0), results);
-			Ray::sortResults(results);
+			if(diffX < 0.5 * width && diffZ < 0.5 * length && diffY > unevenness){
+				unevenness = diffY;
 
-			if(!results.empty()){
-				if(!rotatingStructure)
-					s.model->setPosition(results[0].pos);
-
-				sol::table unitTable = SOL_LUA_STATE["unitCornerPoints"][s.id + 1]; 
-    			float width = (float)unitTable[1]["x"] - (float)unitTable[2]["x"];
-    			float length = (float)unitTable[4]["z"] - (float)unitTable[1]["z"];
-
-				float unevenness = 0;
-
-				for(int i = 0; i < numVerts; i++){
-					float diffX = fabs(s.model->getPosition().x - verts[i].pos.x);
-					float diffY = fabs(s.model->getPosition().y - verts[i].pos.y);
-					float diffZ = fabs(s.model->getPosition().z - verts[i].pos.z);
-
-					if(diffX < 0.5 * width && diffZ < 0.5 * length && diffY > unevenness){
-						unevenness = diffY;
-
-						if(unevenness > maxUnevenness)
-							break;
-					}
-				}
-
-				Vector4 color;
-
-				if(unevenness > maxUnevenness){
-					color = Vector4(1, 0, 0, 1);
-					s.status = UnitFrame::NOT_PLACEABLE;
-				}
-				else{
-					color = Vector4(0, 1, 0, 1);
-					s.status = UnitFrame::PLACEABLE;
-				}
-
-				Material *mat = s.model->getMaterial();
-				mat->setVec4Uniform("diffuseColor", color);
+				if(unevenness > maxUnevenness)
+					break;
 			}
+		}
+
+		Vector4 color;
+
+		if(unevenness > maxUnevenness){
+			color = Vector4(1, 0, 0, 1);
+			s.status = UnitFrame::NOT_PLACEABLE;
+		}
+		else{
+			color = Vector4(0, 1, 0, 1);
+			s.status = UnitFrame::PLACEABLE;
+		}
+
+		Material *mat = s.model->getMaterial();
+		mat->setVec4Uniform("diffuseColor", color);
+	}
+
+	void UnitFrameController::update(){
+		Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
+		vector<Ray::CollisionResult> results;
+		Ray::retrieveCollisions(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);
+		Ray::sortResults(results);
+		if(results.empty()) return;
+
+		Vector3 newPos, rowEnd;
+		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table unitTable = SOL_LUA_STATE["unitCornerPoints"][unitFrames[0].id + 1]; 
+    	float width = (float)unitTable[1]["x"] - (float)unitTable[2]["x"];
+    	float length = (float)unitTable[4]["z"] - (float)unitTable[1]["z"];
+
+		if(paintSelecting)
+			paintSelect(results[0].pos, width, length);
+		else if(!(paintSelecting || rotatingStructure))
+			newPos = results[0].pos;
+
+		for(int i = 0; i < unitFrames.size(); i++){
+			if(paintSelecting){
+				float hypothenuse = sqrt(width * width + length * length);
+				Vector3 dir = (results[0].pos - paintSelectRowStart).norm(); 
+				newPos = paintSelectRowStart + dir * hypothenuse * i;
+			}
+
+			placeUnitFrame(i, newPos, width, length);
 		}
 	}
 
-	void UnitFrameController::removeUnitFrames(){
-		for(UnitFrame &u : unitFrames){
-			u.model->getParent()->dettachChild(u.model);
-			delete u.model;
-		}
+	void UnitFrameController::removeUnitFrame(int i){
+		unitFrames[i].model->getParent()->dettachChild(unitFrames[i].model);
+		delete unitFrames[i].model;
+		unitFrames.erase(unitFrames.begin() + i);
+	}
 
-		unitFrames.clear();
+	void UnitFrameController::removeUnitFrames(){
+		while(unitFrames.size() > 0)
+			removeUnitFrame(0);
 	}
 
 	void UnitFrameController::rotateUnitFrames(float angle){
