@@ -31,7 +31,8 @@ namespace battleship{
 		RESUME,
 		CONSOLE_SCREEN,
 		MAIN_MENU,
-		CONSOLE_COMMAND_OK
+		CONSOLE_COMMAND_OK,
+		BUILD
 	};
 	enum ListboxType {
 		CONTROLS,

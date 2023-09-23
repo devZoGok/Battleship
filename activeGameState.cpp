@@ -22,6 +22,7 @@
 #include "tooltip.h"
 #include "unitFrameController.h"
 #include "cameraController.h"
+#include "concreteGuiManager.h"
 
 using namespace vb01;
 using namespace vb01Gui;
@@ -141,6 +142,11 @@ namespace battleship{
 
                         mainPlayer->selectUnit(u);
                 		u->toggleSelection(true);
+
+						if(engineersSelected()){
+							ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+							guiManager->readLuaScreenScript("engineerCommands.lua");
+						}
                     }
                 }
 
@@ -304,6 +310,14 @@ namespace battleship{
 			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : unit), results[0].pos));
 		}
     }
+
+	bool ActiveGameState::engineersSelected(){
+		for(Unit *u : mainPlayer->getSelectedUnits())
+			if(u->getUnitClass() == UnitClass::ENGINEER)
+				return true;
+
+		return false;
+	}
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameManager *gm = GameManager::getSingleton();
@@ -415,31 +429,6 @@ namespace battleship{
                 }
 
                 break;
-			case Bind::SELECT_STRUCTURE:
-			{
-				if(isPressed){
-					bool engineersSelected = false;
-
-					for(Unit *u : mainPlayer->getSelectedUnits())
-						if(u->getUnitClass() == UnitClass::ENGINEER){
-							engineersSelected = true;
-							break;
-						}
-
-					if(!engineersSelected)
-						break;
-
-					//TODO fix the magic value
-					int id = 3;
-					sol::state_view SOL_LUA_STATE = generateView();
-					string modelPath = (string)SOL_LUA_STATE["basePath"][id + 1] + (string)SOL_LUA_STATE["meshPath"][id + 1];
-					ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
-
-					ufCtr->setPlacingFrames(true);
-				}
-
-				break;
-			}
 			case Bind::DESELECT_STRUCTURE:
 				ufCtr->removeUnitFrames();
 				ufCtr->setPlacingFrames(false);

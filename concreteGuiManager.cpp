@@ -19,6 +19,7 @@
 #include "playButton.h"
 #include "inGameAppState.h"
 #include "mainMenuButton.h"
+#include "buildButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -154,6 +155,9 @@ namespace battleship{
 				button = new InGameAppState::ConsoleButton::ConsoleCommandEntryButton(textbox, listbox, pos, size, name);
 				break;
 			}
+			case BUILD:
+				button = new BuildButton(pos, size, (int)guiTable["structureId"], name, (int)guiTable["trigger"], "");
+				break;
 		}
 
 		int typeArr[2]{(int)GuiElementType::BUTTON, (int)type};

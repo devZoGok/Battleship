@@ -32,6 +32,7 @@ namespace battleship{
         void addTarget();
         void issueOrder(Order::TYPE, bool);
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
+		bool engineersSelected();
 
         GuiAppState *guiState;
         Player *mainPlayer;
