@@ -33,7 +33,6 @@ namespace battleship{
         void issueOrder(Order::TYPE, bool);
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
 		bool engineersSelected();
-		void paintSelectUnitFrames();
 
         GuiAppState *guiState;
         Player *mainPlayer;
@@ -45,7 +44,7 @@ namespace battleship{
         std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;
         bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false;
-        int playerId, zooms = 0, buildableStructId;
+        int playerId, zooms = 0;
 	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;
     };

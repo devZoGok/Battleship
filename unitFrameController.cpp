@@ -21,7 +21,7 @@ namespace battleship{
 
 	static UnitFrameController *unitFrameController = nullptr;
 
-	UnitFrameController::UnitFrame::UnitFrame(string modelPath, int i, int t) : id(i), type(t) {
+	UnitFrameController::UnitFrame::UnitFrame(string modelPath, int i, int t, Vector3 pos, Quaternion rot) : id(i), type(t) {
 		Root *root = Root::getSingleton();
 		Material *mat = new Material(root->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", false);
@@ -31,6 +31,8 @@ namespace battleship{
 		model = new Model(modelPath);
 		model->setWireframe(true);
 		model->setMaterial(mat);
+		model->setPosition(pos);
+		model->setOrientation(rot);
 		root->getRootNode()->attachChild(model);
 	}    
 
@@ -42,7 +44,8 @@ namespace battleship{
 	}
 
 	void UnitFrameController::paintSelect(Vector3 rowEnd, float width, float length){
-		float lenRow = (rowEnd - paintSelectRowStart).getLength();
+		Vector3 rowDir = rowEnd - paintSelectRowStart;
+		float lenRow = rowDir.getLength();
 		float hypothenuse = sqrt(width * width + length * length);
 		int numStructsInRow = int(lenRow / hypothenuse);
 		
@@ -53,14 +56,22 @@ namespace battleship{
 			int structureId = unitFrames[0].id;
 			sol::state_view SOL_LUA_STATE = generateView();
 			string modelPath = (string)SOL_LUA_STATE["basePath"][structureId + 1] + (string)SOL_LUA_STATE["meshPath"][structureId + 1];
-			addUnitFrame(UnitFrame(modelPath, structureId, (int)UnitType::LAND));
+			Vector3 buildDir = rowDir; 
+
+			if(unitFrames.size() > 1)
+				buildDir = unitFrames[1].model->getPosition() - unitFrames[0].model->getPosition();
+
+			Vector3 pos = paintSelectRowStart + buildDir.norm() * hypothenuse * unitFrames.size();
+			addUnitFrame(UnitFrame(modelPath, structureId, (int)UnitType::LAND, pos));
 		}
 	}
 
 	//TODO implement terrain evenness check
 	void UnitFrameController::placeUnitFrame(int id, Vector3 newPos, float width, float length){
 		UnitFrame &s = unitFrames[id];
-		s.model->setPosition(newPos);
+
+		if(!rotatingStructure)
+			s.model->setPosition(newPos);
 
 		Map *map = Map::getSingleton();
 		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();

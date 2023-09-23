@@ -107,43 +107,9 @@ namespace battleship{
 
 		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 
-		if(ufCtr->isPlacingFrames()){
+		if(ufCtr->isPlacingFrames())
 			ufCtr->update();
-		}
     }
-
-	void ActiveGameState::paintSelectUnitFrames(){
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
-		Vector3 rowStartPos = ufCtr->getUnitFrame(0).model->getPosition();
-
-		Camera *cam = Root::getSingleton()->getCamera();
-		Vector3 camPos = cam->getPosition(), rayDir = (screenToSpace(getCursorPos()) - camPos).norm();
-		Node *node = Map::getSingleton()->getNodeParent()->getChild(0);
-		vector<Ray::CollisionResult> results;
-		Ray::retrieveCollisions(camPos, rayDir, node, results);
-
-		if(results.empty()) return;
-
-		Vector3 rowDir = results[0].pos - rowStartPos;
-		float lenRow = rowDir.getLength();
-
-		sol::state_view SOL_LUA_STATE = generateView();
-		sol::table cornerTable = SOL_LUA_STATE[buildableStructId];
-        float width = (float)cornerTable[0]["x"] - (float)cornerTable[1]["x"];
-        float length = (float)cornerTable[3]["z"] - (float)cornerTable[0]["z"];
-		float hypothenuse = sqrt(width * width + length * length);
-
-		int numStructsInRow = int(lenRow / hypothenuse);
-
-		if(numStructsInRow != ufCtr->getNumUnitFrames()){
-			ufCtr->removeUnitFrames();
-
-			for(int i = 0; i < numStructsInRow; i++){
-				string modelPath = (string)SOL_LUA_STATE["basePath"][buildableStructId + 1] + (string)SOL_LUA_STATE["meshPath"][buildableStructId + 1];
-				ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, buildableStructId, (int)UnitType::LAND));
-			}
-		}
-	}
 
 	void ActiveGameState::deselectUnits(){
 		mainPlayer->deselectUnits();
@@ -309,7 +275,8 @@ namespace battleship{
 			UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 
 			if(ufCtr->isPlacingFrames()){
-				unit = new Structure(mainPlayer, ufCtr->getUnitFrame(0).id, results[0].pos, ufCtr->getUnitFrame(0).model->getOrientation());
+				Model *model = ufCtr->getUnitFrame(0).model;
+				unit = new Structure(mainPlayer, ufCtr->getUnitFrame(0).id, model->getPosition(), model->getOrientation());
 				mainPlayer->addUnit(unit);
 			}
 
@@ -375,6 +342,7 @@ namespace battleship{
 							else if(ufCtr->isPlacingFrames()){
 								type = Order::TYPE::BUILD;
 								ufCtr->setPlacingFrames(false);
+								ufCtr->setRotatingFrames(false);
 								ufCtr->removeUnitFrames();
 							}
 						
@@ -426,12 +394,10 @@ namespace battleship{
 
 				if(isPressed){
 					depth += 0.05;
-					Camera *cam = Root::getSingleton()->getCamera();
-					Vector3 startPos = cam->getPosition();
-					Vector3 endPos = screenToSpace(getCursorPos());
 
+					Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
 					vector<Ray::CollisionResult> results;
-					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);
+					Ray::retrieveCollisions(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);
 					Ray::sortResults(results);
 
 					if(!results.empty())

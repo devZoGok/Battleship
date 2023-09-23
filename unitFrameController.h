@@ -5,6 +5,7 @@
 #include <string>
 
 #include <vector.h>
+#include <quaternion.h>
 
 namespace vb01{
 	class Model;
@@ -16,7 +17,7 @@ namespace battleship{
 			struct UnitFrame{
 				enum Status{PLACEABLE, NOT_PLACEABLE, PLACED};
 			
-				UnitFrame(std::string, int, int);
+				UnitFrame(std::string, int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO, vb01::Quaternion = vb01::Quaternion::QUAT_W);
 				~UnitFrame(){}
 				void update();
 			
