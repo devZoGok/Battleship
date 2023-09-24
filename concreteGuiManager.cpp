@@ -338,9 +338,15 @@ namespace battleship{
 		return textbox;
 	}
 
-	void ConcreteGuiManager::readLuaScreenScript(string script){
-		removeAllGuiElements();
-
+	void ConcreteGuiManager::readLuaScreenScript(
+			string script,
+			vector<Button*> buttonExceptions,
+			vector<Listbox*> listboxExceptions,
+			vector<Checkbox*> checkboxExceptions,
+			vector<Slider*> sliderExceptions,
+			vector<Textbox*> textboxExceptions
+		){
+		removeAllGuiElements(buttonExceptions, listboxExceptions, checkboxExceptions, sliderExceptions, textboxExceptions);
 		guiElements.clear();
 
 		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";

@@ -116,6 +116,9 @@ namespace battleship{
 		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 		ufCtr->removeUnitFrames();
 		ufCtr->setPlacingFrames(false);
+
+		ConcreteGuiManager::getSingleton()->removeAllGuiElements();
+		buttons.clear();
 	}
 
 	//TODO fix fog of war for hostile units

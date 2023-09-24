@@ -8,7 +8,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(BUILD_TESTS ON)
 cmake_policy(SET CMP0015 NEW)
 
-set(UNIT_BUTTONS buildButton.cpp)
+set(UNIT_BUTTONS unitButton.cpp buildButton.cpp)
 set(OPTIONS_BUTTONS optionsButton.cpp tabButton.cpp okButton.cpp defaultsButton.cpp)
 set(IN_GAME_APP_STATE_BUTTONS mainMenuButton.cpp)
 set(MAP_EDITOR_BUTTONS mapEditorButton.cpp newMapButton.cpp loadMapButton.cpp exportButton.cpp)
