@@ -10,11 +10,6 @@ namespace battleship{
 	}
 
 	void Engineer::build(Order order){
-		navigate(order, 0.5 * Map::getSingleton()->getCellSize().x);
-
-		if(type == UnitType::LAND)
-			alignToSurface();
-
 		if(pathPoints.empty()){
 			if(!order.targets[0].unit){
 				player->addUnit(order.targets[0].unit);
@@ -29,6 +24,12 @@ namespace battleship{
 				else if(structure->getBuildStatus() >= 100)
 					removeOrder(0);
 			}
+		}
+		else{
+			navigate(order, 0.5 * Map::getSingleton()->getCellSize().x);
+
+			if(type == UnitType::LAND)
+				alignToSurface();
 		}
 	}
 }

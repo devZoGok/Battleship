@@ -111,28 +111,26 @@ namespace battleship{
 		orientUnit(rot);
 	}
 
-	void Unit::initUnitStats(){
+	Node* Unit::createBar(float initLen, Vector4 color){
 		Root *root = Root::getSingleton();
+		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addVec4Uniform("diffuseColor", color);
 
-		hpBackground = new Quad(Vector3(lenHpBar, 10, 0), false);
-		string libPath = root->getLibPath();
-		Material *hpBackgroundMat = new Material(libPath + "gui");
-		hpBackgroundMat->addBoolUniform("texturingEnabled", false);
-		hpBackgroundMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
-		hpBackground->setMaterial(hpBackgroundMat);
-		hpBackgroundNode = new Node();
-		hpBackgroundNode->attachMesh(hpBackground);
-		Node *guiNode = root->getGuiNode();
-		guiNode->attachChild(hpBackgroundNode);
+		Quad *quad = new Quad(Vector3(initLen, 10, 0), false);
+		quad->setMaterial(mat);
 
-		hpForeground = new Quad(Vector3(lenHpBar, 10, 0), false);
-		Material *hpForegroundMat = new Material(libPath + "gui");
-		hpForegroundMat->addBoolUniform("texturingEnabled", false);
-		hpForegroundMat->addVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
-		hpForeground->setMaterial(hpForegroundMat);
-		hpForegroundNode = new Node();
-		hpForegroundNode->attachMesh(hpForeground);
-		guiNode->attachChild(hpForegroundNode);
+		Node *node = new Node();
+		node->attachMesh(quad);
+		node->setVisible(false);
+		root->getGuiNode()->attachChild(node);
+
+		return node;
+	}
+
+	void Unit::initUnitStats(){
+		hpBackgroundNode = createBar(lenHpBar, Vector4(0, 0, 0, 1));
+		hpForegroundNode = createBar(lenHpBar, Vector4(0, 1, 0, 1));
 	}
 
     void Unit::update() {
@@ -149,11 +147,7 @@ namespace battleship{
         executeOrders();
 
 		screenPos = spaceToScreen(pos);
-		hpBackgroundNode->setVisible(selected);
-		hpForegroundNode->setVisible(selected);
-
-        if (selected)
-            displayUnitStats();
+		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth);
 
         if (health <= 0) 
             blowUp();
@@ -163,14 +157,23 @@ namespace battleship{
         working = false;
     }
 
-    void Unit::displayUnitStats() {
-		float shiftedX = screenPos.x - 0.5 * lenHpBar;
-		hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
-		hpForeground->setSize(Vector3(health / maxHealth * lenHpBar, 10, 0));
-		hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
+    void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, Vector2 offset) {
+		foreground->setVisible(selected);
+		background->setVisible(selected);
+
+		if(selected){
+			Vector3 offset3d = Vector3(offset.x, offset.y, 0);
+			float shiftedX = screenPos.x - 0.5 * lenHpBar;
+			background->setPosition(Vector3(shiftedX, screenPos.y, .1) + offset3d);
+
+			
+			Quad *fgQuad = (Quad*)foreground->getMesh(0);
+			fgQuad->setSize(Vector3((float)currVal / maxVal * lenHpBar, 10, 0));
+			fgQuad->updateVerts(fgQuad->getMeshBase());
+			foreground->setPosition(Vector3(shiftedX, screenPos.y, 0) + offset3d);
+		}
     }
 
-	//TODO factor out non mutual order methods
     void Unit::executeOrders() {
         if (orders.size() > 0) {
             Order order = orders[0];

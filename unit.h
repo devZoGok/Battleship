@@ -37,6 +37,9 @@ namespace battleship{
         TYPE type;
 		vb01::LineRenderer::Line line;
         std::vector<Target> targets;
+
+		Order(){}
+		Order(TYPE t, vb01::LineRenderer::Line l, std::vector<Target> targ) : type(t), line(l), targets(targ){}
     };
     
     enum class MoveDir {LEFT, UP, FORW};
@@ -85,15 +88,12 @@ namespace battleship{
         inline vb01::Vector3 getUpVec() {return upVec;}
     private:
         void updateScreenCoordinates();
-        void displayUnitStats();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         const int orderVecDispLength = 2000;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
-		vb01::Quad *hpBackground = nullptr, *hpForeground = nullptr;
 		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
-		int lenHpBar = 200;
     protected:
         Player *player;
         UnitClass unitClass;
@@ -102,13 +102,14 @@ namespace battleship{
         std::vector<Order> orders;
 		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
 		vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
-        int health, maxHealth, cost, id, playerId;
+        int health, maxHealth, cost, id, playerId, lenHpBar = 200;
         s64 orderLineDispTime = 0;
 		vb01::Model *model;
         bool selected = false, selectable, debugging = false, working = true;
         float lineOfSight, range, width, height, length;
 
         void removeOrder(int);
+        void displayUnitStats(vb01::Node*, vb01::Node*, int, int, vb01::Vector2 = vb01::Vector2::VEC_ZERO);
 		virtual void initProperties();
 		virtual void destroyModel();
 		virtual void initModel();
@@ -121,6 +122,7 @@ namespace battleship{
         virtual void move(Order){}
         virtual void patrol(Order){}
         virtual void launch(Order){}
+		vb01::Node* createBar(float, vb01::Vector4);
     };
 }
 

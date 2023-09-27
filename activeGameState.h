@@ -10,6 +10,10 @@ namespace vb01{
 	class Node;
 }
 
+namespace vb01Gui{
+	class Button;
+}
+
 namespace battleship{
     class ActiveGameState : public gameBase::AbstractAppState {
     public:
@@ -20,6 +24,8 @@ namespace battleship{
         void update();
         void onAction(int, bool);
         void onAnalog(int, float);
+		inline void addButton(vb01Gui::Button *b){buttons.push_back(b);}
+		inline std::vector<vb01Gui::Button*> getButtons(){return buttons;}
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
@@ -32,6 +38,7 @@ namespace battleship{
         void addTarget();
         void issueOrder(Order::TYPE, bool);
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
+		bool engineersSelected();
 
         GuiAppState *guiState;
         Player *mainPlayer;
@@ -42,6 +49,7 @@ namespace battleship{
         std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;
+		std::vector<vb01Gui::Button*> buttons;
         bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false;
         int playerId, zooms = 0;
 	   	const int NUM_MAX_ZOOMS = 10;

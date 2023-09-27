@@ -112,7 +112,7 @@ namespace battleship{
             isMainMenuActive = true;
             gm->getStateManager()->dettachAppState(activeState);
 						
-			guiManager->readLuaScreenScript("gamePaused.lua");
+			guiManager->readLuaScreenScript("gamePaused.lua", activeState->getButtons());
         } 
         else {
             isMainMenuActive = false;
@@ -120,7 +120,7 @@ namespace battleship{
 						
 			AssetManager::getSingleton()->load(gm->getPath() + (string)generateView()["modelPrefix"], true);
 
-			guiManager->readLuaScreenScript("inGame.lua");
+			guiManager->readLuaScreenScript("inGame.lua", activeState->getButtons());
 
 			for(Player *p : Map::getSingleton()->getPlayers())
 				for(Unit *u : p->getUnits())

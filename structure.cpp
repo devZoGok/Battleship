@@ -1,5 +1,7 @@
 #include "structure.h"
 
+#include <node.h>
+
 using namespace gameBase;
 using namespace vb01;
 using namespace std;
@@ -7,5 +9,18 @@ using namespace std;
 namespace battleship{
 	Structure::Structure(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Unit(player, id, pos, rot){
 		this->buildStatus = buildStatus;
+		buildStatusBackground = createBar(Unit::lenHpBar, Vector4(0, 0, 0, 1));
+		buildStatusForeground = createBar(Unit::lenHpBar, Vector4(0, 0, 1, 1));
+	}
+
+	void Structure::update(){
+		Unit::update();
+
+		if(selected && buildStatus < 100)
+			Unit::displayUnitStats(buildStatusForeground, buildStatusBackground, buildStatus, 100, Vector2(0, -10));
+		else{
+			buildStatusBackground->setVisible(false);
+			buildStatusForeground->setVisible(false);
+		}
 	}
 }

@@ -31,7 +31,8 @@ namespace battleship{
 		RESUME,
 		CONSOLE_SCREEN,
 		MAIN_MENU,
-		CONSOLE_COMMAND_OK
+		CONSOLE_COMMAND_OK,
+		BUILD
 	};
 	enum ListboxType {
 		CONTROLS,
@@ -48,7 +49,14 @@ namespace battleship{
 	class ConcreteGuiManager : public vb01Gui::AbstractGuiManager{
 		public:
 			static ConcreteGuiManager* getSingleton();
-			void readLuaScreenScript(std::string);
+			void readLuaScreenScript(
+					std::string,
+					std::vector<vb01Gui::Button*> = std::vector<vb01Gui::Button*>{},
+					std::vector<vb01Gui::Listbox*> = std::vector<vb01Gui::Listbox*>{},
+					std::vector<vb01Gui::Checkbox*> = std::vector<vb01Gui::Checkbox*>{},
+					std::vector<vb01Gui::Slider*> = std::vector<vb01Gui::Slider*>{},
+					std::vector<vb01Gui::Textbox*> = std::vector<vb01Gui::Textbox*>{}
+				);
 		private:
 			ConcreteGuiManager(){}
 			vb01Gui::Button* parseButton(int);

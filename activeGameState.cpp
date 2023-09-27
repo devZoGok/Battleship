@@ -22,6 +22,7 @@
 #include "tooltip.h"
 #include "unitFrameController.h"
 #include "cameraController.h"
+#include "concreteGuiManager.h"
 
 using namespace vb01;
 using namespace vb01Gui;
@@ -115,6 +116,9 @@ namespace battleship{
 		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 		ufCtr->removeUnitFrames();
 		ufCtr->setPlacingFrames(false);
+
+		ConcreteGuiManager::getSingleton()->removeAllGuiElements();
+		buttons.clear();
 	}
 
 	//TODO fix fog of war for hostile units
@@ -141,6 +145,11 @@ namespace battleship{
 
                         mainPlayer->selectUnit(u);
                 		u->toggleSelection(true);
+
+						if(engineersSelected()){
+							ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+							guiManager->readLuaScreenScript("engineerCommands.lua");
+						}
                     }
                 }
 
@@ -216,22 +225,21 @@ namespace battleship{
       	        break;
       	}
 
-        Order o;
-        o.type = type;
-        o.targets = targets;
 		targets.push_back(Order::Target());
 
-		if(o.type == Order::TYPE::PATROL)
+		if(type == Order::TYPE::PATROL)
 			for(int i = targets.size() - 2; i >= 0; i--)
 				targets[i + 1] = targets[i];
 
 		LineRenderer *lineRenderer = LineRenderer::getSingleton();
+		Order order;
 
         for (int i = 0; i < mainPlayer->getNumSelectedUnits(); ++i) {
 			Unit *u = mainPlayer->getSelectedUnit(i);
-			lineRenderer->addLine(u->getPos(), o.targets[i].pos, color);
+			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
-			o.line = lines[lines.size() - 1];
+			LineRenderer::Line line = lines[lines.size() - 1];
+        	order = Order(type, line, targets);
 
             if (type != Order::TYPE::LAUNCH) {
 				if(type == Order::TYPE::PATROL){
@@ -240,9 +248,9 @@ namespace battleship{
 				}
 
                 if (addOrder)
-                    u->addOrder(o);
+                    u->addOrder(order);
                 else
-                    u->setOrder(o);
+                    u->setOrder(order);
             }
         }
 
@@ -270,7 +278,8 @@ namespace battleship{
 			UnitFrameController *ufCtr = UnitFrameController::getSingleton();
 
 			if(ufCtr->isPlacingFrames()){
-				unit = new Structure(mainPlayer, ufCtr->getUnitFrame(0).id, results[0].pos, ufCtr->getUnitFrame(0).model->getOrientation());
+				Model *model = ufCtr->getUnitFrame(0).model;
+				unit = new Structure(mainPlayer, ufCtr->getUnitFrame(0).id, model->getPosition(), model->getOrientation());
 				mainPlayer->addUnit(unit);
 			}
 
@@ -304,6 +313,14 @@ namespace battleship{
 			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : unit), results[0].pos));
 		}
     }
+
+	bool ActiveGameState::engineersSelected(){
+		for(Unit *u : mainPlayer->getSelectedUnits())
+			if(u->getUnitClass() == UnitClass::ENGINEER)
+				return true;
+
+		return false;
+	}
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameManager *gm = GameManager::getSingleton();
@@ -328,6 +345,7 @@ namespace battleship{
 							else if(ufCtr->isPlacingFrames()){
 								type = Order::TYPE::BUILD;
 								ufCtr->setPlacingFrames(false);
+								ufCtr->setRotatingFrames(false);
 								ufCtr->removeUnitFrames();
 							}
 						
@@ -371,8 +389,24 @@ namespace battleship{
 				if(isPressed) depth -= 0.05;
                 break;
 			case Bind::LEFT_SHIFT:
-                shiftPressed = isPressed;
-				if(isPressed) depth += 0.05;
+			{
+        		shiftPressed = isPressed;
+
+				UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+				ufCtr->setPaintSelecting(shiftPressed);
+
+				if(isPressed){
+					depth += 0.05;
+
+					Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
+					vector<Ray::CollisionResult> results;
+					Ray::retrieveCollisions(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);
+					Ray::sortResults(results);
+
+					if(!results.empty())
+						ufCtr->setPaintSelectRowStart(results[0].pos);
+				}
+			}
                 break;
 			case Bind::SELECT_PATROL_POINTS: 
                 selectingPatrolPoints = isPressed;
@@ -415,31 +449,6 @@ namespace battleship{
                 }
 
                 break;
-			case Bind::SELECT_STRUCTURE:
-			{
-				if(isPressed){
-					bool engineersSelected = false;
-
-					for(Unit *u : mainPlayer->getSelectedUnits())
-						if(u->getUnitClass() == UnitClass::ENGINEER){
-							engineersSelected = true;
-							break;
-						}
-
-					if(!engineersSelected)
-						break;
-
-					//TODO fix the magic value
-					int id = 3;
-					sol::state_view SOL_LUA_STATE = generateView();
-					string modelPath = (string)SOL_LUA_STATE["basePath"][id + 1] + (string)SOL_LUA_STATE["meshPath"][id + 1];
-					ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
-
-					ufCtr->setPlacingFrames(true);
-				}
-
-				break;
-			}
 			case Bind::DESELECT_STRUCTURE:
 				ufCtr->removeUnitFrames();
 				ufCtr->setPlacingFrames(false);

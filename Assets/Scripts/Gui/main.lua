@@ -22,7 +22,8 @@ ButtonType = {
 	RESUME = 18,
 	CONSOLE = 19,
 	MAIN_MENU = 20,
-	CONSOLE_COMMAND_OK = 21
+	CONSOLE_COMMAND_OK = 21,
+	BUILD = 22
 }
 
 ListboxType = {

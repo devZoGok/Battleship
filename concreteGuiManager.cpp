@@ -19,6 +19,7 @@
 #include "playButton.h"
 #include "inGameAppState.h"
 #include "mainMenuButton.h"
+#include "buildButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -154,6 +155,9 @@ namespace battleship{
 				button = new InGameAppState::ConsoleButton::ConsoleCommandEntryButton(textbox, listbox, pos, size, name);
 				break;
 			}
+			case BUILD:
+				button = new BuildButton(pos, size, (int)guiTable["structureId"], name, (int)guiTable["trigger"], "");
+				break;
 		}
 
 		int typeArr[2]{(int)GuiElementType::BUTTON, (int)type};
@@ -334,9 +338,15 @@ namespace battleship{
 		return textbox;
 	}
 
-	void ConcreteGuiManager::readLuaScreenScript(string script){
-		removeAllGuiElements();
-
+	void ConcreteGuiManager::readLuaScreenScript(
+			string script,
+			vector<Button*> buttonExceptions,
+			vector<Listbox*> listboxExceptions,
+			vector<Checkbox*> checkboxExceptions,
+			vector<Slider*> sliderExceptions,
+			vector<Textbox*> textboxExceptions
+		){
+		removeAllGuiElements(buttonExceptions, listboxExceptions, checkboxExceptions, sliderExceptions, textboxExceptions);
 		guiElements.clear();
 
 		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";
