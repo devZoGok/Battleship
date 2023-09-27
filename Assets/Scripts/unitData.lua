@@ -2,7 +2,7 @@ numUnits = 4
 
 UnitClass = {VESSEL = 0, ENGINEER = 1, SAMPLE_STRUCTURE = 2};
 
-UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, LAND = 2, AIR = 3};
+UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4};
 
 unitClass = {
 	UnitClass.VESSEL, UnitClass.VESSEL,
@@ -10,8 +10,8 @@ unitClass = {
 };
 
 unitType = {
-	UnitType.SEA_LEVEL, UnitType.UNDERWATER,
-	UnitType.LAND, UnitType.LAND 
+	UnitType.HOVER, UnitType.SEA_LEVEL,
+	UnitType.LAND, UnitType.HOVER 
 }
 
 isVehicle = {

@@ -1,5 +1,6 @@
 #include "pathfinderTest.h"
 #include "pathfinder.h"
+#include "map.h"
 
 #include <util.h>
 
@@ -10,36 +11,28 @@ namespace battleship{
 		using namespace vb01;
 
 		void PathfinderTest::testFindPath(){
-				int size = 7;
-				const u16 INF = u16(0 - 1);
-				//pathfinder->setImpassibleNodeVal(INF);
-				u32 w[size][size] = {
-						{0, 2, 4, INF, INF, INF, INF},
-						{INF, 0, 1, 9, 13, INF, INF},
-						{INF, 2, 0, INF, 4, 5, INF},
-						{INF, INF, INF, 0, INF, INF, 1},
-						{1, INF, INF, 1, 0, INF, 3},
-						{INF, INF, INF, INF, 9, 0, 2},
-						{INF, INF, INF, INF, INF, INF, 0}
-				};
-				u32 **weights = new u32*[size];
+			vector<Map::Cell> cells = vector<Map::Cell>{
+				Map::Cell(Vector3::VEC_ZERO, Map::Cell::Type::LAND, vector<Map::Edge>{Map::Edge(0, 0, 0), Map::Edge(2, 0, 1), Map::Edge(4, 0, 2)}),
+				Map::Cell(Vector3::VEC_ZERO, Map::Cell::Type::LAND, vector<Map::Edge>{Map::Edge(0, 1, 1), Map::Edge(1, 1, 2), Map::Edge(9, 1, 3), Map::Edge(13, 1, 4)}),
+				Map::Cell(Vector3::VEC_ZERO, Map::Cell::Type::LAND, vector<Map::Edge>{Map::Edge(0, 2, 2), Map::Edge(2, 2, 1), Map::Edge(4, 2, 4), Map::Edge(5, 2, 5)}),
+				Map::Cell(Vector3::VEC_ZERO, Map::Cell::Type::LAND, vector<Map::Edge>{Map::Edge(0, 3, 3), Map::Edge(1, 3, 6)}),
+				Map::Cell(Vector3::VEC_ZERO, Map::Cell::Type::LAND, vector<Map::Edge>{Map::Edge(0, 4, 4), Map::Edge(1, 4, 0), Map::Edge(1, 4, 3), Map::Edge(3, 4, 6)}),
+				Map::Cell(Vector3::VEC_ZERO, Map::Cell::Type::LAND, vector<Map::Edge>{Map::Edge(0, 5, 5), Map::Edge(9, 5, 4), Map::Edge(2, 5, 6)}),
+				Map::Cell(Vector3::VEC_ZERO, Map::Cell::Type::LAND, vector<Map::Edge>{Map::Edge(0, 6, 6)})
+			};
 
-				for(int i = 0; i < size; i++){
-						weights[i] = new u32[size];
+			int size = cells.size();
+			const u16 INF = u16(0 - 1);
+			pathfinder->setImpassibleNodeVal(INF);
+			vector<int> path = pathfinder->findPath(cells, 0, size - 1);
+			CPPUNIT_ASSERT(path == vector<int>({0, 1, 2, 4, 3, 6}));
 
-						for(int j = 0; j < size; j++)
-								weights[i][j] = w[i][j];
-				}
+			int sumPathWeights = 0;
 
-				vector<int> path = pathfinder->findPath(weights, size, 0, size - 1);
-				CPPUNIT_ASSERT(path == vector<int>({0, 1, 2, 4, 3, 6}));
+			for(int i = 1; i < path.size(); i++)
+					sumPathWeights += cells[path[i - 1]].getEdgeWeight(path[i]);
 
-				int sumPathWeights = 0;
-
-				for(int i = 1; i < size; i++)
-						sumPathWeights += w[path[i - 1]][path[i]];
-
-				CPPUNIT_ASSERT(sumPathWeights == 9);
+			CPPUNIT_ASSERT(sumPathWeights == 9);
 		}
 
 		void PathfinderTest::setUp(){

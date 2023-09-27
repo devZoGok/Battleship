@@ -3,6 +3,10 @@
 
 #include "unit.h"
 
+namespace vb01{
+	class Material;
+}
+
 namespace battleship{
 	class Vehicle : public Unit{
 		public:
@@ -11,6 +15,8 @@ namespace battleship{
 		private:
 			int patrolPointId = 0;
         	float speed, maxTurnAngle, anglePrecision;
+			vb01::Material *debugMat = nullptr;
+			std::vector<vb01::Node*> debugPathPoints;
 
         	inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
 			void halt();
@@ -19,6 +25,8 @@ namespace battleship{
 			void initProperties();
 			void advance(float, MoveDir = MoveDir::FORW);
 			void preparePathpoints(Order);
+			void removePathpoint(int = 0);
+			void removeAllPathpoints();
 		protected:
 			std::vector<vb01::Vector3> pathPoints;
 

@@ -20,6 +20,17 @@ using namespace gameBase;
 namespace battleship{
 	using namespace configData;
 
+	//TODO check if edges have lower weight than impassible weight value for the Pathfinder 
+	int Map::Cell::getEdgeWeight(int destCellId){
+		int weight = Pathfinder::getSingleton()->getImpassibleNodeVal();
+
+		for(Edge e : edges)
+			if(e.destCellId == destCellId)
+				weight = e.weight;
+
+		return weight;
+	}
+
 	Map *map = nullptr;
 
 	Map* Map::getSingleton(){
@@ -182,6 +193,12 @@ namespace battleship{
 				edges.push_back(Edge(edgeTable["weight"], edgeTable["srcCellId"], edgeTable["destCellId"]));
 			}
 
+			int numUnderWaterCells = cellTable["numUnderWaterCells"];
+			vector<int> underWaterCellIds;
+
+			for(int j = 0; j < numUnderWaterCells; j++)
+				underWaterCellIds.push_back((int)cellTable["underWaterCellId"][j + 1]);
+
 			Vector3 cellPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 			Cell::Type cellType = (Cell::Type)cellTable["type"];
 
@@ -193,10 +210,11 @@ namespace battleship{
 			node->attachMesh(quad);
 			cellNode->attachChild(node);
 
-			cells.push_back(Cell(cellPos, cellType, edges));
+			cells.push_back(Cell(cellPos, cellType, edges, underWaterCellIds));
 		}
 	}
 
+	//TODO implement map size calculation when exporting maps
     void Map::load(string mapName, bool empty) {
 		this->mapName = mapName;
 
@@ -207,8 +225,9 @@ namespace battleship{
 		preprareScene();
 
 		if(!empty){
-			sol::state_view SOL_LUA_STATE = generateView();
-			SOL_LUA_STATE.script_file(GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/" + mapName + ".lua");
+			SOL_LUA_STATE.script_file(path + "Models/Maps/" + mapName + "/" + mapName + ".lua");
+			sol::table sizeTable = SOL_LUA_STATE[mapTable]["size"];
+			mapSize = Vector3(sizeTable["x"], sizeTable["y"], sizeTable["z"]);
 			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
 			
 			loadSpawnPoints();
@@ -224,22 +243,69 @@ namespace battleship{
 
     void Map::unload() {}
 
-	int Map::getCellId(Vector3 pos, int id){
-		/*
-		Vector3 regionSize = terrainObjects[id].size;
-		Vector3 regionPos = terrainObjects[id].pos;
-		Vector3 cellSize = terrainObjects[id].cellSize;
+	template<typename T> int Map::bsearch(vector<T> haystack, T needle, float eps){
+		T haystackMidVal;
+		bool sizeHaystackEven = (haystack.size() % 2 == 0);
+		int midValId = haystack.size() / 2;
 
-		int numCellsX = regionSize.x / cellSize.x;
-		int numCellsZ = regionSize.z / cellSize.z;
+		if(sizeHaystackEven)
+			haystackMidVal = (haystack[midValId - 1] + haystack[midValId]) / 2;
+		else
+			haystackMidVal = haystack[midValId];
 
-		Vector3 initPos = regionPos - Vector3(regionSize.x, 0, regionSize.z) * 0.5;
-		int x = fabs(pos.x - initPos.x) / cellSize.x;
-		int y = (cellSize.y > 0 ? (fabs(pos.y - initPos.y) / cellSize.y) : 0);
-		int z = fabs(pos.z - initPos.z) / cellSize.z;
+		int beginId, endId;
 
-		return (numCellsX * numCellsZ * y + (numCellsX * z + x));
-		*/
-		return 0;
+		if(fabs(haystackMidVal - needle) > eps){
+			if(fabs(haystackMidVal - needle) < eps){
+				beginId = 0;
+				endId = (midValId - 1);
+			}
+			else{
+				endId = haystack.size() - 1;
+				endId = (midValId + 1);
+			}
+			
+			return bsearch(vector<T>(haystack.begin() + beginId, haystack.begin() + endId), needle);
+		}
+		else{
+			if(sizeHaystackEven)
+				return midValId - (needle > haystackMidVal ? 0 : 1);
+			else
+				return midValId;
+		}
+	}
+
+	//TODO replace search with binary search
+	int Map::getCellId(Vector3 pos){
+		int numHorCells = int(mapSize.x / CELL_SIZE.x), horId = -1;
+
+		for(int i = 0; i < numHorCells; i++)
+			if(fabs(cells[i].pos.x - pos.x) < .5 * CELL_SIZE.x){
+				horId = i;
+				break;
+			}
+
+		int numVertCells = int(mapSize.z / CELL_SIZE.z), vertId = -1;
+
+		for(int i = 0; i < numVertCells; i++)
+			if(fabs(cells[i * numHorCells].pos.z - pos.z) < .5 * CELL_SIZE.z){
+				vertId = i;
+				break;
+			}
+
+		int surfaceCellId = vertId * numHorCells + horId;
+
+		if(cells[surfaceCellId].type == Cell::Type::WATER && !cells[surfaceCellId].underWaterCellIds.empty()){
+			int cellId = surfaceCellId;
+
+			for(int i = 0; i <= cells[surfaceCellId].underWaterCellIds.size(); i++){
+				cellId = (i == 0 ? surfaceCellId : cells[surfaceCellId].underWaterCellIds[i - 1]);
+
+				if(fabs(cells[cellId].pos.y - pos.y) < .5 * CELL_SIZE.y)
+					return cellId;
+			}
+		}
+		else
+			return surfaceCellId;
 	}
 }

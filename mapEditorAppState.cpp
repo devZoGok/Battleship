@@ -74,6 +74,7 @@ namespace battleship{
 	}
 
 	void MapEditorAppState::MapEditor::castSelectionRay(){
+	/*
 		Camera *cam = Root::getSingleton()->getCamera();
 		Vector3 startPos = cam->getPosition();
 		Vector3 endPos = screenToSpace(getCursorPos());
@@ -93,6 +94,7 @@ namespace battleship{
 					break;
 				}
 		}
+	*/
 	}
 
 	void MapEditorAppState::MapEditor::createWaterbody(){
@@ -101,11 +103,11 @@ namespace battleship{
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addTexUniform("textures[0]", waterTextures[0], false);
 
-		Vector3 size = Vector3(10, 10, 1);
+		Vector3 size = Vector3(30, 30, 1);
 		Quad *quad = new Quad(size, true);
 		quad->setMaterial(mat);
 
-		Vector3 pos = 0.1 * Vector3::VEC_J;
+		Vector3 pos = 12 * Vector3::VEC_J;
 		Node *node = new Node(pos);
 		node->attachMesh(quad);
 
@@ -351,35 +353,40 @@ namespace battleship{
 				cells.push_back(Map::Cell(pos, type, edges));
 			}
 
-		std::map<int, vector<int>> waterCellMap;
+		vector<Map::Cell> waterCells;
 		int currUnderWaterCellId = cells.size();
 		int weight = 2;
 
 		for(pair<int, float> p : waterBodyBedPoints){
 			int numUnderWaterCells = (int)((cells[p.first].pos.y - p.second) / cellSize.y);
-			vector<int> underWaterCellIds;
 
-			if(numUnderWaterCells)
+			if(numUnderWaterCells > 0){
 				cells[p.first].edges.push_back(Map::Edge(weight, p.first, currUnderWaterCellId));
 
-			for(int i = 0; i < numUnderWaterCells; i++, currUnderWaterCellId++)
-				underWaterCellIds.push_back(currUnderWaterCellId);
+				for(int i = 0; i < numUnderWaterCells; i++, currUnderWaterCellId++)
+					cells[p.first].underWaterCellIds.push_back(currUnderWaterCellId);
 
-			waterCellMap[p.first] = underWaterCellIds;
+				waterCells.push_back(cells[p.first]);
+			}
 		}
 
+		for(int i = 0; i < waterCells.size(); i++){
+			for(int j = 0; j < waterCells[i].underWaterCellIds.size(); j++){
+				int aboveCellId = (j == 0 ? waterCells[i].edges[0].srcCellId : j - 1);
+				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCells[i].underWaterCellIds[j], aboveCellId)};
 
-		for(std::map<int, vector<int>>::iterator it = waterCellMap.begin(); it != waterCellMap.end(); ++it){
-			for(int i = 0; i < waterCellMap[it->first].size(); i++){
-				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCellMap[it->first][i], it->first)};
+				if(waterCells[i].underWaterCellIds.size() > j + 1)
+					edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], waterCells[i].underWaterCellIds[j + 1]));
 
-				for(Map::Edge edge : cells[it->first].edges){
-					if(cells[edge.destCellId].type == Map::Cell::Type::WATER && waterCellMap[edge.destCellId].size() >= i){
-						edges.push_back(Map::Edge(weight, waterCellMap[it->first][i], waterCellMap[edge.destCellId][i]));
+				for(int k = 0; k < waterCells[i].edges.size(); k++){
+					Map::Cell adjacentUnderwaterCell = cells[waterCells[i].edges[k].destCellId]; 
+
+					if(adjacentUnderwaterCell.underWaterCellIds.size() >= j + 1){
+						edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], adjacentUnderwaterCell.underWaterCellIds[j]));
 					}
 				}
 
-				Vector3 cellPos = cells[it->first].pos - Vector3::VEC_J * cellSize.y * (i + 1);
+				Vector3 cellPos = waterCells[i].pos - Vector3::VEC_J * cellSize.y * (j + 1);
 				cells.push_back(Map::Cell(cellPos, Map::Cell::Type::WATER, edges));
 			}
 		}
@@ -390,6 +397,7 @@ namespace battleship{
 	void MapEditorAppState::MapEditor::generateMapScript(){
 		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
 		string mapScript = "map = {\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
+		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.y) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(map->getNumPlayers()) + ",\n";
 
@@ -444,7 +452,19 @@ namespace battleship{
 			for(Map::Edge edge : cell.edges)
 				mapScript += "{srcCellId = " + to_string(edge.srcCellId) + ", destCellId = "  + to_string(edge.destCellId) + ", weight = "  + to_string(edge.weight) + "}, ";
 
-			mapScript += "}\n},\n";
+			int numSubCells = cell.underWaterCellIds.size();
+			mapScript += "}, numUnderWaterCells = " + to_string(numSubCells) + ",";
+
+			if(numSubCells > 0){
+				mapScript += "underWaterCellId = {";
+
+				for(int subCellId : cell.underWaterCellIds)
+					mapScript += to_string(subCellId) + ", ";
+
+				mapScript += "}";
+			}
+
+			mapScript += "},\n";
 		}
 
 		mapScript += "},\n";

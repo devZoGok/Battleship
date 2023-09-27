@@ -272,6 +272,7 @@ namespace battleship{
 					lines.push_back("");
 
 				closable = false;
+				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
 
 				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
 			}

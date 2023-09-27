@@ -4,6 +4,7 @@
 
 #include <util.h>
 #include <ray.h>
+#include <box.h>
 #include <model.h>
 #include <quaternion.h>
 
@@ -18,10 +19,16 @@ using namespace std;
 namespace battleship{
 	Vehicle::Vehicle(Player *player, int id, Vector3 pos, Quaternion rot) : Unit(player, id, pos, rot){
 		initProperties();
+
+		debugMat = new Material(Root::getSingleton()->getLibPath() + "texture");
+		debugMat->addBoolUniform("lightingEnabled", false);
+		debugMat->addBoolUniform("texturingEnabled", false);
+		debugMat->addVec4Uniform("diffuseColor", Vector4::VEC_IJKL);
 	}
 
 	void Vehicle::halt(){
 		Unit::halt();
+		removeAllPathpoints();
 		patrolPointId = 0;
 	}
 
@@ -53,8 +60,7 @@ namespace battleship{
 				break;
 		}
 		
-		pos = pos + dir * speed;
-		model->setPosition(pos);
+		placeUnit(pos + dir * speed);
 	}
 
 	void Vehicle::initProperties(){
@@ -101,9 +107,9 @@ namespace battleship{
 			}
 
 			if(type != UnitType::UNDERWATER && pos.getDistanceFrom(linDest) <= destOffset)
-				pathPoints.erase(pathPoints.begin());
+				removePathpoint();
 			else if(type == UnitType::UNDERWATER && fabs(pos.y - pathPoints[0].y) < 0.5 * height && pos.getDistanceFrom(linDest) <= destOffset)
-				pathPoints.erase(pathPoints.begin());
+				removePathpoint();
 		}
 	}
 
@@ -136,41 +142,55 @@ namespace battleship{
 			removeOrder(0);
     }
 
+	//TODO add hover unit type
+	//TODO cleanup debug pathpoint removal
 	void Vehicle::preparePathpoints(Order order){
-		int srcObjId = 0, destObjId = 0;
+		removeAllPathpoints();
+
 		Map *map = Map::getSingleton();
+		vector<Map::Cell> &cells = map->getCells();
 
-		/*
-		for(int i = 1; i < map->getNumTerrainObjects(); i++){
-			if(map->isPointWithinTerrainObject(pos, i))
-				srcObjId = i;
+		int source = map->getCellId(pos);
+		int dest = map->getCellId(order.targets[0].pos);
 
-			if(map->isPointWithinTerrainObject(order.targets[0].pos, i))
-				destObjId = i;
+		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL || type == UnitType::LAND){
+			Map::Cell::Type cellType = (type == UnitType::LAND ? Map::Cell::LAND : Map::Cell::WATER);
+			bool canReach = (cells[source].type == cellType && cells[dest].type == cellType);
+
+			if(!canReach) return;
 		}
-		 */
 
-		if(srcObjId != destObjId)
-			return;
-
-		int source = map->getCellId(pos, srcObjId);
-		int dest = map->getCellId(order.targets[0].pos, destObjId);
-
-		/*
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
-		u32 **weights = map->getTerrainObject(srcObjId).weights;
-		vector<int> path = pathfinder->findPath(weights, map->getTerrainObject(srcObjId).numCells, source, dest);
+		vector<int> path = pathfinder->findPath(cells, source, dest, (int)type);
+		Node *rootNode = Root::getSingleton()->getRootNode();
 
-		bool impassibleNodePresent = false;
-		pathPoints.clear();
+		for(int p : path){
+			pathPoints.push_back(cells[p].pos);
 
-		for(int i = 1; i < path.size(); i++)
-			if(!impassibleNodePresent && weights[path[i - 1]][path[i]] == pathfinder->getImpassibleNodeVal())
-				impassibleNodePresent = true;
+			Box *b = new Box(Vector3::VEC_IJK);
+			b->setMaterial(debugMat);
+			Node *n = new Node(cells[p].pos);
+			n->attachMesh(b);
+			rootNode->attachChild(n);
+			debugPathPoints.push_back(n);
+		}
+	}
 
-		if(!(impassibleNodePresent || path.empty()))
-			for(int p : path)
-				pathPoints.push_back(map->getTerrainObject(srcObjId).cells[p].pos);
-		*/
+	void Vehicle::removePathpoint(int i){
+		Node *rootNode = Root::getSingleton()->getRootNode();
+		Node *debugPathPointNode = debugPathPoints[i];
+		rootNode->dettachChild(debugPathPointNode);
+
+		Mesh *mesh = debugPathPointNode->getMesh(0);
+		mesh->setMaterial(nullptr);
+		debugPathPoints.erase(debugPathPoints.begin() + i);
+		delete debugPathPointNode;
+
+		pathPoints.erase(pathPoints.begin() + i);
+	}
+
+	void Vehicle::removeAllPathpoints(){
+		while(!pathPoints.empty())
+			removePathpoint();
 	}
 }

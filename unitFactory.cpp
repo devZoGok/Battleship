@@ -2,6 +2,7 @@
 #include "player.h"
 #include "vehicle.h"
 #include "engineer.h"
+#include "defConfigs.h"
 
 #include <solUtil.h>
 

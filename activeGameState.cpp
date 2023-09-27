@@ -276,21 +276,30 @@ namespace battleship{
 
 			Map *map = Map::getSingleton();
 
-			/*
-			for(Unit *u : mainPlayer->getSelectedUnits())
-				if(u->getType() == UnitType::UNDERWATER){
-					for(int i = 1; i < map->getNumTerrainObjects(); i++){
-						if(map->isPointWithinTerrainObject(u->getPos(), i) && map->isPointWithinTerrainObject(results[0].pos, i)){
-							vector<Ray::CollisionResult> res;
-							Vector3 pos = u->getPos();
-							Ray::retrieveCollisions(Vector3(pos.x, map->getTerrainObject(0).size.y, pos.z), Vector3(0, -1, 0), map->getTerrainObject(0).node->getChild(0), res);
-							Ray::sortResults(res);
-							results[0].pos.y = res[0].pos.y + depth * (map->getTerrainObject(i).pos.y - res[0].pos.y);
+			for(Unit *u : mainPlayer->getSelectedUnits()){
+				Vector3 pos = u->getPos();
+				Node *nodeParent = map->getNodeParent();
+
+				if(u->getType() == UnitType::UNDERWATER && nodeParent->getNumChildren() > 0){
+					vector<Ray::CollisionResult> res;
+					Ray::retrieveCollisions(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), nodeParent->getChild(0), res);
+					Ray::sortResults(res);
+
+					Vector3 waterBodyPos = Vector3::VEC_ZERO;
+					Vector3 cellSize = map->getCellSize();
+
+					for(int i = 1; i < nodeParent->getNumChildren(); i++){
+						Vector3 wpos = nodeParent->getChild(i)->getPosition();
+						
+						if(fabs(wpos.x - pos.x) < .5 * cellSize.x && fabs(wpos.z - pos.z) < .5 * cellSize.z){
+							waterBodyPos = wpos;
 							break;
 						}
 					}
+
+					results[0].pos.y = res[0].pos.y + depth * (waterBodyPos.y - res[0].pos.y);
 				}
-			*/
+			}
 
 			targets.push_back(Order::Target((it != unitData.end() ? unitData[node] : unit), results[0].pos));
 		}
