@@ -11,7 +11,7 @@
 
 #include "defConfigs.h"
 #include "inGameAppState.h"
-#include "consoleCommand.h"
+#include "console.h"
 #include "unitFrameController.h"
 #include "concreteGuiManager.h"
 #include "vessel.h"
@@ -36,13 +36,13 @@ namespace battleship{
 		ConcreteGuiManager::getSingleton()->readLuaScreenScript("console.lua");
     }
 
-	InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
+	InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", 257, true) {
 	    textbox = t;
 	    listbox = l;
 	}
 	
 	void InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::onClick() {
-		ConsoleCommand::execute(wstringToString(textbox->getText()));
+		Console::execute(wstringToString(textbox->getText()));
 	}
 
     InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions, string mapName) : AbstractAppState(
