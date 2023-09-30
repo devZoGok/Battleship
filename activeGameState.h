@@ -30,7 +30,7 @@ namespace battleship{
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
 		void initDragbox();
-		void initDepthText();
+		vb01::Node* initText(vb01::Vector2);
 		void deselectUnits();
         void renderUnits();
         void updateSelectionBox();
@@ -43,7 +43,7 @@ namespace battleship{
         GuiAppState *guiState;
         Player *mainPlayer;
 		vb01::Quad *dragbox = nullptr;
-		vb01::Node *dragboxNode = nullptr, *textNode = nullptr;
+		vb01::Node *dragboxNode = nullptr, *textNode = nullptr, *refinedsText = nullptr, *wealthText = nullptr, *researchText = nullptr;
 		vb01::Vector2 clickPoint;
         std::vector<vb01::Vector2> unitScreenPosVec;
         std::vector<vb01::Node*> unitLightNodes;

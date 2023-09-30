@@ -31,8 +31,17 @@ namespace battleship{
         inline int getFaction(){return faction;}
         inline int getSide(){return side;}
         inline vb01::Vector3 getSpawnPoint(){return spawnPoint;}
+		inline int getRefineds(){return refineds;}
+		inline void setRefineds(int ref){this->refineds = ref;}
+		inline void addRefineds(int ref){this->refineds += ref;}
+		inline int getWealth(){return wealth;}
+		inline void setWealth(int w){this->wealth = w;}
+		inline void addWealth(int w){this->wealth += w;}
+		inline int getResearch(){return research;}
+		inline void setResearch(int r){this->research = r;}
+		inline void addResearch(int r){this->research += r;}
     private:
-        int credits, faction, difficulty,side,id;
+        int refineds = 0, wealth = 0, research = 0, faction, difficulty,side,id;
         std::vector<Unit*> units, selectedUnits;
         vb01::Vector3 spawnPoint;
     };

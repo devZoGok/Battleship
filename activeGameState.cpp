@@ -43,7 +43,12 @@ namespace battleship{
         mainPlayer = Map::getSingleton()->getPlayer(playerId);
 
 		initDragbox();
-		initDepthText();
+
+		refinedsText = initText(Vector2(0, 100));
+		wealthText = initText(Vector2(0, 200));
+		researchText = initText(Vector2(0, 300));
+		textNode = initText(Vector2(0, 400));
+		depth = 1;
     }
 
     ActiveGameState::~ActiveGameState() {
@@ -65,33 +70,41 @@ namespace battleship{
 		root->getGuiNode()->attachChild(dragboxNode);
 	}
 
-	void ActiveGameState::initDepthText(){
-		Root *root = Root::getSingleton();
-		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"depth: ");
-
-		Material *tm = new Material(root->getLibPath() + "text");
+	Node* ActiveGameState::initText(Vector2 pos){
+		Material *tm = new Material(Root::getSingleton()->getLibPath() + "text");
 		tm->addBoolUniform("texturingEnabled", false);
 		tm->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
+
+		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"");
 		t->setMaterial(tm);
 
-		textNode = new Node(Vector3(0, 100, 0));
-		textNode->addText(t);
+		Node *node = new Node(Vector3(pos.x, pos.y, 0));
+		node->addText(t);
 
-		depth = 1;
+		return node;
 	}
 
     void ActiveGameState::onAttached() {
         AbstractAppState::onAttached();
 		Root::getSingleton()->getGuiNode()->attachChild(textNode);
+		Root::getSingleton()->getGuiNode()->attachChild(refinedsText);
+		Root::getSingleton()->getGuiNode()->attachChild(wealthText);
+		Root::getSingleton()->getGuiNode()->attachChild(researchText);
     }
 
     void ActiveGameState::onDettached() {
 		AbstractAppState::onDettached();
-		Root::getSingleton()->getGuiNode()->attachChild(textNode);
+		Root::getSingleton()->getGuiNode()->dettachChild(textNode);
+		Root::getSingleton()->getGuiNode()->dettachChild(refinedsText);
+		Root::getSingleton()->getGuiNode()->dettachChild(wealthText);
+		Root::getSingleton()->getGuiNode()->dettachChild(researchText);
     }
 
     void ActiveGameState::update() {
 		textNode->getText(0)->setText(L"Depth: " + to_wstring(depth));
+		refinedsText->getText(0)->setText(L"Refineds: " + to_wstring(mainPlayer->getRefineds()));
+		wealthText->getText(0)->setText(L"Wealth: " + to_wstring(mainPlayer->getWealth()));
+		researchText->getText(0)->setText(L"Research: " + to_wstring(mainPlayer->getResearch()));
 
         if (isSelectionBox)
 			updateSelectionBox();
