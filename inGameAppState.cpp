@@ -12,7 +12,7 @@
 #include "defConfigs.h"
 #include "inGameAppState.h"
 #include "console.h"
-#include "unitFrameController.h"
+#include "gameObjectFrameController.h"
 #include "concreteGuiManager.h"
 #include "vessel.h"
 
@@ -124,14 +124,14 @@ namespace battleship{
 
 			for(Player *p : Map::getSingleton()->getPlayers())
 				for(Unit *u : p->getUnits())
-					u->reinitUnit();
+					u->reinit();
         }
     }
 
     void InGameAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
 			case Bind::TOGGLE_MAIN_MENU: 
-            	if(isPressed && !UnitFrameController::getSingleton()->isPlacingFrames())
+            	if(isPressed && !GameObjectFrameController::getSingleton()->isPlacingFrames())
 					toggleMainMenu();
             break;
         }

@@ -7,33 +7,33 @@
 #include <vector.h>
 #include <quaternion.h>
 
+#include "gameObject.h"
+
 namespace vb01{
 	class Model;
 }
 
 namespace battleship{
-	class UnitFrameController{
+	class GameObjectFrameController{
 		public:
-			struct UnitFrame{
+			struct GameObjectFrame : public GameObject{
 				enum Status{PLACEABLE, NOT_PLACEABLE, PLACED};
 			
-				UnitFrame(std::string, int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO, vb01::Quaternion = vb01::Quaternion::QUAT_W);
-				~UnitFrame(){}
-				void update();
+				GameObjectFrame(int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO, vb01::Quaternion = vb01::Quaternion::QUAT_W);
+				~GameObjectFrame(){}
 			
-				vb01::Model *model;
-				int id, type;
+				int type;
 				Status status;
 			};
 
-			static UnitFrameController* getSingleton();
+			static GameObjectFrameController* getSingleton();
 			void update();
-			void removeUnitFrame(int);
-			void removeUnitFrames();
-			void rotateUnitFrames(float);
-			inline int getNumUnitFrames(){return unitFrames.size();}
-			inline void addUnitFrame(UnitFrame u){unitFrames.push_back(u);}
-			inline UnitFrame& getUnitFrame(int i){return unitFrames[i];}
+			void removeGameObjectFrame(int);
+			void removeGameObjectFrames();
+			void rotateGameObjectFrames(float);
+			inline int getNumGameObjectFrames(){return gameObjectFrames.size();}
+			inline void addGameObjectFrame(GameObjectFrame u){gameObjectFrames.push_back(u);}
+			inline GameObjectFrame& getGameObjectFrame(int i){return gameObjectFrames[i];}
 			inline bool isPlacingFrames(){return placingStructures;}
 			inline void setPlacingFrames(bool ps){placingStructures = ps;}
 			inline bool isPaintSelecting(){return paintSelecting;}
@@ -42,11 +42,11 @@ namespace battleship{
 			inline void setRotatingFrames(bool rs){rotatingStructure = rs;}
 			inline void setPaintSelectRowStart(vb01::Vector3 st){paintSelectRowStart = st;}
 		private:
-			UnitFrameController(){}
+			GameObjectFrameController(){}
 			void paintSelect(vb01::Vector3, float, float);
-			void placeUnitFrame(int, vb01::Vector3, float, float);
+			void placeGameObjectFrame(int, vb01::Vector3, float, float);
 
-			std::vector<UnitFrame> unitFrames;
+			std::vector<GameObjectFrame> gameObjectFrames;
 			vb01::Vector3 paintSelectRowStart, rowDir;
 	   		bool placingStructures = false, paintSelecting = false, rotatingStructure = false;
 	};

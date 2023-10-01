@@ -1,7 +1,7 @@
 #include "buildButton.h"
 #include "gameManager.h"
 #include "unit.h"
-#include "unitFrameController.h"
+#include "gameObjectFrameController.h"
 
 #include <solUtil.h>
 
@@ -17,11 +17,8 @@ namespace battleship{
 	}
 
 	void BuildButton::onClick(){
-		sol::state_view SOL_LUA_STATE = generateView();
-		string modelPath = (string)SOL_LUA_STATE["basePath"][structureId + 1] + (string)SOL_LUA_STATE["meshPath"][structureId + 1];
-
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
-		ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, structureId, (int)UnitType::LAND));
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
+		ufCtr->addGameObjectFrame(GameObjectFrameController::GameObjectFrame(structureId, (int)UnitType::LAND));
 		ufCtr->setPlacingFrames(true);
 	}
 }

@@ -20,7 +20,7 @@
 #include "structure.h"
 #include "util.h"
 #include "tooltip.h"
-#include "unitFrameController.h"
+#include "gameObjectFrameController.h"
 #include "cameraController.h"
 #include "concreteGuiManager.h"
 
@@ -118,7 +118,7 @@ namespace battleship{
 		if(!camCtr->isLookingAround())
 			camCtr->updateCameraPosition();
 
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		if(ufCtr->isPlacingFrames())
 			ufCtr->update();
@@ -126,8 +126,8 @@ namespace battleship{
 
 	void ActiveGameState::deselectUnits(){
 		mainPlayer->deselectUnits();
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
-		ufCtr->removeUnitFrames();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
+		ufCtr->removeGameObjectFrames();
 		ufCtr->setPlacingFrames(false);
 
 		ConcreteGuiManager::getSingleton()->removeAllGuiElements();
@@ -288,11 +288,11 @@ namespace battleship{
 			std::map<Node*, Unit*>::iterator it = unitData.find(node);
 
 			Unit *unit = nullptr;
-			UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+			GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 			if(ufCtr->isPlacingFrames()){
-				Model *model = ufCtr->getUnitFrame(0).model;
-				unit = new Structure(mainPlayer, ufCtr->getUnitFrame(0).id, model->getPosition(), model->getOrientation());
+				GameObjectFrameController::GameObjectFrame goFr= ufCtr->getGameObjectFrame(0);
+				unit = new Structure(mainPlayer, goFr.getId(), goFr.getModel()->getPosition(), goFr.getModel()->getOrientation());
 				mainPlayer->addUnit(unit);
 			}
 
@@ -338,7 +338,7 @@ namespace battleship{
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameManager *gm = GameManager::getSingleton();
         InGameAppState *inGameState = (InGameAppState*) gm->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE);
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
         switch((Bind)bind){
 			case Bind::DRAG_BOX: 
@@ -359,7 +359,7 @@ namespace battleship{
 								type = Order::TYPE::BUILD;
 								ufCtr->setPlacingFrames(false);
 								ufCtr->setRotatingFrames(false);
-								ufCtr->removeUnitFrames();
+								ufCtr->removeGameObjectFrames();
 							}
 						
 							issueOrder(type, shiftPressed);
@@ -405,7 +405,7 @@ namespace battleship{
 			{
         		shiftPressed = isPressed;
 
-				UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+				GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 				ufCtr->setPaintSelecting(shiftPressed);
 
 				if(isPressed){
@@ -463,7 +463,7 @@ namespace battleship{
 
                 break;
 			case Bind::DESELECT_STRUCTURE:
-				ufCtr->removeUnitFrames();
+				ufCtr->removeGameObjectFrames();
 				ufCtr->setPlacingFrames(false);
 				break;
         }
@@ -471,7 +471,7 @@ namespace battleship{
 
     void ActiveGameState::onAnalog(int bind, float strength) {
 		CameraController *camCtr = CameraController::getSingleton();
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		switch((Bind)bind){
 			case Bind::LOOK_UP: 
@@ -488,7 +488,7 @@ namespace battleship{
 				if(camCtr->isLookingAround())
 					CameraController::getSingleton()->orientCamera(Vector3(0, 1, 0), strength);
 				else if(ufCtr->isPlacingFrames() && ufCtr->isRotatingFrames())
-					ufCtr->rotateUnitFrames(100 * strength);
+					ufCtr->rotateGameObjectFrames(100 * strength);
 
 				break;
 		}

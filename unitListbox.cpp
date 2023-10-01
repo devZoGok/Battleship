@@ -2,7 +2,7 @@
 
 #include "unitListbox.h"
 #include "unit.h"
-#include "unitFrameController.h"
+#include "gameObjectFrameController.h"
 
 namespace battleship{
 	using namespace std;
@@ -14,13 +14,9 @@ namespace battleship{
 	}
 
 	void UnitListbox::onClose(){
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
-		
 		int id = selectedOption;
-		sol::state_view SOL_LUA_STATE = generateView();
-		string modelPath = (string)SOL_LUA_STATE["basePath"][id + 1] + (string)SOL_LUA_STATE["meshPath"][id + 1];
-		ufCtr->addUnitFrame(UnitFrameController::UnitFrame(modelPath, id, (int)UnitType::LAND));
-
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
+		ufCtr->addGameObjectFrame(GameObjectFrameController::GameObjectFrame(id, (int)UnitType::LAND));
 		ufCtr->setPlacingFrames(true);
 	}
 }

@@ -2,7 +2,7 @@
 #include "gameManager.h"
 #include "defConfigs.h"
 #include "cameraController.h"
-#include "unitFrameController.h"
+#include "gameObjectFrameController.h"
 #include "player.h"
 #include "map.h"
 #include "mesh.h"
@@ -545,7 +545,7 @@ namespace battleship{
 		if(!(camCtr->isLookingAround() || mapEditor->isPushing()))
 			camCtr->updateCameraPosition();
 
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		if(ufCtr->isPlacingFrames())
 			ufCtr->update();
@@ -578,21 +578,21 @@ namespace battleship{
 	void MapEditorAppState::onDettached(){}
 
 	void MapEditorAppState::onAction(int bind, bool isPressed){
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		switch((Bind)bind){
 			case Bind::LOOK_AROUND:
 				if(ufCtr->isPlacingFrames()){
 					Player *player = Map::getSingleton()->getPlayer(0);
-					UnitFrameController::UnitFrame &frame = ufCtr->getUnitFrame(0);
-					player->addUnit(new Unit(player, frame.id, frame.model->getPosition(), frame.model->getOrientation()));
+					GameObjectFrameController::GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
+					player->addUnit(new Unit(player, frame.getId(), frame.getModel()->getPosition(), frame.getModel()->getOrientation()));
 				}
 				else
 					CameraController::getSingleton()->setLookingAround(isPressed);
 
                 break;
 			case Bind::DESELECT_STRUCTURE:
-				ufCtr->removeUnitFrames();
+				ufCtr->removeGameObjectFrames();
 				ufCtr->setPlacingFrames(false);
 				break;
 			case Bind::INCREASE_RADIUS:

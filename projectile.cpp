@@ -23,7 +23,7 @@ namespace battleship{
 	using namespace configData;
 	using namespace gameBase;
 
-    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) {
+    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) : GameObject(id, unit->getPlayer(), pos, Quaternion::QUAT_W){
         this->unit = unit;
         this->id = id;
         this->weaponTypeId = weaponTypeId;
