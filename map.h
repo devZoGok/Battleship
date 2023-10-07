@@ -16,6 +16,7 @@ namespace vb01{
 
 namespace battleship{
 	class Player;
+	class GameObject;
 	struct Cell;
 
     class Map {
@@ -58,6 +59,8 @@ namespace battleship{
 		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
 		inline std::vector<Map::Cell>& getCells(){return cells;}
+		inline void addNpcGameObject(GameObject *obj){npcGameObjects.push_back(obj);}
+		inline std::vector<GameObject*> getNpcGameObjects(){return npcGameObjects;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
@@ -67,6 +70,7 @@ namespace battleship{
 		std::vector<vb01::Vector3> spawnPoints;
         std::vector<Player*> players;
 		std::vector<Cell> cells;
+		std::vector<GameObject*> npcGameObjects;
 
         Map(){}
 		void preprareScene();

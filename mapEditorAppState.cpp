@@ -415,7 +415,27 @@ namespace battleship{
 		mapScript += "},\nplayers = {\n";
 
 		for(int i = 0; i < map->getNumPlayers(); i++){
-			mapScript += "{\nspawnPoint = 0,\n";
+			mapScript += "{\n";
+
+			if(i > 0)
+				mapScript += "spawnPoint = 0,\n";
+			else{
+				vector<GameObject*> npcGameObjs = map->getNpcGameObjects();
+				mapScript += "numNpcGameObjs = " + to_string(npcGameObjs.size()) + ",\n";
+				mapScript += "npcGameObjs = {\n";
+
+				for(GameObject *npcGameObj : npcGameObjs){
+					Vector3 pos = npcGameObj->getPos();
+					string posStr = "x = " + to_string(pos.x) + ", y = " + to_string(pos.y) + ", z = " + to_string(pos.z);
+
+					Quaternion rot = npcGameObj->getRot();
+					string rotStr = "w = " + to_string(rot.w) + ", x = " + to_string(rot.x) + ", y = " + to_string(rot.y) + ", z = " + to_string(rot.z);
+
+					mapScript += "{id = " + to_string(npcGameObj->getId()) + ", pos = {" + posStr + "}, rot = {" + rotStr + "}},\n";
+				}
+
+				mapScript += "},\n";
+			}
 
 			int numUnits = map->getPlayer(i)->getNumberOfUnits();
 			mapScript += "numUnits = " + to_string(numUnits) + ",\n";
@@ -594,6 +614,7 @@ namespace battleship{
 
 					if(frame.getType() == GameObject::Type::RESOURCE_DEPOSIT){
 						ResourceDeposit *dep = GameObjectFactory::createResourceDeposit(frame.getId(), pos, rot);
+						map->addNpcGameObject((GameObject*)dep);
 					}
 					else
 						player->addUnit(GameObjectFactory::createUnit(player, frame.getId(), pos, rot));
