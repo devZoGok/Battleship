@@ -8,7 +8,7 @@
 
 #include "map.h"
 #include "player.h"
-#include "unitFactory.h"
+#include "gameObjectFactory.h"
 #include "pathfinder.h"
 #include "gameManager.h"
 #include "defConfigs.h"
@@ -149,7 +149,7 @@ namespace battleship{
 
 				int id = unitTable["id"];
 				
-				players[i]->addUnit(UnitFactory::createUnit(players[i], id, pos, rot));
+				players[i]->addUnit(GameObjectFactory::createUnit(players[i], id, pos, rot));
 			}
 		}
 	}

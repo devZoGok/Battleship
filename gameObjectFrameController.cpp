@@ -1,6 +1,6 @@
 #include <solUtil.h>
 
-#include "unitFrameController.h"
+#include "gameObjectFrameController.h"
 #include "unit.h"
 #include "util.h"
 #include "map.h"
@@ -20,10 +20,6 @@ namespace battleship{
 	using namespace gameBase;
 
 	static GameObjectFrameController *gameObjectFrameController = nullptr;
-
-	GameObjectFrameController::GameObjectFrame::GameObjectFrame(int i, int t, Vector3 pos, Quaternion rot) : GameObject(i, nullptr, pos, rot), type(t) {
-		initModel(false);
-	}    
 
 	GameObjectFrameController* GameObjectFrameController::getSingleton(){
 		if(!gameObjectFrameController)
@@ -49,7 +45,7 @@ namespace battleship{
 				buildDir = gameObjectFrames[1].getModel()->getPosition() - gameObjectFrames[0].getModel()->getPosition();
 
 			Vector3 pos = paintSelectRowStart + buildDir.norm() * hypothenuse * gameObjectFrames.size();
-			addGameObjectFrame(GameObjectFrame(structureId, (int)UnitType::LAND, pos));
+			addGameObjectFrame(GameObjectFrame(structureId, GameObjectFrame::UNIT, pos));
 		}
 	}
 

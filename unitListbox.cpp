@@ -14,9 +14,8 @@ namespace battleship{
 	}
 
 	void UnitListbox::onClose(){
-		int id = selectedOption;
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
-		ufCtr->addGameObjectFrame(GameObjectFrameController::GameObjectFrame(id, (int)UnitType::LAND));
+		ufCtr->addGameObjectFrame(GameObjectFrame(selectedOption, GameObjectFrame::UNIT));
 		ufCtr->setPlacingFrames(true);
 	}
 }

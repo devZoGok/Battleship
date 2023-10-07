@@ -584,7 +584,7 @@ namespace battleship{
 			case Bind::LOOK_AROUND:
 				if(ufCtr->isPlacingFrames()){
 					Player *player = Map::getSingleton()->getPlayer(0);
-					GameObjectFrameController::GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
+					GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
 					player->addUnit(new Unit(player, frame.getId(), frame.getModel()->getPosition(), frame.getModel()->getOrientation()));
 				}
 				else

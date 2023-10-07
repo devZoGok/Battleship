@@ -291,7 +291,7 @@ namespace battleship{
 			GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 			if(ufCtr->isPlacingFrames()){
-				GameObjectFrameController::GameObjectFrame goFr= ufCtr->getGameObjectFrame(0);
+				GameObjectFrame goFr = ufCtr->getGameObjectFrame(0);
 				unit = new Structure(mainPlayer, goFr.getId(), goFr.getModel()->getPosition(), goFr.getModel()->getOrientation());
 				mainPlayer->addUnit(unit);
 			}

@@ -18,7 +18,7 @@ namespace battleship{
 
 	void BuildButton::onClick(){
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
-		ufCtr->addGameObjectFrame(GameObjectFrameController::GameObjectFrame(structureId, (int)UnitType::LAND));
+		ufCtr->addGameObjectFrame(GameObjectFrame(structureId, GameObjectFrame::UNIT));
 		ufCtr->setPlacingFrames(true);
 	}
 }

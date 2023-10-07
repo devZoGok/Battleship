@@ -1,5 +1,5 @@
-#ifndef UNIT_FRAME_CONTROLLER_H
-#define UNIT_FRAME_CONTROLLER_H
+#ifndef GAME_OBJECT_FRAME_CONTROLLER_H
+#define GAME_OBJECT_FRAME_CONTROLLER_H
 
 #include <vector>
 #include <string>
@@ -7,7 +7,7 @@
 #include <vector.h>
 #include <quaternion.h>
 
-#include "gameObject.h"
+#include "gameObjectFrame.h"
 
 namespace vb01{
 	class Model;
@@ -16,16 +16,6 @@ namespace vb01{
 namespace battleship{
 	class GameObjectFrameController{
 		public:
-			struct GameObjectFrame : public GameObject{
-				enum Status{PLACEABLE, NOT_PLACEABLE, PLACED};
-			
-				GameObjectFrame(int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO, vb01::Quaternion = vb01::Quaternion::QUAT_W);
-				~GameObjectFrame(){}
-			
-				int type;
-				Status status;
-			};
-
 			static GameObjectFrameController* getSingleton();
 			void update();
 			void removeGameObjectFrame(int);
