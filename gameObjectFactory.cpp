@@ -17,7 +17,7 @@ namespace battleship{
 
 	Unit* GameObjectFactory::createUnit(Player *player, int id, Vector3 pos, Quaternion rot){
 		sol::state_view SOL_LUA_STATE = generateView();
-		int unitClass = SOL_LUA_STATE["unitClass"][id + 1];
+		int unitClass = SOL_LUA_STATE["units"]["unitClass"][id + 1];
 
 		switch((UnitClass)unitClass){
 			case UnitClass::ENGINEER:

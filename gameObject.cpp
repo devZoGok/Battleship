@@ -36,7 +36,7 @@ namespace battleship{
 	}
 
 	void GameObject::initModel(bool textured){
-		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
 		string basePath = SOL_LUA_STATE["basePath"][id + 1];
 		string meshPath = SOL_LUA_STATE["meshPath"][id + 1];
 
@@ -67,4 +67,15 @@ namespace battleship{
 	void GameObject::destroySound(){}
 
 	void GameObject::initSound(){}
+
+	string GameObject::getGameObjTableName(){
+		switch(type){
+			case GameObject::Type::UNIT:
+				return "units";
+			case GameObject::Type::PROJECTILE:
+				return "projectiles";
+			case GameObject::Type::RESOURCE_DEPOSIT:
+				return "resources";
+		}
+	}
 }

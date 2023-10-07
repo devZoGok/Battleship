@@ -10,12 +10,15 @@ namespace battleship{
 
 	class GameObject{
 		public:
-			GameObject(int i, Player *pl, vb01::Vector3 vec, vb01::Quaternion quat) : id(i), player(pl), pos(vec), rot(quat){}
+			enum class Type{UNIT, PROJECTILE, RESOURCE_DEPOSIT};
+
+			GameObject(Type t, int i, Player *pl, vb01::Vector3 vec, vb01::Quaternion quat) : type(t), id(i), player(pl), pos(vec), rot(quat){}
 			~GameObject(){}
 			virtual void update();
         	virtual void toggleSelection(bool sel){selected = sel;}
 			void placeAt(vb01::Vector3);
 			void orientAt(vb01::Quaternion);
+			std::string getGameObjTableName();
 			inline vb01::Vector3 getCorner(int i){return corners[i];}
 			inline bool isSelected(){return selected;}
 			inline bool isSelectable(){return selectable;}
@@ -40,6 +43,7 @@ namespace battleship{
 			virtual void destroySound();
 			virtual void initSound();
 
+			Type type;
 			int id;
 			Player *player;
 			vb01::Model *model = nullptr;

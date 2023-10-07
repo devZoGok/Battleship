@@ -15,7 +15,7 @@
 #include "exportButton.h"
 #include "skyboxTextureListbox.h"
 #include "landTextureListbox.h"
-#include "unitListbox.h"
+#include "gameObjectListbox.h"
 #include "playButton.h"
 #include "inGameAppState.h"
 #include "mainMenuButton.h"
@@ -166,6 +166,9 @@ namespace battleship{
 		return button;
 	}
 
+	Listbox* ConcreteGuiManager::parseGameObjectListbox(){
+	}
+
 	Listbox* ConcreteGuiManager::parseListbox(int guiId){
 		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
@@ -220,23 +223,31 @@ namespace battleship{
 
 				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
 				break;
-			case UNITS:{
-				string path = GameManager::getSingleton()->getPath();
-				bool vehicles = guiTable["vehicles"];
-				int numUnits = SOL_LUA_STATE["numUnits"];
+			case VEHICLES:
+			case STRUCTURES:
+			case RESOURCE_DEPOSITS:{
+				bool resources = (listboxType == RESOURCE_DEPOSITS);
+				sol::table gameObjTable = SOL_LUA_STATE[resources ? "resources" : "units"];
+				int numGameObjs = gameObjTable["num"];
+				
+				for(int i = 0; i < numGameObjs; i++){
+					bool canAdd = true;
 
-				for(int i = 0; i < numUnits; i++){
-					bool v = SOL_LUA_STATE["isVehicle"][i + 1];
+					if(!resources){
+						bool vehicles = (listboxType == VEHICLES);
+						bool v = gameObjTable["isVehicle"][i + 1];
+						canAdd = (v == vehicles);
+					}
 
-					if(v == vehicles)
-						lines.push_back(SOL_LUA_STATE["name"][i + 1]);
+					if(canAdd)
+						lines.push_back(gameObjTable["name"][i + 1]);
 				}
-
+				
 				numLines = lines.size();
 				closable = true;
 				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
-
-				listbox = new UnitListbox(pos, size, lines, maxDisplay, fontPath);
+				
+				listbox = new GameObjectListbox(!resources, pos, size, lines, maxDisplay, fontPath);
 				break;
 			}
 			case SKYBOX_TEXTURES:

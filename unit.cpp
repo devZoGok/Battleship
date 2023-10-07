@@ -22,7 +22,7 @@ using namespace gameBase;
 using namespace std;
 
 namespace battleship{
-    Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(id, player, pos, rot){
+    Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
         this->id = id;
         this->player = player;
 
@@ -45,7 +45,7 @@ namespace battleship{
 	}
 
 	void Unit::initProperties(){
-		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
@@ -73,7 +73,7 @@ namespace battleship{
 	}
 
 	void Unit::initSound(){
-		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
 		string name = SOL_LUA_STATE["name"][id + 1];
         selectionSfxBuffer = new sf::SoundBuffer();
         string p = GameManager::getSingleton()->getPath() + "Sounds/" + name + "s/selection.ogg";

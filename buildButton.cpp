@@ -1,6 +1,6 @@
 #include "buildButton.h"
 #include "gameManager.h"
-#include "unit.h"
+#include "gameObject.h"
 #include "gameObjectFrameController.h"
 
 #include <solUtil.h>
@@ -18,7 +18,7 @@ namespace battleship{
 
 	void BuildButton::onClick(){
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
-		ufCtr->addGameObjectFrame(GameObjectFrame(structureId, GameObjectFrame::UNIT));
+		ufCtr->addGameObjectFrame(GameObjectFrame(structureId, GameObject::Type::UNIT));
 		ufCtr->setPlacingFrames(true);
 	}
 }

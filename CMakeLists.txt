@@ -13,7 +13,7 @@ set(OPTIONS_BUTTONS optionsButton.cpp tabButton.cpp okButton.cpp defaultsButton.
 set(IN_GAME_APP_STATE_BUTTONS mainMenuButton.cpp)
 set(MAP_EDITOR_BUTTONS mapEditorButton.cpp newMapButton.cpp loadMapButton.cpp exportButton.cpp)
 set(BUTTONS singlePlayerButton.cpp exitButton.cpp backButton.cpp playButton.cpp ${OPTIONS_BUTTONS} ${IN_GAME_APP_STATE_BUTTONS} ${MAP_EDITOR_BUTTONS} ${UNIT_BUTTONS})
-set(LISTBOXES skyboxTextureListbox.cpp landTextureListbox.cpp unitListbox.cpp)
+set(LISTBOXES skyboxTextureListbox.cpp landTextureListbox.cpp gameObjectListbox.cpp)
 set(GUI tooltip.cpp concreteGuiManager.cpp ${BUTTONS} ${LISTBOXES})
 
 set(STATES activeGameState.cpp inGameAppState.cpp guiAppState.cpp mapEditorAppState.cpp)

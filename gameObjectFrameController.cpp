@@ -45,7 +45,7 @@ namespace battleship{
 				buildDir = gameObjectFrames[1].getModel()->getPosition() - gameObjectFrames[0].getModel()->getPosition();
 
 			Vector3 pos = paintSelectRowStart + buildDir.norm() * hypothenuse * gameObjectFrames.size();
-			addGameObjectFrame(GameObjectFrame(structureId, GameObjectFrame::UNIT, pos));
+			addGameObjectFrame(GameObjectFrame(structureId, GameObject::Type::UNIT, pos));
 		}
 	}
 
@@ -100,8 +100,7 @@ namespace battleship{
 		if(results.empty()) return;
 
 		Vector3 newPos, rowEnd;
-		sol::state_view SOL_LUA_STATE = generateView();
-		sol::table unitTable = SOL_LUA_STATE["unitCornerPoints"][gameObjectFrames[0].getId() + 1]; 
+		sol::table unitTable = generateView()[gameObjectFrames[0].getGameObjTableName()]["unitCornerPoints"][gameObjectFrames[0].getId() + 1]; 
     	float width = (float)unitTable[1]["x"] - (float)unitTable[2]["x"];
     	float length = (float)unitTable[4]["z"] - (float)unitTable[1]["z"];
 

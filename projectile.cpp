@@ -23,7 +23,7 @@ namespace battleship{
 	using namespace configData;
 	using namespace gameBase;
 
-    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) : GameObject(id, unit->getPlayer(), pos, Quaternion::QUAT_W){
+    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) : GameObject(GameObject::Type::PROJECTILE, id, unit->getPlayer(), pos, Quaternion::QUAT_W){
         this->unit = unit;
         this->id = id;
         this->weaponTypeId = weaponTypeId;
@@ -43,7 +43,7 @@ namespace battleship{
     }
 
 	void Projectile::initProperties(int weaponId){
-		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
         rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
         damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
         speed = SOL_LUA_STATE["speed"][id + 1][weaponTypeId + 1][weaponId + 1];
@@ -51,7 +51,7 @@ namespace battleship{
 
 	void Projectile::initModel(Node *node){
         if(!node){
-			sol::state_view SOL_LUA_STATE = generateView();
+			sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
 			string meshPath = SOL_LUA_STATE["meshPath"][id + 1][weaponTypeId + 1];
 			this->node = new Model(meshPath);
 
@@ -72,7 +72,7 @@ namespace battleship{
 	void Projectile::initSound(){
 		GameManager *gm = GameManager::getSingleton();
 
-		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
 		string unitName = SOL_LUA_STATE["name"][id + 1];
 		string projectileName = SOL_LUA_STATE["projectileName"][id + 1][weaponTypeId + 1];
         string p1 = gm->getPath() + "Sounds/" + unitName + "s/" + projectileName + ".ogg";

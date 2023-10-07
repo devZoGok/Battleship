@@ -23,7 +23,7 @@ namespace battleship{
 
 		unitId = atoi(arguments[1].c_str());
 
-		if(!(0 <= unitId && unitId <= (int)generateView()["numUnits"]))
+		if(!(0 <= unitId && unitId <= (int)generateView()["units"]["num"]))
 			return;
 
 		if(arguments.size() >= 5){
