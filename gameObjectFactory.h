@@ -14,7 +14,7 @@ namespace battleship{
 		public:
 			enum GameObjectType{UNIT, PROJECTILE, RESOURCE_DEPOSIT};
 			static Unit* createUnit(Player*, int, vb01::Vector3, vb01::Quaternion);
-			static Projectile* createProjectile(Player*, Unit*, int, vb01::Vector3, vb01::Quaternion);
+			static Projectile* createProjectile(Unit*, int, vb01::Vector3, vb01::Quaternion);
 			static ResourceDeposit* createResourceDeposit(int, vb01::Vector3, vb01::Quaternion);
 		private:
 	};

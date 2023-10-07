@@ -35,6 +35,7 @@ namespace battleship{
 			inline vb01::Vector3 getLeftVec() {return leftVec;}
 			inline vb01::Vector3 getUpVec() {return upVec;}
         	inline int getId() {return id;}
+			inline Type getType(){return type;}
 		private:
 		protected:
 			virtual void initProperties();

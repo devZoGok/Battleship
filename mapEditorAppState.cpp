@@ -2,6 +2,7 @@
 #include "gameManager.h"
 #include "defConfigs.h"
 #include "cameraController.h"
+#include "gameObjectFactory.h"
 #include "gameObjectFrameController.h"
 #include "player.h"
 #include "map.h"
@@ -56,6 +57,7 @@ namespace battleship{
 
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(basePath + "Models/Units/", true);
+		assetManager->load(basePath + "Models/Resources/", true);
 		assetManager->load(basePath + DEFAULT_TEXTURE);
 	}
 
@@ -583,9 +585,18 @@ namespace battleship{
 		switch((Bind)bind){
 			case Bind::LOOK_AROUND:
 				if(ufCtr->isPlacingFrames()){
-					Player *player = Map::getSingleton()->getPlayer(0);
+					Map *map = Map::getSingleton();
+					Player *player = map->getPlayer(0);
 					GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
-					player->addUnit(new Unit(player, frame.getId(), frame.getModel()->getPosition(), frame.getModel()->getOrientation()));
+					Model *model = frame.getModel();
+					Vector3 pos = model->getPosition();
+					Quaternion rot = model->getOrientation();
+
+					if(frame.getType() == GameObject::Type::RESOURCE_DEPOSIT){
+						ResourceDeposit *dep = GameObjectFactory::createResourceDeposit(frame.getId(), pos, rot);
+					}
+					else
+						player->addUnit(GameObjectFactory::createUnit(player, frame.getId(), pos, rot));
 				}
 				else
 					CameraController::getSingleton()->setLookingAround(isPressed);

@@ -27,11 +27,11 @@ namespace battleship{
 		}
 	}
 
-	Projectile* createProjectile(Unit*, int, vb01::Vector3, vb01::Quaternion){
+	Projectile* GameObjectFactory::createProjectile(Unit *unti, int id, Vector3 pos, Quaternion rot){
 		return nullptr;
 	}
 	
-	ResourceDeposit* createResourceDeposit(int, vb01::Vector3, vb01::Quaternion){
-		return nullptr;
+	ResourceDeposit* GameObjectFactory::createResourceDeposit(int id, Vector3 pos, Quaternion rot){
+		return new ResourceDeposit(id, pos, rot);
 	}
 }
