@@ -45,7 +45,7 @@ namespace battleship{
 		map->load(name, newMap);
 
 		if(newMap){
-			map->addPlayer(new Player(0, 0, 0));
+			addPlayer();
 			map->addSpawnPoint(Vector3::VEC_ZERO);
 			generatePlane(size);
 		}
@@ -401,7 +401,7 @@ namespace battleship{
 		string mapScript = "map = {\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
 		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.y) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
-		mapScript += "numPlayers = " + to_string(map->getNumPlayers()) + ",\n";
+		mapScript += "numPlayers = " + to_string(players.size()) + ",\n";
 
 		int numSpawnPoints = map->getNumSpawnPoints();
 		mapScript += "numSpawnPoints = " + to_string(numSpawnPoints) + ",\n";
@@ -414,13 +414,13 @@ namespace battleship{
 
 		mapScript += "},\nplayers = {\n";
 
-		for(int i = 0; i < map->getNumPlayers(); i++){
+		for(int i = 0; i < players.size(); i++){
 			mapScript += "{\n";
 
 			if(i > 0)
 				mapScript += "spawnPoint = 0,\n";
 			else{
-				vector<GameObject*> npcGameObjs = map->getNpcGameObjects();
+				vector<GameObject*> npcGameObjs;
 				mapScript += "numNpcGameObjs = " + to_string(npcGameObjs.size()) + ",\n";
 				mapScript += "npcGameObjs = {\n";
 
@@ -437,14 +437,14 @@ namespace battleship{
 				mapScript += "},\n";
 			}
 
-			int numUnits = map->getPlayer(i)->getNumberOfUnits();
+			int numUnits = players[i]->getNumberOfUnits();
 			mapScript += "numUnits = " + to_string(numUnits) + ",\n";
 
 			if(numUnits > 0){
 				mapScript += "units = {\n";
 
 				for(int j = 0; j < numUnits; j++){
-					Unit *unit = map->getPlayer(i)->getUnit(j);
+					Unit *unit = getPlayer(i)->getUnit(j);
 
 					string idStr = "id = " + to_string(unit->getId());
 
@@ -605,17 +605,15 @@ namespace battleship{
 		switch((Bind)bind){
 			case Bind::LOOK_AROUND:
 				if(ufCtr->isPlacingFrames()){
-					Map *map = Map::getSingleton();
-					Player *player = map->getPlayer(0);
+					Player *player = mapEditor->getPlayer(0);
 					GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
 					Model *model = frame.getModel();
 					Vector3 pos = model->getPosition();
 					Quaternion rot = model->getOrientation();
+					GameObject *obj;
 
-					if(frame.getType() == GameObject::Type::RESOURCE_DEPOSIT){
-						ResourceDeposit *dep = GameObjectFactory::createResourceDeposit(frame.getId(), pos, rot);
-						map->addNpcGameObject((GameObject*)dep);
-					}
+					if(frame.getType() == GameObject::Type::RESOURCE_DEPOSIT)
+						player->addResourceDeposit(GameObjectFactory::createResourceDeposit(player, frame.getId(), pos, rot));
 					else
 						player->addUnit(GameObjectFactory::createUnit(player, frame.getId(), pos, rot));
 				}

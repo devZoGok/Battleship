@@ -9,7 +9,9 @@ spawnPoints = {
 },
 players = {
 {
-spawnPoint = 0,
+numResourceDeposits = 0,
+resourceDeposits = {
+},
 numUnits = 0,
 }
 },

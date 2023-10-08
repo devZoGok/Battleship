@@ -1,4 +1,3 @@
-#pragma once
 #ifndef MAP_H
 #define MAP_H
 
@@ -16,7 +15,8 @@ namespace vb01{
 
 namespace battleship{
 	class Player;
-	class GameObject;
+	class Unit;
+	class ResourceDeposit;
 	struct Cell;
 
     class Map {
@@ -48,19 +48,14 @@ namespace battleship{
         void unload();
 		int getCellId(vb01::Vector3);
 		bool isPointWithinTerrainObject(vb01::Vector3, int);
+		void loadPlayerGameObjects(Player*);
 		inline std::string getMapName(){return mapName;}
 		inline vb01::Node* getNodeParent(){return terrainNode;}
 		inline vb01::Vector3 getCellSize(){return CELL_SIZE;}
-        inline std::vector<Player*> getPlayers() {return players;}
-		inline Player* getPlayer(int i){return players[i];}
-		inline void addPlayer(Player *p){players.push_back(p);}
-		inline int getNumPlayers(){return players.size();}
 		inline int getNumSpawnPoints(){return spawnPoints.size();}
 		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
 		inline std::vector<Map::Cell>& getCells(){return cells;}
-		inline void addNpcGameObject(GameObject *obj){npcGameObjects.push_back(obj);}
-		inline std::vector<GameObject*> getNpcGameObjects(){return npcGameObjects;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
@@ -68,14 +63,11 @@ namespace battleship{
 		std::string mapName;
 		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7), mapSize;
 		std::vector<vb01::Vector3> spawnPoints;
-        std::vector<Player*> players;
 		std::vector<Cell> cells;
-		std::vector<GameObject*> npcGameObjects;
 
         Map(){}
 		void preprareScene();
 		void loadSpawnPoints();
-		void loadPlayers();
 		void loadSkybox();
 		void loadCells();
 		void loadTerrainObject(int);

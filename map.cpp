@@ -42,8 +42,6 @@ namespace battleship{
 	}
 
 	void Map::update(){
-		for(Player *p : players)
-			p->update();
 	}
 
 	void Map::loadSkybox(){
@@ -123,7 +121,7 @@ namespace battleship{
 		}
 	}
 
-	void Map::loadPlayers(){
+	void Map::loadPlayerGameObjects(Player *player){
 		AssetManager *assetManager = AssetManager::getSingleton();
 		string path = GameManager::getSingleton()->getPath();
 		assetManager->load(path + DEFAULT_TEXTURE);
@@ -135,10 +133,10 @@ namespace battleship{
 
 		for(int i = 0; i < numPlayers; i++){
 			if(i == 0){
-				int numNpcObjs = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numNpcGameObjs"];
+				int numNpcObjs = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numResourceDeposits"];
 
 				for(int j = 0; j < numNpcObjs; j++){
-					sol::table npcObjTable = SOL_LUA_STATE[mapTable][playerInd][i + 1]["npcGameObjs"][j + 1];
+					sol::table npcObjTable = SOL_LUA_STATE[mapTable][playerInd][i + 1]["resourceDeposits"][j + 1];
 					int id = npcObjTable["id"];
 
 					sol::table posTable = npcObjTable["pos"];
@@ -147,15 +145,13 @@ namespace battleship{
 					sol::table rotTable = npcObjTable["rot"];
 					Quaternion rot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
 
-					addNpcGameObject((GameObject*)GameObjectFactory::createResourceDeposit(id, pos, rot));
+					player->addResourceDeposit(GameObjectFactory::createResourceDeposit(player, id, pos, rot));
 				}
 			}
 
 			//int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
 			int numUnits = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numUnits"];
 			
-			players.push_back(new Player(0, 0, 0, spawnPoints[i]));
-
 			for(int j = 0; j < numUnits; j++){
 				sol::table unitTable = SOL_LUA_STATE[mapTable][playerInd][i + 1]["units"][j + 1];
 
@@ -167,7 +163,7 @@ namespace battleship{
 
 				int id = unitTable["id"];
 				
-				players[i]->addUnit(GameObjectFactory::createUnit(players[i], id, pos, rot));
+				player->addUnit(GameObjectFactory::createUnit(player, id, pos, rot));
 			}
 		}
 	}
@@ -249,7 +245,6 @@ namespace battleship{
 			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
 			
 			loadSpawnPoints();
-			loadPlayers();
 			loadSkybox();
 			loadCells();
 			loadTerrainObject(-1);

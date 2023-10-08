@@ -2,6 +2,7 @@
 #define MAP_EDITOR_APP_STATE_H
 
 #include "map.h"
+#include "player.h"
 
 #include <listbox.h>
 
@@ -39,6 +40,8 @@ namespace battleship{
 					void exportMap();
 					void prepareTerrainObjects(int = 0, int = -1);
 					void togglePush(bool);
+					inline void addPlayer(){players.push_back(new Player(0, 0, 0));}
+					inline Player* getPlayer(int id){return players[id];}
 					inline vb01::Node* getSelectedNode(){return selectedTerrainNode;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
@@ -63,6 +66,7 @@ namespace battleship{
 					void prepareTerrainObject(vb01::u32**, Map::Cell*, int[3], float, bool);
 
 					Map *map;
+					std::vector<Player*> players;
 					vb01::Node *selectedTerrainNode = nullptr;
 					TransformAxis transformAxis = X_AXIS;
 					vb01Gui::Listbox *skyListbox = nullptr;

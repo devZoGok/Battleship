@@ -6,7 +6,7 @@
 namespace battleship{
 	class ResourceDeposit : public GameObject{
 		public:
-			ResourceDeposit(int, vb01::Vector3, vb01::Quaternion);
+			ResourceDeposit(Player*, int, vb01::Vector3, vb01::Quaternion);
 			void update();
 		private:
 	};

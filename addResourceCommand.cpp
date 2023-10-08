@@ -1,5 +1,5 @@
 #include "addResourceCommand.h"
-#include "map.h"
+#include "game.h"
 #include "player.h"
 
 namespace battleship{
@@ -21,7 +21,7 @@ namespace battleship{
 	}
 
 	void AddResourceCommand::addResource(){
-		Player *player = Map::getSingleton()->getPlayer(playerId);
+		Player *player = Game::getSingleton()->getPlayer(playerId);
 
 		switch(resourceId){
 			case 0:

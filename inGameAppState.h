@@ -13,11 +13,6 @@
 #include <vector>
 
 namespace battleship{
-    struct Fx {
-        s64 initTime, time;
-        sf::Sound *sfx = nullptr;
-    };
-    
     class InGameAppState : public gameBase::AbstractAppState {
     public:
         class ResumeButton : public vb01Gui::Button {
@@ -43,7 +38,7 @@ namespace battleship{
         private:
         };
 
-        InGameAppState(std::vector<std::string>, std::vector<std::string>, std::string);
+        InGameAppState(std::vector<std::string>, std::vector<std::string>);
         ~InGameAppState();
         void onAttached();
         void onDettached();
@@ -51,15 +46,9 @@ namespace battleship{
         void onAction(int, bool);
         void onAnalog(int, float);
         std::vector<Unit*> getSelectedUnits(Player*);
-        inline std::vector<Projectile*>& getProjectiles(){return projectiles;}
-        inline void addFx(Fx fx){this->fx.push_back(fx);}
-        inline void addProjectile(Projectile *p){projectiles.push_back(p);}
     private:
         bool isMainMenuActive = false;
         std::vector<std::string> difficultyLevels, factions, modelPaths;
-        std::vector<Projectile*> projectiles;
-        std::vector<Fx> fx;
-		std::string mapName;
         Player *mainPlayer;
         int playerId;
         ActiveGameState* activeState;

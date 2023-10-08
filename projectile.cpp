@@ -8,7 +8,7 @@
 
 #include <stateManager.h>
 
-#include "map.h"
+#include "game.h"
 #include "unit.h"
 #include "util.h"
 #include "projectile.h"
@@ -103,7 +103,7 @@ namespace battleship{
     void Projectile::explode(Node *collNode) {
         exploded = true;
 
-        for (Player *p : Map::getSingleton()->getPlayers()) {
+        for (Player *p : Game::getSingleton()->getPlayers()) {
             for (Unit *u : p->getUnits())
                 if (collNode == u->getNode())
                     u->takeDamage(damage);
@@ -113,11 +113,11 @@ namespace battleship{
         InGameAppState *inGameState = ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE));
 
         if(id == 8)
-            detonateTorpedo(inGameState, pos);
+            detonateTorpedo();
         else if(weaponTypeId == 1 && (id == 2 || id == 3))
-            detonateDepthCharge(inGameState, pos);
+            detonateDepthCharge();
         else
-            detonate(inGameState, pos, -dirVec);
+            detonate(pos, -dirVec);
     }
     
     void Projectile::debug(){
