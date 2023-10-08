@@ -2,6 +2,7 @@
 #include "gameManager.h"
 #include "defConfigs.h"
 #include "cameraController.h"
+#include "resourceDeposit.h"
 #include "gameObjectFactory.h"
 #include "gameObjectFrameController.h"
 #include "player.h"
@@ -41,15 +42,6 @@ namespace battleship{
 		this->newMap = newMap;
 		this->mapSize = size;
 
-		map = Map::getSingleton();
-		map->load(name, newMap);
-
-		if(newMap){
-			addPlayer();
-			map->addSpawnPoint(Vector3::VEC_ZERO);
-			generatePlane(size);
-		}
-
 		string basePath = GameManager::getSingleton()->getPath();
 		prepareTextures(basePath + "Textures/Skyboxes/", true, skyTextures);
 		prepareTextures(basePath + "Textures/Landmass/", false, landmassTextures);
@@ -59,6 +51,24 @@ namespace battleship{
 		assetManager->load(basePath + "Models/Units/", true);
 		assetManager->load(basePath + "Models/Resources/", true);
 		assetManager->load(basePath + DEFAULT_TEXTURE);
+
+		map = Map::getSingleton();
+		map->load(name, newMap);
+
+		if(newMap){
+			addPlayer(new Player(0, 0, 0));
+			map->addSpawnPoint(Vector3::VEC_ZERO);
+			generatePlane(size);
+		}
+		else{
+			int numPlayers = map->getNumSpawnPoints();
+
+			for(int i = 0; i < numPlayers; i++){
+				Player *player = new Player(0, 0, 0);
+				map->loadPlayerGameObjects(player);
+				addPlayer(player);
+			}
+		}
 	}
 
 	void MapEditorAppState::MapEditor::updateCircleRadius(bool increase){
@@ -420,18 +430,18 @@ namespace battleship{
 			if(i > 0)
 				mapScript += "spawnPoint = 0,\n";
 			else{
-				vector<GameObject*> npcGameObjs;
-				mapScript += "numNpcGameObjs = " + to_string(npcGameObjs.size()) + ",\n";
-				mapScript += "npcGameObjs = {\n";
+				vector<ResourceDeposit*> resourceDeposits = players[0]->getResourceDeposits();
+				mapScript += "numResourceDeposits = " + to_string(resourceDeposits.size()) + ",\n";
+				mapScript += "resourceDeposits = {\n";
 
-				for(GameObject *npcGameObj : npcGameObjs){
-					Vector3 pos = npcGameObj->getPos();
+				for(ResourceDeposit *rd : resourceDeposits){
+					Vector3 pos = rd->getPos();
 					string posStr = "x = " + to_string(pos.x) + ", y = " + to_string(pos.y) + ", z = " + to_string(pos.z);
 
-					Quaternion rot = npcGameObj->getRot();
+					Quaternion rot = rd->getRot();
 					string rotStr = "w = " + to_string(rot.w) + ", x = " + to_string(rot.x) + ", y = " + to_string(rot.y) + ", z = " + to_string(rot.z);
 
-					mapScript += "{id = " + to_string(npcGameObj->getId()) + ", pos = {" + posStr + "}, rot = {" + rotStr + "}},\n";
+					mapScript += "{id = " + to_string(rd->getId()) + ", pos = {" + posStr + "}, rot = {" + rotStr + "}},\n";
 				}
 
 				mapScript += "},\n";

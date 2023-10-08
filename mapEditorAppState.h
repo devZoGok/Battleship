@@ -40,7 +40,7 @@ namespace battleship{
 					void exportMap();
 					void prepareTerrainObjects(int = 0, int = -1);
 					void togglePush(bool);
-					inline void addPlayer(){players.push_back(new Player(0, 0, 0));}
+					inline void addPlayer(Player *pl){players.push_back(pl);}
 					inline Player* getPlayer(int id){return players[id];}
 					inline vb01::Node* getSelectedNode(){return selectedTerrainNode;}
 					inline float getGuiThreshold(){return guiThreshold;}

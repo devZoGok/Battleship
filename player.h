@@ -25,6 +25,7 @@ namespace battleship{
 		inline void selectUnit(Unit *u){selectedUnits.push_back(u);}
 		inline void selectUnits(std::vector<Unit*> units){selectedUnits = units;}
         inline void addUnit(Unit *u){units.push_back(u);}
+		inline std::vector<ResourceDeposit*>& getResourceDeposits(){return resourceDeposits;}
         inline void addResourceDeposit(ResourceDeposit *rd){resourceDeposits.push_back(rd);}
         inline Unit* getUnit(int i){return units[i];}
         inline std::vector<Unit*>& getUnits(){return units;}
