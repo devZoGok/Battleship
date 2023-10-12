@@ -18,6 +18,7 @@
 #include "inGameAppState.h"
 #include "defConfigs.h"
 #include "structure.h"
+#include "game.h"
 #include "util.h"
 #include "tooltip.h"
 #include "gameObjectFrameController.h"
@@ -38,9 +39,9 @@ namespace battleship{
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, false),
 					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
         this->guiState = guiState;
-
         this->playerId = playerId;
-        mainPlayer = Map::getSingleton()->getPlayer(playerId);
+
+        mainPlayer = Game::getSingleton()->getPlayer(playerId);
 
 		initDragbox();
 
@@ -138,7 +139,7 @@ namespace battleship{
     void ActiveGameState::renderUnits() {
 		vector<Unit*> units;
 
-        for (Player *p : Map::getSingleton()->getPlayers())
+        for (Player *p : Game::getSingleton()->getPlayers())
             for (Unit *u : p->getUnits())
                 units.push_back(u);
 

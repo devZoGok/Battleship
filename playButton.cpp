@@ -2,6 +2,7 @@
 #include "gameManager.h"
 #include "inGameAppState.h"
 #include "concreteGuiManager.h"
+#include "game.h"
 
 #include <stateManager.h>
 
@@ -28,10 +29,22 @@ namespace battleship{
 	        for(int i = 0; i < factionsListboxes.size(); i++)
 	            factions.push_back(to_string(factionsListboxes[i]->getSelectedOption()));
 	
-			StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 			int selectedMap = mapListbox->getSelectedOption();
 			string mapName = wstringToString(mapListbox->getContents()[selectedMap]);
-	        stateManager->attachAppState(new InGameAppState(difficulties, factions, mapName));
+			Map *map = Map::getSingleton();
+			map->load(mapName);
+			Game::getSingleton()->addPlayer(new Player(0, 0, 0));
+
+			int numPlayers = map->getNumSpawnPoints();
+
+			for(int i = 0; i < numPlayers; i++){
+				Player *player = new Player(0, 0, 0);
+				map->loadPlayerGameObjects(player);
+				Game::getSingleton()->addPlayer(player);
+			}
+
+			StateManager *stateManager = GameManager::getSingleton()->getStateManager();
+	        stateManager->attachAppState(new InGameAppState(difficulties, factions));
 
 			ConcreteGuiManager::getSingleton()->readLuaScreenScript("inGame.lua");
 	    }

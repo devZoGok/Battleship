@@ -11,6 +11,7 @@
 
 #include "defConfigs.h"
 #include "inGameAppState.h"
+#include "game.h"
 #include "console.h"
 #include "gameObjectFrameController.h"
 #include "concreteGuiManager.h"
@@ -45,7 +46,7 @@ namespace battleship{
 		Console::execute(wstringToString(textbox->getText()));
 	}
 
-    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions, string mapName) : AbstractAppState(
+    InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions) : AbstractAppState(
 						AppStateType::IN_GAME_STATE,
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, true),
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, false),
@@ -53,7 +54,6 @@ namespace battleship{
         this->playerId = 1;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;
-		this->mapName = mapName;
     }
 
     InGameAppState::~InGameAppState() {
@@ -61,9 +61,6 @@ namespace battleship{
 
     void InGameAppState::onAttached() {
         AbstractAppState::onAttached();
-
-		Map *map = Map::getSingleton();
-		map->load(mapName);
 
         for (int i = 0; i < factions.size(); i++) {
             int faction, difficulty;
@@ -80,16 +77,13 @@ namespace battleship{
             }
 
             faction = factions[i][0] - 48;
-            Player *p = new Player(difficulty, faction, i);
-            p->setId(map->getNumPlayers() - 1);
-            map->addPlayer(p);
         }
 
 		Camera *cam = Root::getSingleton()->getCamera();
-		cam->setPosition(map->getSpawnPoint(playerId - 1) + Vector3(1, 1, 1) * 40);
+		cam->setPosition(Map::getSingleton()->getSpawnPoint(playerId - 1) + Vector3(1, 1, 1) * 40);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
 
-        mainPlayer = map->getPlayer(playerId);
+        mainPlayer = Game::getSingleton()->getPlayer(playerId);
 
 		GameManager *gm = GameManager::getSingleton();
 		StateManager *stateManager = gm->getStateManager();
@@ -101,7 +95,7 @@ namespace battleship{
     void InGameAppState::onDettached() {}
 
     void InGameAppState::update() {
-		Map::getSingleton()->update();
+		Game::getSingleton()->update();
     }
 
     void InGameAppState::toggleMainMenu() {
@@ -122,7 +116,7 @@ namespace battleship{
 
 			guiManager->readLuaScreenScript("inGame.lua", activeState->getButtons());
 
-			for(Player *p : Map::getSingleton()->getPlayers())
+			for(Player *p : Game::getSingleton()->getPlayers())
 				for(Unit *u : p->getUnits())
 					u->reinit();
         }

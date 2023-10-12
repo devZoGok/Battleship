@@ -1,18 +1,14 @@
 #include <solUtil.h>
 
 #include "player.h"
-
-using namespace vb01;
-using namespace gameBase;
-using namespace std;
+#include "resourceDeposit.h"
 
 namespace battleship{
-    Player::Player(int difficulty, int faction, int id, Vector3 spawnPoint) {
-        this->difficulty = difficulty;
-        this->faction = faction;
-        this->spawnPoint = spawnPoint;
-		this->id = id;
+	using namespace vb01;
+	using namespace gameBase;
+	using namespace std;
 
+    Player::Player(int diff, int fac, int i, Vector3 sp) : difficulty(diff), faction(fac), id(i), spawnPoint(sp) {
 		//SOL_LUA_STATE.script("players[" + to_string(id + 1) + "] = Player:new({id = " + to_string(id + 1) + "})");
     }
 
@@ -24,6 +20,9 @@ namespace battleship{
 
 		for(Unit *u : units)
 			u->update();
+
+		for(ResourceDeposit *rd : resourceDeposits)
+			rd->update();
     }
 
 	void Player::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool append){
@@ -39,7 +38,7 @@ namespace battleship{
 		}
 	}
 
-    bool Player::isThisPlayersUnit(Unit *u) {
+    bool Player::isThisPlayersUnit(GameObject *u) {
         bool foundUnit = false;
 
         if (units.size() > 0) {

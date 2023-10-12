@@ -55,7 +55,6 @@ namespace battleship{
         virtual void halt();
         void toggleSelection(bool);
         void setOrder(Order);
-        void addProjectile(Projectile*);
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		virtual void reinit();

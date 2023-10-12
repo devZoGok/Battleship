@@ -5,6 +5,7 @@
 #include "console.h"
 #include "addUnitCommand.h"
 #include "inGameAppState.h"
+#include "game.h"
 #include "player.h"
 #include "gameObjectFactory.h"
 
@@ -47,7 +48,7 @@ namespace battleship{
 	}
 
 	void AddUnitCommand::addUnit(){
-        Player* player = Map::getSingleton()->getPlayer(playerId);
+        Player* player = Game::getSingleton()->getPlayer(playerId);
         player->addUnit(GameObjectFactory::createUnit(player, unitId, pos, rot));
 	}
 

@@ -192,17 +192,6 @@ namespace battleship{
             removeOrder(orders.size() - 1);
     }
 
-    std::vector<Projectile*> Unit::getProjectiles(){
-        std::vector<Projectile*> projectiles;
-        InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-
-        for(Projectile *p: inGameState->getProjectiles())
-            if(p->getUnit() == this)
-                projectiles.push_back(p);
-
-        return projectiles;
-    }
-
 	void Unit::addOrder(Order order){
 		orders.push_back(order);
 	}
@@ -220,9 +209,4 @@ namespace battleship{
 
         orderLineDispTime = getTime();
     }
-
-    void Unit::addProjectile(Projectile *p) {
-		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
-		((InGameAppState*)stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE))->addProjectile(p);
-	}
 }

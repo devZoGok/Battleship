@@ -20,7 +20,7 @@ set(STATES activeGameState.cpp inGameAppState.cpp guiAppState.cpp mapEditorAppSt
 set(UTIL util.cpp binds.h)
 set(CONTROLLERS gameObjectFrameController.cpp cameraController.cpp)
 set(CONSOLE console.cpp abstractCommand.cpp addUnitCommand.cpp addResourceCommand.cpp)
-set(CORE gameManager.cpp defConfigs.cpp ${CONSOLE} ${CONTROLLERS})
+set(CORE gameManager.cpp game.cpp defConfigs.cpp ${CONSOLE} ${CONTROLLERS})
 set(PROJECTILES projectile.cpp)
 set(FX explosion.cpp)
 set(VEHICLES vehicle.cpp engineer.cpp)
