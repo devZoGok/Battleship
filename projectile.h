@@ -1,4 +1,3 @@
-#pragma once
 #ifndef PROJECTILE_H
 #define PROJECTILE_H
 
@@ -8,6 +7,7 @@
 #include <quaternion.h>
 
 #include "gameManager.h"
+#include "gameObject.h"
 #include "util.h"
 
 namespace vb01{
@@ -19,7 +19,7 @@ namespace vb01{
 namespace battleship {
     class Unit;
     
-    class Projectile {
+    class Projectile : public GameObject{
     public:
         Projectile(Unit*, vb01::Node*, vb01::Vector3, vb01::Vector3, vb01::Vector3, vb01::Vector3, int, int, int);
         virtual ~Projectile();
@@ -40,8 +40,7 @@ namespace battleship {
         bool exploded = false;
         float speed, rayLength, scale;
         int damage, id, weaponTypeId;
-        vb01::Vector3 initPos, pos, dirVec, leftVec, upVec;
-		vb01::Quaternion rot;
+        vb01::Vector3 initPos;
         s64 lastUpdateTime = 0;
         Unit *unit = nullptr;
         sf::SoundBuffer *shotSfxBuffer, *explosionSfxBuffer;

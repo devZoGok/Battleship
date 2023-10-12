@@ -1,5 +1,3 @@
-#pragma once
-#include "external/vb01/quaternion.h"
 #ifndef UNIT_H
 #define UNIT_H
 
@@ -11,6 +9,7 @@
 #include <SFML/Audio.hpp>
 
 #include "gameManager.h"
+#include "gameObject.h"
 #include "projectile.h"
 
 namespace vb01{
@@ -47,7 +46,7 @@ namespace battleship{
     enum class UnitClass {VESSEL, ENGINEER, SAMPLE_BUILDING};
     enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
     
-    class Unit {
+    class Unit : public GameObject{
     public:
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
         ~Unit();
@@ -56,38 +55,23 @@ namespace battleship{
         virtual void halt();
         void toggleSelection(bool);
         void setOrder(Order);
-        void placeUnit(vb01::Vector3);
-        void orientUnit(vb01::Quaternion);
         void addProjectile(Projectile*);
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
-		virtual void reinitUnit();
+		virtual void reinit();
 		inline vb01::Vector3 getCorner(int i){return corners[i];}
-        inline bool isSelected(){return selected;}
-        inline bool isSelectable(){return selectable;}
-        inline bool isDebuggable(){return debugging;}
         inline bool isWorking(){return working;}
         inline vb01::Vector2 getScreenPos(){return screenPos;}
-        inline vb01::Vector3 getPos() {return pos;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
-		inline vb01::Quaternion getRot(){return rot;}
         inline float getLineOfSight() {return lineOfSight;}
-        inline float getWidth() {return width;}
-        inline float getHeight() {return height;}
-        inline float getLength() {return length;}
         inline vb01::Model* getNode() {return model;}
-        inline Player* getPlayer(){return player;}
         inline UnitType getType() {return type;}
         inline UnitClass getUnitClass() {return unitClass;}
-        inline void toggleDebugging(bool d){this->debugging=d;}
         inline void takeDamage(int damage) {health -= damage;}
-        inline int getId() {return id;}
         inline int getPlayerId() {return playerId;}
-        inline vb01::Vector3 getDirVec() {return dirVec;}
-        inline vb01::Vector3 getLeftVec() {return leftVec;}
-        inline vb01::Vector3 getUpVec() {return upVec;}
     private:
         void updateScreenCoordinates();
+		void init();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         const int orderVecDispLength = 2000;
@@ -95,24 +79,19 @@ namespace battleship{
         sf::Sound *selectionSfx = nullptr;
 		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
     protected:
-        Player *player;
         UnitClass unitClass;
         UnitType type;
 		vb01::Vector2 screenPos;
         std::vector<Order> orders;
-		vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
-		vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
+		vb01::Vector3 corners[8];
         int health, maxHealth, cost, id, playerId, lenHpBar = 200;
         s64 orderLineDispTime = 0;
-		vb01::Model *model;
-        bool selected = false, selectable, debugging = false, working = true;
-        float lineOfSight, range, width, height, length;
+        bool working = true;
+        float lineOfSight, range;
 
         void removeOrder(int);
         void displayUnitStats(vb01::Node*, vb01::Node*, int, int, vb01::Vector2 = vb01::Vector2::VEC_ZERO);
 		virtual void initProperties();
-		virtual void destroyModel();
-		virtual void initModel();
 		virtual void destroySound();
 		virtual void initSound();
 		virtual void initUnitStats();

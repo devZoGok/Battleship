@@ -2,7 +2,8 @@
 #include "gameManager.h"
 #include "defConfigs.h"
 #include "cameraController.h"
-#include "unitFrameController.h"
+#include "gameObjectFactory.h"
+#include "gameObjectFrameController.h"
 #include "player.h"
 #include "map.h"
 #include "mesh.h"
@@ -56,6 +57,7 @@ namespace battleship{
 
 		AssetManager *assetManager = AssetManager::getSingleton();
 		assetManager->load(basePath + "Models/Units/", true);
+		assetManager->load(basePath + "Models/Resources/", true);
 		assetManager->load(basePath + DEFAULT_TEXTURE);
 	}
 
@@ -413,7 +415,27 @@ namespace battleship{
 		mapScript += "},\nplayers = {\n";
 
 		for(int i = 0; i < map->getNumPlayers(); i++){
-			mapScript += "{\nspawnPoint = 0,\n";
+			mapScript += "{\n";
+
+			if(i > 0)
+				mapScript += "spawnPoint = 0,\n";
+			else{
+				vector<GameObject*> npcGameObjs = map->getNpcGameObjects();
+				mapScript += "numNpcGameObjs = " + to_string(npcGameObjs.size()) + ",\n";
+				mapScript += "npcGameObjs = {\n";
+
+				for(GameObject *npcGameObj : npcGameObjs){
+					Vector3 pos = npcGameObj->getPos();
+					string posStr = "x = " + to_string(pos.x) + ", y = " + to_string(pos.y) + ", z = " + to_string(pos.z);
+
+					Quaternion rot = npcGameObj->getRot();
+					string rotStr = "w = " + to_string(rot.w) + ", x = " + to_string(rot.x) + ", y = " + to_string(rot.y) + ", z = " + to_string(rot.z);
+
+					mapScript += "{id = " + to_string(npcGameObj->getId()) + ", pos = {" + posStr + "}, rot = {" + rotStr + "}},\n";
+				}
+
+				mapScript += "},\n";
+			}
 
 			int numUnits = map->getPlayer(i)->getNumberOfUnits();
 			mapScript += "numUnits = " + to_string(numUnits) + ",\n";
@@ -545,7 +567,7 @@ namespace battleship{
 		if(!(camCtr->isLookingAround() || mapEditor->isPushing()))
 			camCtr->updateCameraPosition();
 
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		if(ufCtr->isPlacingFrames())
 			ufCtr->update();
@@ -578,21 +600,31 @@ namespace battleship{
 	void MapEditorAppState::onDettached(){}
 
 	void MapEditorAppState::onAction(int bind, bool isPressed){
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		switch((Bind)bind){
 			case Bind::LOOK_AROUND:
 				if(ufCtr->isPlacingFrames()){
-					Player *player = Map::getSingleton()->getPlayer(0);
-					UnitFrameController::UnitFrame &frame = ufCtr->getUnitFrame(0);
-					player->addUnit(new Unit(player, frame.id, frame.model->getPosition(), frame.model->getOrientation()));
+					Map *map = Map::getSingleton();
+					Player *player = map->getPlayer(0);
+					GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
+					Model *model = frame.getModel();
+					Vector3 pos = model->getPosition();
+					Quaternion rot = model->getOrientation();
+
+					if(frame.getType() == GameObject::Type::RESOURCE_DEPOSIT){
+						ResourceDeposit *dep = GameObjectFactory::createResourceDeposit(frame.getId(), pos, rot);
+						map->addNpcGameObject((GameObject*)dep);
+					}
+					else
+						player->addUnit(GameObjectFactory::createUnit(player, frame.getId(), pos, rot));
 				}
 				else
 					CameraController::getSingleton()->setLookingAround(isPressed);
 
                 break;
 			case Bind::DESELECT_STRUCTURE:
-				ufCtr->removeUnitFrames();
+				ufCtr->removeGameObjectFrames();
 				ufCtr->setPlacingFrames(false);
 				break;
 			case Bind::INCREASE_RADIUS:

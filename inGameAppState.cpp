@@ -11,8 +11,8 @@
 
 #include "defConfigs.h"
 #include "inGameAppState.h"
-#include "consoleCommand.h"
-#include "unitFrameController.h"
+#include "console.h"
+#include "gameObjectFrameController.h"
 #include "concreteGuiManager.h"
 #include "vessel.h"
 
@@ -36,13 +36,13 @@ namespace battleship{
 		ConcreteGuiManager::getSingleton()->readLuaScreenScript("console.lua");
     }
 
-	InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
+	InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", 257, true) {
 	    textbox = t;
 	    listbox = l;
 	}
 	
 	void InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::onClick() {
-		ConsoleCommand::execute(wstringToString(textbox->getText()));
+		Console::execute(wstringToString(textbox->getText()));
 	}
 
     InGameAppState::InGameAppState(vector<string> difficultyLevels, vector<string> factions, string mapName) : AbstractAppState(
@@ -124,14 +124,14 @@ namespace battleship{
 
 			for(Player *p : Map::getSingleton()->getPlayers())
 				for(Unit *u : p->getUnits())
-					u->reinitUnit();
+					u->reinit();
         }
     }
 
     void InGameAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
 			case Bind::TOGGLE_MAIN_MENU: 
-            	if(isPressed && !UnitFrameController::getSingleton()->isPlacingFrames())
+            	if(isPressed && !GameObjectFrameController::getSingleton()->isPlacingFrames())
 					toggleMainMenu();
             break;
         }

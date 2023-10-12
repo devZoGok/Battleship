@@ -20,7 +20,7 @@
 #include "structure.h"
 #include "util.h"
 #include "tooltip.h"
-#include "unitFrameController.h"
+#include "gameObjectFrameController.h"
 #include "cameraController.h"
 #include "concreteGuiManager.h"
 
@@ -43,7 +43,12 @@ namespace battleship{
         mainPlayer = Map::getSingleton()->getPlayer(playerId);
 
 		initDragbox();
-		initDepthText();
+
+		refinedsText = initText(Vector2(0, 100));
+		wealthText = initText(Vector2(0, 200));
+		researchText = initText(Vector2(0, 300));
+		textNode = initText(Vector2(0, 400));
+		depth = 1;
     }
 
     ActiveGameState::~ActiveGameState() {
@@ -65,33 +70,41 @@ namespace battleship{
 		root->getGuiNode()->attachChild(dragboxNode);
 	}
 
-	void ActiveGameState::initDepthText(){
-		Root *root = Root::getSingleton();
-		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"depth: ");
-
-		Material *tm = new Material(root->getLibPath() + "text");
+	Node* ActiveGameState::initText(Vector2 pos){
+		Material *tm = new Material(Root::getSingleton()->getLibPath() + "text");
 		tm->addBoolUniform("texturingEnabled", false);
 		tm->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
+
+		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"");
 		t->setMaterial(tm);
 
-		textNode = new Node(Vector3(0, 100, 0));
-		textNode->addText(t);
+		Node *node = new Node(Vector3(pos.x, pos.y, 0));
+		node->addText(t);
 
-		depth = 1;
+		return node;
 	}
 
     void ActiveGameState::onAttached() {
         AbstractAppState::onAttached();
 		Root::getSingleton()->getGuiNode()->attachChild(textNode);
+		Root::getSingleton()->getGuiNode()->attachChild(refinedsText);
+		Root::getSingleton()->getGuiNode()->attachChild(wealthText);
+		Root::getSingleton()->getGuiNode()->attachChild(researchText);
     }
 
     void ActiveGameState::onDettached() {
 		AbstractAppState::onDettached();
-		Root::getSingleton()->getGuiNode()->attachChild(textNode);
+		Root::getSingleton()->getGuiNode()->dettachChild(textNode);
+		Root::getSingleton()->getGuiNode()->dettachChild(refinedsText);
+		Root::getSingleton()->getGuiNode()->dettachChild(wealthText);
+		Root::getSingleton()->getGuiNode()->dettachChild(researchText);
     }
 
     void ActiveGameState::update() {
 		textNode->getText(0)->setText(L"Depth: " + to_wstring(depth));
+		refinedsText->getText(0)->setText(L"Refineds: " + to_wstring(mainPlayer->getRefineds()));
+		wealthText->getText(0)->setText(L"Wealth: " + to_wstring(mainPlayer->getWealth()));
+		researchText->getText(0)->setText(L"Research: " + to_wstring(mainPlayer->getResearch()));
 
         if (isSelectionBox)
 			updateSelectionBox();
@@ -105,7 +118,7 @@ namespace battleship{
 		if(!camCtr->isLookingAround())
 			camCtr->updateCameraPosition();
 
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		if(ufCtr->isPlacingFrames())
 			ufCtr->update();
@@ -113,8 +126,8 @@ namespace battleship{
 
 	void ActiveGameState::deselectUnits(){
 		mainPlayer->deselectUnits();
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
-		ufCtr->removeUnitFrames();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
+		ufCtr->removeGameObjectFrames();
 		ufCtr->setPlacingFrames(false);
 
 		ConcreteGuiManager::getSingleton()->removeAllGuiElements();
@@ -275,11 +288,11 @@ namespace battleship{
 			std::map<Node*, Unit*>::iterator it = unitData.find(node);
 
 			Unit *unit = nullptr;
-			UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+			GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 			if(ufCtr->isPlacingFrames()){
-				Model *model = ufCtr->getUnitFrame(0).model;
-				unit = new Structure(mainPlayer, ufCtr->getUnitFrame(0).id, model->getPosition(), model->getOrientation());
+				GameObjectFrame goFr = ufCtr->getGameObjectFrame(0);
+				unit = new Structure(mainPlayer, goFr.getId(), goFr.getModel()->getPosition(), goFr.getModel()->getOrientation());
 				mainPlayer->addUnit(unit);
 			}
 
@@ -325,7 +338,7 @@ namespace battleship{
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameManager *gm = GameManager::getSingleton();
         InGameAppState *inGameState = (InGameAppState*) gm->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE);
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
         switch((Bind)bind){
 			case Bind::DRAG_BOX: 
@@ -346,7 +359,7 @@ namespace battleship{
 								type = Order::TYPE::BUILD;
 								ufCtr->setPlacingFrames(false);
 								ufCtr->setRotatingFrames(false);
-								ufCtr->removeUnitFrames();
+								ufCtr->removeGameObjectFrames();
 							}
 						
 							issueOrder(type, shiftPressed);
@@ -392,7 +405,7 @@ namespace battleship{
 			{
         		shiftPressed = isPressed;
 
-				UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+				GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 				ufCtr->setPaintSelecting(shiftPressed);
 
 				if(isPressed){
@@ -450,7 +463,7 @@ namespace battleship{
 
                 break;
 			case Bind::DESELECT_STRUCTURE:
-				ufCtr->removeUnitFrames();
+				ufCtr->removeGameObjectFrames();
 				ufCtr->setPlacingFrames(false);
 				break;
         }
@@ -458,7 +471,7 @@ namespace battleship{
 
     void ActiveGameState::onAnalog(int bind, float strength) {
 		CameraController *camCtr = CameraController::getSingleton();
-		UnitFrameController *ufCtr = UnitFrameController::getSingleton();
+		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
 		switch((Bind)bind){
 			case Bind::LOOK_UP: 
@@ -475,7 +488,7 @@ namespace battleship{
 				if(camCtr->isLookingAround())
 					CameraController::getSingleton()->orientCamera(Vector3(0, 1, 0), strength);
 				else if(ufCtr->isPlacingFrames() && ufCtr->isRotatingFrames())
-					ufCtr->rotateUnitFrames(100 * strength);
+					ufCtr->rotateGameObjectFrames(100 * strength);
 
 				break;
 		}

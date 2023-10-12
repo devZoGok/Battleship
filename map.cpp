@@ -8,7 +8,8 @@
 
 #include "map.h"
 #include "player.h"
-#include "unitFactory.h"
+#include "gameObject.h"
+#include "gameObjectFactory.h"
 #include "pathfinder.h"
 #include "gameManager.h"
 #include "defConfigs.h"
@@ -133,6 +134,23 @@ namespace battleship{
 		string playerInd = "players";
 
 		for(int i = 0; i < numPlayers; i++){
+			if(i == 0){
+				int numNpcObjs = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numNpcGameObjs"];
+
+				for(int j = 0; j < numNpcObjs; j++){
+					sol::table npcObjTable = SOL_LUA_STATE[mapTable][playerInd][i + 1]["npcGameObjs"][j + 1];
+					int id = npcObjTable["id"];
+
+					sol::table posTable = npcObjTable["pos"];
+					Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+
+					sol::table rotTable = npcObjTable["rot"];
+					Quaternion rot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
+
+					addNpcGameObject((GameObject*)GameObjectFactory::createResourceDeposit(id, pos, rot));
+				}
+			}
+
 			//int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
 			int numUnits = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numUnits"];
 			
@@ -149,7 +167,7 @@ namespace battleship{
 
 				int id = unitTable["id"];
 				
-				players[i]->addUnit(UnitFactory::createUnit(players[i], id, pos, rot));
+				players[i]->addUnit(GameObjectFactory::createUnit(players[i], id, pos, rot));
 			}
 		}
 	}

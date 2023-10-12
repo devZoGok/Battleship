@@ -22,24 +22,30 @@ using namespace gameBase;
 using namespace std;
 
 namespace battleship{
-    Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) {
+    Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
         this->id = id;
         this->player = player;
 
-		initProperties();
-		initModel();
-		initSound();
-		initUnitStats();
-        placeUnit(pos);
-		orientUnit(rot);
+		init();
+
+		hpBackgroundNode = createBar(lenHpBar, Vector4(0, 0, 0, 1));
+		hpForegroundNode = createBar(lenHpBar, Vector4(0, 1, 0, 1));
     }
 
 	//TODO complete implementation
     Unit::~Unit() {
     }
 
+	void Unit::init(){
+		initProperties();
+		initModel();
+		initSound();
+        placeAt(pos);
+		orientAt(rot);
+	}
+
 	void Unit::initProperties(){
-		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
@@ -60,31 +66,6 @@ namespace battleship{
         length = corners[3].z - corners[0].z;
 	}
 	
-	void Unit::destroyModel(){
-		Root::getSingleton()->getRootNode()->dettachChild(model);
-		delete model;
-	}
-
-	void Unit::initModel(){
-		sol::state_view SOL_LUA_STATE = generateView();
-		string basePath = SOL_LUA_STATE["basePath"][id + 1];
-		string meshPath = SOL_LUA_STATE["meshPath"][id + 1];
-
-		model = new Model(basePath + meshPath);
-		Root *root = Root::getSingleton();
-		string libPath = root->getLibPath();
-
-		Material *mat = new Material(libPath + "texture");
-		string f[]{GameManager::getSingleton()->getPath() + configData::DEFAULT_TEXTURE};
-        Texture *diffuseTexture = new Texture(f, 1, false);
-		mat->addBoolUniform("texturingEnabled", true);
-		mat->addBoolUniform("lightingEnabled", false);
-		mat->addTexUniform("textures[0]", diffuseTexture, true);
-
-		model->setMaterial(mat);
-		root->getRootNode()->attachChild(model);
-	}
-
 	void Unit::destroySound(){
 		selectionSfx->stop();
 		delete selectionSfx;
@@ -92,7 +73,7 @@ namespace battleship{
 	}
 
 	void Unit::initSound(){
-		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
 		string name = SOL_LUA_STATE["name"][id + 1];
         selectionSfxBuffer = new sf::SoundBuffer();
         string p = GameManager::getSingleton()->getPath() + "Sounds/" + name + "s/selection.ogg";
@@ -101,14 +82,14 @@ namespace battleship{
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
 	}
 
-	void Unit::reinitUnit(){
+	void Unit::reinit(){
 		destroySound();
 		destroyModel();
 		initModel();
 		initSound();
 		initProperties();
-		placeUnit(pos);
-		orientUnit(rot);
+        placeAt(pos);
+		orientAt(rot);
 	}
 
 	Node* Unit::createBar(float initLen, Vector4 color){
@@ -129,8 +110,6 @@ namespace battleship{
 	}
 
 	void Unit::initUnitStats(){
-		hpBackgroundNode = createBar(lenHpBar, Vector4(0, 0, 0, 1));
-		hpForegroundNode = createBar(lenHpBar, Vector4(0, 1, 0, 1));
 	}
 
     void Unit::update() {
@@ -213,16 +192,6 @@ namespace battleship{
             removeOrder(orders.size() - 1);
     }
 
-    void Unit::placeUnit(Vector3 p) {
-        model->setPosition(p);
-        pos = p;
-    }
-
-    void Unit::orientUnit(Quaternion rotQuat){
-		model->setOrientation(rotQuat);
-		rot = rotQuat;
-    }
-    
     std::vector<Projectile*> Unit::getProjectiles(){
         std::vector<Projectile*> projectiles;
         InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));

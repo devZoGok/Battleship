@@ -38,7 +38,9 @@ namespace battleship{
 		CONTROLS,
 		RESOLUTION,
 		MAPS,
-		UNITS,
+		VEHICLES,
+		STRUCTURES,
+		RESOURCE_DEPOSITS,
 		SKYBOX_TEXTURES,
 		LAND_TEXTURES,
 		CPU_DIFFICULTIES,
@@ -60,6 +62,7 @@ namespace battleship{
 		private:
 			ConcreteGuiManager(){}
 			vb01Gui::Button* parseButton(int);
+			vb01Gui::Listbox* parseGameObjectListbox();
 			vb01Gui::Listbox* parseListbox(int);
 			vb01Gui::Checkbox* parseCheckbox(int);
 			vb01Gui::Slider* parseSlider(int);

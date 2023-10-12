@@ -60,7 +60,7 @@ namespace battleship{
 				break;
 		}
 		
-		placeUnit(pos + dir * speed);
+		placeAt(pos + dir * speed);
 	}
 
 	void Vehicle::initProperties(){
@@ -122,12 +122,12 @@ namespace battleship{
 		Ray::sortResults(res);
 		
 		if(!res.empty()){
-			placeUnit(res[0].pos);
+			placeAt(res[0].pos);
 		
 			float angle = upVec.getAngleBetween(res[0].norm);
 			Vector3 axis = upVec.cross(res[0].norm).norm();
 			Quaternion rotQuat = Quaternion(angle, axis);
-			orientUnit(rotQuat * rot);
+			orientAt(rotQuat * rot);
 		}
 		*/
 	}
