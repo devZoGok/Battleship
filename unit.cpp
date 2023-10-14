@@ -76,9 +76,9 @@ namespace battleship{
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
 		string name = SOL_LUA_STATE["name"][id + 1];
         selectionSfxBuffer = new sf::SoundBuffer();
-        string p = GameManager::getSingleton()->getPath() + "Sounds/" + name + "s/selection.ogg";
+        string sfxPath = SOL_LUA_STATE["selectionSfx"][id + 1];
 
-        if(selectionSfxBuffer->loadFromFile(p.c_str()))
+        if(selectionSfxBuffer->loadFromFile(sfxPath.c_str()))
             selectionSfx = new sf::Sound(*selectionSfxBuffer);
 	}
 

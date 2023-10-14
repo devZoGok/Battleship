@@ -9,6 +9,6 @@ gui = {
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
 		trigger = 66,
-		structureId = 3
+		structureId = 6
 	}
 }

@@ -8,7 +8,7 @@ resources = {
 		"Resource",
 	},
 	basePath = {
-		PATH .. 'Models/Resources/'
+		PATH .. 'Models/GameObjects/Resources/'
 	},
 	unitCornerPoints = {
 		{

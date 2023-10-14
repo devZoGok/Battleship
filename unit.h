@@ -43,7 +43,7 @@ namespace battleship{
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {VESSEL, ENGINEER, SAMPLE_BUILDING};
+    enum class UnitClass {WAR_MECH, ENGINEER, TRANSPORT, CARGO_SHIP, CARRIER, SUBMARINE, SAMPLE_STRUCTURE};
     enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
     
     class Unit : public GameObject{
