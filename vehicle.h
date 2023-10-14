@@ -13,6 +13,7 @@ namespace battleship{
 			Vehicle(Player*, int, vb01::Vector3, vb01::Quaternion);
         	void move(Order);
 		private:
+			bool pursuingTarget = false;
 			int patrolPointId = 0;
         	float speed, maxTurnAngle, anglePrecision;
 			vb01::Material *debugMat = nullptr;
@@ -21,7 +22,7 @@ namespace battleship{
         	inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
 			void halt();
 			void turn(float);
-			void addOrder(Order order);
+			void addOrder(Order);
 			void initProperties();
 			void advance(float, MoveDir = MoveDir::FORW);
 			void preparePathpoints(Order);
@@ -32,6 +33,8 @@ namespace battleship{
 
         	void navigate(Order, float = 0.);
 			void alignToSurface();
+			void attack(Order);
+			void fire(){}
 	};
 }
 

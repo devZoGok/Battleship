@@ -49,6 +49,7 @@ namespace battleship{
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
+		rateOfFire = SOL_LUA_STATE["rateOfFire"][id + 1];
         range = SOL_LUA_STATE["range"][id + 1];
         lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
         unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];

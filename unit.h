@@ -83,8 +83,8 @@ namespace battleship{
 		vb01::Vector2 screenPos;
         std::vector<Order> orders;
 		vb01::Vector3 corners[8];
-        int health, maxHealth, cost, id, playerId, lenHpBar = 200;
-        s64 orderLineDispTime = 0;
+        int health, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
+        s64 orderLineDispTime = 0, lastFireTime = 0;
         bool working = true;
         float lineOfSight, range;
 

@@ -29,7 +29,9 @@ namespace battleship{
 	void Vehicle::halt(){
 		Unit::halt();
 		removeAllPathpoints();
+
 		patrolPointId = 0;
+		pursuingTarget = false;
 	}
 
 	void Vehicle::addOrder(Order order){
@@ -151,7 +153,9 @@ namespace battleship{
 		vector<Map::Cell> &cells = map->getCells();
 
 		int source = map->getCellId(pos);
-		int dest = map->getCellId(order.targets[0].pos);
+
+		Order::Target targ = order.targets[0];
+		int dest = map->getCellId(targ.unit ? targ.unit->getPos() : targ.pos);
 
 		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL || type == UnitType::LAND){
 			Map::Cell::Type cellType = (type == UnitType::LAND ? Map::Cell::LAND : Map::Cell::WATER);
@@ -187,10 +191,34 @@ namespace battleship{
 		delete debugPathPointNode;
 
 		pathPoints.erase(pathPoints.begin() + i);
+
+		if(pathPoints.empty())
+			pursuingTarget = false;
 	}
 
 	void Vehicle::removeAllPathpoints(){
 		while(!pathPoints.empty())
 			removePathpoint();
+	}
+
+	void Vehicle::attack(Order order){
+		Order::Target target = order.targets[0];
+		float distToTarg = pos.getDistanceFrom(target.unit ? target.unit->getPos() : target.pos);
+		float minDist = range;
+
+		if(distToTarg > minDist){
+			if(!pursuingTarget){
+				preparePathpoints(order);
+				pursuingTarget = true;
+			}
+
+			navigate(order, .5 *  Map::getSingleton()->getCellSize().x);
+		}
+		else{
+			pursuingTarget = false;
+
+			if(getTime() - lastFireTime > rateOfFire)
+				fire();
+		}
 	}
 }
