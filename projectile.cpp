@@ -14,7 +14,7 @@
 #include "projectile.h"
 #include "defConfigs.h"
 #include "inGameAppState.h"
-#include "explosion.h"
+#include "fx.h"
 
 using namespace std;
 using namespace vb01;
@@ -111,13 +111,7 @@ namespace battleship{
 
 		StateManager *sm = GameManager::getSingleton()->getStateManager();
         InGameAppState *inGameState = ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-
-        if(id == 8)
-            detonateTorpedo();
-        else if(weaponTypeId == 1 && (id == 2 || id == 3))
-            detonateDepthCharge();
-        else
-            detonate(pos, -dirVec);
+		string path = GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
     }
     
     void Projectile::debug(){

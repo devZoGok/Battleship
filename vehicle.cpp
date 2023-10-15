@@ -26,6 +26,13 @@ namespace battleship{
 		debugMat->addVec4Uniform("diffuseColor", Vector4::VEC_IJKL);
 	}
 
+	Vehicle::~Vehicle(){
+		removeAllPathpoints();
+		delete debugMat;
+
+		Unit::~Unit();
+	}
+
 	void Vehicle::halt(){
 		Unit::halt();
 		removeAllPathpoints();
@@ -220,5 +227,14 @@ namespace battleship{
 			if(getTime() - lastFireTime > rateOfFire)
 				fire();
 		}
+	}
+
+	void Vehicle::fire(){
+		fireSfx->play();
+
+		Unit *targetUnit = orders[0].targets[0].unit;
+
+		if(targetUnit)
+			targetUnit->takeDamage(1);
 	}
 }

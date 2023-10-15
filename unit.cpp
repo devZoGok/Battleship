@@ -1,6 +1,7 @@
 #include <model.h>
 #include <quad.h>
 #include <material.h>
+#include <particleEmitter.h>
 #include <texture.h>
 #include <ray.h>
 
@@ -12,6 +13,7 @@
 
 #include "unit.h"
 #include "util.h"
+#include "game.h"
 #include "inGameAppState.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
@@ -32,8 +34,11 @@ namespace battleship{
 		hpForegroundNode = createBar(lenHpBar, Vector4(0, 1, 0, 1));
     }
 
-	//TODO complete implementation
     Unit::~Unit() {
+		removeBar(hpBackgroundNode);
+		removeBar(hpForegroundNode);
+		destroySound();
+		destroyModel();
     }
 
 	void Unit::init(){
@@ -46,6 +51,7 @@ namespace battleship{
 
 	void Unit::initProperties(){
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+		string name = SOL_LUA_STATE["name"][id + 1];
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
@@ -71,16 +77,22 @@ namespace battleship{
 		selectionSfx->stop();
 		delete selectionSfx;
 		delete selectionSfxBuffer;
+
+		if(fireSfx){
+			fireSfx->stop();
+			delete fireSfx;
+			delete fireSfxBuffer;
+		}
 	}
 
 	void Unit::initSound(){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-		string name = SOL_LUA_STATE["name"][id + 1];
-        selectionSfxBuffer = new sf::SoundBuffer();
-        string sfxPath = SOL_LUA_STATE["selectionSfx"][id + 1];
+		GameObject::initSound();
 
-        if(selectionSfxBuffer->loadFromFile(sfxPath.c_str()))
-            selectionSfx = new sf::Sound(*selectionSfxBuffer);
+		selectionSfxBuffer = new sf::SoundBuffer();
+		selectionSfx = GameObject::prepareSfx(selectionSfxBuffer, "selectionSfx");
+
+		fireSfxBuffer = new sf::SoundBuffer();
+		fireSfx = prepareSfx(fireSfxBuffer, "fireSfx");
 	}
 
 	void Unit::reinit(){
@@ -110,6 +122,11 @@ namespace battleship{
 		return node;
 	}
 
+	void Unit::removeBar(Node *node){
+		Root::getSingleton()->getGuiNode()->dettachChild(node);
+		delete node;
+	}
+
 	void Unit::initUnitStats(){
 	}
 
@@ -130,11 +147,41 @@ namespace battleship{
 		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth);
 
         if (health <= 0) 
-            blowUp();
+			blowUp();
     }
 
     void Unit::blowUp(){
-        working = false;
+		Root *root = Root::getSingleton();
+
+		const int numFrames = 1;
+		string p[numFrames];
+
+		for(int i = 0; i < numFrames; i++)
+			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion0" + to_string(7) + ".png";
+
+		Texture *tex = new Texture(numFrames, p, false);
+
+		Material *mat = new Material(root->getLibPath() + "particle");
+		mat->addVec4Uniform("startColor", Vector4(1, 1, 1, 1));
+		mat->addVec4Uniform("endColor", Vector4(1, 1, 0, 1));
+		mat->addTexUniform("tex", tex, false);
+
+		ParticleEmitter *pe = new ParticleEmitter(1);
+		pe->setMaterial(mat);
+		pe->setLowLife(3);
+		pe->setHighLife(3);
+		pe->setSize(10 * Vector2::VEC_IJ);
+		pe->setSpeed(0);
+		Node *node = new Node(pos + Vector3(0, 2, 0));
+		node->attachParticleEmitter(pe);
+		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
+		root->getRootNode()->attachChild(node);
+
+		Fx fx(2500, deathSfx, node);
+		fx.activate();
+		Game::getSingleton()->addFx(fx);
+
+		player->removeUnit(this);
     }
 
     void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, Vector2 offset) {

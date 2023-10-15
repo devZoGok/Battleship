@@ -6,11 +6,14 @@
 #include <quaternion.h>
 #include <lineRenderer.h>
 
-#include <SFML/Audio.hpp>
-
 #include "gameManager.h"
 #include "gameObject.h"
 #include "projectile.h"
+
+namespace sf{
+	class SoundBuffer;
+	class Sound;
+}
 
 namespace vb01{
 	class Mesh;
@@ -59,7 +62,6 @@ namespace battleship{
         virtual void addOrder(Order);
 		virtual void reinit();
 		inline vb01::Vector3 getCorner(int i){return corners[i];}
-        inline bool isWorking(){return working;}
         inline vb01::Vector2 getScreenPos(){return screenPos;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
         inline float getLineOfSight() {return lineOfSight;}
@@ -83,9 +85,10 @@ namespace battleship{
 		vb01::Vector2 screenPos;
         std::vector<Order> orders;
 		vb01::Vector3 corners[8];
+		sf::SoundBuffer *fireSfxBuffer;
+		sf::Sound *fireSfx = nullptr;
         int health, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
         s64 orderLineDispTime = 0, lastFireTime = 0;
-        bool working = true;
         float lineOfSight, range;
 
         void removeOrder(int);
@@ -101,6 +104,7 @@ namespace battleship{
         virtual void patrol(Order){}
         virtual void launch(Order){}
 		vb01::Node* createBar(float, vb01::Vector4);
+		void removeBar(vb01::Node*);
     };
 }
 

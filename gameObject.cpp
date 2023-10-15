@@ -6,6 +6,8 @@
 
 #include <material.h>
 
+#include <SFML/Audio.hpp>
+
 #include <string>
 
 namespace battleship{
@@ -64,9 +66,27 @@ namespace battleship{
 		root->getRootNode()->attachChild(model);
 	}
 
-	void GameObject::destroySound(){}
+	void GameObject::destroySound(){
+	}
 
-	void GameObject::initSound(){}
+	sf::Sound* GameObject::prepareSfx(sf::SoundBuffer *buffer, string key){
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+        string sfxPath = SOL_LUA_STATE[key][id + 1];
+
+		sf::Sound *sfx = nullptr;
+
+        if(buffer->loadFromFile(sfxPath.c_str())){
+            sfx = new sf::Sound(*buffer);
+			sfx->setBuffer(*buffer);
+		}
+
+		return sfx;
+	}
+
+	void GameObject::initSound(){
+		deathSfxBuffer = new sf::SoundBuffer();
+		deathSfx = prepareSfx(deathSfxBuffer, "deathSfx");
+	}
 
 	string GameObject::getGameObjTableName(){
 		switch(type){

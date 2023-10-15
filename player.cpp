@@ -62,4 +62,20 @@ namespace battleship{
 
 		selectedUnits.clear();
 	}
+
+	void Player::removeUnit(Unit *unit){
+		for(int i = 0; i < units.size(); i++)
+			if(unit == units[i]){
+				removeUnit(i);
+				break;
+			}
+	}
+
+	void Player::removeUnit(int id){
+		if(units[id]->isSelected())
+			deselectUnit(id);
+
+		delete units[id];
+		units.erase(units.begin() + id);
+	}
 }

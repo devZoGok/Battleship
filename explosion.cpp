@@ -9,7 +9,7 @@ using namespace std;
 using namespace vb01;
 
 namespace battleship{
-    void detonate(Vector3 pos, Vector3 dir){
+    void detonate(string p){
 		sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
 		sf::Sound *sfx = nullptr;
         string  p = GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
@@ -19,11 +19,7 @@ namespace battleship{
             sfx->play();
         }
 
-        Fx fx;
-        fx.initTime = getTime();
-        fx.time = 2500;
-        fx.sfx = sfx;
-		Game::getSingleton()->addFx(fx);
+		Game::getSingleton()->addFx(Fx(sfx, 2500));
     }
 
     void detonateDepthCharge(){
@@ -36,11 +32,7 @@ namespace battleship{
             sfx->play();
         }
 				
-        Fx fx;
-        fx.initTime = getTime();
-        fx.time = 2000;
-        fx.sfx = sfx;
-		Game::getSingleton()->addFx(fx);
+		Game::getSingleton()->addFx(Fx(sfx, 2000));
     }
 
     void detonateTorpedo(){
@@ -53,10 +45,6 @@ namespace battleship{
             sfx->play();
         }
 
-        Fx fx;
-        fx.initTime = getTime();
-        fx.time = 250;
-        fx.sfx = sfx;
-		Game::getSingleton()->addFx(fx);
+		Game::getSingleton()->addFx(Fx(sfx, 250));
     }
 }

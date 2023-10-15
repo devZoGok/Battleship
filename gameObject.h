@@ -5,6 +5,11 @@
 #include <quaternion.h>
 #include <model.h>
 
+namespace sf{
+	class SoundBuffer;
+	class Sound;
+}
+
 namespace battleship{
 	class Player;
 
@@ -43,10 +48,13 @@ namespace battleship{
 			virtual void initModel(bool = true);
 			virtual void destroySound();
 			virtual void initSound();
+			sf::Sound* prepareSfx(sf::SoundBuffer*, std::string);
 
 			Type type;
 			int id;
 			Player *player;
+			sf::SoundBuffer *deathSfxBuffer;
+			sf::Sound *deathSfx;
 			vb01::Model *model = nullptr;
 			vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
 			vb01::Quaternion rot;

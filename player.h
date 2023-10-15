@@ -18,6 +18,8 @@ namespace battleship{
 		void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);
 		void deselectUnit(int);
 		void deselectUnits();
+		void removeUnit(Unit*);
+		void removeUnit(int);
         bool isThisPlayersUnit(GameObject*);
 		const inline std::vector<Unit*>& getSelectedUnits(){return selectedUnits;}
 		inline Unit* getSelectedUnit(int i){return selectedUnits[i];}

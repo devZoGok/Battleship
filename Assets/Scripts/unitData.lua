@@ -35,7 +35,7 @@ units = {
 	health = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	cost = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	range = {15, 15, 14, 14, 13, 13, 12, 12, 15, 25},
-	rateOfFire = {100, 100, 100, 100, 100, 100, 100},
+	rateOfFire = {5000, 100, 100, 100, 100, 100, 100},
 	
 	unitCornerPoints = {
 	    {
@@ -299,5 +299,23 @@ units = {
 		PATH .. 'Sounds/Units/Carriers/selection.ogg',
 		PATH .. 'Sounds/Units/Submarines/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
+	},
+	fireSfx = {
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+	},
+	deathSfx = {
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	}
 }

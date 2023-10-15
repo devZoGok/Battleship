@@ -11,6 +11,7 @@ namespace battleship{
 	class Vehicle : public Unit{
 		public:
 			Vehicle(Player*, int, vb01::Vector3, vb01::Quaternion);
+			~Vehicle();
         	void move(Order);
 		private:
 			bool pursuingTarget = false;
@@ -34,7 +35,7 @@ namespace battleship{
         	void navigate(Order, float = 0.);
 			void alignToSurface();
 			void attack(Order);
-			void fire(){}
+			virtual void fire();
 	};
 }
 

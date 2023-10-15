@@ -13,6 +13,12 @@ namespace battleship{
 		buildStatusForeground = createBar(Unit::lenHpBar, Vector4(0, 0, 1, 1));
 	}
 
+	Structure::~Structure(){
+		removeBar(buildStatusForeground);
+		removeBar(buildStatusBackground);
+		Unit::~Unit();
+	}
+
 	void Structure::update(){
 		Unit::update();
 
