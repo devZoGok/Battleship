@@ -224,8 +224,11 @@ namespace battleship{
 		else{
 			pursuingTarget = false;
 
-			if(getTime() - lastFireTime > rateOfFire)
+			if(getTime() - lastFireTime > rateOfFire){
 				fire();
+
+				lastFireTime = getTime();
+			}
 		}
 	}
 
