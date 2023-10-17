@@ -10,6 +10,7 @@
 
 #include "vehicle.h"
 #include "pathfinder.h"
+#include "garrisonable.h"
 #include "map.h"
 
 using namespace gameBase;
@@ -150,6 +151,9 @@ namespace battleship{
 		if(pathPoints.empty())
 			removeOrder(0);
     }
+
+	void Vehicle::garrison(Garrisonable *garrisonable){
+	}
 
 	//TODO add hover unit type
 	//TODO cleanup debug pathpoint removal

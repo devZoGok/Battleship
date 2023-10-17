@@ -8,13 +8,17 @@ namespace vb01{
 }
 
 namespace battleship{
+	class Garrisonable;
+
 	class Vehicle : public Unit{
 		public:
 			Vehicle(Player*, int, vb01::Vector3, vb01::Quaternion);
 			~Vehicle();
         	void move(Order);
+			void garrison(Garrisonable*);
+			bool isGarrisoned(){return garrisoned;}
 		private:
-			bool pursuingTarget = false;
+			bool pursuingTarget = false, garrisoned = false;
 			int patrolPointId = 0;
         	float speed, maxTurnAngle, anglePrecision;
 			vb01::Material *debugMat = nullptr;
