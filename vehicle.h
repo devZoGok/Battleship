@@ -14,8 +14,8 @@ namespace battleship{
 		public:
 			Vehicle(Player*, int, vb01::Vector3, vb01::Quaternion);
 			~Vehicle();
+			virtual void update();
         	void move(Order);
-			void garrison(Garrisonable*);
 			bool isGarrisoned(){return garrisoned;}
 		private:
 			bool pursuingTarget = false, garrisoned = false;
@@ -32,12 +32,14 @@ namespace battleship{
 			void preparePathpoints(Order);
 			void removePathpoint(int = 0);
 			void removeAllPathpoints();
+			void toggleSelection(bool);
 		protected:
 			std::vector<vb01::Vector3> pathPoints;
 
         	void navigate(Order, float = 0.);
 			void alignToSurface();
 			void attack(Order);
+			void garrison(Order);
 			virtual void initProperties();
 			virtual void fire();
 	};

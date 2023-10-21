@@ -10,7 +10,6 @@
 
 #include "vehicle.h"
 #include "pathfinder.h"
-#include "garrisonable.h"
 #include "map.h"
 
 using namespace gameBase;
@@ -32,6 +31,12 @@ namespace battleship{
 		delete debugMat;
 
 		Unit::~Unit();
+	}
+
+	void Vehicle::update(){
+		Unit::update();
+
+		model->setVisible(!garrisoned);
 	}
 
 	void Vehicle::halt(){
@@ -150,7 +155,28 @@ namespace battleship{
 			removeOrder(0);
     }
 
-	void Vehicle::garrison(Garrisonable *garrisonable){
+	void Vehicle::garrison(Order order){
+		float garrisonDist = 1.25 * Map::getSingleton()->getCellSize().x;
+		Unit *targUnit = order.targets[0].unit;
+		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos());
+
+		if(distToGarrisonable > garrisonDist){
+			if(!pursuingTarget){
+				preparePathpoints(order);
+				pursuingTarget = true;
+			}
+
+			navigate(order, garrisonDist);
+		}
+		else{
+			targUnit->updateGarrison(this);
+
+			removeAllPathpoints();
+			removeOrder(0);
+
+			garrisoned = true;
+			pursuingTarget = false;
+		}
 	}
 
 	//TODO add hover unit type
@@ -241,5 +267,10 @@ namespace battleship{
 
 		if(targetUnit)
 			targetUnit->takeDamage(1);
+	}
+
+	void Vehicle::toggleSelection(bool selection){
+		if(!garrisoned)
+			Unit::toggleSelection(selection);
 	}
 }

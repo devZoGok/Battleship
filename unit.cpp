@@ -157,7 +157,7 @@ namespace battleship{
 		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth);
 
 		for(GarrisonSlot &slot : garrisonSlots)
-			displayUnitStats(slot.foreground, slot.background, (int)(slot.vehicle ? 1 : 0), (int)1, slot.offset);
+			displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, slot.offset);
 
         if (health <= 0) 
 			blowUp();
@@ -204,11 +204,12 @@ namespace battleship{
 		if(selected){
 			Vector3 offset3d = Vector3(offset.x, offset.y, 0);
 
-			Quad *fgQuad = (Quad*)foreground->getMesh(0);
-			Vector3 size = fgQuad->getSize();
+			Quad *bgQuad = (Quad*)background->getMesh(0);
+			Vector3 size = bgQuad->getSize();
 			float shiftedX = screenPos.x - 0.5 * size.x;
 			background->setPosition(Vector3(shiftedX, screenPos.y, .1) + offset3d);
 
+			Quad *fgQuad = (Quad*)foreground->getMesh(0);
 			fgQuad->setSize(Vector3((float)currVal / maxVal * size.x, size.y, 0));
 			fgQuad->updateVerts(fgQuad->getMeshBase());
 			foreground->setPosition(Vector3(shiftedX, screenPos.y, 0) + offset3d);
@@ -229,6 +230,9 @@ namespace battleship{
                 case Order::TYPE::MOVE:
                     move(order);
                     break;
+				case Order::TYPE::GARRISON:
+					garrison(order);
+					break;
                 case Order::TYPE::PATROL:
                     patrol(order);
                     break;
@@ -253,6 +257,14 @@ namespace battleship{
         while (orders.size() > 0)
             removeOrder(orders.size() - 1);
     }
+
+	void Unit::updateGarrison(Vehicle *garrison){
+		for(GarrisonSlot &slot : garrisonSlots)
+			if(!slot.vehicle){
+				slot.vehicle = garrison;
+				break;
+			}
+	}
 
 	void Unit::addOrder(Order order){
 		orders.push_back(order);

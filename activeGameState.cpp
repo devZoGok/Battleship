@@ -232,6 +232,8 @@ namespace battleship{
 				color = Vector3::VEC_I;
       	        break;
       	    case Order::TYPE::PATROL:
+      	    case Order::TYPE::GARRISON:
+      	    case Order::TYPE::EJECT:
 				color = Vector3::VEC_K;
 				break;
       	    case Order::TYPE::BUILD:

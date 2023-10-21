@@ -28,7 +28,7 @@ namespace battleship{
 	class Vehicle;
     
     struct Order {
-        enum class TYPE {ATTACK, BUILD, MOVE, PATROL, LAUNCH};
+        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH};
 			struct Target{
 				Unit *unit = nullptr;
 				vb01::Vector3 pos;
@@ -65,7 +65,8 @@ namespace battleship{
         virtual void update();
         virtual void blowUp();
         virtual void halt();
-        void toggleSelection(bool);
+		void updateGarrison(Vehicle*);
+        virtual void toggleSelection(bool);
         void setOrder(Order);
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
@@ -108,6 +109,8 @@ namespace battleship{
 		virtual void initUnitStats();
         virtual void executeOrders();
         virtual void attack(Order){}
+        virtual void garrison(Order){}
+        virtual void eject(Order){}
         virtual void build(Order){}
         virtual void move(Order){}
         virtual void patrol(Order){}
