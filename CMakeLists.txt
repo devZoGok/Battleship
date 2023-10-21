@@ -24,7 +24,7 @@ set(CORE gameManager.cpp game.cpp defConfigs.cpp ${CONSOLE} ${CONTROLLERS})
 set(PROJECTILES projectile.cpp)
 set(FX fx.cpp)
 set(VEHICLES vehicle.cpp engineer.cpp transport.cpp)
-set(UNITS gameObjectFactory.cpp unit.cpp structure.cpp garrisonable.cpp ${VEHICLES})
+set(UNITS gameObjectFactory.cpp unit.cpp structure.cpp ${VEHICLES})
 set(CONTENT player.cpp pathfinder.cpp map.cpp gameObject.cpp gameObjectFrame.h resourceDeposit.cpp ${UNITS} ${PROJECTILES} ${FX})
 set(GAME_SRC ${STATES} ${GUI} ${CORE} ${CONTENT} ${UTIL})
 

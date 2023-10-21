@@ -74,8 +74,6 @@ namespace battleship{
 	}
 
 	void Vehicle::initProperties(){
-		Unit::initProperties();
-
 		sol::state_view SOL_LUA_STATE = generateView();
         maxTurnAngle = SOL_LUA_STATE["maxTurnAngle"][id + 1];
         speed = SOL_LUA_STATE["speed"][id + 1];

@@ -24,7 +24,8 @@ namespace vb01{
 
 namespace battleship{
     class Player;
-		class Unit;
+	class Unit;
+	class Vehicle;
     
     struct Order {
         enum class TYPE {ATTACK, BUILD, MOVE, PATROL, LAUNCH};
@@ -51,6 +52,14 @@ namespace battleship{
     
     class Unit : public GameObject{
     public:
+		struct GarrisonSlot{
+			Vehicle *vehicle = nullptr;
+			vb01::Node *background, *foreground;
+			vb01::Vector2 offset;
+
+			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), vehicle(v){}
+		};
+
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
         ~Unit();
         virtual void update();
@@ -90,9 +99,9 @@ namespace battleship{
         int health, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
         s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight, range;
+		std::vector<GarrisonSlot> garrisonSlots;
 
         void removeOrder(int);
-        void displayUnitStats(vb01::Node*, vb01::Node*, int, int, vb01::Vector2 = vb01::Vector2::VEC_ZERO);
 		virtual void initProperties();
 		virtual void destroySound();
 		virtual void initSound();
@@ -103,8 +112,9 @@ namespace battleship{
         virtual void move(Order){}
         virtual void patrol(Order){}
         virtual void launch(Order){}
-		vb01::Node* createBar(float, vb01::Vector4);
 		void removeBar(vb01::Node*);
+		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);
+        void displayUnitStats(vb01::Node*, vb01::Node*, int, int, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
     };
 }
 

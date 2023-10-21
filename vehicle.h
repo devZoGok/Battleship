@@ -28,7 +28,6 @@ namespace battleship{
 			void halt();
 			void turn(float);
 			void addOrder(Order);
-			void initProperties();
 			void advance(float, MoveDir = MoveDir::FORW);
 			void preparePathpoints(Order);
 			void removePathpoint(int = 0);
@@ -39,6 +38,7 @@ namespace battleship{
         	void navigate(Order, float = 0.);
 			void alignToSurface();
 			void attack(Order);
+			virtual void initProperties();
 			virtual void fire();
 	};
 }

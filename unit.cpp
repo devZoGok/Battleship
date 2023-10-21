@@ -30,8 +30,9 @@ namespace battleship{
 
 		init();
 
-		hpBackgroundNode = createBar(lenHpBar, Vector4(0, 0, 0, 1));
-		hpForegroundNode = createBar(lenHpBar, Vector4(0, 1, 0, 1));
+		Vector2 size = Vector2(lenHpBar, 10);
+		hpBackgroundNode = createBar(Vector2::VEC_ZERO, size, Vector4(0, 0, 0, 1));
+		hpForegroundNode = createBar(Vector2::VEC_ZERO, size, Vector4(0, 1, 0, 1));
     }
 
     Unit::~Unit() {
@@ -60,6 +61,15 @@ namespace battleship{
         lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
         unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
 		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
+		int capacity = SOL_LUA_STATE["garrisonCapacity"][id + 1];
+
+		for(int i = 0; i < capacity; i++){
+			Vector2 size = 10 * Vector2::VEC_IJ;
+			Vector2 pos = Vector2(1.5 * size.x * i, 20);
+			Node *bg = createBar(pos, size, Vector4(0, 0, 0, 1));
+			Node *fg = createBar(pos, size, Vector4(0, 1, 0, 1));
+			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos));
+		}
 
 		string cornerInd = "unitCornerPoints";
 
@@ -105,16 +115,16 @@ namespace battleship{
 		orientAt(rot);
 	}
 
-	Node* Unit::createBar(float initLen, Vector4 color){
+	Node* Unit::createBar(Vector2 pos, Vector2 size, Vector4 color){
 		Root *root = Root::getSingleton();
 		Material *mat = new Material(root->getLibPath() + "gui");
 		mat->addBoolUniform("texturingEnabled", false);
 		mat->addVec4Uniform("diffuseColor", color);
 
-		Quad *quad = new Quad(Vector3(initLen, 10, 0), false);
+		Quad *quad = new Quad(Vector3(size.x, size.y, 0), false);
 		quad->setMaterial(mat);
 
-		Node *node = new Node();
+		Node *node = new Node(Vector3(pos.x, pos.y, 0));
 		node->attachMesh(quad);
 		node->setVisible(false);
 		root->getGuiNode()->attachChild(node);
@@ -145,6 +155,9 @@ namespace battleship{
 
 		screenPos = spaceToScreen(pos);
 		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth);
+
+		for(GarrisonSlot &slot : garrisonSlots)
+			displayUnitStats(slot.foreground, slot.background, (int)(slot.vehicle ? 1 : 0), (int)1, slot.offset);
 
         if (health <= 0) 
 			blowUp();
@@ -190,12 +203,13 @@ namespace battleship{
 
 		if(selected){
 			Vector3 offset3d = Vector3(offset.x, offset.y, 0);
-			float shiftedX = screenPos.x - 0.5 * lenHpBar;
+
+			Quad *fgQuad = (Quad*)foreground->getMesh(0);
+			Vector3 size = fgQuad->getSize();
+			float shiftedX = screenPos.x - 0.5 * size.x;
 			background->setPosition(Vector3(shiftedX, screenPos.y, .1) + offset3d);
 
-			
-			Quad *fgQuad = (Quad*)foreground->getMesh(0);
-			fgQuad->setSize(Vector3((float)currVal / maxVal * lenHpBar, 10, 0));
+			fgQuad->setSize(Vector3((float)currVal / maxVal * size.x, size.y, 0));
 			fgQuad->updateVerts(fgQuad->getMeshBase());
 			foreground->setPosition(Vector3(shiftedX, screenPos.y, 0) + offset3d);
 		}
