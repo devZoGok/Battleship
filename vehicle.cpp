@@ -49,7 +49,7 @@ namespace battleship{
 
 	void Vehicle::addOrder(Order order){
 		if(order.type != Order::TYPE::EJECT){
-			preparePathpoints(order);
+			preparePathpoints(order.targets[0].pos);
 
 			if(!pathPoints.empty())
 				orders.push_back(order);
@@ -178,7 +178,7 @@ namespace battleship{
 
 	void Vehicle::navigateToMovingTarget(float minDist){
 		if(!pursuingTarget){
-			preparePathpoints(orders[0]);
+			preparePathpoints(orders[0].targets[0].unit->getPos());
 			pursuingTarget = true;
 		}
 
@@ -196,18 +196,23 @@ namespace battleship{
 			enterGarrisonable();
 	}
 
-	//TODO add hover unit type
-	//TODO cleanup debug pathpoint removal
-	void Vehicle::preparePathpoints(Order order){
+	void Vehicle::patrol(Order order){
+		if(pathPoints.empty()){
+			patrolPointId = getNextPatrolPointId(order.targets.size());
+			preparePathpoints(order.targets[patrolPointId].pos);
+		}
+
+		navigate(.5 * Map::getSingleton()->getCellSize().x);
+	}
+
+	void Vehicle::preparePathpoints(Vector3 destPos){
 		removeAllPathpoints();
 
 		Map *map = Map::getSingleton();
 		vector<Map::Cell> &cells = map->getCells();
 
 		int source = map->getCellId(pos);
-
-		Order::Target targ = order.targets[0];
-		int dest = map->getCellId(targ.unit ? targ.unit->getPos() : targ.pos);
+		int dest = map->getCellId(destPos);
 
 		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL || type == UnitType::LAND){
 			Map::Cell::Type cellType = (type == UnitType::LAND ? Map::Cell::LAND : Map::Cell::WATER);

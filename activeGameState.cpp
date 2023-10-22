@@ -243,8 +243,6 @@ namespace battleship{
       	}
 
 		if(type == Order::TYPE::PATROL){
-			for(int i = targets.size() - 2; i >= 0; i--)
-				targets[i + 1] = targets[i];
 		}
 		else if(type == Order::TYPE::EJECT){
 			vector<Unit*> units = mainPlayer->getSelectedUnits();
@@ -271,11 +269,6 @@ namespace battleship{
         	order = Order(type, line, targets);
 
             if (type != Order::TYPE::LAUNCH) {
-				if(type == Order::TYPE::PATROL){
-					Vector3 p = u->getPos();
-					targets[0] = Order::Target(nullptr, p);
-				}
-
                 if (addOrder)
                     u->addOrder(order);
                 else
@@ -380,6 +373,10 @@ namespace battleship{
 						
 							issueOrder(type, shiftPressed);
 						}
+						else if(selectingPatrolPoints && !shiftPressed){
+							issueOrder(Order::TYPE::PATROL, false);
+							selectingPatrolPoints = false;
+						}
 					}
                 }
 
@@ -439,11 +436,11 @@ namespace battleship{
 			}
                 break;
 			case Bind::SELECT_PATROL_POINTS: 
-                selectingPatrolPoints = isPressed;
+				if(isPressed && mainPlayer->getNumSelectedUnits() > 0){
+					targets.push_back(Order::Target(nullptr, mainPlayer->getSelectedUnit(0)->getPos()));
+			   		selectingPatrolPoints = isPressed;
+				}
 
-				if(!selectingPatrolPoints)
-					issueOrder(Order::TYPE::PATROL, shiftPressed);
-								
                 break;
 			case Bind::LAUNCH:{ 
 				if(isPressed){
