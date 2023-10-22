@@ -30,6 +30,8 @@ namespace battleship{
 		order.type = type;
 		order.targets = targets;
 
+		vector<Unit*> selectedUnits = getSelectedUnits();
+
 		for(Unit *u : selectedUnits){
 			if(append)
 				u->addOrder(order);
@@ -51,16 +53,11 @@ namespace battleship{
             return false;
     }
 
-	void Player::deselectUnit(int i){
-		selectedUnits[i]->toggleSelection(false);
-		selectedUnits.erase(selectedUnits.begin() + i);
-	}
-
 	void Player::deselectUnits(){
+		vector<Unit*> selectedUnits = getSelectedUnits();
+
 		for(Unit *u : selectedUnits)
 			u->toggleSelection(false);
-
-		selectedUnits.clear();
 	}
 
 	void Player::removeUnit(Unit *unit){
@@ -77,5 +74,36 @@ namespace battleship{
 
 		delete units[id];
 		units.erase(units.begin() + id);
+	}
+
+	vector<Unit*> Player::getSelectedUnits(){
+		vector<Unit*> selectedUnits;
+
+		for(Unit *u : units)
+			if(u->isSelected())
+				selectedUnits.push_back(u);
+
+		return selectedUnits;
+	}
+
+	Unit* Player::getSelectedUnit(int selectedUnitId){
+		Unit *selectedUnit = nullptr;
+
+		for(int i = 0, selUnitId = 0; i < units.size(); i++)
+			if(units[i]->isSelected()){
+				if(selUnitId == selectedUnitId){
+					selectedUnit = units[i];
+					break;
+				}
+
+				selUnitId++;
+			}
+
+		return selectedUnit;
+	}
+
+	void Player::selectUnits(vector<Unit*> selUnits){
+		for(Unit *u : selUnits)
+			u->toggleSelection(true);
 	}
 }
