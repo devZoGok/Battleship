@@ -220,6 +220,7 @@ namespace battleship{
 		dragboxNode->setPosition(Vector3(selectionBoxOrigin.x, selectionBoxOrigin.y, 0));
     }
 
+	//TODO fix ejectable unit selection with multiple transports selected
     void ActiveGameState::issueOrder(Order::TYPE type, bool addOrder) {
 		Vector3 color;
 
@@ -241,11 +242,23 @@ namespace battleship{
       	        break;
       	}
 
-		targets.push_back(Order::Target());
-
-		if(type == Order::TYPE::PATROL)
+		if(type == Order::TYPE::PATROL){
 			for(int i = targets.size() - 2; i >= 0; i--)
 				targets[i + 1] = targets[i];
+		}
+		else if(type == Order::TYPE::EJECT){
+			vector<Unit*> units = mainPlayer->getSelectedUnits();
+
+			for(Unit *u : units){
+				const vector<Unit::GarrisonSlot> &garrisonSlots = u->getGarrisonSlots();
+
+				for(Unit::GarrisonSlot slot : garrisonSlots)
+					if(slot.vehicle)
+						targets.push_back(Order::Target((Unit*)slot.vehicle));
+			}
+		}
+		else
+			targets.push_back(Order::Target());
 
 		LineRenderer *lineRenderer = LineRenderer::getSingleton();
 		Order order;
@@ -396,8 +409,9 @@ namespace battleship{
 					CameraController::getSingleton()->setLookingAround(isPressed);
                 break;
 			case Bind::HALT: 
-                for (Unit *u : mainPlayer->getSelectedUnits())
-                    u->halt();
+				if(isPressed)
+            		for (Unit *u : mainPlayer->getSelectedUnits())
+                    	u->halt();
                 break;
 				//TODO reimplement submarine diving mechanic
 			case Bind::LEFT_CONTROL:

@@ -14,6 +14,7 @@
 #include "unit.h"
 #include "util.h"
 #include "game.h"
+#include "vehicle.h"
 #include "inGameAppState.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
@@ -216,6 +217,7 @@ namespace battleship{
 		}
     }
 
+	//TODO remove order argument from action methods
     void Unit::executeOrders() {
         if (orders.size() > 0) {
             Order order = orders[0];
@@ -233,6 +235,9 @@ namespace battleship{
 				case Order::TYPE::GARRISON:
 					garrison(order);
 					break;
+				case Order::TYPE::EJECT:
+					eject(order);
+					break;
                 case Order::TYPE::PATROL:
                     patrol(order);
                     break;
@@ -244,6 +249,15 @@ namespace battleship{
             }
         }
     }
+
+	void Unit::eject(Order order){
+		if(garrisonSlots.size() > 0){
+			for(Order::Target targ : order.targets)
+				((Vehicle*)targ.unit)->exitGarrisonable();
+
+			removeOrder(0);
+		}
+	}
 
     void Unit::setOrder(Order order) {
         while (!orders.empty())
@@ -258,12 +272,17 @@ namespace battleship{
             removeOrder(orders.size() - 1);
     }
 
-	void Unit::updateGarrison(Vehicle *garrison){
-		for(GarrisonSlot &slot : garrisonSlots)
-			if(!slot.vehicle){
-				slot.vehicle = garrison;
+	void Unit::updateGarrison(Vehicle *garrVeh, bool entering){
+		for(GarrisonSlot &slot : garrisonSlots){
+			if(entering && !slot.vehicle){
+				slot.vehicle = garrVeh;
 				break;
 			}
+			else if(!entering && slot.vehicle == garrVeh){
+				slot.vehicle = nullptr;
+				break;
+			}
+		}
 	}
 
 	void Unit::addOrder(Order order){

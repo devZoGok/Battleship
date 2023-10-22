@@ -36,7 +36,7 @@ namespace battleship{
 	void Vehicle::update(){
 		Unit::update();
 
-		model->setVisible(!garrisoned);
+		model->setVisible(!garrisonable);
 	}
 
 	void Vehicle::halt(){
@@ -48,9 +48,13 @@ namespace battleship{
 	}
 
 	void Vehicle::addOrder(Order order){
-		preparePathpoints(order);
+		if(order.type != Order::TYPE::EJECT){
+			preparePathpoints(order);
 
-		if(!pathPoints.empty())
+			if(!pathPoints.empty())
+				orders.push_back(order);
+		}
+		else
 			orders.push_back(order);
 	}
 
@@ -85,7 +89,7 @@ namespace battleship{
 		anglePrecision = SOL_LUA_STATE["anglePrecision"][id + 1];
 	}
 
-	void Vehicle::navigate(Order order, float destOffset){
+	void Vehicle::navigate(float destOffset){
 		Vector3 hypVec = (pathPoints[0] - pos);
 		float hypAngle = hypVec.norm().getAngleBetween(upVec) - PI / 2;
 		float offset = hypVec.getLength() * sin(hypAngle);
@@ -146,7 +150,7 @@ namespace battleship{
 	}
 
     void Vehicle::move(Order order) {
-		navigate(order, 0.5 * Map::getSingleton()->getCellSize().x);
+		navigate(0.5 * Map::getSingleton()->getCellSize().x);
 
 		if(type == UnitType::LAND)
 			alignToSurface();
@@ -155,28 +159,41 @@ namespace battleship{
 			removeOrder(0);
     }
 
+	void Vehicle::exitGarrisonable(){
+		placeAt(garrisonable->getPos());
+		garrisonable->updateGarrison(this, false);
+		garrisonable = nullptr;
+	}
+
+	void Vehicle::enterGarrisonable(){
+		Unit *targUnit = orders[0].targets[0].unit; 
+		targUnit->updateGarrison(this, true);
+
+		removeAllPathpoints();
+		removeOrder(0);
+
+		garrisonable = targUnit;
+		pursuingTarget = false;
+	}
+
+	void Vehicle::navigateToMovingTarget(float minDist){
+		if(!pursuingTarget){
+			preparePathpoints(orders[0]);
+			pursuingTarget = true;
+		}
+
+		navigate(minDist);
+	}
+
 	void Vehicle::garrison(Order order){
 		float garrisonDist = 1.25 * Map::getSingleton()->getCellSize().x;
 		Unit *targUnit = order.targets[0].unit;
 		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos());
 
-		if(distToGarrisonable > garrisonDist){
-			if(!pursuingTarget){
-				preparePathpoints(order);
-				pursuingTarget = true;
-			}
-
-			navigate(order, garrisonDist);
-		}
-		else{
-			targUnit->updateGarrison(this);
-
-			removeAllPathpoints();
-			removeOrder(0);
-
-			garrisoned = true;
-			pursuingTarget = false;
-		}
+		if(distToGarrisonable > garrisonDist)
+			navigateToMovingTarget(garrisonDist);
+		else
+			enterGarrisonable();
 	}
 
 	//TODO add hover unit type
@@ -241,14 +258,8 @@ namespace battleship{
 		float distToTarg = pos.getDistanceFrom(target.unit ? target.unit->getPos() : target.pos);
 		float minDist = range;
 
-		if(distToTarg > minDist){
-			if(!pursuingTarget){
-				preparePathpoints(order);
-				pursuingTarget = true;
-			}
-
-			navigate(order, .5 *  Map::getSingleton()->getCellSize().x);
-		}
+		if(distToTarg > minDist)
+			navigateToMovingTarget(.5 *  Map::getSingleton()->getCellSize().x);
 		else{
 			pursuingTarget = false;
 
@@ -270,7 +281,7 @@ namespace battleship{
 	}
 
 	void Vehicle::toggleSelection(bool selection){
-		if(!garrisoned)
+		if(!garrisonable)
 			Unit::toggleSelection(selection);
 	}
 }

@@ -34,7 +34,7 @@ namespace battleship{
 				vb01::Vector3 pos;
 
 				Target(){}
-				Target(Unit *u, vb01::Vector3 p) : unit(u), pos(p){}
+				Target(Unit *u, vb01::Vector3 p = vb01::Vector3::VEC_ZERO) : unit(u), pos(p){}
 			};
 
         TYPE type;
@@ -65,12 +65,13 @@ namespace battleship{
         virtual void update();
         virtual void blowUp();
         virtual void halt();
-		void updateGarrison(Vehicle*);
+		void updateGarrison(Vehicle*, bool);
         virtual void toggleSelection(bool);
         void setOrder(Order);
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		virtual void reinit();
+		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
 		inline vb01::Vector3 getCorner(int i){return corners[i];}
         inline vb01::Vector2 getScreenPos(){return screenPos;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
@@ -108,9 +109,9 @@ namespace battleship{
 		virtual void initSound();
 		virtual void initUnitStats();
         virtual void executeOrders();
+        virtual void eject(Order);
         virtual void attack(Order){}
         virtual void garrison(Order){}
-        virtual void eject(Order){}
         virtual void build(Order){}
         virtual void move(Order){}
         virtual void patrol(Order){}
