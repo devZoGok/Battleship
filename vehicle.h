@@ -28,6 +28,7 @@ namespace battleship{
 
         	inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
 			void enterGarrisonable();
+			float calculateRotation(vb01::Vector3, float);
 			void navigateToMovingTarget(float);
 			void halt();
 			void turn(float);

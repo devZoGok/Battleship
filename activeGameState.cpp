@@ -110,6 +110,19 @@ namespace battleship{
         if (isSelectionBox)
 			updateSelectionBox();
 
+		vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
+
+		if(!selectingDestOrient && leftMouseClicked && !selectedUnits.empty() && getTime() - lastLeftMouseClicked > 100){
+			selectingDestOrient = true;
+
+			GameObjectFrameController *fc = GameObjectFrameController::getSingleton();
+			fc->setPlacingFrames(true);
+			fc->setRotatingFrames(true);
+
+			for(Unit *unit : selectedUnits)
+				fc->addGameObjectFrame(GameObjectFrame(unit->getId(), GameObject::Type::UNIT));
+		}
+
 		dragboxNode->setVisible(isSelectionBox);
 
         renderUnits();
@@ -259,14 +272,14 @@ namespace battleship{
 			targets.push_back(Order::Target());
 
 		LineRenderer *lineRenderer = LineRenderer::getSingleton();
-		Order order;
 
         for (int i = 0; i < mainPlayer->getNumSelectedUnits(); ++i) {
 			Unit *u = mainPlayer->getSelectedUnit(i);
 			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
 			LineRenderer::Line line = lines[lines.size() - 1];
-        	order = Order(type, line, targets);
+			Vector3 destDir = (selectingDestOrient ? GameObjectFrameController::getSingleton()->getGameObjectFrame(0).getDirVec() : Vector3::VEC_ZERO);
+        	Order order(type, line, targets, destDir);
 
             if (type != Order::TYPE::LAUNCH) {
                 if (addOrder)
@@ -352,10 +365,12 @@ namespace battleship{
         switch((Bind)bind){
 			case Bind::DRAG_BOX: 
                 isSelectionBox = isPressed;
+				leftMouseClicked = isPressed;
+				clickPoint = getCursorPos();
 
-                if (isPressed) {
-					clickPoint = getCursorPos();
-
+				if(isPressed)
+					lastLeftMouseClicked = getTime();
+				else{
                     if (mainPlayer->getNumSelectedUnits() > 0){
                     	addTarget();
 
@@ -364,12 +379,8 @@ namespace battleship{
 						
 							if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getSide() != mainPlayer->getSide()))
 								type = Order::TYPE::ATTACK;
-							else if(ufCtr->isPlacingFrames()){
+							else if(ufCtr->isPlacingFrames() && !selectingDestOrient)
 								type = Order::TYPE::BUILD;
-								ufCtr->setPlacingFrames(false);
-								ufCtr->setRotatingFrames(false);
-								ufCtr->removeGameObjectFrames();
-							}
 						
 							issueOrder(type, shiftPressed);
 						}
@@ -378,6 +389,11 @@ namespace battleship{
 							selectingPatrolPoints = false;
 						}
 					}
+
+					selectingDestOrient = false;
+					ufCtr->setPlacingFrames(false);
+					ufCtr->setRotatingFrames(false);
+					ufCtr->removeGameObjectFrames();
                 }
 
                 break;
@@ -442,15 +458,6 @@ namespace battleship{
 				}
 
                 break;
-			case Bind::LAUNCH:{ 
-				if(isPressed){
-					Node *node = Map::getSingleton()->getNodeParent()->getChild(1);
-					node->setVisible(!node->isVisible());
-				}
-
-                selectingGuidedMissileTarget = isPressed;
-                break;
-										  }
 			case Bind::GROUP_0:
             case Bind::GROUP_1:
             case Bind::GROUP_2:
@@ -501,7 +508,7 @@ namespace battleship{
 			case Bind::LOOK_RIGHT: 
 				if(camCtr->isLookingAround())
 					CameraController::getSingleton()->orientCamera(Vector3(0, 1, 0), strength);
-				else if(ufCtr->isPlacingFrames() && ufCtr->isRotatingFrames())
+				else if(ufCtr->isRotatingFrames())
 					ufCtr->rotateGameObjectFrames(100 * strength);
 
 				break;

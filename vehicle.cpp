@@ -89,23 +89,27 @@ namespace battleship{
 		anglePrecision = SOL_LUA_STATE["anglePrecision"][id + 1];
 	}
 
+	float Vehicle::calculateRotation(Vector3 dir, float angle){
+		float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
+
+		if(leftVec.getAngleBetween(dir) > PI / 2)
+			rotSpeed *= -1;
+
+		return rotSpeed;
+	}
+
 	void Vehicle::navigate(float destOffset){
 		Vector3 hypVec = (pathPoints[0] - pos);
 		float hypAngle = hypVec.norm().getAngleBetween(upVec) - PI / 2;
 		float offset = hypVec.getLength() * sin(hypAngle);
 
 		Vector3 linDest = pathPoints[0] + upVec * offset;
+		float vertDist = fabs(pos.y - pathPoints[0].y);
 		Vector3 destDir = (linDest - pos).norm();
 		float angle = (destDir != Vector3::VEC_ZERO ? dirVec.getAngleBetween(destDir) : -1);
 
-		if(angle > anglePrecision){
-			float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
-
-			if(leftVec.getAngleBetween(destDir) > PI / 2)
-				rotSpeed *= -1;
-
-			turn(rotSpeed);
-		}
+		if(angle > anglePrecision && pos.getDistanceFrom(linDest) > destOffset)
+			turn(calculateRotation(destDir, angle));
 		else{
 			if(pos.getDistanceFrom(linDest) > destOffset){
 				float dist = pos.getDistanceFrom(linDest);
@@ -113,7 +117,7 @@ namespace battleship{
 				advance(movementAmmount);
 			}
 
-			if(fabs(pos.y - pathPoints[0].y) > 0.5 * height){
+			if(vertDist > 0.5 * height){
 				float dist = pos.y - pathPoints[0].y;
 				float movementAmmount = (speed > fabs(dist) ? dist : speed);
 
@@ -123,10 +127,21 @@ namespace battleship{
 				advance(movementAmmount, MoveDir::UP);
 			}
 
-			if(type != UnitType::UNDERWATER && pos.getDistanceFrom(linDest) <= destOffset)
-				removePathpoint();
-			else if(type == UnitType::UNDERWATER && fabs(pos.y - pathPoints[0].y) < 0.5 * height && pos.getDistanceFrom(linDest) <= destOffset)
-				removePathpoint();
+			if(pos.getDistanceFrom(linDest) <= destOffset){
+				bool orderHasDir = (orders[0].direction != Vector3::VEC_ZERO);
+				float angleToOrderDir = dirVec.getAngleBetween(orders[0].direction);
+				bool destDirWithin = (!orderHasDir || (orderHasDir && angleToOrderDir <= anglePrecision));
+
+				if(pathPoints.size() == 1 && !destDirWithin)
+					turn(calculateRotation(orders[0].direction, angleToOrderDir));
+
+				if(pathPoints.size() > 1 || (pathPoints.size() == 1 && destDirWithin)){
+					if(type == UnitType::UNDERWATER && vertDist < 0.5 * height)
+						removePathpoint();
+					else if(type != UnitType::UNDERWATER)
+						removePathpoint();
+				}
+			}
 		}
 	}
 

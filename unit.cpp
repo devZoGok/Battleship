@@ -142,9 +142,7 @@ namespace battleship{
 	}
 
     void Unit::update() {
-		leftVec = model->getGlobalAxis(0);
-		upVec = model->getGlobalAxis(1);
-		dirVec = model->getGlobalAxis(2);
+		GameObject::update();
 
         if (!orders.empty()){
 			LineRenderer *lineRenderer = LineRenderer::getSingleton();

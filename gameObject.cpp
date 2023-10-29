@@ -17,6 +17,9 @@ namespace battleship{
 	using namespace configData;
 
 	void GameObject::update(){
+		leftVec = model->getGlobalAxis(0);
+		upVec = model->getGlobalAxis(1);
+		dirVec = model->getGlobalAxis(2);
 	}
 
     void GameObject::placeAt(Vector3 p) {

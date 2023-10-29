@@ -93,6 +93,9 @@ namespace battleship{
 	}
 
 	void GameObjectFrameController::update(){
+		for(GameObjectFrame &frame : gameObjectFrames)
+			frame.update();
+
 		Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
 		vector<Ray::CollisionResult> results;
 		Ray::retrieveCollisions(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);

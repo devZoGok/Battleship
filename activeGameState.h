@@ -1,4 +1,3 @@
-#pragma once
 #ifndef ACTIVE_GAME_STATE_H
 #define ACTIVE_GAME_STATE_H
 
@@ -50,10 +49,11 @@ namespace battleship{
         std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;
 		std::vector<vb01Gui::Button*> buttons;
-        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, selectingPatrolPoints = false, selectingGuidedMissileTarget = false;
+        bool isSelectionBox = false, shiftPressed = false, controlPressed = false, leftMouseClicked = false, selectingPatrolPoints = false, selectingDestOrient = false;
         int playerId, zooms = 0;
 	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;
+		vb01::s64 lastLeftMouseClicked = 0;
     };
 }
 
