@@ -29,7 +29,17 @@ namespace battleship{
 		return game;
 	}
 
+	void Game::resetLuaGameObjects(){
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script("game.players = {}");
+
+		for(int i = 0; i < players.size(); i++)
+			SOL_LUA_VIEW.script("game.players[" + to_string(i + 1) + "] = Player:new()");
+	}
+
 	void Game::update(){
+		resetLuaGameObjects();
+
 		for(int i = 0; i < players.size(); i++){
 			players[i]->update();
 

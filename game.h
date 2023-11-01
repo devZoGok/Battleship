@@ -23,6 +23,7 @@ namespace battleship{
 			inline int getNumPlayers(){return players.size();}
 		private:
 			Game(){}
+			void resetLuaGameObjects();
 
 			bool paused = false;
 			std::vector<Fx> fx;

@@ -1,4 +1,12 @@
-Player = {}
+Player = {
+	refineds = 0,
+	wealth = 0,
+	research = 0,
+	faction = -1,
+	difficulty = -1,
+	team = -1,
+	units = {}
+}
 
 function Player:new(pl)
 	player = pl or {}
@@ -34,8 +42,5 @@ end
 Player.behaviour = {
 	type = BTNodeType.SEQUENCE,
 	children = {
-		{type = BTNodeType.FUNCTION, func = Player.foo1},
-		{type = BTNodeType.FUNCTION, func = Player.foo2},
-		{type = BTNodeType.SEQUENCE, children = {{type = BTNodeType.FUNCTION, func = Player.foo3}, {type = BTNodeType.FUNCTION, func = Player.foo4}}}
 	}
 }

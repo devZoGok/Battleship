@@ -49,7 +49,7 @@ namespace battleship{
 		inline bool isCpuPlayer(){return cpuPlayer;}
     private:
 		bool cpuPlayer = false;
-        int refineds = 0, wealth = 0, research = 0, faction, difficulty, team;
+        int refineds = 0, wealth = 0, research = 0, faction, difficulty, team, luaPlayerId;
         std::vector<Unit*> units;
 		std::vector<Projectile*> projectiles;
 		std::vector<ResourceDeposit*> resourceDeposits;
