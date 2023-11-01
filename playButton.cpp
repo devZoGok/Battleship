@@ -38,7 +38,7 @@ namespace battleship{
 			int numPlayers = map->getNumSpawnPoints();
 
 			for(int i = 0; i < numPlayers; i++){
-				Player *player = new Player(0, 0, 0);
+				Player *player = new Player(0, 0, i + 1, false);
 				map->loadPlayerGameObjects(player);
 				Game::getSingleton()->addPlayer(player);
 			}

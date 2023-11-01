@@ -30,8 +30,12 @@ namespace battleship{
 	}
 
 	void Game::update(){
-		for(Player *p : players)
-			p->update();
+		for(int i = 0; i < players.size(); i++){
+			players[i]->update();
+
+			if(players[i]->isCpuPlayer())
+				generateView().script("game.players[" + to_string(i + 1) + "]:update()");
+		}
 
 		for(Projectile *proj : projectiles)
 			proj->update();

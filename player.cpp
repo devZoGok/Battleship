@@ -11,15 +11,21 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace std;
 
-    Player::Player(int diff, int fac, int i, Vector3 sp) : difficulty(diff), faction(fac), id(i), spawnPoint(sp) {
-		//SOL_LUA_STATE.script("players[" + to_string(id + 1) + "] = Player:new({id = " + to_string(id + 1) + "})");
+    Player::Player(int diff, int fac, int t, bool cpuPl, Vector3 sp) : difficulty(diff), faction(fac), team(t), cpuPlayer(cpuPl), spawnPoint(sp) {
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script("numPlayers = #game.players");
+		int numPlayers = SOL_LUA_VIEW["numPlayers"];
+		SOL_LUA_VIEW.script("game.players[" + to_string(numPlayers + 1) + "] = Player:new({id = " + to_string(numPlayers + 1) + "})");
     }
 
     Player::~Player() {
     }
 
+	void Player::syncLuaPlayer(){
+	}
+
     void Player::update() {
-		//SOL_LUA_STATE.script("players[" + to_string(id + 1) + "]:update()");
+		syncLuaPlayer();
 
 		for(Unit *u : units)
 			u->update();

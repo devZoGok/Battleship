@@ -334,9 +334,15 @@ namespace battleship{
 						if(selectingPatrolPoints){
                     		castRayToTerrain();
 
-							if(!shiftPressed){
-								issueOrder(Order::TYPE::PATROL, targets, shiftPressed);
-								selectingPatrolPoints = false;
+							if(!(targets.empty() || selectingPatrolPoints)){
+								Order::TYPE type = Order::TYPE::MOVE;
+							
+								if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getTeam() != mainPlayer->getTeam()))
+									type = Order::TYPE::ATTACK;
+								else if(ufCtr->isPlacingFrames() && !selectingDestOrient)
+									type = Order::TYPE::BUILD;
+							
+								issueOrder(type, shiftPressed);
 							}
 						}
 						else{
