@@ -27,8 +27,7 @@ namespace battleship{
     InGameAppState::ResumeButton::ResumeButton(Vector2 pos, Vector2 size) : Button(pos, size, "Resume", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {}
 
     void InGameAppState::ResumeButton::onClick() {
-		StateManager *sm = GameManager::getSingleton()->getStateManager();
-        ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE))->toggleMainMenu();
+		Game::getSingleton()->togglePause();
     }
 
     InGameAppState::ConsoleButton::ConsoleButton(Vector2 pos, Vector2 size) : Button(pos, size, "Console", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) { }
@@ -98,35 +97,11 @@ namespace battleship{
 		Game::getSingleton()->update();
     }
 
-    void InGameAppState::toggleMainMenu() {
-		GameManager *gm = GameManager::getSingleton();
-		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
-
-        if (!isMainMenuActive) {
-            isMainMenuActive = true;
-            gm->getStateManager()->dettachAppState(activeState);
-						
-			guiManager->readLuaScreenScript("gamePaused.lua", activeState->getButtons());
-        } 
-        else {
-            isMainMenuActive = false;
-            gm->getStateManager()->attachAppState(activeState);
-						
-			AssetManager::getSingleton()->load(gm->getPath() + (string)generateView()["modelPrefix"], true);
-
-			guiManager->readLuaScreenScript("inGame.lua", activeState->getButtons());
-
-			for(Player *p : Game::getSingleton()->getPlayers())
-				for(Unit *u : p->getUnits())
-					u->reinit();
-        }
-    }
-
     void InGameAppState::onAction(int bind, bool isPressed) {
         switch((Bind)bind){
 			case Bind::TOGGLE_MAIN_MENU: 
             	if(isPressed && !GameObjectFrameController::getSingleton()->isPlacingFrames())
-					toggleMainMenu();
+					Game::getSingleton()->togglePause();
             break;
         }
     }

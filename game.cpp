@@ -1,11 +1,24 @@
 #include "game.h"
 #include "player.h"
 #include "projectile.h"
+#include "gameManager.h"
+#include "activeGameState.h"
+#include "inGameAppState.h"
+#include "concreteGuiManager.h"
+#include "defConfigs.h"
+
+#include <assetManager.h>
+
+#include <stateManager.h>
+
+#include <solUtil.h>
 
 #include <SFML/Audio.hpp>
 
 namespace battleship{
+	using namespace std;
 	using namespace vb01;
+	using namespace gameBase;
 
 	static Game *game = nullptr;
 
@@ -50,5 +63,28 @@ namespace battleship{
 	}
 
 	void Game::togglePause(){
+		GameManager *gm = GameManager::getSingleton();
+		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+		ActiveGameState *activeState = ((InGameAppState*)gm->getStateManager()->getAppStateByType(AppStateType::IN_GAME_STATE))->getActiveState();
+
+        if (!paused) {
+            gm->getStateManager()->dettachAppState(activeState);
+			guiManager->readLuaScreenScript("gamePaused.lua", activeState->getButtons());
+        } 
+        else {
+			for(string f : configData::scripts)
+				generateView().script_file(gm->getPath() + f);
+
+			guiManager->readLuaScreenScript("inGame.lua", activeState->getButtons());
+			AssetManager::getSingleton()->load(gm->getPath() + (string)generateView()["modelPrefix"], true);
+
+			for(Player *p : Game::getSingleton()->getPlayers())
+				for(Unit *u : p->getUnits())
+					u->reinit();
+
+            gm->getStateManager()->attachAppState(activeState);
+        }
+
+		paused = !paused;
 	}
 }
