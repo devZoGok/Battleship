@@ -50,6 +50,7 @@ namespace battleship{
 			"Scripts/GameObjects/Units/vehicleData.lua",
 			"Scripts/GameObjects/Units/structureData.lua",
 			"Scripts/GameObjects/resourceData.lua",
+			"Scripts/aiAgent.lua",
 			"Scripts/Core/player.lua"
 		};
 
