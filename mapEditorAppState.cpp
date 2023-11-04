@@ -10,7 +10,7 @@
 #include "mesh.h"
 #include "util.h"
 
-#include <ray.h>
+#include <rayCaster.h>
 #include <box.h>
 #include <text.h>
 #include <node.h>
@@ -91,10 +91,8 @@ namespace battleship{
 		Vector3 startPos = cam->getPosition();
 		Vector3 endPos = screenToSpace(getCursorPos());
 
-		vector<Ray::CollisionResult> results;
 		Map *map = Map::getSingleton();
-		Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), map->getNodeParent(), results);
-		Ray::sortResults(results);
+		vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (endPos - startPos).norm(), map->getNodeParent());
 
 		if(selectedTerrainNode)
 			toggleSelection(selectedTerrainNode, false);
@@ -308,13 +306,11 @@ namespace battleship{
 
 		for(int i = 0; i < numVertCells; i++)
 			for(int j = 0; j < numHorCells; j++){
-				vector<Ray::CollisionResult> res;
 				Vector3 rayPos = startPos + Vector3(cellSize.x * j, 100, cellSize.z * i);
-				Ray::retrieveCollisions(rayPos, -Vector3::VEC_J, terrainNode->getChild(0), res);
-				Ray::sortResults(res);
+				vector<RayCaster::CollisionResult> res = RayCaster::cast(rayPos, -Vector3::VEC_J, terrainNode->getChild(0));
 
 				if(res.empty()){
-					Ray::CollisionResult r;
+					RayCaster::CollisionResult r;
 					r.pos = Vector3(rayPos.x, 0, rayPos.z);
 					res.push_back(r);
 				}
@@ -648,9 +644,7 @@ namespace battleship{
 					Vector2 cursorPos = getCursorPos();
 					Vector3 endPos = screenToSpace(cursorPos);
 
-					vector<Ray::CollisionResult> results;
-					Ray::retrieveCollisions(startPos, (endPos - startPos).norm(), Root::getSingleton()->getRootNode(), results);
-					Ray::sortResults(results);
+					vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (endPos - startPos).norm(), Root::getSingleton()->getRootNode());
 
 					if(cursorPos.y < GameManager::getSingleton()->getHeight() - mapEditor->getGuiThreshold()){
 						bool push = !results.empty();

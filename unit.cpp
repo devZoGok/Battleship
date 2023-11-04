@@ -3,7 +3,6 @@
 #include <material.h>
 #include <particleEmitter.h>
 #include <texture.h>
-#include <ray.h>
 
 #include <stateManager.h>
 #include <solUtil.h>

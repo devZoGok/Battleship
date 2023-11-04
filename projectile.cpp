@@ -4,7 +4,7 @@
 #include <model.h>
 #include <material.h>
 #include <quaternion.h>
-#include <ray.h>
+#include <rayCaster.h>
 
 #include <stateManager.h>
 

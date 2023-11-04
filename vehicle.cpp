@@ -3,7 +3,7 @@
 #include <solUtil.h>
 
 #include <util.h>
-#include <ray.h>
+#include <rayCaster.h>
 #include <box.h>
 #include <model.h>
 #include <quaternion.h>
@@ -149,9 +149,7 @@ namespace battleship{
 		/*
 		Map *map = Map::getSingleton();
 		TerrainObject terr = map->getTerrainObject(0);
-		vector<Ray::CollisionResult> res;
-		Ray::retrieveCollisions(Vector3(pos.x, terr.size.y, pos.z), Vector3(0, -1, 0), terr.node, res);
-		Ray::sortResults(res);
+		vector<RayCaster::CollisionResult> res = RayCaster::cast(Vector3(pos.x, terr.size.y, pos.z), Vector3(0, -1, 0), terr.node);
 		
 		if(!res.empty()){
 			placeAt(res[0].pos);

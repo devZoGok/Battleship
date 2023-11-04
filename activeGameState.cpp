@@ -4,7 +4,7 @@
 #include <material.h>
 #include <quad.h>
 #include <text.h>
-#include <ray.h>
+#include <rayCaster.h>
 
 #include <stateManager.h>
 #include <solUtil.h>
@@ -297,12 +297,9 @@ namespace battleship{
 		Vector3 camPos = cam->getPosition();
 		Vector3 endPos = screenToSpace(getCursorPos());
 
-		vector<Ray::CollisionResult> results;
 		Vector3 rayDir = (endPos - camPos).norm();
-		Ray::retrieveCollisions(camPos, rayDir, Map::getSingleton()->getNodeParent(), results);
+		vector<RayCaster::CollisionResult> results = RayCaster::cast(camPos, rayDir, Map::getSingleton()->getNodeParent());
 		std::map<Node*, Unit*> unitData;
-
-		Ray::sortResults(results);
 
 		if(!results.empty()){
 			vector<Node*> ancestors = results[0].mesh->getNode()->getAncestors();
@@ -325,9 +322,7 @@ namespace battleship{
 				Node *nodeParent = map->getNodeParent();
 
 				if(u->getType() == UnitType::UNDERWATER && nodeParent->getNumChildren() > 0){
-					vector<Ray::CollisionResult> res;
-					Ray::retrieveCollisions(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), nodeParent->getChild(0), res);
-					Ray::sortResults(res);
+					vector<RayCaster::CollisionResult> res = RayCaster::cast(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), nodeParent->getChild(0));
 
 					Vector3 waterBodyPos = Vector3::VEC_ZERO;
 					Vector3 cellSize = map->getCellSize();
@@ -442,9 +437,7 @@ namespace battleship{
 					depth += 0.05;
 
 					Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
-					vector<Ray::CollisionResult> results;
-					Ray::retrieveCollisions(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);
-					Ray::sortResults(results);
+					vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0));
 
 					if(!results.empty())
 						ufCtr->setPaintSelectRowStart(results[0].pos);
