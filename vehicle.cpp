@@ -189,9 +189,10 @@ namespace battleship{
 		pursuingTarget = false;
 	}
 
-	void Vehicle::navigateToMovingTarget(float minDist){
+	void Vehicle::navigateToTarget(float minDist){
 		if(!pursuingTarget){
-			preparePathpoints(orders[0].targets[0].unit->getPos());
+			Vector3 targPos = (orders[0].targets[0].unit ? orders[0].targets[0].unit->getPos() : orders[0].targets[0].pos);
+			preparePathpoints(targPos);
 			pursuingTarget = true;
 		}
 
@@ -204,7 +205,7 @@ namespace battleship{
 		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos());
 
 		if(distToGarrisonable > garrisonDist)
-			navigateToMovingTarget(garrisonDist);
+			navigateToTarget(garrisonDist);
 		else
 			enterGarrisonable();
 	}
@@ -272,20 +273,21 @@ namespace battleship{
 	}
 
 	void Vehicle::attack(Order order){
+		Unit::attack(order);
+
 		Order::Target target = order.targets[0];
 		float distToTarg = pos.getDistanceFrom(target.unit ? target.unit->getPos() : target.pos);
 		float minDist = range;
 
 		if(distToTarg > minDist)
-			navigateToMovingTarget(.5 *  Map::getSingleton()->getCellSize().x);
-		else{
+			navigateToTarget(.5 *  Map::getSingleton()->getCellSize().x);
+		else
 			pursuingTarget = false;
 
-			if(getTime() - lastFireTime > rateOfFire){
-				fire();
+		if(distToTarg <= range && getTime() - lastFireTime > rateOfFire){
+			fire();
 
-				lastFireTime = getTime();
-			}
+			lastFireTime = getTime();
 		}
 	}
 

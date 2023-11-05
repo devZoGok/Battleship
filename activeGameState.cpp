@@ -391,9 +391,9 @@ namespace battleship{
 						else{
 							bool canSelect = canSelectHoveredOnGameObj();
 
-							if(gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getSide() != mainPlayer->getSide())
-								issueOrder(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, Vector3())}, shiftPressed);
-							else if(controlPressed){
+							if(gameObjHoveredOn && (controlPressed || (gameObjHoveredOn->getPlayer()->getSide() != mainPlayer->getSide())))
+								issueOrder(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
+							else if(controlPressed && !gameObjHoveredOn){
                     			castRayToTerrain();
 								issueOrder(Order::TYPE::ATTACK, targets, shiftPressed);
 							}

@@ -107,7 +107,7 @@ namespace battleship{
 		virtual void initUnitStats();
         virtual void executeOrders();
         virtual void eject(Order);
-        virtual void attack(Order){}
+        virtual void attack(Order);
         virtual void garrison(Order){}
         virtual void build(Order){}
         virtual void move(Order){}
