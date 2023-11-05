@@ -4,6 +4,7 @@
 #include "guiAppState.h"
 #include "player.h"
 #include "map.h"
+#include "unit.h"
 
 namespace vb01{
 	class Node;
@@ -14,6 +15,8 @@ namespace vb01Gui{
 }
 
 namespace battleship{
+	class GameObject;
+
     class ActiveGameState : public gameBase::AbstractAppState {
     public:
         ActiveGameState(GuiAppState*, int);
@@ -28,24 +31,24 @@ namespace battleship{
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
+		void updateGameObjHoveredOn();
 		void initDragbox();
 		vb01::Node* initText(vb01::Vector2);
 		void deselectUnits();
         void renderUnits();
         void updateSelectionBox();
 		void updateStructureFrames();
-        void addTarget();
-        void issueOrder(Order::TYPE, bool);
+        void castRayToTerrain();
+        void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
-		bool engineersSelected();
+		bool unitClassSelected(UnitClass);
+		inline bool canSelectHoveredOnGameObj(){return gameObjHoveredOn && gameObjHoveredOn->isSelectable() && gameObjHoveredOn->getPlayer() == mainPlayer;}
 
         GuiAppState *guiState;
         Player *mainPlayer;
-		vb01::Quad *dragbox = nullptr;
+		GameObject *gameObjHoveredOn = nullptr;
 		vb01::Node *dragboxNode = nullptr, *textNode = nullptr, *refinedsText = nullptr, *wealthText = nullptr, *researchText = nullptr;
 		vb01::Vector2 clickPoint;
-        std::vector<vb01::Vector2> unitScreenPosVec;
-        std::vector<vb01::Node*> unitLightNodes;
         std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;
 		std::vector<vb01Gui::Button*> buttons;

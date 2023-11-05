@@ -27,6 +27,7 @@ namespace battleship{
     void makeTitlescreenButtons(GuiAppState*);
 	std::vector<std::string> readDir(std::string, bool);
 	vb01::Vector2 spaceToScreen(vb01::Vector3);
+	vb01::Vector3 spaceToScreen3d(vb01::Vector3);
 	vb01::Vector3 screenToSpace(vb01::Vector2);
 }
 

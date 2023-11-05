@@ -73,8 +73,6 @@ namespace battleship{
         virtual void addOrder(Order);
 		virtual void reinit();
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
-		inline vb01::Vector3 getCorner(int i){return corners[i];}
-        inline vb01::Vector2 getScreenPos(){return screenPos;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
         inline float getLineOfSight() {return lineOfSight;}
         inline vb01::Model* getNode() {return model;}
@@ -94,9 +92,7 @@ namespace battleship{
     protected:
         UnitClass unitClass;
         UnitType type;
-		vb01::Vector2 screenPos;
         std::vector<Order> orders;
-		vb01::Vector3 corners[8];
 		sf::SoundBuffer *fireSfxBuffer;
 		sf::Sound *fireSfx = nullptr;
         int health, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;

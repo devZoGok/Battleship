@@ -27,6 +27,7 @@ namespace battleship{
     Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
         this->id = id;
         this->player = player;
+		selectable = true;
 
 		init();
 
@@ -51,6 +52,8 @@ namespace battleship{
 	}
 
 	void Unit::initProperties(){
+		GameObject::initProperties();
+
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
 		string name = SOL_LUA_STATE["name"][id + 1];
         health = SOL_LUA_STATE["health"][id + 1];
@@ -71,16 +74,6 @@ namespace battleship{
 			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos));
 		}
 
-		string cornerInd = "unitCornerPoints";
-
-		for(int i = 0; i < 8; i++){
-			sol::table cornerTable = SOL_LUA_STATE[cornerInd][id + 1][i + 1];
-			corners[i] = Vector3(cornerTable["x"], cornerTable["y"], cornerTable["z"]);
-		}
-
-        width = corners[0].x - corners[1].x;
-        height = corners[4].y - corners[0].y;
-        length = corners[3].z - corners[0].z;
 	}
 	
 	void Unit::destroySound(){
@@ -151,7 +144,6 @@ namespace battleship{
 
         executeOrders();
 
-		screenPos = spaceToScreen(pos);
 		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth);
 
 		for(GarrisonSlot &slot : garrisonSlots)

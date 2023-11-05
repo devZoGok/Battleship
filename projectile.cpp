@@ -4,7 +4,6 @@
 #include <model.h>
 #include <material.h>
 #include <quaternion.h>
-#include <rayCaster.h>
 
 #include <stateManager.h>
 
@@ -43,6 +42,8 @@ namespace battleship{
     }
 
 	void Projectile::initProperties(int weaponId){
+		GameObject::initProperties();
+
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
         rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
         damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
