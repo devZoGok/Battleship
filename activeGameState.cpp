@@ -266,66 +266,8 @@ namespace battleship{
 
 	//TODO fix ejectable unit selection with multiple transports selected
     void ActiveGameState::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool addOrder) {
-		Vector3 color;
-
-      	switch(type){
-      	    case Order::TYPE::MOVE:
-				color = Vector3::VEC_J;
-      	        break;
-      	    case Order::TYPE::ATTACK:
-				color = Vector3::VEC_I;
-      	        break;
-      	    case Order::TYPE::PATROL:
-      	    case Order::TYPE::GARRISON:
-      	    case Order::TYPE::EJECT:
-				color = Vector3::VEC_K;
-				break;
-      	    case Order::TYPE::BUILD:
-				color = Vector3(1, 1, 0);
-      	        break;
-      	}
-
-		if(type == Order::TYPE::EJECT){
-			vector<Unit*> units = mainPlayer->getSelectedUnits();
-
-			for(Unit *u : units){
-				const vector<Unit::GarrisonSlot> &garrisonSlots = u->getGarrisonSlots();
-
-				for(Unit::GarrisonSlot slot : garrisonSlots)
-					if(slot.vehicle)
-						targets.push_back(Order::Target((Unit*)slot.vehicle));
-			}
-		}
-		else if(type != Order::TYPE::PATROL)
-			targets.push_back(Order::Target());
-
-		LineRenderer *lineRenderer = LineRenderer::getSingleton();
-
-        for (int i = 0; i < mainPlayer->getNumSelectedUnits(); ++i) {
-			Unit *u = mainPlayer->getSelectedUnit(i);
-			bool targetingSelf = false;
-
-			for(Order::Target &targ : targets)
-				if(targ.unit && targ.unit == u){
-					targetingSelf = true;
-					break;
-				}
-
-			if(targetingSelf) continue;
-
-			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
-			vector<LineRenderer::Line> lines = lineRenderer->getLines();
-
-			LineRenderer::Line line = lines[lines.size() - 1];
-			Vector3 destDir = (selectingDestOrient ? GameObjectFrameController::getSingleton()->getGameObjectFrame(0).getDirVec() : Vector3::VEC_ZERO);
-        	Order order(type, line, targets, destDir);
-
-            if (addOrder)
-                u->addOrder(order);
-            else
-                u->setOrder(order);
-        }
-
+		Vector3 destDir = (selectingDestOrient ? GameObjectFrameController::getSingleton()->getGameObjectFrame(0).getDirVec() : Vector3::VEC_ZERO);
+		mainPlayer->issueOrder(type, destDir, targets, addOrder);
 		this->targets.clear();
     }
     

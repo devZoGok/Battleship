@@ -15,7 +15,7 @@ namespace battleship{
         Player(int, int, int, vb01::Vector3 = vb01::Vector3::VEC_ZERO);
         ~Player();
         void update();
-		void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);
+		void issueOrder(Order::TYPE, vb01::Vector3, std::vector<Order::Target>, bool);
 		void deselectUnits();
 		void removeUnit(Unit*);
 		void removeUnit(int);
@@ -52,6 +52,8 @@ namespace battleship{
 		std::vector<Projectile*> projectiles;
 		std::vector<ResourceDeposit*> resourceDeposits;
         vb01::Vector3 spawnPoint;
+
+		int getOrderLineId(Order::TYPE, vb01::Vector3, vb01::Vector3);
     };
 }
 

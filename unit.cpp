@@ -136,10 +136,16 @@ namespace battleship{
     void Unit::update() {
 		GameObject::update();
 
-        if (!orders.empty()){
+        if (!orders.empty() && orders[0].lineId != -1){
+			bool display = (selected && canDisplayOrderLine());
 			LineRenderer *lineRenderer = LineRenderer::getSingleton();
-			lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
-			lineRenderer->changeLineField(orders[0].line.id, pos, LineRenderer::START);
+			lineRenderer->toggleVisibility(orders[0].lineId, display);
+
+			if(display){
+				lineRenderer->changeLineField(orders[0].lineId, pos, LineRenderer::START);
+				Vector3 targPos = (orders[0].targets[0].unit ? orders[0].targets[0].unit->getPos() : orders[0].targets[0].pos);
+				lineRenderer->changeLineField(orders[0].lineId, targPos, LineRenderer::END);
+			}
         }
 
         executeOrders();
@@ -297,7 +303,9 @@ namespace battleship{
 	}
     
     void Unit::removeOrder(int id) {
-		LineRenderer::getSingleton()->removeLine(orders[id].line.id);
+		if(orders[id].lineId != -1)
+			LineRenderer::getSingleton()->removeLine(orders[id].lineId);
+
         orders.erase(orders.begin() + id);
     }
 

@@ -38,12 +38,12 @@ namespace battleship{
 			};
 
         TYPE type;
-		vb01::LineRenderer::Line line;
+		int lineId = -1;
 		vb01::Vector3 direction;
         std::vector<Target> targets;
 
 		Order(){}
-		Order(TYPE t, vb01::LineRenderer::Line l, std::vector<Target> targ, vb01::Vector3 dir) : type(t), line(l), targets(targ), direction(dir){}
+		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1) : type(t), lineId(lid), targets(targ), direction(dir){}
     };
     
     enum class MoveDir {LEFT, UP, FORW};
