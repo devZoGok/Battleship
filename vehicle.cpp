@@ -193,8 +193,9 @@ namespace battleship{
 		if(!pursuingTarget){
 			Vector3 targPos = (orders[0].targets[0].unit ? orders[0].targets[0].unit->getPos() : orders[0].targets[0].pos);
 			preparePathpoints(targPos);
-			addPathpoint(targPos);
 			pursuingTarget = true;
+
+			if(orders[0].type == Order::TYPE::GARRISON) addPathpoint(targPos);
 		}
 
 		navigate(minDist);
