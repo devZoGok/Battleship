@@ -193,6 +193,7 @@ namespace battleship{
 		if(!pursuingTarget){
 			Vector3 targPos = (orders[0].targets[0].unit ? orders[0].targets[0].unit->getPos() : orders[0].targets[0].pos);
 			preparePathpoints(targPos);
+			addPathpoint(targPos);
 			pursuingTarget = true;
 		}
 
@@ -200,9 +201,8 @@ namespace battleship{
 	}
 
 	void Vehicle::garrison(Order order){
-		float garrisonDist = 1.25 * Map::getSingleton()->getCellSize().x;
 		Unit *targUnit = order.targets[0].unit;
-		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos());
+		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos()), garrisonDist = .1;
 
 		if(distToGarrisonable > garrisonDist)
 			navigateToTarget(garrisonDist);
@@ -217,6 +217,20 @@ namespace battleship{
 		}
 
 		navigate(.5 * Map::getSingleton()->getCellSize().x);
+	}
+
+	void Vehicle::addPathpoint(Vector3 pointPos){
+		pathPoints.push_back(pointPos);
+
+		Box *b = new Box(Vector3::VEC_IJK);
+		b->setMaterial(debugMat);
+
+		Node *n = new Node(pointPos);
+		n->attachMesh(b);
+
+		Root::getSingleton()->getRootNode()->attachChild(n);
+
+		debugPathPoints.push_back(n);
 	}
 
 	void Vehicle::preparePathpoints(Vector3 destPos){
@@ -237,18 +251,9 @@ namespace battleship{
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		vector<int> path = pathfinder->findPath(cells, source, dest, (int)type);
-		Node *rootNode = Root::getSingleton()->getRootNode();
 
-		for(int p : path){
-			pathPoints.push_back(cells[p].pos);
-
-			Box *b = new Box(Vector3::VEC_IJK);
-			b->setMaterial(debugMat);
-			Node *n = new Node(cells[p].pos);
-			n->attachMesh(b);
-			rootNode->attachChild(n);
-			debugPathPoints.push_back(n);
-		}
+		for(int p : path)
+			addPathpoint(cells[p].pos);
 	}
 
 	void Vehicle::removePathpoint(int i){

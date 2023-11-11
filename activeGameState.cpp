@@ -303,6 +303,15 @@ namespace battleship{
 
         for (int i = 0; i < mainPlayer->getNumSelectedUnits(); ++i) {
 			Unit *u = mainPlayer->getSelectedUnit(i);
+			bool targetingSelf = false;
+
+			for(Order::Target &targ : targets)
+				if(targ.unit && targ.unit == u){
+					targetingSelf = true;
+					break;
+				}
+
+			if(targetingSelf) continue;
 
 			lineRenderer->addLine(u->getPos(), targets[i].pos, color);
 			vector<LineRenderer::Line> lines = lineRenderer->getLines();
@@ -390,8 +399,11 @@ namespace battleship{
 						}
 						else{
 							bool canSelect = canSelectHoveredOnGameObj();
+							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getSide() == mainPlayer->getSide());
 
-							if(gameObjHoveredOn && (controlPressed || (gameObjHoveredOn->getPlayer()->getSide() != mainPlayer->getSide())))
+							if(gameObjHoveredOn && (gameObjHoveredOn->getType() == GameObject::Type::UNIT && ((Unit*)gameObjHoveredOn)->getNumGarrisonSlots() > 0 && ownGameObj))
+								issueOrder(Order::TYPE::GARRISON, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
+							else if(gameObjHoveredOn && (controlPressed || !ownGameObj))
 								issueOrder(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
 							else if(controlPressed && !gameObjHoveredOn){
                     			castRayToTerrain();

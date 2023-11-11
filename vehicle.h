@@ -34,6 +34,7 @@ namespace battleship{
 			void turn(float);
 			void addOrder(Order);
 			void advance(float, MoveDir = MoveDir::FORW);
+			void addPathpoint(vb01::Vector3);
 			void preparePathpoints(vb01::Vector3);
 			void removePathpoint(int = 0);
 			void removeAllPathpoints();

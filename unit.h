@@ -72,6 +72,7 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		virtual void reinit();
+		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
         inline float getLineOfSight() {return lineOfSight;}
