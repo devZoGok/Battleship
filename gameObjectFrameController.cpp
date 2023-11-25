@@ -10,7 +10,7 @@
 #include <mesh.h>
 #include <model.h>
 #include <root.h>
-#include <ray.h>
+#include <rayCaster.h>
 
 #include <string>
 
@@ -93,10 +93,12 @@ namespace battleship{
 	}
 
 	void GameObjectFrameController::update(){
+		for(GameObjectFrame &frame : gameObjectFrames)
+			frame.update();
+
 		Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
-		vector<Ray::CollisionResult> results;
-		Ray::retrieveCollisions(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0), results);
-		Ray::sortResults(results);
+		vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0));
+
 		if(results.empty()) return;
 
 		Vector3 newPos, rowEnd;

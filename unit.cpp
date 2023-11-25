@@ -1,8 +1,8 @@
 #include <model.h>
 #include <quad.h>
 #include <material.h>
+#include <particleEmitter.h>
 #include <texture.h>
-#include <ray.h>
 
 #include <stateManager.h>
 #include <solUtil.h>
@@ -12,6 +12,8 @@
 
 #include "unit.h"
 #include "util.h"
+#include "game.h"
+#include "vehicle.h"
 #include "inGameAppState.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
@@ -25,15 +27,20 @@ namespace battleship{
     Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
         this->id = id;
         this->player = player;
+		selectable = true;
 
 		init();
 
-		hpBackgroundNode = createBar(lenHpBar, Vector4(0, 0, 0, 1));
-		hpForegroundNode = createBar(lenHpBar, Vector4(0, 1, 0, 1));
+		Vector2 size = Vector2(lenHpBar, 10);
+		hpBackgroundNode = createBar(Vector2::VEC_ZERO, size, Vector4(0, 0, 0, 1));
+		hpForegroundNode = createBar(Vector2::VEC_ZERO, size, Vector4(0, 1, 0, 1));
     }
 
-	//TODO complete implementation
     Unit::~Unit() {
+		removeBar(hpBackgroundNode);
+		removeBar(hpForegroundNode);
+		destroySound();
+		destroyModel();
     }
 
 	void Unit::init(){
@@ -45,41 +52,50 @@ namespace battleship{
 	}
 
 	void Unit::initProperties(){
+		GameObject::initProperties();
+
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+		string name = SOL_LUA_STATE["name"][id + 1];
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
+		rateOfFire = SOL_LUA_STATE["rateOfFire"][id + 1];
         range = SOL_LUA_STATE["range"][id + 1];
         lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
         unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
 		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
+		int capacity = SOL_LUA_STATE["garrisonCapacity"][id + 1];
 
-		string cornerInd = "unitCornerPoints";
-
-		for(int i = 0; i < 8; i++){
-			sol::table cornerTable = SOL_LUA_STATE[cornerInd][id + 1][i + 1];
-			corners[i] = Vector3(cornerTable["x"], cornerTable["y"], cornerTable["z"]);
+		for(int i = 0; i < capacity; i++){
+			Vector2 size = 10 * Vector2::VEC_IJ;
+			Vector2 pos = Vector2(1.5 * size.x * i, 20);
+			Node *bg = createBar(pos, size, Vector4(0, 0, 0, 1));
+			Node *fg = createBar(pos, size, Vector4(0, 1, 0, 1));
+			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos));
 		}
 
-        width = corners[0].x - corners[1].x;
-        height = corners[4].y - corners[0].y;
-        length = corners[3].z - corners[0].z;
 	}
 	
 	void Unit::destroySound(){
 		selectionSfx->stop();
 		delete selectionSfx;
 		delete selectionSfxBuffer;
+
+		if(fireSfx){
+			fireSfx->stop();
+			delete fireSfx;
+			delete fireSfxBuffer;
+		}
 	}
 
 	void Unit::initSound(){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-		string name = SOL_LUA_STATE["name"][id + 1];
-        selectionSfxBuffer = new sf::SoundBuffer();
-        string p = GameManager::getSingleton()->getPath() + "Sounds/" + name + "s/selection.ogg";
+		GameObject::initSound();
 
-        if(selectionSfxBuffer->loadFromFile(p.c_str()))
-            selectionSfx = new sf::Sound(*selectionSfxBuffer);
+		selectionSfxBuffer = new sf::SoundBuffer();
+		selectionSfx = GameObject::prepareSfx(selectionSfxBuffer, "selectionSfx");
+
+		fireSfxBuffer = new sf::SoundBuffer();
+		fireSfx = prepareSfx(fireSfxBuffer, "fireSfx");
 	}
 
 	void Unit::reinit(){
@@ -92,16 +108,16 @@ namespace battleship{
 		orientAt(rot);
 	}
 
-	Node* Unit::createBar(float initLen, Vector4 color){
+	Node* Unit::createBar(Vector2 pos, Vector2 size, Vector4 color){
 		Root *root = Root::getSingleton();
 		Material *mat = new Material(root->getLibPath() + "gui");
 		mat->addBoolUniform("texturingEnabled", false);
 		mat->addVec4Uniform("diffuseColor", color);
 
-		Quad *quad = new Quad(Vector3(initLen, 10, 0), false);
+		Quad *quad = new Quad(Vector3(size.x, size.y, 0), false);
 		quad->setMaterial(mat);
 
-		Node *node = new Node();
+		Node *node = new Node(Vector3(pos.x, pos.y, 0));
 		node->attachMesh(quad);
 		node->setVisible(false);
 		root->getGuiNode()->attachChild(node);
@@ -109,31 +125,72 @@ namespace battleship{
 		return node;
 	}
 
+	void Unit::removeBar(Node *node){
+		Root::getSingleton()->getGuiNode()->dettachChild(node);
+		delete node;
+	}
+
 	void Unit::initUnitStats(){
 	}
 
     void Unit::update() {
-		leftVec = model->getGlobalAxis(0);
-		upVec = model->getGlobalAxis(1);
-		dirVec = model->getGlobalAxis(2);
+		GameObject::update();
 
-        if (!orders.empty()){
+        if (!orders.empty() && orders[0].lineId != -1){
+			bool display = (selected && canDisplayOrderLine());
 			LineRenderer *lineRenderer = LineRenderer::getSingleton();
-			lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
-			lineRenderer->changeLineField(orders[0].line.id, pos, LineRenderer::START);
+			lineRenderer->toggleVisibility(orders[0].lineId, display);
+
+			if(display){
+				lineRenderer->changeLineField(orders[0].lineId, pos, LineRenderer::START);
+				Vector3 targPos = (orders[0].targets[0].unit ? orders[0].targets[0].unit->getPos() : orders[0].targets[0].pos);
+				lineRenderer->changeLineField(orders[0].lineId, targPos, LineRenderer::END);
+			}
         }
 
         executeOrders();
 
-		screenPos = spaceToScreen(pos);
 		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth);
 
+		for(GarrisonSlot &slot : garrisonSlots)
+			displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, slot.offset);
+
         if (health <= 0) 
-            blowUp();
+			blowUp();
     }
 
     void Unit::blowUp(){
-        working = false;
+		Root *root = Root::getSingleton();
+
+		const int numFrames = 1;
+		string p[numFrames];
+
+		for(int i = 0; i < numFrames; i++)
+			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion0" + to_string(7) + ".png";
+
+		Texture *tex = new Texture(numFrames, p, false);
+
+		Material *mat = new Material(root->getLibPath() + "particle");
+		mat->addVec4Uniform("startColor", Vector4(1, 1, 1, 1));
+		mat->addVec4Uniform("endColor", Vector4(1, 1, 0, 1));
+		mat->addTexUniform("tex", tex, false);
+
+		ParticleEmitter *pe = new ParticleEmitter(1);
+		pe->setMaterial(mat);
+		pe->setLowLife(3);
+		pe->setHighLife(3);
+		pe->setSize(10 * Vector2::VEC_IJ);
+		pe->setSpeed(0);
+		Node *node = new Node(pos + Vector3(0, 2, 0));
+		node->attachParticleEmitter(pe);
+		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
+		root->getRootNode()->attachChild(node);
+
+		Fx fx(2500, deathSfx, node);
+		fx.activate();
+		Game::getSingleton()->addFx(fx);
+
+		player->removeUnit(this);
     }
 
     void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, Vector2 offset) {
@@ -142,17 +199,20 @@ namespace battleship{
 
 		if(selected){
 			Vector3 offset3d = Vector3(offset.x, offset.y, 0);
-			float shiftedX = screenPos.x - 0.5 * lenHpBar;
+
+			Quad *bgQuad = (Quad*)background->getMesh(0);
+			Vector3 size = bgQuad->getSize();
+			float shiftedX = screenPos.x - 0.5 * size.x;
 			background->setPosition(Vector3(shiftedX, screenPos.y, .1) + offset3d);
 
-			
 			Quad *fgQuad = (Quad*)foreground->getMesh(0);
-			fgQuad->setSize(Vector3((float)currVal / maxVal * lenHpBar, 10, 0));
+			fgQuad->setSize(Vector3((float)currVal / maxVal * size.x, size.y, 0));
 			fgQuad->updateVerts(fgQuad->getMeshBase());
 			foreground->setPosition(Vector3(shiftedX, screenPos.y, 0) + offset3d);
 		}
     }
 
+	//TODO remove order argument from action methods
     void Unit::executeOrders() {
         if (orders.size() > 0) {
             Order order = orders[0];
@@ -167,6 +227,12 @@ namespace battleship{
                 case Order::TYPE::MOVE:
                     move(order);
                     break;
+				case Order::TYPE::GARRISON:
+					garrison(order);
+					break;
+				case Order::TYPE::EJECT:
+					eject(order);
+					break;
                 case Order::TYPE::PATROL:
                     patrol(order);
                     break;
@@ -178,6 +244,33 @@ namespace battleship{
             }
         }
     }
+
+	void Unit::eject(Order order){
+		if(garrisonSlots.size() > 0){
+			for(Order::Target targ : order.targets)
+				((Vehicle*)targ.unit)->exitGarrisonable();
+
+			removeOrder(0);
+		}
+	}
+
+	void Unit::attack(Order order){
+		if(orders[0].targets[0].unit){
+			bool unitFound = false;
+
+			for(Player *pl : Game::getSingleton()->getPlayers()){
+				vector<Unit*> units = pl->getUnits();
+
+				if(find(units.begin(), units.end(), orders[0].targets[0].unit) != units.end()){
+					unitFound = true;
+					break;
+				}
+			}
+
+			if(!unitFound)
+				removeOrder(0);
+		}
+	}
 
     void Unit::setOrder(Order order) {
         while (!orders.empty())
@@ -192,12 +285,27 @@ namespace battleship{
             removeOrder(orders.size() - 1);
     }
 
+	void Unit::updateGarrison(Vehicle *garrVeh, bool entering){
+		for(GarrisonSlot &slot : garrisonSlots){
+			if(entering && !slot.vehicle){
+				slot.vehicle = garrVeh;
+				break;
+			}
+			else if(!entering && slot.vehicle == garrVeh){
+				slot.vehicle = nullptr;
+				break;
+			}
+		}
+	}
+
 	void Unit::addOrder(Order order){
 		orders.push_back(order);
 	}
     
     void Unit::removeOrder(int id) {
-		LineRenderer::getSingleton()->removeLine(orders[id].line.id);
+		if(orders[id].lineId != -1)
+			LineRenderer::getSingleton()->removeLine(orders[id].lineId);
+
         orders.erase(orders.begin() + id);
     }
 

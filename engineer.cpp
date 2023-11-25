@@ -26,7 +26,7 @@ namespace battleship{
 			}
 		}
 		else{
-			navigate(order, 0.5 * Map::getSingleton()->getCellSize().x);
+			navigate(0.5 * Map::getSingleton()->getCellSize().x);
 
 			if(type == UnitType::LAND)
 				alignToSurface();

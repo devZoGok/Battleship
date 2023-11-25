@@ -4,7 +4,6 @@
 #include <model.h>
 #include <material.h>
 #include <quaternion.h>
-#include <ray.h>
 
 #include <stateManager.h>
 
@@ -14,7 +13,7 @@
 #include "projectile.h"
 #include "defConfigs.h"
 #include "inGameAppState.h"
-#include "explosion.h"
+#include "fx.h"
 
 using namespace std;
 using namespace vb01;
@@ -43,6 +42,8 @@ namespace battleship{
     }
 
 	void Projectile::initProperties(int weaponId){
+		GameObject::initProperties();
+
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
         rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
         damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
@@ -111,13 +112,7 @@ namespace battleship{
 
 		StateManager *sm = GameManager::getSingleton()->getStateManager();
         InGameAppState *inGameState = ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-
-        if(id == 8)
-            detonateTorpedo();
-        else if(weaponTypeId == 1 && (id == 2 || id == 3))
-            detonateDepthCharge();
-        else
-            detonate(pos, -dirVec);
+		string path = GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
     }
     
     void Projectile::debug(){

@@ -14,9 +14,8 @@ namespace battleship{
 			void build(Order);
 		private:
 			vb01::s64 lastIncrementTime = 0;
-			int incrementRate = 50;
 
-			bool canIncrementStructureStatus(){return vb01::getTime() - lastIncrementTime > incrementRate;}
+			bool canIncrementStructureStatus(){return vb01::getTime() - lastIncrementTime > rateOfFire;}
 	};
 }
 

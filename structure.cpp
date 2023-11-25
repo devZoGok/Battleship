@@ -9,8 +9,16 @@ using namespace std;
 namespace battleship{
 	Structure::Structure(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Unit(player, id, pos, rot){
 		this->buildStatus = buildStatus;
-		buildStatusBackground = createBar(Unit::lenHpBar, Vector4(0, 0, 0, 1));
-		buildStatusForeground = createBar(Unit::lenHpBar, Vector4(0, 0, 1, 1));
+
+		Vector2 size = Vector2(lenHpBar, 10);
+		buildStatusBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
+		buildStatusForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 1, 1));
+	}
+
+	Structure::~Structure(){
+		removeBar(buildStatusForeground);
+		removeBar(buildStatusBackground);
+		Unit::~Unit();
 	}
 
 	void Structure::update(){

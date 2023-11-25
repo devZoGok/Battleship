@@ -8,18 +8,18 @@ resources = {
 		"Resource",
 	},
 	basePath = {
-		PATH .. 'Models/Resources/'
+		PATH .. 'Models/GameObjects/Resources/'
 	},
 	unitCornerPoints = {
 		{
-			{x = .9, y = -1, z = -6}, 
-			{x = -.9, y = -1, z = -6}, 
-			{x = -.9, y = -1, z = 5.8}, 
-			{x = .9, y = -1, z = 5.8}, 
-			{x = .9, y = 3.5, z = -6}, 
-			{x = -.9, y = 3.5, z = -6}, 
-			{x = -.9, y = 3.5, z = 5.8}, 
-			{x = .9, y = 3.5, z = 5.8}
+			{x = 1, y = .571, z = -1}, 
+			{x = -1, y = .571, z = -1}, 
+			{x = -1, y = .571, z = 1}, 
+			{x = 1, y = .571, z = 1}, 
+			{x = 1, y = .571, z = -1}, 
+			{x = -1, y = .571, z = -1}, 
+			{x = -1, y = .571, z = 1}, 
+			{x = 1, y = .571, z = 1}
 		}
 	}
 }

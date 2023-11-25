@@ -1,7 +1,7 @@
 #include "gameObjectFactory.h"
 #include "player.h"
-#include "vehicle.h"
 #include "engineer.h"
+#include "transport.h"
 #include "projectile.h"
 #include "resourceDeposit.h"
 #include "defConfigs.h"
@@ -22,6 +22,8 @@ namespace battleship{
 		switch((UnitClass)unitClass){
 			case UnitClass::ENGINEER:
 				return new Engineer(player, id, pos, rot);
+			case UnitClass::TRANSPORT:
+				return new Transport(player, id, pos, rot);
 			default:
 				return new Vehicle(player, id, pos, rot);
 		}

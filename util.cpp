@@ -242,7 +242,7 @@ namespace battleship{
 		return files;
 	}
 
-	Vector2 spaceToScreen(Vector3 pos){
+	Vector3 spaceToScreen3d(Vector3 pos){
 		Root *root = Root::getSingleton();
 		Camera *cam = root->getCamera();
 		Vector3 dir = cam->getDirection(), up = cam->getUp();
@@ -255,7 +255,13 @@ namespace battleship{
 		vec4 ndcPos = proj * view * vec4(pos.x, pos.y, pos.z, 1);
 		ndcPos.x /= ndcPos.w;
 		ndcPos.y /= ndcPos.w;
-		return Vector2(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y));
+		ndcPos.z /= ndcPos.w;
+		return Vector3(0.5 * width * (1 + ndcPos.x), 0.5 * height * (1 - ndcPos.y), ndcPos.z);
+	}
+
+	Vector2 spaceToScreen(Vector3 pos){
+		Vector3 pos3d = spaceToScreen3d(pos);
+		return Vector2(pos3d.x, pos3d.y);
 	}
 
 	Vector3 screenToSpace(Vector2 pos){

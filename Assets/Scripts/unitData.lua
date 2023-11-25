@@ -1,41 +1,53 @@
-UnitClass = {VESSEL = 0, ENGINEER = 1, SAMPLE_STRUCTURE = 2}
+UnitClass = {WAR_MECH = 0, ENGINEER = 1, TRANSPORT = 2, CARGO_SHIP = 3, CARRIER = 4, SUBMARINE = 5, SAMPLE_STRUCTURE = 6}
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
 
-modelPrefix = "Models/"
+modelPrefix = "Models/GameObjects/"
 vehiclePrefix = modelPrefix .. "Units/Vehicles/"
 structurePrefix = modelPrefix .. "Units/Structures/"
 
 units = {
-	num = 4,
+	num = 7,
 	
 	unitClass = {
-		UnitClass.VESSEL, UnitClass.VESSEL,
-		UnitClass.ENGINEER, UnitClass.SAMPLE_STRUCTURE 
+		UnitClass.WAR_MECH,
+		UnitClass.ENGINEER,
+		UnitClass.TRANSPORT,
+		UnitClass.CARGO_SHIP,
+		UnitClass.CARRIER,
+		UnitClass.SUBMARINE,
+		UnitClass.SAMPLE_STRUCTURE
 	},
 	
 	unitType = {
-		UnitType.HOVER, UnitType.SEA_LEVEL,
-		UnitType.LAND, UnitType.HOVER 
+		UnitType.LAND,
+		UnitType.LAND,
+		UnitType.HOVER,
+		UnitType.HOVER,
+		UnitType.SEA_LEVEL,
+		UnitType.UNDERWATER,
+		UnitType.LAND
 	},
 	
 	isVehicle = {
-		true, true, true, false
+		true, true, true, true, true, true, false
 	},
 	
 	health = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	cost = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	range = {15, 15, 14, 14, 13, 13, 12, 12, 15, 25},
+	rateOfFire = {50, 100, 100, 100, 100, 100, 100},
+	garrisonCapacity = {0, 0, 3, 0, 0, 0, 0},
 	
 	unitCornerPoints = {
 	    {
-					{x = .9, y = -1, z = -6}, 
-					{x = -.9, y = -1, z = -6}, 
-					{x = -.9, y = -1, z = 5.8}, 
-					{x = .9, y = -1, z = 5.8}, 
-					{x = .9, y = 3.5, z = -6}, 
-					{x = -.9, y = 3.5, z = -6}, 
-					{x = -.9, y = 3.5, z = 5.8}, 
-					{x = .9, y = 3.5, z = 5.8}
+					{x = 1.45, y = -4.11, z = -1.21}, 
+					{x = -1.45, y = -4.11, z = -1.21}, 
+					{x = -1.45, y = -4.11, z = 1.21}, 
+					{x = 1.45, y = -4.11, z = 1.21}, 
+					{x = 1.45, y = 4.11, z = -1.21}, 
+					{x = -1.45, y = 4.11, z = -1.21}, 
+					{x = -1.45, y = 4.11, z = 1.21}, 
+					{x = 1.45, y = 4.11, z = 1.21}
 	    },
 	    {
 					{x = .5, y = -.5, z = -7.05}, 
@@ -254,27 +266,57 @@ units = {
 	unitAxisLength = {8, 8, 6, 6, 5, 5, 8, 8, 7, 2, 2},
 	lineOfSight = {5, 8, 4, 4, 3, 3, 6, 6, 3, 3, 8},
 	name = {
-		"Battleship", "Battleship", 
-		"Battleship", "Sample", 
-		"Cruiser", "Cruiser", 
-		"Aircraft carrier", "Aircraft carrier", 
-		"Submarine", 
-		"Jet", "Jet"
+		'War mech',
+		'Engineer',
+		'Transport',
+		'Cargo ship',
+		'Carrier',
+		'Submarine',
+		'Sample structure',
 	},
 	meshPath = {
-		"battleship00.xml", "battleship00.xml",
-		"battleship00.xml", "sample.xml", 
-		"cruiser00.xml", "cruiser01.xml", 
-		"aircraftCarrier00.xml", "aircraftCarrier01.xml",
-		"submarine.xml",
-		"jet00.xml", "jet01.xml"
+		'warMech.xml',
+		'engineer.xml',
+		'transport.xml',
+		'cargoship.xml',
+		'carrier.xml',
+		'submarine.xml',
+		'sample.xml',
 	},
 	basePath = {
-		PATH .. vehiclePrefix .. "Battleships/", PATH .. vehiclePrefix .. "Battleships/",
-		PATH .. vehiclePrefix .. "Battleships/", PATH .. structurePrefix .. "Sample/",
-		PATH .. vehiclePrefix .. "Cruisers/", PATH .. vehiclePrefix .. "Cruisers/",
-		PATH .. vehiclePrefix .. "Aircraft carriers/", PATH .. vehiclePrefix .. "Aircraft carriers/",
-		PATH .. vehiclePrefix .. "Submarines/",
-		PATH .. vehiclePrefix .. "Jets/", PATH .. vehiclePrefix .. "Jets/"
+		PATH .. vehiclePrefix .. 'WarMechs/',
+		PATH .. vehiclePrefix .. 'Engineers/',
+		PATH .. vehiclePrefix .. 'Transports/',
+		PATH .. vehiclePrefix .. 'Cargoships/',
+		PATH .. vehiclePrefix .. 'Carriers/',
+		PATH .. vehiclePrefix .. 'Submarines/',
+		PATH .. structurePrefix .. 'Sample/'
+	},
+	selectionSfx = {
+		PATH .. 'Sounds/Units/WarMechs/selection.ogg',
+		PATH .. 'Sounds/Units/Engineers/selection.ogg',
+		PATH .. 'Sounds/Units/Transports/selection.ogg',
+		PATH .. 'Sounds/Units/Cargoships/selection.ogg',
+		PATH .. 'Sounds/Units/Carriers/selection.ogg',
+		PATH .. 'Sounds/Units/Submarines/selection.ogg',
+		PATH .. 'Sounds/Units/Sample/selection.ogg',
+	},
+	fireSfx = {
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+	},
+	deathSfx = {
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	}
 }

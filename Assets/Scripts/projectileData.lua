@@ -219,16 +219,16 @@ projectiles = {
 	    {"missile","missile"},
 	},
 	meshPath = {
-	    {PATH .. "Models/Shell/shell.x"},
-	    {PATH .. "Models/Shell/shell.x"},
-	    {PATH .. "Models/Shell/shell.x", PATH .. "Models/Depth charge/depthCharge.x"},
-	    {PATH .. "Models/Shell/shell.x", PATH .. "Models/Depth charge/depthCharge.x"},
-	    {PATH .. "Models/Shell/shell.x", PATH .. "Models/Guided missile/guidedMissile.x"},
-	    {PATH .. "Models/Shell/shell.x", PATH .. "Models/Guided missile/guidedMissile.x"},
+	    {PATH .. "Models/GameObjects/Shell/shell.x"},
+	    {PATH .. "Models/GameObjects/Shell/shell.x"},
+	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Depth charge/depthCharge.x"},
+	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Depth charge/depthCharge.x"},
+	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Guided missile/guidedMissile.x"},
+	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Guided missile/guidedMissile.x"},
 	    {},
 	    {},
-	    {PATH .. "Models/Torpedo/torpedo.x"},
-	    {PATH .. "Models/Jets/aam.x", PATH .. "Models/Jets/awm.x"}
+	    {PATH .. "Models/GameObjects/Torpedo/torpedo.x"},
+	    {PATH .. "Models/GameObjects/Jets/aam.x", PATH .. "Models/GameObjects/Jets/awm.x"}
 	},
 	diffuseMapTextPath = {
 	    {},
