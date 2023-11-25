@@ -50,7 +50,7 @@ namespace battleship{
 						AppStateType::IN_GAME_STATE,
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, true),
 					 	configData::calcSumBinds(AppStateType::IN_GAME_STATE, false),
-					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
+					 	GameManager::getSingleton()->getPath() + scripts[(int)ScriptFiles::OPTIONS]){
         this->playerId = 1;
         this->difficultyLevels = difficultyLevels;
         this->factions = factions;

@@ -1,5 +1,6 @@
 #include "gameObjectFactory.h"
 #include "player.h"
+#include "structure.h"
 #include "engineer.h"
 #include "transport.h"
 #include "projectile.h"
@@ -24,6 +25,12 @@ namespace battleship{
 				return new Engineer(player, id, pos, rot);
 			case UnitClass::TRANSPORT:
 				return new Transport(player, id, pos, rot);
+			case UnitClass::LAND_FACTORY:
+			case UnitClass::NAVAL_FACTORY:
+			case UnitClass::MARKET:
+			case UnitClass::LAB:
+			case UnitClass::POINT_DEFENSE:
+				return new Structure(player, id, pos, rot);
 			default:
 				return new Vehicle(player, id, pos, rot);
 		}

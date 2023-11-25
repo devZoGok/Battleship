@@ -22,7 +22,7 @@ namespace battleship{
 						AppStateType::GUI_STATE,
 					 	configData::calcSumBinds(AppStateType::GUI_STATE, true),
 					 	configData::calcSumBinds(AppStateType::GUI_STATE, false),
-					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
+					 	GameManager::getSingleton()->getPath() + scripts[(int)ScriptFiles::OPTIONS]){
     }
 
     GuiAppState::~GuiAppState() {}

@@ -32,15 +32,25 @@ namespace battleship{
 		const static int numScripts = 5;
 
 		const static std::string scriptPathBase = "Scripts/";
+		enum ScriptFiles{
+			CORE_MAIN,
+			GUI_MAIN,
+			OPTIONS,
+			UNIT_DATA,
+			VEHICLE_DATA,
+			STRUCTURE_DATA,
+			RESOURCE_DATA,
+			PLAYER
+		};
 		const static std::vector<std::string> scripts = std::vector<std::string>{
-			"Scripts/main.lua",
+			"Scripts/Core/main.lua",
 			"Scripts/Gui/main.lua",
-			"Scripts/options.lua",
-			"Scripts/unitData.lua",
-			"Scripts/vehicleData.lua",
-			"Scripts/structureData.lua",
-			"Scripts/resourceData.lua",
-			"Scripts/player.lua"
+			"Scripts/Core/options.lua",
+			"Scripts/GameObjects/Units/unitData.lua",
+			"Scripts/GameObjects/Units/vehicleData.lua",
+			"Scripts/GameObjects/Units/structureData.lua",
+			"Scripts/GameObjects/resourceData.lua",
+			"Scripts/Core/player.lua"
 		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{
