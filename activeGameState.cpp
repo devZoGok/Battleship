@@ -22,6 +22,7 @@
 #include "util.h"
 #include "tooltip.h"
 #include "gameObjectFrameController.h"
+#include "gameObjectFactory.h"
 #include "cameraController.h"
 #include "concreteGuiManager.h"
 
@@ -350,6 +351,12 @@ namespace battleship{
 							}
 							else if(ufCtr->isPlacingFrames() && !selectingDestOrient){
                     			castRayToTerrain();
+
+								GameObjectFrame gmObjFr = ufCtr->getGameObjectFrame(0);
+								Unit *buildStruct = GameObjectFactory::createUnit(mainPlayer, gmObjFr.getId(), gmObjFr.getPos(), gmObjFr.getRot());
+								mainPlayer->addUnit(buildStruct);
+								targets[0].unit = buildStruct;
+
 								issueOrder(Order::TYPE::BUILD, targets, shiftPressed);
 							}
 							else if(canSelect){
