@@ -9,11 +9,17 @@ namespace battleship{
 
 	void PointDefense::attack(Order order){
 		Unit *targUnit = order.targets[0].unit;
-		Vector3 targDir = ((targUnit ? targUnit->getPos() : order.targets[0].pos) - pos).norm();
+		Vector3 targDir = (targUnit ? targUnit->getPos() : order.targets[0].pos) - pos;
+
+		if(targDir.getLength() > range){
+			removeOrder(0);
+			return;
+		}
+
 		float angleToTarg = targDir.getAngleBetween(turretDir);
 		
 		if(angleToTarg > .05)
-			rotateTurret(calculateRotation(targDir, angleToTarg, .1));
+			rotateTurret(calculateRotation(targDir.norm(), angleToTarg, .1));
 		else if(canFire())
 			fire();
 

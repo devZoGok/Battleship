@@ -24,7 +24,6 @@ using namespace gameBase;
 using namespace std;
 
 namespace battleship{
-	//TODO remove the player member field
     Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
         this->id = id;
         this->player = player;
