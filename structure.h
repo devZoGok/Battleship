@@ -12,9 +12,9 @@ namespace battleship{
 		public:
 			Structure(Player*, int, vb01::Vector3, vb01::Quaternion, int = 0);
 			~Structure();
+			virtual void update();
 			inline int getBuildStatus(){return buildStatus;}
 			inline void incrementBuildStatus(){buildStatus++;}
-			virtual void update();
 		private:
 			int buildStatus = 0;
 		protected:

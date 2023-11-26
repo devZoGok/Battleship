@@ -161,6 +161,7 @@ namespace battleship{
 				break;
 			case LAND_FACTORY_TRAIN:
 				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)UnitClass::LAND_FACTORY, (int)guiTable["unitId"]);
+				break;
 			case NAVAL_FACTORY_TRAIN:
 				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)UnitClass::NAVAL_FACTORY, (int)guiTable["unitId"]);
 				break;

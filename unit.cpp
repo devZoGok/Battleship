@@ -62,6 +62,7 @@ namespace battleship{
 
 		rateOfFire = SOL_LUA_STATE["rateOfFire"][id + 1];
         range = SOL_LUA_STATE["range"][id + 1];
+        damage = SOL_LUA_STATE["damage"][id + 1];
         lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
         unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
 		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
@@ -129,6 +130,26 @@ namespace battleship{
 	void Unit::removeBar(Node *node){
 		Root::getSingleton()->getGuiNode()->dettachChild(node);
 		delete node;
+	}
+
+	float Unit::calculateRotation(Vector3 dir, float angle, float maxTurnAngle){
+		float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
+
+		if(isTargetToTheRight(dir, leftVec))
+			rotSpeed *= -1;
+
+		return rotSpeed;
+	}
+
+	void Unit::fire(){
+		fireSfx->play();
+
+		Unit *targetUnit = orders[0].targets[0].unit;
+
+		if(targetUnit)
+			targetUnit->takeDamage(damage);
+
+		lastFireTime = getTime();
 	}
 
 	void Unit::initUnitStats(){

@@ -5,6 +5,7 @@
 #include "transport.h"
 #include "projectile.h"
 #include "resourceDeposit.h"
+#include "pointDefense.h"
 #include "defConfigs.h"
 
 #include <solUtil.h>
@@ -28,9 +29,10 @@ namespace battleship{
 			case UnitClass::LAND_FACTORY:
 			case UnitClass::NAVAL_FACTORY:
 				return new Factory(player, id, pos, rot, buildStatus);
+			case UnitClass::POINT_DEFENSE:
+				return new PointDefense(player, id, pos, rot, buildStatus);
 			case UnitClass::MARKET:
 			case UnitClass::LAB:
-			case UnitClass::POINT_DEFENSE:
 				return new Structure(player, id, pos, rot, buildStatus);
 			default:
 				return new Vehicle(player, id, pos, rot);

@@ -6,6 +6,8 @@
 #include <quaternion.h>
 #include <lineRenderer.h>
 
+#include <solUtil.h>
+
 #include "gameManager.h"
 #include "gameObject.h"
 #include "projectile.h"
@@ -81,6 +83,8 @@ namespace battleship{
         inline UnitClass getUnitClass() {return unitClass;}
         inline void takeDamage(int damage) {health -= damage;}
         inline int getPlayerId() {return playerId;}
+		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
+		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
     private:
         void updateScreenCoordinates();
 		void init();
@@ -96,7 +100,7 @@ namespace battleship{
         std::vector<Order> orders;
 		sf::SoundBuffer *fireSfxBuffer;
 		sf::Sound *fireSfx = nullptr;
-        int health, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
+        int health, damage, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
         s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight, range;
 		std::vector<GarrisonSlot> garrisonSlots;
@@ -114,9 +118,12 @@ namespace battleship{
         virtual void move(Order){}
         virtual void patrol(Order){}
         virtual void launch(Order){}
+		float calculateRotation(vb01::Vector3, float, float);
+		virtual void fire();
 		void removeBar(vb01::Node*);
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);
         void displayUnitStats(vb01::Node*, vb01::Node*, int, int, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
+		inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
     };
 }
 

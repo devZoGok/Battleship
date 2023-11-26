@@ -89,14 +89,6 @@ namespace battleship{
 		anglePrecision = SOL_LUA_STATE["anglePrecision"][id + 1];
 	}
 
-	float Vehicle::calculateRotation(Vector3 dir, float angle){
-		float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
-
-		if(leftVec.getAngleBetween(dir) > PI / 2)
-			rotSpeed *= -1;
-
-		return rotSpeed;
-	}
 
 	void Vehicle::navigate(float destOffset){
 		Vector3 hypVec = (pathPoints[0] - pos);
@@ -109,7 +101,7 @@ namespace battleship{
 		float angle = (destDir != Vector3::VEC_ZERO ? dirVec.getAngleBetween(destDir) : -1);
 
 		if(angle > anglePrecision && pos.getDistanceFrom(linDest) > destOffset)
-			turn(calculateRotation(destDir, angle));
+			turn(calculateRotation(destDir, angle, maxTurnAngle));
 		else{
 			if(pos.getDistanceFrom(linDest) > destOffset){
 				float dist = pos.getDistanceFrom(linDest);
@@ -133,7 +125,7 @@ namespace battleship{
 				bool destDirWithin = (!orderHasDir || (orderHasDir && angleToOrderDir <= anglePrecision));
 
 				if(pathPoints.size() == 1 && !destDirWithin)
-					turn(calculateRotation(orders[0].direction, angleToOrderDir));
+					turn(calculateRotation(orders[0].direction, angleToOrderDir, maxTurnAngle));
 
 				if(pathPoints.size() > 1 || (pathPoints.size() == 1 && destDirWithin)){
 					if(type == UnitType::UNDERWATER && vertDist < 0.5 * height)
@@ -290,21 +282,10 @@ namespace battleship{
 		else
 			pursuingTarget = false;
 
-		if(distToTarg <= range && getTime() - lastFireTime > rateOfFire){
+		if(distToTarg <= range && canFire())
 			fire();
-
-			lastFireTime = getTime();
-		}
 	}
 
-	void Vehicle::fire(){
-		fireSfx->play();
-
-		Unit *targetUnit = orders[0].targets[0].unit;
-
-		if(targetUnit)
-			targetUnit->takeDamage(1);
-	}
 
 	void Vehicle::toggleSelection(bool selection){
 		if(!garrisonable)

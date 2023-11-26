@@ -1,6 +1,7 @@
 #include <solUtil.h>
 
 #include "player.h"
+#include "structure.h"
 #include "stateManager.h"
 #include "activeGameState.h"
 #include "resourceDeposit.h"
@@ -70,15 +71,21 @@ namespace battleship{
 			targets.push_back(Order::Target());
 
         for (Unit *u : selectedUnits) {
-			bool targetingSelf = false;
+			bool targetingSelf = false, structBuilt = true;
 
-			for(Order::Target &targ : targets)
+			for(Order::Target &targ : targets){
 				if(targ.unit && targ.unit == u){
 					targetingSelf = true;
 					break;
 				}
 
-			if(targetingSelf) continue;
+				if(!u->isVehicle() && ((Structure*)u)->getBuildStatus() < 100){
+					structBuilt = false;
+					break;
+				}
+			}
+
+			if(targetingSelf || !structBuilt) continue;
 
 			int lineId = -1;
 			ActiveGameState *activeState = ((ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE));
