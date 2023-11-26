@@ -14,7 +14,7 @@ namespace battleship{
 			initModel(false);
 		}    
 		~GameObjectFrame(){}
-		void update(){GameObject::update();}
+		void destroy(){destroyModel();}
 	
 		Status status;
 	};

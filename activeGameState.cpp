@@ -199,12 +199,14 @@ namespace battleship{
 				Vector3 dragboxOrigin = dragboxNode->getPosition(), dragboxEnd = dragboxOrigin + dragboxSize;
             	Vector2 pos = u->getScreenPos();
 
-				if(!mainPlayer->getSelectedUnitsByClass(UnitClass::ENGINEER).empty())
-					guiManager->readLuaScreenScript("engineerCommands.lua");
-				else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::LAND_FACTORY).empty())
-					guiManager->readLuaScreenScript("landFactoryCommands.lua");
-				else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::NAVAL_FACTORY).empty())
-					guiManager->readLuaScreenScript("navalFactoryCommands.lua");
+				if(buttons.empty()){
+					if(!mainPlayer->getSelectedUnitsByClass(UnitClass::ENGINEER).empty())
+						guiManager->readLuaScreenScript("engineerCommands.lua");
+					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::LAND_FACTORY).empty())
+						guiManager->readLuaScreenScript("landFactoryCommands.lua");
+					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::NAVAL_FACTORY).empty())
+						guiManager->readLuaScreenScript("navalFactoryCommands.lua");
+				}
 
                 if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){
                     if(!u->isSelected()){

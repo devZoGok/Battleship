@@ -10,7 +10,7 @@ gui = {
 		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
-		trigger = 75,
+		trigger = 76,
 		structureId = 8
 	},
 	{
@@ -30,7 +30,7 @@ gui = {
 		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
-		trigger = 75,
+		trigger = 77,
 		structureId = 10
 	},
 	{
@@ -50,7 +50,7 @@ gui = {
 		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
-		trigger = 80,
+		trigger = 68,
 		structureId = 12
 	}
 }

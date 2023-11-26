@@ -52,10 +52,9 @@ namespace battleship{
 	//TODO implement terrain evenness check
 	void GameObjectFrameController::placeGameObjectFrame(int id, Vector3 newPos, float width, float length){
 		GameObjectFrame &s = gameObjectFrames[id];
-		Model *model = s.getModel();
 
 		if(!rotatingStructure)
-			model->setPosition(newPos);
+			s.placeAt(newPos);
 
 		Map *map = Map::getSingleton();
 		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
@@ -65,9 +64,9 @@ namespace battleship{
 		float maxUnevenness = generateView()["maxUnevenness"], unevenness = 0;
 
 		for(int i = 0; i < numVerts; i++){
-			float diffX = fabs(model->getPosition().x - verts[i].pos.x);
-			float diffY = fabs(model->getPosition().y - verts[i].pos.y);
-			float diffZ = fabs(model->getPosition().z - verts[i].pos.z);
+			float diffX = fabs(s.getPos().x - verts[i].pos.x);
+			float diffY = fabs(s.getPos().y - verts[i].pos.y);
+			float diffZ = fabs(s.getPos().z - verts[i].pos.z);
 
 			if(diffX < 0.5 * width && diffZ < 0.5 * length && diffY > unevenness){
 				unevenness = diffY;
@@ -88,7 +87,7 @@ namespace battleship{
 			s.status = GameObjectFrame::PLACEABLE;
 		}
 
-		Material *mat = model->getMaterial();
+		Material *mat = s.getModel()->getMaterial();
 		mat->setVec4Uniform("diffuseColor", color);
 	}
 
@@ -123,9 +122,7 @@ namespace battleship{
 	}
 
 	void GameObjectFrameController::removeGameObjectFrame(int i){
-		Model *model = gameObjectFrames[i].getModel();
-		model->getParent()->dettachChild(model);
-		delete model;
+		gameObjectFrames[i].destroy();
 		gameObjectFrames.erase(gameObjectFrames.begin() + i);
 	}
 
@@ -136,10 +133,7 @@ namespace battleship{
 
 	void GameObjectFrameController::rotateGameObjectFrames(float angle){
 		for(GameObjectFrame &s : gameObjectFrames)
-			if(s.status != GameObjectFrame::PLACED){
-				Model *model = s.getModel();
-				Quaternion rot = model->getOrientation();
-			   	model->setOrientation(Quaternion(angle, Vector3::VEC_J) * rot);
-			}
+			if(s.status != GameObjectFrame::PLACED)
+			   	s.orientAt(Quaternion(angle, Vector3::VEC_J) * s.getRot());
 	}
 }
