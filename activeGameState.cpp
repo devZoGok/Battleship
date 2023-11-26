@@ -190,16 +190,20 @@ namespace battleship{
             for (Unit *u : p->getUnits())
                 units.push_back(u);
 
+		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+
         for (Unit *u : units) {
             if (u->getPlayer() == mainPlayer){
 			   	Vector3 dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
 				Vector3 dragboxOrigin = dragboxNode->getPosition(), dragboxEnd = dragboxOrigin + dragboxSize;
             	Vector2 pos = u->getScreenPos();
 
-				if(unitClassSelected(UnitClass::ENGINEER)){
-					ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+				if(!mainPlayer->getSelectedUnitsByClass(UnitClass::ENGINEER).empty())
 					guiManager->readLuaScreenScript("engineerCommands.lua");
-				}
+				else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::LAND_FACTORY).empty())
+					guiManager->readLuaScreenScript("landFactoryCommands.lua");
+				else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::NAVAL_FACTORY).empty())
+					guiManager->readLuaScreenScript("navalFactoryCommands.lua");
 
                 if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){
                     if(!u->isSelected()){
@@ -310,13 +314,6 @@ namespace battleship{
 		}
     }
 
-	bool ActiveGameState::unitClassSelected(UnitClass uc){
-		for(Unit *u : mainPlayer->getSelectedUnits())
-			if(u->getUnitClass() == uc)
-				return true;
-
-		return false;
-	}
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();

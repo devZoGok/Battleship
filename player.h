@@ -20,6 +20,7 @@ namespace battleship{
 		void removeUnit(Unit*);
 		void removeUnit(int);
         bool isThisPlayersUnit(GameObject*);
+		std::vector<Unit*> getSelectedUnitsByClass(UnitClass);
 		std::vector<Unit*> getSelectedUnits();
 		Unit* getSelectedUnit(int);
 		void selectUnits(std::vector<Unit*>);

@@ -13,6 +13,7 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace vb01;
 
+	//TODO implement structure build status argument
 	void AddUnitCommand::validate(){
 		if(!(arguments.size() == 2 || arguments.size() == 5 || arguments.size() == 9))
 			return;
@@ -49,7 +50,7 @@ namespace battleship{
 
 	void AddUnitCommand::addUnit(){
         Player* player = Game::getSingleton()->getPlayer(playerId);
-        player->addUnit(GameObjectFactory::createUnit(player, unitId, pos, rot));
+        player->addUnit(GameObjectFactory::createUnit(player, unitId, pos, rot, 100));
 	}
 
 	void AddUnitCommand::execute(){

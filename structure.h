@@ -17,7 +17,8 @@ namespace battleship{
 			virtual void update();
 		private:
 			int buildStatus = 0;
-			vb01::Node *buildStatusBackground, *buildStatusForeground;
+		protected:
+			vb01::Node *buildStatusBackground = nullptr, *buildStatusForeground = nullptr;
 	};
 }
 

@@ -20,6 +20,7 @@
 #include "inGameAppState.h"
 #include "mainMenuButton.h"
 #include "buildButton.h"
+#include "trainButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -156,7 +157,12 @@ namespace battleship{
 				break;
 			}
 			case BUILD:
-				button = new BuildButton(pos, size, (int)guiTable["structureId"], name, (int)guiTable["trigger"], "");
+				button = new BuildButton(pos, size, (int)guiTable["structureId"], name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
+				break;
+			case LAND_FACTORY_TRAIN:
+				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)UnitClass::LAND_FACTORY, (int)guiTable["unitId"]);
+			case NAVAL_FACTORY_TRAIN:
+				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)UnitClass::NAVAL_FACTORY, (int)guiTable["unitId"]);
 				break;
 		}
 

@@ -23,7 +23,9 @@ ButtonType = {
 	CONSOLE = 19,
 	MAIN_MENU = 20,
 	CONSOLE_COMMAND_OK = 21,
-	BUILD = 22
+	BUILD = 22,
+	LAND_FACTORY_TRAIN = 23,
+	NAVAL_FACTORY_TRAIN = 24
 }
 
 ListboxType = {

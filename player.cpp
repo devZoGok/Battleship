@@ -157,6 +157,16 @@ namespace battleship{
 		return selectedUnit;
 	}
 
+	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
+		vector<Unit*> selectedUnits = getSelectedUnits(), unitsByClass;
+
+		for(Unit *u : selectedUnits)
+			if(u->getUnitClass() == uc)
+				unitsByClass.push_back(u);
+
+		return unitsByClass;
+	}
+
 	void Player::selectUnits(vector<Unit*> selUnits){
 		for(Unit *u : selUnits)
 			u->toggleSelection(true);

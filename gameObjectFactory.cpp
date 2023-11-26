@@ -1,6 +1,6 @@
 #include "gameObjectFactory.h"
 #include "player.h"
-#include "structure.h"
+#include "factory.h"
 #include "engineer.h"
 #include "transport.h"
 #include "projectile.h"
@@ -16,7 +16,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 
-	Unit* GameObjectFactory::createUnit(Player *player, int id, Vector3 pos, Quaternion rot){
+	Unit* GameObjectFactory::createUnit(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus){
 		sol::state_view SOL_LUA_STATE = generateView();
 		int unitClass = SOL_LUA_STATE["units"]["unitClass"][id + 1];
 
@@ -27,10 +27,11 @@ namespace battleship{
 				return new Transport(player, id, pos, rot);
 			case UnitClass::LAND_FACTORY:
 			case UnitClass::NAVAL_FACTORY:
+				return new Factory(player, id, pos, rot, buildStatus);
 			case UnitClass::MARKET:
 			case UnitClass::LAB:
 			case UnitClass::POINT_DEFENSE:
-				return new Structure(player, id, pos, rot);
+				return new Structure(player, id, pos, rot, buildStatus);
 			default:
 				return new Vehicle(player, id, pos, rot);
 		}

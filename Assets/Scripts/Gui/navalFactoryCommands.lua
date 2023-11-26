@@ -5,11 +5,11 @@ gui = {
 	{
 		pos = {x = res.x - 200, y = res.y - 200},
 		size = {x = 100, y = 100},
-		name = 'Point defense',
+		name = 'Transport',
 		imagePath = '',
 		guiType = GuiType.BUTTON,
-		buttonType = ButtonType.BUILD,
+		buttonType = ButtonType.NAVAL_FACTORY_TRAIN,
 		trigger = 66,
-		structureId = 8
+		unitId = 4
 	}
 }
