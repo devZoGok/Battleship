@@ -274,7 +274,8 @@ namespace battleship{
 		Unit::attack(order);
 
 		Order::Target target = order.targets[0];
-		float distToTarg = pos.getDistanceFrom(target.unit ? target.unit->getPos() : target.pos);
+		Vector3 targVec = (target.unit ? target.unit->getPos() : target.pos) - pos;
+		float distToTarg = targVec.getLength();
 		float minDist = range;
 
 		if(distToTarg > minDist)
@@ -282,8 +283,14 @@ namespace battleship{
 		else
 			pursuingTarget = false;
 
-		if(distToTarg <= range && canFire())
-			fire();
+		float angleToTarg = targVec.norm().getAngleBetween(dirVec);
+
+		if(distToTarg <= range){
+			if(angleToTarg <= anglePrecision && canFire())
+				fire();
+			else if(angleToTarg > anglePrecision)
+				turn(calculateRotation(targVec.norm(), angleToTarg, maxTurnAngle));
+		}
 	}
 
 
