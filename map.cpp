@@ -127,6 +127,7 @@ namespace battleship{
 		assetManager->load(path + DEFAULT_TEXTURE);
 		sol::state_view SOL_LUA_STATE = generateView();
 		assetManager->load(path + (string)SOL_LUA_STATE["modelPrefix"], true);
+		assetManager->load(path + "Textures/", true);
 
 		int numPlayers = SOL_LUA_STATE[mapTable]["numPlayers"];
 		string playerInd = "players";

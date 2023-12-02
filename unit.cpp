@@ -187,14 +187,12 @@ namespace battleship{
 		string p[numFrames];
 
 		for(int i = 0; i < numFrames; i++)
-			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion0" + to_string(7) + ".png";
+			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion07.png";
 
-		Texture *tex = new Texture(numFrames, p, false);
+		Texture *tex = new Texture(p, numFrames, false);
 
 		Material *mat = new Material(root->getLibPath() + "particle");
-		mat->addVec4Uniform("startColor", Vector4(1, 1, 1, 1));
-		mat->addVec4Uniform("endColor", Vector4(1, 1, 0, 1));
-		mat->addTexUniform("tex", tex, false);
+		mat->addTexUniform("tex", tex, true);
 
 		ParticleEmitter *pe = new ParticleEmitter(1);
 		pe->setMaterial(mat);
@@ -202,6 +200,7 @@ namespace battleship{
 		pe->setHighLife(3);
 		pe->setSize(10 * Vector2::VEC_IJ);
 		pe->setSpeed(0);
+
 		Node *node = new Node(pos + Vector3(0, 2, 0));
 		node->attachParticleEmitter(pe);
 		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
