@@ -206,7 +206,7 @@ namespace battleship{
 		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
 		root->getRootNode()->attachChild(node);
 
-		Fx fx(2500, deathSfx, node);
+		Fx fx(50, 2500, deathSfx, node);
 		fx.activate();
 		Game::getSingleton()->addFx(fx);
 
