@@ -16,7 +16,7 @@ namespace battleship{
 			return;
 		}
 
-		float angleToTarg = targDir.getAngleBetween(turretDir);
+		float angleToTarg = targDir.norm().getAngleBetween(turretDir);
 		
 		if(angleToTarg > .05)
 			rotateTurret(calculateRotation(targDir.norm(), angleToTarg, .1));
