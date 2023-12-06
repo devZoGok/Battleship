@@ -273,6 +273,8 @@ namespace battleship{
 
 	//TODO fix ejectable unit selection with multiple transports selected
     void ActiveGameState::issueOrder(Order::TYPE type, vector<Order::Target> targets, bool addOrder) {
+		if(targets.empty()) return;
+
 		Vector3 destDir = (selectingDestOrient ? GameObjectFrameController::getSingleton()->getGameObjectFrame(0).getDirVec() : Vector3::VEC_ZERO);
 		mainPlayer->issueOrder(type, destDir, targets, addOrder);
 		this->targets.clear();
