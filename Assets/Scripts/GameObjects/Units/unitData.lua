@@ -445,8 +445,8 @@ units = {
 	},
 	selectionSfx = {
 		PATH .. 'Sounds/Units/WarMechs/selection.ogg',
-		PATH .. 'Sounds/Units/Engineers/selection.ogg',
-		PATH .. 'Sounds/Units/Engineers/selection.ogg',
+		PATH .. 'Sounds/Units/Tanks/selection.ogg',
+		PATH .. 'Sounds/Units/Tanks/selection.ogg',
 		PATH .. 'Sounds/Units/Engineers/selection.ogg',
 		PATH .. 'Sounds/Units/Transports/selection.ogg',
 		PATH .. 'Sounds/Units/Cargoships/selection.ogg',
@@ -460,8 +460,8 @@ units = {
 	},
 	fireSfx = {
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/Tanks/attack.ogg',
+		PATH .. 'Sounds/Units/Tanks/attack.ogg',
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
