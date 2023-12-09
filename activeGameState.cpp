@@ -342,12 +342,12 @@ namespace battleship{
 								else if(ufCtr->isPlacingFrames() && !selectingDestOrient)
 									type = Order::TYPE::BUILD;
 							
-								issueOrder(type, shiftPressed);
+								issueOrder(type, targets, shiftPressed);
 							}
 						}
 						else{
 							bool canSelect = canSelectHoveredOnGameObj();
-							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getSide() == mainPlayer->getSide());
+							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getTeam() == mainPlayer->getTeam());
 
 							if(gameObjHoveredOn && (gameObjHoveredOn->getType() == GameObject::Type::UNIT && ((Unit*)gameObjHoveredOn)->getNumGarrisonSlots() > 0 && ownGameObj))
 								issueOrder(Order::TYPE::GARRISON, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
