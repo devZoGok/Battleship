@@ -271,7 +271,11 @@ namespace battleship{
 	}
 
 	void Vehicle::attack(Order order){
+		int prevNumOrders = orders.size();
 		Unit::attack(order);
+		int currNumOrders = orders.size();
+
+		if(prevNumOrders != currNumOrders) return;
 
 		Order::Target target = order.targets[0];
 		Vector3 targVec = (target.unit ? target.unit->getPos() : target.pos) - pos;

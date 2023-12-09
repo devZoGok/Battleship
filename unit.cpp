@@ -275,21 +275,20 @@ namespace battleship{
 	}
 
 	void Unit::attack(Order order){
-		if(orders[0].targets[0].unit){
-			bool unitFound = false;
+		vector<Unit*> units;
 
-			for(Player *pl : Game::getSingleton()->getPlayers()){
-				vector<Unit*> units = pl->getUnits();
-
-				if(find(units.begin(), units.end(), orders[0].targets[0].unit) != units.end()){
-					unitFound = true;
-					break;
-				}
-			}
-
-			if(!unitFound)
-				removeOrder(0);
+		for(Player *pl : Game::getSingleton()->getPlayers()){
+			vector<Unit*> un = pl->getUnits();
+			units.insert(units.end(), un.begin(), un.end());
 		}
+
+		for(Order::Target &target : orders[0].targets)
+			if(target.unit){
+				if(find(units.begin(), units.end(), target.unit) != units.end())
+					break;
+
+				removeOrder(0);
+			}
 	}
 
     void Unit::setOrder(Order order) {
