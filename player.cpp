@@ -132,7 +132,7 @@ namespace battleship{
 
 	void Player::removeUnit(int id){
 		if(units[id]->isSelected())
-			deselectUnit(id);
+			units[id]->toggleSelection(false);
 
 		delete units[id];
 		units.erase(units.begin() + id);
