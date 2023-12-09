@@ -26,9 +26,9 @@ namespace battleship{
 
   		const static int numAppStates = 4;
   		const static int numStaticBinds[numAppStates]{6, 0, 5, 19};
-  		const static int numConfBinds[numAppStates]{0, 1, 22, 0};
+  		const static int numConfBinds[numAppStates]{0, 1, 23, 0};
 		const static int maxStaticBinds = 19;
-		const static int maxConfBinds = 22;
+		const static int maxConfBinds = 23;
 		const static int numScripts = 5;
 
 		const static std::string scriptPathBase = "Scripts/";

@@ -56,6 +56,8 @@ namespace battleship{
 	}
 
 	void Player::issueOrder(Order::TYPE type, Vector3 destDir, vector<Order::Target> targets, bool append){
+		if(type != Order::TYPE::EJECT && targets.empty()) return;
+
 		vector<Unit*> selectedUnits = getSelectedUnits();
 
 		if(type == Order::TYPE::EJECT){
