@@ -34,18 +34,18 @@ namespace battleship{
 		SOL_LUA_VIEW.script("game.players = {}");
 
 		for(int i = 0; i < players.size(); i++)
-			SOL_LUA_VIEW.script("game.players[" + to_string(i + 1) + "] = Player:new()");
+			SOL_LUA_VIEW["game"]["players"][i + 1] = *players[i];
+
+		for(int i = 0; i < players.size(); i++)
+			if(players[i]->isCpuPlayer())
+				SOL_LUA_VIEW.script("executeBtNode(game.players[" + to_string(i + 1) + "].behaviour)");
 	}
 
 	void Game::update(){
 		resetLuaGameObjects();
 
-		for(int i = 0; i < players.size(); i++){
+		for(int i = 0; i < players.size(); i++)
 			players[i]->update();
-
-			if(players[i]->isCpuPlayer())
-				generateView().script("game.players[" + to_string(i + 1) + "]:update()");
-		}
 
 		for(Projectile *proj : projectiles)
 			proj->update();

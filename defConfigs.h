@@ -40,6 +40,7 @@ namespace battleship{
 			VEHICLE_DATA,
 			STRUCTURE_DATA,
 			RESOURCE_DATA,
+			AI_AGENT,
 			PLAYER
 		};
 		const static std::vector<std::string> scripts = std::vector<std::string>{

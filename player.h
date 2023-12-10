@@ -56,7 +56,6 @@ namespace battleship{
         vb01::Vector3 spawnPoint;
 
 		int getOrderLineId(Order::TYPE, vb01::Vector3, vb01::Vector3);
-		void syncLuaPlayer();
     };
 }
 

@@ -2,7 +2,6 @@
 
 #include <stateManager.h>
 #include <inputManager.h>
-#include <solUtil.h>
 
 #include <assetManager.h>
 #include <root.h>
@@ -10,6 +9,7 @@
 #include "gameManager.h"
 #include "guiAppState.h"
 #include "defConfigs.h"
+#include "player.h"
 
 using namespace std;
 using namespace vb01;
@@ -25,10 +25,15 @@ namespace battleship{
 		return gameManager;
 	}
 
-	void GameManager::start(string gameDir) {
-		path = gameDir + "Assets/";
-
+	void GameManager::registerPlayerMembers(){
 		sol::state_view SOL_LUA_STATE = generateView();
+		sol::usertype<Player> playerType = SOL_LUA_STATE.new_usertype<Player>("Player", sol::constructors<Player(int, int, int, bool, Vector3)>());
+	}
+
+	void GameManager::initLua(string gameDir){
+		sol::state_view SOL_LUA_STATE = generateView();
+
+		path = gameDir + "Assets/";
 		SOL_LUA_STATE.script("PATH = \"" + path + "\";");
 
 		for(string f : configData::scripts)
@@ -37,6 +42,11 @@ namespace battleship{
 		sol::table resTable = SOL_LUA_STATE["graphics"]["resolution"]; 
 		width = resTable["x"];
 		height = resTable["y"];
+	}
+
+	void GameManager::start(string gameDir) {
+		registerPlayerMembers();
+		initLua(gameDir);
 
 		Root *root = Root::getSingleton();
 		root->start(width, height, path + "../external/vb01/", "Battleship");
