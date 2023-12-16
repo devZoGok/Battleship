@@ -34,11 +34,13 @@ namespace battleship{
 		SOL_LUA_VIEW.script("game.players = {}");
 
 		for(int i = 0; i < players.size(); i++)
-			SOL_LUA_VIEW["game"]["players"][i + 1] = *players[i];
+			SOL_LUA_VIEW["game"]["players"][i + 1] = players[i];
 
 		for(int i = 0; i < players.size(); i++)
-			if(players[i]->isCpuPlayer())
-				SOL_LUA_VIEW.script("executeBtNode(game.players[" + to_string(i + 1) + "].behaviour)");
+			if(players[i]->isCpuPlayer()){
+				string plStr = "game.players[" + to_string(i + 1) + "]";
+				SOL_LUA_VIEW.script("executeBtNode(" + plStr + ", " + plStr + ".behaviour)");
+			}
 	}
 
 	void Game::update(){

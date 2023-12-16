@@ -1,3 +1,5 @@
-Vehicle = {}
-
-function Vehicle:new{Unit:new()}
+Vehicle.behaviour = {
+	type = BTNodeType.SEQUENCE,
+	children = {
+	}
+}

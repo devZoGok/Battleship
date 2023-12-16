@@ -29,6 +29,11 @@ namespace battleship{
     private:
         GameManager(){}
         ~GameManager(){}
+		void registerOrderMembers();
+		void registerVectorMembers();
+		void registerQuaternionMembers();
+		void registerGameObjectFactoryMembers();
+		void registerUnitMembers();
 		void registerPlayerMembers();
 		void initLua(std::string);
 

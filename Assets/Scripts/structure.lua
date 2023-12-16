@@ -1,3 +1,5 @@
-Structure = {}
-
-function Structure:new{Unit:new()}
+Structure.behaviour = {
+	type = BTNodeType.SEQUENCE,
+	children = {
+	}
+}

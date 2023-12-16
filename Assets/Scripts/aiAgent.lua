@@ -1,11 +1,12 @@
 BTNodeType = {SELECTOR = 0, SEQUENCE = 1, FUNCTION = 2}
 
-function executeBtNode(btNode)
+function executeBtNode(agent, btNode)
 	for i = 1, #btNode.children do
 		if btNode.children[i].type == BTNodeType.FUNCTION then
-			res = btNode.children[i].func()
+			func = btNode.children[i].func
+			res = agent[func](agent)
 		else
-			res = executeBtNode(btNode.children[i])
+			res = executeBtNode(agent, btNode.children[i])
 		end
 	
 		if btNode.type == BTNodeType.SELECTOR then

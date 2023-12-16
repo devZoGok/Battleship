@@ -33,15 +33,16 @@ namespace battleship{
 			string mapName = wstringToString(mapListbox->getContents()[selectedMap]);
 			Map *map = Map::getSingleton();
 			map->load(mapName);
-			Game::getSingleton()->addPlayer(new Player(0, 0, 0));
 
 			int numPlayers = map->getNumSpawnPoints();
 
 			for(int i = 0; i < numPlayers; i++){
-				Player *player = new Player(0, 0, i + 1, false);
+				Player *player = new Player(0, 0, i);
 				map->loadPlayerGameObjects(player);
 				Game::getSingleton()->addPlayer(player);
 			}
+
+			Game::getSingleton()->addPlayer(new Player(0, 0, 0, false));
 
 			StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 	        stateManager->attachAppState(new InGameAppState(difficulties, factions));
