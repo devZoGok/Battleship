@@ -19,6 +19,7 @@ namespace battleship{
 			~Factory(){}
 			void update();
 			void appendToQueue(int);
+			inline std::vector<int> getQueue(){return unitQueue;}
 		private:
 			const int MAX_LEN_QUEUE = 10;
 			int trainingStatus = 0, rateOfTraining = 50;

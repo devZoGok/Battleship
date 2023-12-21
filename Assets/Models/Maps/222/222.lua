@@ -5,7 +5,7 @@ impassibleNodeValue = 65535,
 numPlayers = 1,
 numSpawnPoints = 1,
 spawnPoints = {
-{x = 0.000000, y = 0.000000, z = 0.000000},
+{x = -50.000000, y = 0.000000, z = -50.000000},
 },
 players = {
 {

@@ -49,7 +49,9 @@ namespace battleship{
 
 	void Vehicle::addOrder(Order order){
 		if(order.type != Order::TYPE::EJECT){
-			preparePathpoints(order.targets[0].pos);
+			Order::Target targ = order.targets[0];
+			Vector3 targPos = (targ.unit ? targ.unit->getPos() : targ.pos);
+			preparePathpoints(targPos);
 
 			if(!pathPoints.empty())
 				orders.push_back(order);

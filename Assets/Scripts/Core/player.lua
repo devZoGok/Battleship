@@ -1,22 +1,59 @@
-function Player:selectTaskForce()
-	taskForce = self:getSelectedUnitsByClass(UnitClass.TANK)
-	return #taskForce > 5
-end
+Player.sizeTaskForce = 5
+Player.trainingStarted = false 
+Player.taskForceSent = false 
+Player.buildOrdered = false 
 
-function Player:issueMoveOrder()
-	return false
-end
+function Player:sendTaskForce()
+	if self.taskForceSent then
+		return true
+	end
 
-function Player:selectLandFactory()
-	return false
+	self:deselectUnits()
+	taskForce = {}
+
+	for i = 1, self:getNumUnits() do
+		if self:getUnit(i - 1):getUnitClass() == UnitClass.TANK then
+			taskForce[i] = self:getUnit(i - 1)
+			taskForce[i]:toggleSelection(true)
+		end
+	end
+
+	if #taskForce >= self.sizeTaskForce then
+		print('Sending...')
+		self.taskForceSent = true
+		self:issueOrder(2, Vector3:new(0, 0, 0), {Target:new(nil, Vector3:new(0, 0, 0))}, false)
+		return true
+	else
+		return false
+	end
 end
 
 function Player:trainTaskForce()
-	return false
-end
+	if self.trainingStarted then
+		return true
+	end
 
-function Player:selectLandCell()
-	return true
+	landFactory = nil
+
+	for i = 1, self:getNumUnits() do
+		if self:getUnit(i - 1):getUnitClass() == UnitClass.LAND_FACTORY then
+			landFactory = self:getUnit(i - 1):toFactory()
+			break
+		end
+	end
+
+	if landFactory ~= nil then
+		print('Training...')
+		for i = 0, self.sizeTaskForce do
+			landFactory:appendToQueue(UnitClass.TANK)
+		end
+
+		self.trainingStarted = true
+		return true
+	else
+		return false
+	end
+	
 end
 
 function Player:selectEngi()
@@ -31,6 +68,10 @@ function Player:selectEngi()
 end
 
 function Player:issueBuildOrder()
+	if self.buildOrdered then
+		return true
+	end
+
 	for i = 1, self:getNumUnits() do
 		if self:getUnit(i - 1):getUnitClass() == UnitClass.LAND_FACTORY then
 			return true
@@ -41,30 +82,21 @@ function Player:issueBuildOrder()
 	structure = GameObjectFactory.createUnit(self, 8, spawnPoint, Quaternion:new(1, 0, 0, 0), 0)
 	self:addUnit(structure)
 
-	targets = {Target:new(structure, Vector3:new(0, 0, 0))}
-	self:issueOrder(1, Vector3:new(0, 0, 0), targets, false)
+	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(structure, Vector3:new(0, 0, 0))}, false)
+	self.buildOrdered = true
 	return true
 end
 
 Player.behaviour = {
 	type = BTNodeType.SELECTOR,
 	children = {
+		{type = BTNodeType.FUNCTION, func = 'sendTaskForce'},
+		{type = BTNodeType.FUNCTION, func = 'trainTaskForce'},
 		{
 			type = BTNodeType.SEQUENCE, children = {
-				{type = BTNodeType.FUNCTION, func = 'selectTaskForce'},
-				{type = BTNodeType.FUNCTION, func = 'issueMoveOrder'},
-			},
-			type = BTNodeType.SEQUENCE, children = {
-				{type = BTNodeType.FUNCTION, func = 'selectLandFactory'},
-				{type = BTNodeType.FUNCTION, func = 'trainTaskForce'}
-			},
-			type = BTNodeType.SEQUENCE, children = {
-				{type = BTNodeType.FUNCTION, func = 'selectLandCell'},
 				{type = BTNodeType.FUNCTION, func = 'selectEngi'},
-				{type = BTNodeType.FUNCTION, func = 'issueBuildOrder'}
+				{type = BTNodeType.FUNCTION, func = 'issueBuildOrder'},
 			}
 		}
-		--[[
-		]]--
 	}
 }

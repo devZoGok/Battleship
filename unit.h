@@ -28,6 +28,10 @@ namespace battleship{
     class Player;
 	class Unit;
 	class Vehicle;
+	class Factory;
+	class Transport;
+	class PointDefense;
+	class Engineer;
     
     struct Order {
         enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH};
@@ -74,6 +78,10 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		virtual void reinit();
+		inline Engineer* toEngineer(){return (Engineer*)this;}
+		inline Transport* toTransport(){return (Transport*)this;}
+		inline Factory* toFactory(){return (Factory*)this;}
+		inline PointDefense* toPointDefense(){return (PointDefense*)this;}
 		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
