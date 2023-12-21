@@ -44,7 +44,7 @@ function Player:trainTaskForce()
 
 	if landFactory ~= nil then
 		print('Training...')
-		for i = 0, self.sizeTaskForce do
+		for i = 1, self.sizeTaskForce do
 			landFactory:appendToQueue(UnitClass.TANK)
 		end
 

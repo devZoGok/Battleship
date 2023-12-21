@@ -16,6 +16,8 @@ namespace battleship{
     Player::~Player() {}
 
     void Player::update() {
+		vector<Unit*> units = this->units;
+
 		for(Unit *u : units)
 			u->update();
 

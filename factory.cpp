@@ -2,8 +2,11 @@
 #include "player.h"
 #include "gameObjectFactory.h"
 
+#include <vector>
+
 namespace battleship{
 	using namespace vb01;
+	using namespace std;
 
 	Factory::Factory(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Structure(player, id, pos, rot, buildStatus){
 		initProperties();
@@ -39,7 +42,10 @@ namespace battleship{
 			if(trainingStatus >= 100){
 				unitQueue.erase(unitQueue.begin());
 				trainingStatus = 0;
-				player->addUnit(GameObjectFactory::createUnit(player, unitQueue[0], pos + 30 * dirVec, rot));
+
+				Unit *unit = GameObjectFactory::createUnit(player, unitQueue[0], pos, rot);
+				player->addUnit(unit);
+				unit->setOrder(Order(Order::TYPE::MOVE, vector<Order::Target>{Order::Target(nullptr, pos + 30 * dirVec)}, Vector3::VEC_ZERO));
 			}
 		}
 	}
