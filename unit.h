@@ -73,7 +73,7 @@ namespace battleship{
         virtual void blowUp();
         virtual void halt();
 		void updateGarrison(Vehicle*, bool);
-        virtual void toggleSelection(bool);
+        virtual void select();
         void setOrder(Order);
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
@@ -94,6 +94,7 @@ namespace battleship{
 		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
     private:
+		void renderOrderLine(bool);
         void updateScreenCoordinates();
 		void init();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
@@ -113,6 +114,7 @@ namespace battleship{
         float lineOfSight, range;
 		std::vector<GarrisonSlot> garrisonSlots;
 
+		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
 		virtual void initProperties();
 		virtual void destroySound();
@@ -130,7 +132,7 @@ namespace battleship{
 		virtual void fire();
 		void removeBar(vb01::Node*);
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);
-        void displayUnitStats(vb01::Node*, vb01::Node*, int, int, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
+        void displayUnitStats(vb01::Node*, vb01::Node*, int, int, bool, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
 		inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
     };
 }

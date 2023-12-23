@@ -14,7 +14,7 @@
 #include "util.h"
 #include "game.h"
 #include "vehicle.h"
-#include "inGameAppState.h"
+#include "activeGameState.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
 
@@ -154,11 +154,9 @@ namespace battleship{
 	void Unit::initUnitStats(){
 	}
 
-    void Unit::update() {
-		GameObject::update();
-
-        if (!orders.empty() && orders[0].lineId != -1){
-			bool display = (selected && canDisplayOrderLine());
+	void Unit::renderOrderLine(bool mainPlayerSelecting){
+        if (!orders.empty() && orders[0].lineId != -1 && mainPlayerSelecting){
+			bool display = canDisplayOrderLine();
 			LineRenderer *lineRenderer = LineRenderer::getSingleton();
 			lineRenderer->toggleVisibility(orders[0].lineId, display);
 
@@ -168,13 +166,26 @@ namespace battleship{
 				lineRenderer->changeLineField(orders[0].lineId, targPos, LineRenderer::END);
 			}
         }
+	}
 
+    void Unit::update() {
+		GameObject::update();
+
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
+
+		vector<Player*> selectingPlayers = getSelectingPlayers();
+		bool mainPlayerSelecting = find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end();
+		bool ownerSelecting = (mainPlayer == player && mainPlayerSelecting);
+
+		renderOrderLine(ownerSelecting);
         executeOrders();
 
-		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth);
+		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth, mainPlayerSelecting);
 
-		for(GarrisonSlot &slot : garrisonSlots)
-			displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, slot.offset);
+		if(ownerSelecting)
+			for(GarrisonSlot &slot : garrisonSlots)
+				displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, mainPlayerSelecting, slot.offset);
 
         if (health <= 0) 
 			blowUp();
@@ -213,11 +224,11 @@ namespace battleship{
 		player->removeUnit(this);
     }
 
-    void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, Vector2 offset) {
-		foreground->setVisible(selected);
-		background->setVisible(selected);
+    void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, bool render, Vector2 offset) {
+		foreground->setVisible(render);
+		background->setVisible(render);
 
-		if(selected){
+		if(render){
 			Vector3 offset3d = Vector3(offset.x, offset.y, 0);
 
 			Quad *bgQuad = (Quad*)background->getMesh(0);
@@ -320,6 +331,22 @@ namespace battleship{
 	void Unit::addOrder(Order order){
 		orders.push_back(order);
 	}
+
+	vector<Player*> Unit::getSelectingPlayers(){
+		vector<Player*> players = Game::getSingleton()->getPlayers(), selectingPlayers;
+
+		for(Player *pl : players){
+			int numSelectedUnits = pl->getNumSelectedUnits();
+
+			for(int i = 0; i < numSelectedUnits; i++)
+				if(pl->getSelectedUnit(i) == this){
+					selectingPlayers.push_back(pl);
+					break;
+				}
+		}
+
+		return selectingPlayers;
+	}
     
     void Unit::removeOrder(int id) {
 		if(orders[id].lineId != -1)
@@ -328,10 +355,14 @@ namespace battleship{
         orders.erase(orders.begin() + id);
     }
 
-    void Unit::toggleSelection(bool selection) {
-        selected = selection;
+    void Unit::select() {
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
 
-        if(selection && selectionSfx)
+		vector<Player*> selectingPlayers = getSelectingPlayers();
+		bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
+
+        if(mainPlayer == player && mainPlayerSelecting && selectionSfx)
             selectionSfx->play();
 
         orderLineDispTime = getTime();

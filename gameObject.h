@@ -20,14 +20,13 @@ namespace battleship{
 			GameObject(Type t, int i, Player *pl, vb01::Vector3 vec, vb01::Quaternion quat) : type(t), id(i), player(pl), pos(vec), rot(quat){}
 			~GameObject(){}
 			virtual void update();
-        	virtual void toggleSelection(bool sel){selected = sel;}
+        	virtual void select(){}
 			void placeAt(vb01::Vector3);
 			void orientAt(vb01::Quaternion);
 			std::string getGameObjTableName();
 			vb01::Vector2 calculateSelectionRect();
         	inline vb01::Vector2 getScreenPos(){return screenPos;}
 			inline vb01::Vector3 getCorner(int i){return corners[i];}
-			inline bool isSelected(){return selected;}
 			inline bool isSelectable(){return selectable;}
 			inline bool isDebuggable(){return debugging;}
 			inline vb01::Vector3 getPos() {return pos;}
@@ -62,7 +61,7 @@ namespace battleship{
 			vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
 			vb01::Vector2 screenPos;
 			vb01::Quaternion rot;
-			bool selected = false, selectable = false, debugging = false;
+			bool selectable = false, debugging = false;
 			float width, height, length;
 	};
 }

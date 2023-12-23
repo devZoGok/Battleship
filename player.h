@@ -16,17 +16,17 @@ namespace battleship{
         ~Player();
         void update();
 		void issueOrder(Order::TYPE, vb01::Vector3, std::vector<Order::Target>, bool);
-		void deselectUnits();
 		void removeUnit(Unit*);
 		void removeUnit(int);
         bool isThisPlayersUnit(GameObject*);
 		std::vector<Unit*> getSelectedUnitsByClass(UnitClass);
-		std::vector<Unit*> getSelectedUnits();
-		Unit* getSelectedUnit(int);
 		void selectUnits(std::vector<Unit*>);
-		inline void deselectUnit(int i){getSelectedUnit(i)->toggleSelection(false);}
+		inline void deselectUnits(){selectedUnits.clear();}
+		inline Unit* getSelectedUnit(int id){return selectedUnits[id];}
+		inline std::vector<Unit*> getSelectedUnits(){return selectedUnits;}
+		inline void deselectUnit(int i){selectedUnits.erase(selectedUnits.begin() + i);}
 		inline int getNumSelectedUnits(){return getSelectedUnits().size();}
-		inline void selectUnit(Unit *u){u->toggleSelection(true);}
+		inline void selectUnit(Unit *u){selectUnits(std::vector<Unit*>{u});}
         inline void addUnit(Unit *u){units.push_back(u);}
 		inline std::vector<ResourceDeposit*>& getResourceDeposits(){return resourceDeposits;}
         inline void addResourceDeposit(ResourceDeposit *rd){resourceDeposits.push_back(rd);}
@@ -50,7 +50,7 @@ namespace battleship{
     private:
 		bool cpuPlayer = false;
         int refineds = 0, wealth = 0, research = 0, faction, difficulty, team, luaPlayerId;
-        std::vector<Unit*> units;
+        std::vector<Unit*> units, selectedUnits;
 		std::vector<Projectile*> projectiles;
 		std::vector<ResourceDeposit*> resourceDeposits;
         vb01::Vector3 spawnPoint;

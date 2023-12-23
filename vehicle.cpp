@@ -300,8 +300,8 @@ namespace battleship{
 	}
 
 
-	void Vehicle::toggleSelection(bool selection){
+	void Vehicle::select(){
 		if(!garrisonable)
-			Unit::toggleSelection(selection);
+			Unit::select();
 	}
 }

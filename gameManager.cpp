@@ -55,7 +55,6 @@ namespace battleship{
 
 		SOL_LUA_STATE.new_usertype<Unit>(
 			"Unit", sol::constructors<Unit(Player*, int, Vector3, Quaternion)>(),
-			"toggleSelection", &Unit::toggleSelection,
 			"getUnitClass", &Unit::getUnitClass,
 			"toEngineer", &Unit::toEngineer,
 			"toPointDefense", &Unit::toPointDefense,

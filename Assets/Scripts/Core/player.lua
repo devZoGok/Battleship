@@ -13,14 +13,13 @@ function Player:sendTaskForce()
 
 	for i = 1, self:getNumUnits() do
 		if self:getUnit(i - 1):getUnitClass() == UnitClass.TANK then
-			taskForce[i] = self:getUnit(i - 1)
-			taskForce[i]:toggleSelection(true)
+			taskForce[#taskForce + 1] = self:getUnit(i - 1)
 		end
 	end
 
 	if #taskForce >= self.sizeTaskForce then
-		print('Sending...')
 		self.taskForceSent = true
+		self:selectUnits(taskForce)
 		self:issueOrder(2, Vector3:new(0, 0, 0), {Target:new(nil, Vector3:new(0, 0, 0))}, false)
 		return true
 	else

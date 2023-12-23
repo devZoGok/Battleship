@@ -37,7 +37,7 @@ namespace battleship{
 			void preparePathpoints(vb01::Vector3);
 			void removePathpoint(int = 0);
 			void removeAllPathpoints();
-			void toggleSelection(bool);
+			void select();
 		protected:
 			std::vector<vb01::Vector3> pathPoints;
 

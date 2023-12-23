@@ -1,6 +1,9 @@
 #include "factory.h"
 #include "player.h"
 #include "gameObjectFactory.h"
+#include "activeGameState.h"
+
+#include <stateManager.h>
 
 #include <vector>
 
@@ -32,7 +35,13 @@ namespace battleship{
 		buildStatusBackground->setVisible(training);
 
 		if(training){
-			Unit::displayUnitStats(buildStatusForeground, buildStatusBackground, trainingStatus, 100, Vector2(0, -10));
+			ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+			Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
+
+			vector<Player*> selectingPlayers = getSelectingPlayers();
+			bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
+
+			Unit::displayUnitStats(buildStatusForeground, buildStatusBackground, trainingStatus, 100, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
 
 			if(canTrain()){
 				trainingStatus++;

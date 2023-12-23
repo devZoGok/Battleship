@@ -101,26 +101,6 @@ namespace battleship{
         }
 	}
 
-    bool Player::isThisPlayersUnit(GameObject *u) {
-        bool foundUnit = false;
-
-        if (units.size() > 0) {
-            for (int i = 0; i < units.size() && !foundUnit; i++)
-                if (units[i] == u)
-                    foundUnit = true;
-
-            return foundUnit;
-        } else
-            return false;
-    }
-
-	void Player::deselectUnits(){
-		vector<Unit*> selectedUnits = getSelectedUnits();
-
-		for(Unit *u : selectedUnits)
-			u->toggleSelection(false);
-	}
-
 	void Player::removeUnit(Unit *unit){
 		for(int i = 0; i < units.size(); i++)
 			if(unit == units[i]){
@@ -130,37 +110,8 @@ namespace battleship{
 	}
 
 	void Player::removeUnit(int id){
-		if(units[id]->isSelected())
-			units[id]->toggleSelection(false);
-
 		delete units[id];
 		units.erase(units.begin() + id);
-	}
-
-	vector<Unit*> Player::getSelectedUnits(){
-		vector<Unit*> selectedUnits;
-
-		for(Unit *u : units)
-			if(u->isSelected())
-				selectedUnits.push_back(u);
-
-		return selectedUnits;
-	}
-
-	Unit* Player::getSelectedUnit(int selectedUnitId){
-		Unit *selectedUnit = nullptr;
-
-		for(int i = 0, selUnitId = 0; i < units.size(); i++)
-			if(units[i]->isSelected()){
-				if(selUnitId == selectedUnitId){
-					selectedUnit = units[i];
-					break;
-				}
-
-				selUnitId++;
-			}
-
-		return selectedUnit;
 	}
 
 	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
@@ -174,7 +125,9 @@ namespace battleship{
 	}
 
 	void Player::selectUnits(vector<Unit*> selUnits){
-		for(Unit *u : selUnits)
-			u->toggleSelection(true);
+		for(Unit *u : selUnits){
+			selectedUnits.push_back(u);
+			u->select();
+		}
 	}
 }

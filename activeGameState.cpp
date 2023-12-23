@@ -209,12 +209,14 @@ namespace battleship{
 				}
 
                 if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){
-                    if(!u->isSelected()){
+					vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
+
+                    if(find(selectedUnits.begin(), selectedUnits.end(), u) == selectedUnits.end()){
                         if(!shiftPressed)
 							deselectUnits();
 
                         mainPlayer->selectUnit(u);
-                		u->toggleSelection(true);
+                		u->select();
                     }
                 }
             }
