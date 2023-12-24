@@ -14,7 +14,7 @@ namespace battleship{
 			static Game* getSingleton();
 			void update();
 			void togglePause();
-			void removeFx(int);
+			void removeFx(int, bool);
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline void addProjectile(Projectile *proj){projectiles.push_back(proj);}

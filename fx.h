@@ -13,11 +13,11 @@ namespace vb01{
 
 namespace battleship{
     struct Fx {
-		vb01::s64 initTime, time;
+		vb01::s64 initTime, vfxTime, sfxTime;
         sf::Sound *sfx = nullptr;
 		vb01::Node *peNode = nullptr;
 
-		Fx(vb01::s64 t, sf::Sound *s = nullptr, vb01::Node *n = nullptr) : time(t), sfx(s), peNode(n), initTime(vb01::getTime()){}
+		Fx(vb01::s64 vt, vb01::s64 st, sf::Sound *s = nullptr, vb01::Node *n = nullptr) : vfxTime(vt), sfxTime(st), sfx(s), peNode(n), initTime(vb01::getTime()){}
 		void activate();
     };
 }

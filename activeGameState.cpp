@@ -22,6 +22,7 @@
 #include "util.h"
 #include "tooltip.h"
 #include "gameObjectFrameController.h"
+#include "gameObjectFactory.h"
 #include "cameraController.h"
 #include "concreteGuiManager.h"
 
@@ -37,7 +38,7 @@ namespace battleship{
 						AppStateType::ACTIVE_STATE,
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, true),
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, false),
-					 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
+					 	GameManager::getSingleton()->getPath() + scripts[(int)ScriptFiles::OPTIONS]){
         this->guiState = guiState;
         this->playerId = playerId;
 
@@ -190,11 +191,22 @@ namespace battleship{
             for (Unit *u : p->getUnits())
                 units.push_back(u);
 
+		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+
         for (Unit *u : units) {
             if (u->getPlayer() == mainPlayer){
 			   	Vector3 dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
 				Vector3 dragboxOrigin = dragboxNode->getPosition(), dragboxEnd = dragboxOrigin + dragboxSize;
             	Vector2 pos = u->getScreenPos();
+
+				if(buttons.empty()){
+					if(!mainPlayer->getSelectedUnitsByClass(UnitClass::ENGINEER).empty())
+						guiManager->readLuaScreenScript("engineerCommands.lua");
+					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::LAND_FACTORY).empty())
+						guiManager->readLuaScreenScript("landFactoryCommands.lua");
+					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::NAVAL_FACTORY).empty())
+						guiManager->readLuaScreenScript("navalFactoryCommands.lua");
+				}
 
                 if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){
                     if(!u->isSelected()){
@@ -203,11 +215,6 @@ namespace battleship{
 
                         mainPlayer->selectUnit(u);
                 		u->toggleSelection(true);
-
-						if(unitClassSelected(UnitClass::ENGINEER)){
-							ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
-							guiManager->readLuaScreenScript("engineerCommands.lua");
-						}
                     }
                 }
             }
@@ -310,13 +317,6 @@ namespace battleship{
 		}
     }
 
-	bool ActiveGameState::unitClassSelected(UnitClass uc){
-		for(Unit *u : mainPlayer->getSelectedUnits())
-			if(u->getUnitClass() == uc)
-				return true;
-
-		return false;
-	}
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
@@ -353,6 +353,12 @@ namespace battleship{
 							}
 							else if(ufCtr->isPlacingFrames() && !selectingDestOrient){
                     			castRayToTerrain();
+
+								GameObjectFrame gmObjFr = ufCtr->getGameObjectFrame(0);
+								Unit *buildStruct = GameObjectFactory::createUnit(mainPlayer, gmObjFr.getId(), gmObjFr.getPos(), gmObjFr.getRot());
+								mainPlayer->addUnit(buildStruct);
+								targets[0].unit = buildStruct;
+
 								issueOrder(Order::TYPE::BUILD, targets, shiftPressed);
 							}
 							else if(canSelect){
@@ -389,6 +395,9 @@ namespace battleship{
 				if(ufCtr->isPlacingFrames()) ufCtr->setRotatingFrames(isPressed);
                 if (!isPressed) deselectUnits();
                 break;
+			case Bind::EJECT_GARRISON:
+				if(isPressed) issueOrder(Order::TYPE::EJECT, vector<Order::Target>{}, shiftPressed);
+				break;
 			case Bind::TOGGLE_SUB:
                 break;
 			case Bind::ZOOM_IN:

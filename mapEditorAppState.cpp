@@ -558,7 +558,7 @@ namespace battleship{
 					AppStateType::MAP_EDITOR,
 				 	configData::calcSumBinds(AppStateType::MAP_EDITOR, true),
 				 	configData::calcSumBinds(AppStateType::MAP_EDITOR, false),
-				 	GameManager::getSingleton()->getPath() + "Scripts/options.lua"){
+				 	GameManager::getSingleton()->getPath() + scripts[ScriptFiles::OPTIONS]){
 		mapName = name;
 		mapSize = size;
 		this->newMap = newMap;

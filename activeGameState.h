@@ -41,7 +41,6 @@ namespace battleship{
         void castRayToTerrain();
         void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);
         bool isInLineOfSight(vb01::Vector3, float, Unit*);
-		bool unitClassSelected(UnitClass);
 		inline bool canSelectHoveredOnGameObj(){return gameObjHoveredOn && gameObjHoveredOn->isSelectable() && gameObjHoveredOn->getPlayer() == mainPlayer;}
 
         GuiAppState *guiState;

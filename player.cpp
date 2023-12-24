@@ -1,6 +1,7 @@
 #include <solUtil.h>
 
 #include "player.h"
+#include "structure.h"
 #include "stateManager.h"
 #include "activeGameState.h"
 #include "resourceDeposit.h"
@@ -55,6 +56,8 @@ namespace battleship{
 	}
 
 	void Player::issueOrder(Order::TYPE type, Vector3 destDir, vector<Order::Target> targets, bool append){
+		if(type != Order::TYPE::EJECT && targets.empty()) return;
+
 		vector<Unit*> selectedUnits = getSelectedUnits();
 
 		if(type == Order::TYPE::EJECT){
@@ -70,15 +73,21 @@ namespace battleship{
 			targets.push_back(Order::Target());
 
         for (Unit *u : selectedUnits) {
-			bool targetingSelf = false;
+			bool targetingSelf = false, structBuilt = true;
 
-			for(Order::Target &targ : targets)
+			for(Order::Target &targ : targets){
 				if(targ.unit && targ.unit == u){
 					targetingSelf = true;
 					break;
 				}
 
-			if(targetingSelf) continue;
+				if(!u->isVehicle() && ((Structure*)u)->getBuildStatus() < 100){
+					structBuilt = false;
+					break;
+				}
+			}
+
+			if(targetingSelf || !structBuilt) continue;
 
 			int lineId = -1;
 			ActiveGameState *activeState = ((ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE));
@@ -125,7 +134,7 @@ namespace battleship{
 
 	void Player::removeUnit(int id){
 		if(units[id]->isSelected())
-			deselectUnit(id);
+			units[id]->toggleSelection(false);
 
 		delete units[id];
 		units.erase(units.begin() + id);
@@ -155,6 +164,16 @@ namespace battleship{
 			}
 
 		return selectedUnit;
+	}
+
+	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
+		vector<Unit*> selectedUnits = getSelectedUnits(), unitsByClass;
+
+		for(Unit *u : selectedUnits)
+			if(u->getUnitClass() == uc)
+				unitsByClass.push_back(u);
+
+		return unitsByClass;
 	}
 
 	void Player::selectUnits(vector<Unit*> selUnits){

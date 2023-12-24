@@ -61,6 +61,7 @@ namespace battleship{
 
 		rateOfFire = SOL_LUA_STATE["rateOfFire"][id + 1];
         range = SOL_LUA_STATE["range"][id + 1];
+        damage = SOL_LUA_STATE["damage"][id + 1];
         lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
         unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
 		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
@@ -130,6 +131,26 @@ namespace battleship{
 		delete node;
 	}
 
+	float Unit::calculateRotation(Vector3 dir, float angle, float maxTurnAngle){
+		float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
+
+		if(isTargetToTheRight(dir, leftVec))
+			rotSpeed *= -1;
+
+		return rotSpeed;
+	}
+
+	void Unit::fire(){
+		fireSfx->play();
+
+		Unit *targetUnit = orders[0].targets[0].unit;
+
+		if(targetUnit)
+			targetUnit->takeDamage(damage);
+
+		lastFireTime = getTime();
+	}
+
 	void Unit::initUnitStats(){
 	}
 
@@ -166,14 +187,12 @@ namespace battleship{
 		string p[numFrames];
 
 		for(int i = 0; i < numFrames; i++)
-			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion0" + to_string(7) + ".png";
+			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion07.png";
 
-		Texture *tex = new Texture(numFrames, p, false);
+		Texture *tex = new Texture(p, numFrames, false);
 
 		Material *mat = new Material(root->getLibPath() + "particle");
-		mat->addVec4Uniform("startColor", Vector4(1, 1, 1, 1));
-		mat->addVec4Uniform("endColor", Vector4(1, 1, 0, 1));
-		mat->addTexUniform("tex", tex, false);
+		mat->addTexUniform("tex", tex, true);
 
 		ParticleEmitter *pe = new ParticleEmitter(1);
 		pe->setMaterial(mat);
@@ -181,12 +200,13 @@ namespace battleship{
 		pe->setHighLife(3);
 		pe->setSize(10 * Vector2::VEC_IJ);
 		pe->setSpeed(0);
+
 		Node *node = new Node(pos + Vector3(0, 2, 0));
 		node->attachParticleEmitter(pe);
 		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
 		root->getRootNode()->attachChild(node);
 
-		Fx fx(2500, deathSfx, node);
+		Fx fx(50, 2500, deathSfx, node);
 		fx.activate();
 		Game::getSingleton()->addFx(fx);
 
@@ -255,21 +275,20 @@ namespace battleship{
 	}
 
 	void Unit::attack(Order order){
-		if(orders[0].targets[0].unit){
-			bool unitFound = false;
+		vector<Unit*> units;
 
-			for(Player *pl : Game::getSingleton()->getPlayers()){
-				vector<Unit*> units = pl->getUnits();
-
-				if(find(units.begin(), units.end(), orders[0].targets[0].unit) != units.end()){
-					unitFound = true;
-					break;
-				}
-			}
-
-			if(!unitFound)
-				removeOrder(0);
+		for(Player *pl : Game::getSingleton()->getPlayers()){
+			vector<Unit*> un = pl->getUnits();
+			units.insert(units.end(), un.begin(), un.end());
 		}
+
+		for(Order::Target &target : orders[0].targets)
+			if(target.unit){
+				if(find(units.begin(), units.end(), target.unit) != units.end())
+					break;
+
+				removeOrder(0);
+			}
 	}
 
     void Unit::setOrder(Order order) {

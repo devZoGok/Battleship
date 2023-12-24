@@ -32,7 +32,9 @@ namespace battleship{
 		CONSOLE_SCREEN,
 		MAIN_MENU,
 		CONSOLE_COMMAND_OK,
-		BUILD
+		BUILD,
+		LAND_FACTORY_TRAIN,
+		NAVAL_FACTORY_TRAIN
 	};
 	enum ListboxType {
 		CONTROLS,

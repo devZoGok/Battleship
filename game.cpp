@@ -23,23 +23,30 @@ namespace battleship{
 		for(Projectile *proj : projectiles)
 			proj->update();
 
-		for(int i = 0; i < fx.size(); i++)
-			if(getTime() - fx[i].initTime > fx[i].time)
-				removeFx(i);
+		for(int i = 0; i < fx.size(); i++){
+			if(getTime() - fx[i].initTime > fx[i].vfxTime)
+				removeFx(i, true);
+
+			if(getTime() - fx[i].initTime > fx[i].sfxTime)
+				removeFx(i, false);
+		}
 	}
 
-	void Game::removeFx(int id){
+	void Game::removeFx(int id, bool vfx){
 		const sf::SoundBuffer *buffer = fx[id].sfx->getBuffer();
-		fx[id].sfx->stop();
-		delete fx[id].sfx;
-		delete buffer;
 
-		if(fx[id].peNode){
-			Root::getSingleton()->getRootNode()->dettachChild(fx[id].peNode);
-			delete fx[id].peNode;
+		if(!vfx){
+			fx[id].sfx->stop();
+			delete fx[id].sfx;
+			delete buffer;
+			fx.erase(fx.begin() + id);
 		}
 
-		fx.erase(fx.begin() + id);
+		if(fx[id].peNode && vfx){
+			Root::getSingleton()->getRootNode()->dettachChild(fx[id].peNode);
+			delete fx[id].peNode;
+			fx[id].peNode = nullptr;
+		}
 	}
 
 	void Game::togglePause(){
