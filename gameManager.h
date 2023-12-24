@@ -29,6 +29,8 @@ namespace battleship{
     private:
         GameManager(){}
         ~GameManager(){}
+		void registerMembers();
+		void initLua(std::string);
 
 		gameBase::StateManager *stateManager = nullptr;
 		gameBase::InputManager *inputManager = nullptr;

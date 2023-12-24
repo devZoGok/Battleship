@@ -209,12 +209,14 @@ namespace battleship{
 				}
 
                 if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){
-                    if(!u->isSelected()){
+					vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
+
+                    if(find(selectedUnits.begin(), selectedUnits.end(), u) == selectedUnits.end()){
                         if(!shiftPressed)
 							deselectUnits();
 
                         mainPlayer->selectUnit(u);
-                		u->toggleSelection(true);
+                		u->select();
                     }
                 }
             }
@@ -334,14 +336,20 @@ namespace battleship{
 						if(selectingPatrolPoints){
                     		castRayToTerrain();
 
-							if(!shiftPressed){
-								issueOrder(Order::TYPE::PATROL, targets, shiftPressed);
-								selectingPatrolPoints = false;
+							if(!(targets.empty() || selectingPatrolPoints)){
+								Order::TYPE type = Order::TYPE::MOVE;
+							
+								if(controlPressed || (targets[0].unit && targets[0].unit->getPlayer()->getTeam() != mainPlayer->getTeam()))
+									type = Order::TYPE::ATTACK;
+								else if(ufCtr->isPlacingFrames() && !selectingDestOrient)
+									type = Order::TYPE::BUILD;
+							
+								issueOrder(type, targets, shiftPressed);
 							}
 						}
 						else{
 							bool canSelect = canSelectHoveredOnGameObj();
-							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getSide() == mainPlayer->getSide());
+							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getTeam() == mainPlayer->getTeam());
 
 							if(gameObjHoveredOn && (gameObjHoveredOn->getType() == GameObject::Type::UNIT && ((Unit*)gameObjHoveredOn)->getNumGarrisonSlots() > 0 && ownGameObj))
 								issueOrder(Order::TYPE::GARRISON, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);

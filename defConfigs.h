@@ -40,6 +40,7 @@ namespace battleship{
 			VEHICLE_DATA,
 			STRUCTURE_DATA,
 			RESOURCE_DATA,
+			AI_AGENT,
 			PLAYER
 		};
 		const static std::vector<std::string> scripts = std::vector<std::string>{
@@ -50,6 +51,7 @@ namespace battleship{
 			"Scripts/GameObjects/Units/vehicleData.lua",
 			"Scripts/GameObjects/Units/structureData.lua",
 			"Scripts/GameObjects/resourceData.lua",
+			"Scripts/aiAgent.lua",
 			"Scripts/Core/player.lua"
 		};
 

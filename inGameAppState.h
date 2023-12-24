@@ -12,6 +12,7 @@
 
 #include <vector>
 
+//TODO refactor dependence on ActiveGameState
 namespace battleship{
     class InGameAppState : public gameBase::AbstractAppState {
     public:
@@ -46,14 +47,13 @@ namespace battleship{
         void onAction(int, bool);
         void onAnalog(int, float);
         std::vector<Unit*> getSelectedUnits(Player*);
+		inline ActiveGameState* getActiveState(){return activeState;}
     private:
         bool isMainMenuActive = false;
         std::vector<std::string> difficultyLevels, factions, modelPaths;
         Player *mainPlayer;
         int playerId;
         ActiveGameState* activeState;
-
-        void toggleMainMenu();
     };
 }
 
