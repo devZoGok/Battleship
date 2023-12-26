@@ -356,25 +356,66 @@ namespace battleship{
 		return textbox;
 	}
 
+	Node* ConcreteGuiManager::parseGuiRectangle(int guiId){
+		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
+
+		Node *guiRectangle;
+
+		int typeArr[2]{(int)GuiElementType::GUI_RECTANGLE, -1};
+	 	guiElements.push_back(make_pair(typeArr, (void*)guiRectangle));
+
+		return nullptr;
+	}
+
+	Text* ConcreteGuiManager::parseText(int guiId){
+		sol::state_view SOL_LUA_STATE = generateView();
+		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
+		sol::table posTable = guiTable["pos"];
+
+		Root *root = Root::getSingleton();
+
+		Material *mat = new Material(root->getLibPath() + "text");
+		mat->addBoolUniform("texturingEnabled", false);
+		sol::table colorTable = guiTable["color"];
+		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
+
+		Text *text = new Text(GameManager::getSingleton()->getPath() + "Fonts/" + (string)guiTable["font"], L"", guiTable["fontFirstChar"], guiTable["fontLastChar"]);
+		text->setMaterial(mat);
+
+		Vector3 pos = Vector3(posTable["x"], posTable["y"], guiTable["zIndex"]);
+		Node *node = new Node(pos, Quaternion::QUAT_W, Vector3::VEC_IJK, guiTable["name"]);
+		node->addText(text);
+		root->getGuiNode()->attachChild(node);
+
+		int typeArr[2]{(int)GuiElementType::TEXT, -1};
+	 	guiElements.push_back(make_pair(typeArr, (void*)text));
+
+		return text;
+	}
+
 	void ConcreteGuiManager::readLuaScreenScript(
 			string script,
 			vector<Button*> buttonExceptions,
 			vector<Listbox*> listboxExceptions,
 			vector<Checkbox*> checkboxExceptions,
 			vector<Slider*> sliderExceptions,
-			vector<Textbox*> textboxExceptions
+			vector<Textbox*> textboxExceptions,
+			vector<Node*> guiRecttboxExceptions,
+			vector<Text*> textExceptions
 		){
 		removeAllGuiElements(buttonExceptions, listboxExceptions, checkboxExceptions, sliderExceptions, textboxExceptions);
 		guiElements.clear();
 
 		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";
-		sol::state_view SOL_LUA_STATE = generateView();
-		SOL_LUA_STATE.script_file(basePath + script);
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script_file(basePath + script);
 
-		int numGuiElements = SOL_LUA_STATE["numGui"];
+		SOL_LUA_VIEW.script("numGui = #gui");
+		int numGuiElements = SOL_LUA_VIEW["numGui"];
 
 		for(int i = 0; i < numGuiElements; i++){
-			int guiTypeId = SOL_LUA_STATE["gui"][i + 1]["guiType"];
+			int guiTypeId = SOL_LUA_VIEW["gui"][i + 1]["guiType"];
 
 			switch((GuiElementType)guiTypeId){
 				case BUTTON:
@@ -391,6 +432,12 @@ namespace battleship{
 					break;
 				case TEXTBOX:
 					addTextbox(parseTextbox(i));
+					break;
+				case GUI_RECTANGLE:
+					addGuiRectangle(parseGuiRectangle(i));
+					break;
+				case TEXT:
+					addText(parseText(i));
 					break;
 			}
 		}

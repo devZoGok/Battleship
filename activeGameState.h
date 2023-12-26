@@ -33,7 +33,6 @@ namespace battleship{
     private:
 		void updateGameObjHoveredOn();
 		void initDragbox();
-		vb01::Node* initText(vb01::Vector2);
 		void deselectUnits();
         void renderUnits();
         void updateSelectionBox();
@@ -46,7 +45,7 @@ namespace battleship{
         GuiAppState *guiState;
         Player *mainPlayer;
 		GameObject *gameObjHoveredOn = nullptr;
-		vb01::Node *dragboxNode = nullptr, *textNode = nullptr, *refinedsText = nullptr, *wealthText = nullptr, *researchText = nullptr;
+		vb01::Node *dragboxNode = nullptr;
 		vb01::Vector2 clickPoint;
         std::vector<Unit*> unitGroups[9];
 		std::vector<Order::Target> targets;

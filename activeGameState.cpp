@@ -41,16 +41,10 @@ namespace battleship{
 					 	GameManager::getSingleton()->getPath() + scripts[(int)ScriptFiles::OPTIONS]){
         this->guiState = guiState;
         this->playerId = playerId;
-
         mainPlayer = Game::getSingleton()->getPlayer(playerId);
+		depth = 1;
 
 		initDragbox();
-
-		refinedsText = initText(Vector2(0, 100));
-		wealthText = initText(Vector2(0, 200));
-		researchText = initText(Vector2(0, 300));
-		textNode = initText(Vector2(0, 400));
-		depth = 1;
     }
 
     ActiveGameState::~ActiveGameState() {
@@ -72,41 +66,21 @@ namespace battleship{
 		root->getGuiNode()->attachChild(dragboxNode);
 	}
 
-	Node* ActiveGameState::initText(Vector2 pos){
-		Material *tm = new Material(Root::getSingleton()->getLibPath() + "text");
-		tm->addBoolUniform("texturingEnabled", false);
-		tm->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
-
-		Text *t = new Text(GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", L"");
-		t->setMaterial(tm);
-
-		Node *node = new Node(Vector3(pos.x, pos.y, 0));
-		node->addText(t);
-
-		return node;
-	}
-
     void ActiveGameState::onAttached() {
         AbstractAppState::onAttached();
-		Root::getSingleton()->getGuiNode()->attachChild(textNode);
-		Root::getSingleton()->getGuiNode()->attachChild(refinedsText);
-		Root::getSingleton()->getGuiNode()->attachChild(wealthText);
-		Root::getSingleton()->getGuiNode()->attachChild(researchText);
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript("activeGameState.lua");
     }
 
     void ActiveGameState::onDettached() {
 		AbstractAppState::onDettached();
-		Root::getSingleton()->getGuiNode()->dettachChild(textNode);
-		Root::getSingleton()->getGuiNode()->dettachChild(refinedsText);
-		Root::getSingleton()->getGuiNode()->dettachChild(wealthText);
-		Root::getSingleton()->getGuiNode()->dettachChild(researchText);
     }
 
     void ActiveGameState::update() {
-		textNode->getText(0)->setText(L"Depth: " + to_wstring(depth));
-		refinedsText->getText(0)->setText(L"Refineds: " + to_wstring(mainPlayer->getRefineds()));
-		wealthText->getText(0)->setText(L"Wealth: " + to_wstring(mainPlayer->getWealth()));
-		researchText->getText(0)->setText(L"Research: " + to_wstring(mainPlayer->getResearch()));
+		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+		guiManager->getText("depth")->setText(L"Depth: " + to_wstring(depth));
+		guiManager->getText("refineds")->setText(L"Refineds: " + to_wstring(mainPlayer->getRefineds()));
+		guiManager->getText("wealth")->setText(L"Wealth: " + to_wstring(mainPlayer->getWealth()));
+		guiManager->getText("research")->setText(L"Research: " + to_wstring(mainPlayer->getResearch()));
 
 		if(!isSelectionBox && leftMouseClicked && getTime() - lastLeftMouseClicked > 10)
 			isSelectionBox = true;
