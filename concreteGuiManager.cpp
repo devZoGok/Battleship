@@ -423,7 +423,7 @@ namespace battleship{
 			vector<Node*> guiRecttboxExceptions,
 			vector<Text*> textExceptions
 		){
-		removeAllGuiElements(buttonExceptions, listboxExceptions, checkboxExceptions, sliderExceptions, textboxExceptions);
+		removeAllGuiElements(buttonExceptions, listboxExceptions, checkboxExceptions, sliderExceptions, textboxExceptions, guiRecttboxExceptions, textExceptions);
 		guiElements.clear();
 
 		string basePath = GameManager::getSingleton()->getPath() + "Scripts/Gui/";
