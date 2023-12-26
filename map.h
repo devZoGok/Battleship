@@ -71,6 +71,11 @@ namespace battleship{
 		void loadSkybox();
 		void loadCells();
 		void loadTerrainObject(int);
+		void unloadTerrainObjects();
+		void unloadCells();
+		void unloadSkybox();
+		void unloadPlayerObjects();
+		void destroyScene();
 		template<typename T> int bsearch(std::vector<T>, T, float);
     };
 }

@@ -18,6 +18,7 @@ namespace battleship{
 		void issueOrder(Order::TYPE, vb01::Vector3, std::vector<Order::Target>, bool);
 		void removeUnit(Unit*);
 		void removeUnit(int);
+		void removeResourceDeposit(int);
         bool isThisPlayersUnit(GameObject*);
 		std::vector<Unit*> getSelectedUnitsByClass(UnitClass);
 		void selectUnits(std::vector<Unit*>);
@@ -30,6 +31,7 @@ namespace battleship{
         inline void addUnit(Unit *u){units.push_back(u);}
 		inline std::vector<ResourceDeposit*>& getResourceDeposits(){return resourceDeposits;}
         inline void addResourceDeposit(ResourceDeposit *rd){resourceDeposits.push_back(rd);}
+		inline int getNumResourceDeposits(){return resourceDeposits.size();}
         inline Unit* getUnit(int i){return units[i];}
         inline std::vector<Unit*>& getUnits(){return units;}
         inline void setTeam(int t){team = t;}

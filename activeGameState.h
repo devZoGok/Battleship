@@ -33,6 +33,7 @@ namespace battleship{
     private:
 		void updateGameObjHoveredOn();
 		void initDragbox();
+		void removeDragbox();
 		void deselectUnits();
         void renderUnits();
         void updateSelectionBox();

@@ -7,6 +7,7 @@
 #include <solUtil.h>
 
 #include "map.h"
+#include "game.h"
 #include "player.h"
 #include "gameObject.h"
 #include "gameObjectFactory.h"
@@ -262,7 +263,59 @@ namespace battleship{
 		}
     }
 
-    void Map::unload() {}
+	void Map::unloadSkybox(){
+		Root::getSingleton()->removeSkybox();
+		//unload skybox assets
+	}
+
+	void Map::unloadCells(){
+		while(cellNode->getNumChildren() > 0){
+			Node *node = cellNode->getChild(0);
+			cellNode->dettachChild(node);
+			//delete node;
+		}
+
+		cells.clear();
+	}
+
+	void Map::unloadTerrainObjects(){
+		//unload terrain assets
+		while(terrainNode->getNumChildren() > 0){
+			Node *node = terrainNode->getChild(0);
+			terrainNode->dettachChild(node);
+			//delete node;
+		}
+	}
+
+	void Map::unloadPlayerObjects(){
+		for(Player *pl : Game::getSingleton()->getPlayers()){
+			while(pl->getNumUnits() > 0){
+				pl->removeUnit(0);
+			}
+
+			while(pl->getNumResourceDeposits() > 0){
+				pl->removeResourceDeposit(0);
+			}
+		}
+	}
+
+	void Map::destroyScene(){
+		Node *rootNode = Root::getSingleton()->getRootNode();
+		rootNode->dettachChild(terrainNode);
+		rootNode->dettachChild(cellNode);
+
+		delete terrainNode;
+		delete cellNode;
+	}
+
+    void Map::unload(){
+		unloadSkybox();
+		unloadCells();
+		unloadTerrainObjects();
+		unloadPlayerObjects();
+		spawnPoints.clear();
+		destroyScene();
+	}
 
 	template<typename T> int Map::bsearch(vector<T> haystack, T needle, float eps){
 		T haystackMidVal;

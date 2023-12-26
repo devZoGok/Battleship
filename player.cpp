@@ -114,6 +114,11 @@ namespace battleship{
 		units.erase(units.begin() + id);
 	}
 
+	void Player::removeResourceDeposit(int id){
+		delete resourceDeposits[id];
+		resourceDeposits.erase(resourceDeposits.begin() + id);
+	}
+
 	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
 		vector<Unit*> selectedUnits = getSelectedUnits(), unitsByClass;
 

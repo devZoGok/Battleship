@@ -42,9 +42,9 @@ namespace battleship{
 				Game::getSingleton()->addPlayer(player);
 			}
 
+			ConcreteGuiManager::getSingleton()->readLuaScreenScript("inGame.lua");
+
 			StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 	        stateManager->attachAppState(new InGameAppState(difficulties, factions));
-
-			ConcreteGuiManager::getSingleton()->readLuaScreenScript("inGame.lua");
 	    }
 }

@@ -48,6 +48,7 @@ namespace battleship{
     }
 
     ActiveGameState::~ActiveGameState() {
+		removeDragbox();
     }
 
 	void ActiveGameState::initDragbox(){
@@ -64,6 +65,11 @@ namespace battleship{
 		dragboxNode->attachMesh(dragbox);
 
 		root->getGuiNode()->attachChild(dragboxNode);
+	}
+
+	void ActiveGameState::removeDragbox(){
+		Root::getSingleton()->getRootNode()->dettachChild(dragboxNode);
+		delete dragboxNode;
 	}
 
     void ActiveGameState::onAttached() {
