@@ -112,11 +112,13 @@ namespace battleship{
 	}
 
 	void Map::loadSpawnPoints(){
-		sol::state_view SOL_LUA_STATE = generateView();
-		int numSpawnPoints = SOL_LUA_STATE[mapTable]["numSpawnPoints"];
+		sol::state_view SOL_LUA_VIEW = generateView();
+		string spawnPointInd = "spawnPoints";
+		SOL_LUA_VIEW.script("numSpawnPoints = #" + mapTable + "." + spawnPointInd);
+		int numSpawnPoints = SOL_LUA_VIEW["numSpawnPoints"];
 
 		for(int i = 0; i < numSpawnPoints; i++){
-			sol::table posTable = SOL_LUA_STATE[mapTable]["spawnPoints"][i + 1];
+			sol::table posTable = SOL_LUA_VIEW[mapTable][spawnPointInd][i + 1];
 			spawnPoints.push_back(Vector3(posTable["x"], posTable["y"], posTable["z"]));
 		}
 	}
@@ -125,19 +127,23 @@ namespace battleship{
 		AssetManager *assetManager = AssetManager::getSingleton();
 		string path = GameManager::getSingleton()->getPath();
 		assetManager->load(path + DEFAULT_TEXTURE);
-		sol::state_view SOL_LUA_STATE = generateView();
-		assetManager->load(path + (string)SOL_LUA_STATE["modelPrefix"], true);
+
+		sol::state_view SOL_LUA_VIEW = generateView();
+		assetManager->load(path + (string)SOL_LUA_VIEW["modelPrefix"], true);
 		assetManager->load(path + "Textures/", true);
 
-		int numPlayers = SOL_LUA_STATE[mapTable]["numPlayers"];
 		string playerInd = "players";
+		SOL_LUA_VIEW.script("numPlayers = #" + mapTable + "." + playerInd);
+		int numPlayers = SOL_LUA_VIEW["numPlayers"];
 
 		for(int i = 0; i < numPlayers; i++){
 			if(i == 0){
-				int numNpcObjs = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numResourceDeposits"];
+				string resDepInd = "resourceDeposits";
+				SOL_LUA_VIEW.script("numResourceDeposits = #" + mapTable + "." + playerInd + "[" + to_string(i + 1) + "]." + resDepInd);
+				int numNpcObjs = SOL_LUA_VIEW["numResourceDeposits"];
 
 				for(int j = 0; j < numNpcObjs; j++){
-					sol::table npcObjTable = SOL_LUA_STATE[mapTable][playerInd][i + 1]["resourceDeposits"][j + 1];
+					sol::table npcObjTable = SOL_LUA_VIEW[mapTable][playerInd][i + 1][resDepInd][j + 1];
 					int id = npcObjTable["id"];
 
 					sol::table posTable = npcObjTable["pos"];
@@ -151,10 +157,12 @@ namespace battleship{
 			}
 
 			//int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
-			int numUnits = SOL_LUA_STATE[mapTable][playerInd][i + 1]["numUnits"];
+			string unitInd = "units";
+			SOL_LUA_VIEW.script("numUnits = #" + mapTable + "." + playerInd + "[" + to_string(i + 1) + "]." + unitInd);
+			int numUnits = SOL_LUA_VIEW["numUnits"];
 			
 			for(int j = 0; j < numUnits; j++){
-				sol::table unitTable = SOL_LUA_STATE[mapTable][playerInd][i + 1]["units"][j + 1];
+				sol::table unitTable = SOL_LUA_VIEW[mapTable][playerInd][i + 1][unitInd][j + 1];
 
 	   			string posInd = "pos";
 				Vector3 pos = Vector3(unitTable[posInd]["x"], unitTable[posInd]["y"], unitTable[posInd]["z"]);
@@ -163,7 +171,6 @@ namespace battleship{
 				Quaternion rot = Quaternion(unitTable[rotInd]["w"], unitTable[rotInd]["x"], unitTable[rotInd]["x"], unitTable[rotInd]["x"]);
 
 				int id = unitTable["id"];
-				
 				player->addUnit(GameObjectFactory::createUnit(player, id, pos, rot));
 			}
 		}
@@ -194,9 +201,9 @@ namespace battleship{
 	}
 
 	void Map::loadCells(){
-		sol::state_view SOL_LUA_STATE = generateView();
-		int numCells = SOL_LUA_STATE[mapTable]["numCells"];
-		sol::table cellsTable = SOL_LUA_STATE[mapTable]["cells"];
+		sol::state_view SOL_LUA_VIEW = generateView();
+		int numCells = SOL_LUA_VIEW[mapTable]["numCells"];
+		sol::table cellsTable = SOL_LUA_VIEW[mapTable]["cells"];
 
 		for(int i = 0; i < numCells; i++){
 			sol::table cellTable = cellsTable[i + 1], posTable = cellTable["pos"];
