@@ -24,8 +24,9 @@ namespace battleship{
 		private:
 			Game(){}
 			void resetLuaGameObjects();
+			void endGame(bool);
 
-			bool paused = false;
+			bool paused = false, ended = false;
 			std::vector<Fx> fx;
 			std::vector<Player*> players;
 			std::vector<Projectile*> projectiles;

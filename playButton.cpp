@@ -37,12 +37,10 @@ namespace battleship{
 			int numPlayers = map->getNumSpawnPoints();
 
 			for(int i = 0; i < numPlayers; i++){
-				Player *player = new Player(0, 0, i, true, map->getSpawnPoint(i));
+				Player *player = new Player(0, 0, i, i < numPlayers - 1, map->getSpawnPoint(i));
 				map->loadPlayerGameObjects(player);
 				Game::getSingleton()->addPlayer(player);
 			}
-
-			Game::getSingleton()->addPlayer(new Player(0, 0, 0, false));
 
 			StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 	        stateManager->attachAppState(new InGameAppState(difficulties, factions));

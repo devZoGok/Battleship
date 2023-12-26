@@ -443,7 +443,7 @@ namespace battleship{
 				mapScript += "},\n";
 			}
 
-			int numUnits = players[i]->getNumberOfUnits();
+			int numUnits = players[i]->getNumUnits();
 			mapScript += "numUnits = " + to_string(numUnits) + ",\n";
 
 			if(numUnits > 0){

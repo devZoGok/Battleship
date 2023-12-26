@@ -39,7 +39,8 @@ namespace battleship{
 		CONSOLE_COMMAND_OK,
 		BUILD,
 		LAND_FACTORY_TRAIN,
-		NAVAL_FACTORY_TRAIN
+		NAVAL_FACTORY_TRAIN,
+		STATISTICS
 	};
 	enum ListboxType {
 		CONTROLS,

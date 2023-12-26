@@ -34,7 +34,7 @@ namespace battleship{
         inline std::vector<Unit*>& getUnits(){return units;}
         inline void setTeam(int t){team = t;}
         inline int getTeam(){return team;}
-        inline int getNumberOfUnits(){return units.size();}
+        inline int getNumUnits(){return units.size();}
         inline int getFaction(){return faction;}
         inline vb01::Vector3 getSpawnPoint(){return spawnPoint;}
 		inline int getRefineds(){return refineds;}

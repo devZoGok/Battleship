@@ -1,5 +1,7 @@
 #include <solUtil.h>
 
+#include <quad.h>
+
 #include "concreteGuiManager.h"
 #include "gameManager.h"
 #include "singlePlayerButton.h"
@@ -21,6 +23,7 @@
 #include "mainMenuButton.h"
 #include "buildButton.h"
 #include "trainButton.h"
+#include "statsButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -164,6 +167,9 @@ namespace battleship{
 				break;
 			case NAVAL_FACTORY_TRAIN:
 				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)UnitClass::NAVAL_FACTORY, (int)guiTable["unitId"]);
+				break;
+			case STATISTICS:
+				button = new StatsButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;
 		}
 
@@ -360,12 +366,25 @@ namespace battleship{
 		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
-		Node *guiRectangle;
+		Root *root = Root::getSingleton();
+		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->addBoolUniform("texturingEnabled", false);
+		sol::table colorTable = guiTable["color"];
+		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
+
+		sol::table sizeTable = guiTable["size"];
+		Quad *quad = new Quad(Vector3(sizeTable["x"], sizeTable["y"], 1), false);
+		quad->setMaterial(mat);
+
+		sol::table posTable = guiTable["pos"];
+		Node *guiRectangle = new Node(Vector3(posTable["x"], posTable["y"], guiTable["zIndex"]));
+		guiRectangle->attachMesh(quad);
+		root->getGuiNode()->attachChild(guiRectangle);
 
 		int typeArr[2]{(int)GuiElementType::GUI_RECTANGLE, -1};
 	 	guiElements.push_back(make_pair(typeArr, (void*)guiRectangle));
 
-		return nullptr;
+		return guiRectangle;
 	}
 
 	Text* ConcreteGuiManager::parseText(int guiId){
@@ -380,7 +399,7 @@ namespace battleship{
 		sol::table colorTable = guiTable["color"];
 		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
 
-		Text *text = new Text(GameManager::getSingleton()->getPath() + "Fonts/" + (string)guiTable["font"], L"", guiTable["fontFirstChar"], guiTable["fontLastChar"]);
+		Text *text = new Text(GameManager::getSingleton()->getPath() + "Fonts/" + (string)guiTable["font"], (wstring)guiTable["text"], guiTable["fontFirstChar"], guiTable["fontLastChar"]);
 		text->setMaterial(mat);
 
 		Vector3 pos = Vector3(posTable["x"], posTable["y"], guiTable["zIndex"]);

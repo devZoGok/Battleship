@@ -72,7 +72,7 @@ namespace battleship{
 			"Player", sol::constructors<Player(int, int, int, bool, Vector3)>(),
 			"addUnit", &Player::addUnit,
 			"getUnit", &Player::getUnit,
-			"getNumUnits", &Player::getNumberOfUnits,
+			"getNumUnits", &Player::getNumUnits,
 			"issueOrder", &Player::issueOrder,
 			"selectUnits", &Player::selectUnits,
 			"deselectUnits", &Player::deselectUnits,
