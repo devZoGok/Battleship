@@ -68,7 +68,7 @@ namespace battleship{
 		};
 
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
-        ~Unit();
+        virtual ~Unit();
         virtual void update();
         virtual void blowUp();
         virtual void halt();

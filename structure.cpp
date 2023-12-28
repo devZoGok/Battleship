@@ -19,7 +19,6 @@ namespace battleship{
 	Structure::~Structure(){
 		removeBar(buildStatusForeground);
 		removeBar(buildStatusBackground);
-		Unit::~Unit();
 	}
 
 	void Structure::update(){
