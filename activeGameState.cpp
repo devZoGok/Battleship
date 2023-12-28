@@ -159,7 +159,7 @@ namespace battleship{
 		ufCtr->removeGameObjectFrames();
 		ufCtr->setPlacingFrames(false);
 
-		ConcreteGuiManager::getSingleton()->removeAllGuiElements();
+		ConcreteGuiManager::getSingleton()->removeAllButtons();
 		buttons.clear();
 	}
 
@@ -172,6 +172,19 @@ namespace battleship{
                 units.push_back(u);
 
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+		vector<Button*> buttons{};
+		vector<Listbox*> listboxes{};
+		vector<Checkbox*> checkboxes{};
+		vector<Slider*> sliders{};
+		vector<Textbox*> textboxes{};
+		vector<Node*> guiRects{};
+		vector<Text*> texts{
+			guiManager->getText("depth"),
+			guiManager->getText("refineds"),
+			guiManager->getText("wealth"),
+			guiManager->getText("research")
+		};
+		
 
         for (Unit *u : units) {
             if (u->getPlayer() == mainPlayer){
@@ -181,11 +194,11 @@ namespace battleship{
 
 				if(buttons.empty()){
 					if(!mainPlayer->getSelectedUnitsByClass(UnitClass::ENGINEER).empty())
-						guiManager->readLuaScreenScript("engineerCommands.lua");
+						guiManager->readLuaScreenScript("engineerCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::LAND_FACTORY).empty())
-						guiManager->readLuaScreenScript("landFactoryCommands.lua");
+						guiManager->readLuaScreenScript("landFactoryCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::NAVAL_FACTORY).empty())
-						guiManager->readLuaScreenScript("navalFactoryCommands.lua");
+						guiManager->readLuaScreenScript("navalFactoryCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 				}
 
                 if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){
