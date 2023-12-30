@@ -172,7 +172,6 @@ namespace battleship{
                 units.push_back(u);
 
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
-		vector<Button*> buttons{};
 		vector<Listbox*> listboxes{};
 		vector<Checkbox*> checkboxes{};
 		vector<Slider*> sliders{};
