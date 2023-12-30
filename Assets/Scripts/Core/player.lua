@@ -59,10 +59,15 @@ function Player:selectEngi()
 	taskForce = self:getSelectedUnitsByClass(UnitClass.ENGINEER)
 
 	if #taskForce == 0 then
-		self:selectUnits({self:getUnit(0)})
+		for i = 1, self:getNumUnits() do
+			if self:getUnit(i - 1):getUnitClass() == UnitClass.ENGINEER then
+				taskForce = {self:getUnit(i - 1)}
+				self:selectUnits(taskForce)
+				break
+			end
+		end
 	end
 
-	taskForce = self:getSelectedUnitsByClass(UnitClass.ENGINEER)
 	return #taskForce > 0
 end
 
