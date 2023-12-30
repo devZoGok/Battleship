@@ -1,30 +1,63 @@
 #ifndef DEF_CONFIGS_H
 #define DEF_CONFIGS_H
+#define SOL_ALL_SAFETIES_ON 1
 
 #include <string>
+#include <vector>
+
+#include <util.h>
+
 #include <glfw3.h>
 
 #include <mapping.h>
+#include <sol/sol.hpp>
 
 #include "binds.h"
+#include "gameManager.h"
 
 namespace battleship{
 	namespace configData{
 		using namespace gameBase;
 
-  		const std::string PATH = "/home/dominykas/c++/Battleship/Assets/";
-  		const std::string DEFAULT_TEXTURE = PATH + "Textures/defaultTexture.jpg";
-  		const double camPanSpeed = .1;
+  		const std::string DEFAULT_TEXTURE = "Textures/defaultTexture.jpg";
+  		const double camPanSpeed = .1, cellLength = 14, cellWidth = 14, cellDepth = 7;
+		const int maxNumGroups = 10;
+		const vb01::u32 IMPASS_NODE_VAL = 65535;
 
-  		const static int numAppStates = 3;
-  		const static int numStaticBinds[numAppStates]{6, 0, 5};
-  		const static int numConfBinds[numAppStates]{0, 1, 20};
-			const static int maxStaticBinds = 6;
-			const static int maxConfBinds = 20;
+  		const static int numAppStates = 4;
+  		const static int numStaticBinds[numAppStates]{6, 0, 5, 19};
+  		const static int numConfBinds[numAppStates]{0, 1, 23, 0};
+		const static int maxStaticBinds = 19;
+		const static int maxConfBinds = 23;
+		const static int numScripts = 5;
+
+		const static std::string scriptPathBase = "Scripts/";
+		enum ScriptFiles{
+			CORE_MAIN,
+			GUI_MAIN,
+			OPTIONS,
+			UNIT_DATA,
+			VEHICLE_DATA,
+			STRUCTURE_DATA,
+			RESOURCE_DATA,
+			AI_AGENT,
+			PLAYER
+		};
+		const static std::vector<std::string> scripts = std::vector<std::string>{
+			"Scripts/Core/main.lua",
+			"Scripts/Gui/main.lua",
+			"Scripts/Core/options.lua",
+			"Scripts/GameObjects/Units/unitData.lua",
+			"Scripts/GameObjects/Units/vehicleData.lua",
+			"Scripts/GameObjects/Units/structureData.lua",
+			"Scripts/GameObjects/resourceData.lua",
+			"Scripts/aiAgent.lua",
+			"Scripts/Core/player.lua"
+		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{
   		    {
-							Bind::LEFT_CLICK,
+				Bind::LEFT_CLICK,
   		        Bind::SCROLLING_UP,
   		        Bind::SCROLLING_DOWN,
   		        Bind::LEFT,
@@ -38,17 +71,24 @@ namespace battleship{
   		        Bind::LOOK_LEFT,
   		        Bind::LOOK_RIGHT,
   		        Bind::LOOK_AROUND,
-  		    }
+  		    },
+			{
+  		        Bind::LOOK_UP,
+  		        Bind::LOOK_DOWN,
+  		        Bind::LOOK_LEFT,
+  		        Bind::LOOK_RIGHT,
+  		        Bind::LOOK_AROUND,
+			}
   		};
   		const static Bind confBinds[numAppStates][maxConfBinds]{
   		    {},
   		    {
-							Bind::TOGGLE_MAIN_MENU
+				Bind::TOGGLE_MAIN_MENU
   		    },
   		    {
   		        Bind::DRAG_BOX,
   		        Bind::DESELECT,
-							Bind::HALT,
+				Bind::HALT,
   		        Bind::ZOOM_IN,
   		        Bind::ZOOM_OUT,
   		        Bind::LEFT_CONTROL,
@@ -65,27 +105,37 @@ namespace battleship{
   		        Bind::GROUP_6,
   		        Bind::GROUP_7,
   		        Bind::GROUP_8,
-  		        Bind::GROUP_9
-  		    }
+  		        Bind::GROUP_9,
+  		        Bind::SELECT_STRUCTURE,
+  		        Bind::DESELECT_STRUCTURE
+  		    },
+			{}
   		};
 
   		const static int staticTriggers[numAppStates][maxStaticBinds]{
   		    {
   		        0,
-							GLFW_KEY_W,
-							GLFW_KEY_S,
+				GLFW_KEY_W,
+				GLFW_KEY_S,
   		        GLFW_KEY_LEFT,
   		        GLFW_KEY_RIGHT,
   		        GLFW_KEY_BACKSPACE
   		    },
   		    {},
   		    {
-							Mapping::MOUSE_AXIS_UP,
-							Mapping::MOUSE_AXIS_DOWN,
-							Mapping::MOUSE_AXIS_LEFT,
-							Mapping::MOUSE_AXIS_RIGHT,
-							0
-  		    }
+				Mapping::MOUSE_AXIS_UP,
+				Mapping::MOUSE_AXIS_DOWN,
+				Mapping::MOUSE_AXIS_LEFT,
+				Mapping::MOUSE_AXIS_RIGHT,
+				0
+  		    },
+			{
+				Mapping::MOUSE_AXIS_UP,
+				Mapping::MOUSE_AXIS_DOWN,
+				Mapping::MOUSE_AXIS_LEFT,
+				Mapping::MOUSE_AXIS_RIGHT,
+				0
+			}
   		};
   		const static int confTriggers[numAppStates][maxConfBinds]{
   		    {},
@@ -93,7 +143,7 @@ namespace battleship{
   		        GLFW_KEY_ESCAPE
   		    },
   		    {
-							GLFW_KEY_LEFT,
+				GLFW_KEY_LEFT,
   		        GLFW_KEY_RIGHT,
   		        GLFW_KEY_H, 
   		        3, 
@@ -112,35 +162,42 @@ namespace battleship{
   		        GLFW_KEY_6,
   		        GLFW_KEY_7,
   		        GLFW_KEY_8,
-  		        GLFW_KEY_9
-  		    }
+  		        GLFW_KEY_9,
+  		        GLFW_KEY_B,
+  		        GLFW_KEY_ESCAPE
+  		    },
+			{}
   		};
 
   		const static bool isStaticKey[numAppStates][maxStaticBinds]{
   		    {0, 1, 1, 1, 1, 1},
   		    {},
-					{0, 0, 0, 0, 1}
+			{0, 0, 0, 0, 1},
+			{0, 0, 0, 0, 1}
   		};
   		const static bool isConfKey[numAppStates][maxConfBinds]{
-					{},
+			{},
   		    {1},
-					{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+			{}
   		};
 
   		const static bool isStaticAction[numAppStates][maxStaticBinds]{
   		    {1, 1, 1, 1, 1, 1},
   		    {},
-					{0, 0, 0, 0, 1}
+			{0, 0, 0, 0, 1},
+			{0, 0, 0, 0, 1}
   		};
   		const static bool isConfAction[numAppStates][maxConfBinds]{
-					{},
+			{},
   		    {1},
-					{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+			{}
   		};
 
-			int calcSumStaticBinds(int, bool);
-			int calcSumConfBinds(int, bool);
-			int calcSumBinds(int, bool);
+		int calcSumStaticBinds(int, bool);
+		int calcSumConfBinds(int, bool);
+		int calcSumBinds(int, bool);
 	}
 }
 

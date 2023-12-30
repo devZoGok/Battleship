@@ -1,73 +1,95 @@
 #include <algorithm>
+
 #include <node.h>
 #include <model.h>
 #include <material.h>
 #include <quaternion.h>
-#include <ray.h>
 
 #include <stateManager.h>
 
-#include "projectile.h"
-#include "projectileData.h"
-#include "inGameAppState.h"
+#include "game.h"
 #include "unit.h"
 #include "util.h"
-#include "explosion.h"
+#include "projectile.h"
+#include "defConfigs.h"
+#include "inGameAppState.h"
+#include "fx.h"
 
 using namespace std;
 using namespace vb01;
 
 namespace battleship{
-		using namespace configData;
+	using namespace configData;
+	using namespace gameBase;
 
-    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) {
-        this->unit=unit;
-        this->id=id;
-        this->weaponTypeId=weaponTypeId;
+    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) : GameObject(GameObject::Type::PROJECTILE, id, unit->getPlayer(), pos, Quaternion::QUAT_W){
+        this->unit = unit;
+        this->id = id;
+        this->weaponTypeId = weaponTypeId;
+        this->pos = pos;
+        initPos = pos;
 
         dirVec = dir;
         leftVec = left;
         upVec = up;
 
-        this->rayLength=projectileData::length[id][weaponTypeId][weaponId];
-
-				GameManager *gm = GameManager::getSingleton();
-
-        if(!node){
-						this->node = new Model((projectileData::meshPath[id][weaponTypeId]));
-						Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
-						mat->addBoolUniform("lightingEnabled", false);
-						string f[]{projectileData::diffuseMapTextPath[id][weaponTypeId]};
-            Texture *diffuseTexture = new Texture(f, 1, false);
-						mat->addTexUniform("textures[0]", diffuseTexture, true);
-						this->node->setMaterial(mat);
-        }
-
-        this->node->setPosition(pos);
-        this->pos = pos;
-        this->damage=projectileData::damage[id][weaponTypeId][weaponId];
-
-        initPos = pos;
-        speed = projectileData::speed[id][weaponTypeId][weaponId];
-        float angle = dirVec.getAngleBetween(Vector3(0, 0, -1));
-        angle = Quaternion(angle, upVec) * Vector3(0, 0, -1) == dirVec ? angle : -angle;
-        
-        string p1 = PATH + "Sounds/" + unitData::name[id] + "s/" + projectileData::name[id][weaponTypeId] + ".ogg";
-        string p2 = PATH + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
-        this->shotSfxBuffer = new sf::SoundBuffer();
-        this->explosionSfxBuffer=new sf::SoundBuffer();
-
-        if(shotSfxBuffer->loadFromFile(p1.c_str())){
-            shotSfx=new sf::Sound(*shotSfxBuffer);
-            shotSfx->play();
-        }
-
-        if(explosionSfxBuffer->loadFromFile(p2.c_str()))
-            explosionSfx=new sf::Sound(*explosionSfxBuffer);
+		initProperties(weaponId);
+		initModel(node);
+		initSound();
     }
 
     Projectile::~Projectile(){
     }
+
+	void Projectile::initProperties(int weaponId){
+		GameObject::initProperties();
+
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+        rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
+        damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
+        speed = SOL_LUA_STATE["speed"][id + 1][weaponTypeId + 1][weaponId + 1];
+	}
+
+	void Projectile::initModel(Node *node){
+        if(!node){
+			sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+			string meshPath = SOL_LUA_STATE["meshPath"][id + 1][weaponTypeId + 1];
+			this->node = new Model(meshPath);
+
+			Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+			mat->addBoolUniform("lightingEnabled", false);
+
+			string diffTexPath = SOL_LUA_STATE["diffuseMapTextPath"][id + 1][weaponTypeId + 1];
+			string f[]{diffTexPath};
+            Texture *diffuseTexture = new Texture(f, 1, false);
+			mat->addTexUniform("textures[0]", diffuseTexture, true);
+
+			this->node->setMaterial(mat);
+        }
+
+        this->node->setPosition(pos);
+	}
+
+	void Projectile::initSound(){
+		GameManager *gm = GameManager::getSingleton();
+
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+		string unitName = SOL_LUA_STATE["name"][id + 1];
+		string projectileName = SOL_LUA_STATE["projectileName"][id + 1][weaponTypeId + 1];
+        string p1 = gm->getPath() + "Sounds/" + unitName + "s/" + projectileName + ".ogg";
+        string p2 = gm->getPath() + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
+
+        shotSfxBuffer = new sf::SoundBuffer();
+        explosionSfxBuffer = new sf::SoundBuffer();
+
+        if(shotSfxBuffer->loadFromFile(p1.c_str())){
+            shotSfx = new sf::Sound(*shotSfxBuffer);
+            shotSfx->play();
+        }
+
+        if(explosionSfxBuffer->loadFromFile(p2.c_str()))
+            explosionSfx = new sf::Sound(*explosionSfxBuffer);
+	}
     
     void Projectile::update() {
         if(unit->isDebuggable())
@@ -81,39 +103,23 @@ namespace battleship{
 
     void Projectile::explode(Node *collNode) {
         exploded = true;
-				StateManager *stateManager = GameManager::getSingleton()->getStateManager();
-        vector<Player*> players = ((InGameAppState*) stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE))->getPlayers();
 
-        for (Player *p : players) {
+        for (Player *p : Game::getSingleton()->getPlayers()) {
             for (Unit *u : p->getUnits())
                 if (collNode == u->getNode())
                     u->takeDamage(damage);
         }
 
-        InGameAppState *inGameState=((InGameAppState*)stateManager->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-
-        if(id == 8)
-            detonateTorpedo(inGameState,pos);
-        else if(weaponTypeId==1&&(id==2||id==3))
-            detonateDepthCharge(inGameState,pos);
-        else
-            detonate(inGameState,pos,-dirVec);
+		StateManager *sm = GameManager::getSingleton()->getStateManager();
+        InGameAppState *inGameState = ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE));
+		string path = GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
     }
     
     void Projectile::debug(){
     }
     
-    void Projectile::orientProjectile(Vector3 orientVec){
-        Vector3 orientVecProj = Vector3(orientVec.x, 0, orientVec.z).norm();
-        float projAngle = orientVec.getAngleBetween(orientVecProj);
-        float rotAngle = Vector3(0,0,-1).getAngleBetween(orientVecProj);
-        rotAngle *= (orientVec.x<0?1:-1)/PI*180;
-        projAngle*=(orientVec.y>0?1:-1)/PI*180;
-        dirVec = orientVecProj;
-        upVec = Vector3(0,1,0);
-        leftVec = Quaternion(-PI/2, upVec) * dirVec;
-        Quaternion rotQuat=Quaternion(projAngle/180*PI,leftVec);
-        dirVec=rotQuat*dirVec;
-        upVec=rotQuat*upVec;
+    void Projectile::orientProjectile(Quaternion rot){
+		node->setOrientation(rot);
+		this->rot = rot;
     }
 }

@@ -15,24 +15,27 @@ namespace gameBase{
 }
 
 namespace battleship{
-    
     class GameManager {
     public:
-				static GameManager* getSingleton();
-				void start(int, int);
+		static GameManager* getSingleton();
+		void start(std::string);
         void update();
         inline int getWidth(){return width;}
         inline int getHeight(){return height;}
+		inline std::string getPath(){return path;}
         inline gameBase::InputManager* getInputManager(){return inputManager;}
         inline bool isServerSide(){return serverSide;}
-				inline gameBase::StateManager* getStateManager(){return stateManager;}
+		inline gameBase::StateManager* getStateManager(){return stateManager;}
     private:
-        GameManager();
-        ~GameManager();
+        GameManager(){}
+        ~GameManager(){}
+		void registerMembers();
+		void initLua(std::string);
 
-				gameBase::StateManager *stateManager = nullptr;
-				gameBase::InputManager *inputManager = nullptr;
+		gameBase::StateManager *stateManager = nullptr;
+		gameBase::InputManager *inputManager = nullptr;
         int width, height;
+		std::string path = "";
         bool serverSide;
     };
     

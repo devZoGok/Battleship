@@ -121,7 +121,7 @@ namespace battleship{
     }
 
     void Vessel::attack(Order order) {
-        Vector3 target = *order.targets[0].pos;
+        Vector3 target = order.targets[0].pos;
 
         for (Turret *t : turrets) {
       			Vector3 turrPos = t->getNode()->localToGlobalPosition(Vector3::VEC_ZERO);

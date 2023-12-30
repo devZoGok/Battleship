@@ -1,4 +1,3 @@
-#pragma once
 #ifndef UNIT_H
 #define UNIT_H
 
@@ -7,118 +6,135 @@
 #include <quaternion.h>
 #include <lineRenderer.h>
 
-#include <SFML/Audio.hpp>
+#include <solUtil.h>
 
-#include "unitData.h"
 #include "gameManager.h"
+#include "gameObject.h"
 #include "projectile.h"
 
+namespace sf{
+	class SoundBuffer;
+	class Sound;
+}
+
 namespace vb01{
-		class Mesh;
-		class Quad;
-		class Node;
-		class Camera;
+	class Mesh;
+	class Quad;
+	class Node;
+	class Camera;
 }
 
 namespace battleship{
     class Player;
-		class Unit;
+	class Unit;
+	class Vehicle;
+	class Factory;
+	class Transport;
+	class PointDefense;
+	class Engineer;
     
     struct Order {
-        enum class TYPE {ATTACK, MOVE, PATROL, LAUNCH};
-				struct Target{
-						Unit *unit = nullptr;
-						vb01::Vector3 *pos = nullptr;
+        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH};
+			struct Target{
+				Unit *unit = nullptr;
+				vb01::Vector3 pos;
 
-						Target(){}
-
-						Target(Unit *unit, vb01::Vector3 *pos){
-								this->unit = unit;
-								this->pos = pos;
-						}
-				};
+				Target(){}
+				Target(Unit *u, vb01::Vector3 p = vb01::Vector3::VEC_ZERO) : unit(u), pos(p){}
+			};
 
         TYPE type;
-				vb01::LineRenderer::Line line;
+		int lineId = -1;
+		vb01::Vector3 direction;
         std::vector<Target> targets;
+
+		Order(){}
+		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1) : type(t), lineId(lid), targets(targ), direction(dir){}
     };
     
-    enum class MoveDir {FORWARD, LEFT, RIGHT};
-    
+    enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
+    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CARRIER, SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
+    enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
     
-    class Unit {
+    class Unit : public GameObject{
     public:
-        Unit(Player*, vb01::Vector3, int);
-        ~Unit();
+		struct GarrisonSlot{
+			Vehicle *vehicle = nullptr;
+			vb01::Node *background, *foreground;
+			vb01::Vector2 offset;
+
+			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), vehicle(v){}
+		};
+
+        Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
+        virtual ~Unit();
         virtual void update();
         virtual void blowUp();
         virtual void halt();
-        void toggleSelection(bool);
+		void updateGarrison(Vehicle*, bool);
+        virtual void select();
         void setOrder(Order);
-        void placeUnit(vb01::Vector3);
-        void orientUnit(vb01::Vector3);
-        void addProjectile(Projectile*);
-        float getCircleRadius();
-				vb01::Vector3 getCorner(int);
         std::vector<Projectile*> getProjectiles();
-        inline void addOrder(Order o){orders.push_back(o);}
-        inline bool isSelected(){return selected;}
-        inline bool isSelectable(){return selectable;}
-        inline bool isDebuggable(){return debugging;}
-        inline bool isWorking(){return working;}
-        inline vb01::Vector2 getScreenPos(){return screenPos;}
-        inline vb01::Vector3 getPos() {return pos;}
+        virtual void addOrder(Order);
+		virtual void reinit();
+		inline Engineer* toEngineer(){return (Engineer*)this;}
+		inline Transport* toTransport(){return (Transport*)this;}
+		inline Factory* toFactory(){return (Factory*)this;}
+		inline PointDefense* toPointDefense(){return (PointDefense*)this;}
+		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
+		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
         inline vb01::Vector3* getPosPtr() {return &pos;}
         inline float getLineOfSight() {return lineOfSight;}
-        inline float getWidth() {return width;}
-        inline float getHeight() {return height;}
-        inline float getLength() {return length;}
         inline vb01::Model* getNode() {return model;}
-        inline Player* getPlayer(){return player;}
-        inline unitData::UNIT_TYPE getType() {return type;}
-        inline void toggleDebugging(bool d){this->debugging=d;}
+        inline UnitType getType() {return type;}
+        inline UnitClass getUnitClass() {return unitClass;}
         inline void takeDamage(int damage) {health -= damage;}
-        inline int getId() {return id;}
         inline int getPlayerId() {return playerId;}
-        inline vb01::Vector3 getDirVec() {return dirVec;}
-        inline vb01::Vector3 getLeftVec() {return leftVec;}
-        inline vb01::Vector3 getUpVec() {return upVec;}
+		inline int getHealth(){return health;}
+		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
+		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
     private:
+		void renderOrderLine(bool);
         void updateScreenCoordinates();
-        void displayUnitStats();
-        inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
+		void init();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
-        const int orderVecDispLength = 2000;
+        const int orderVecDispLength = 2000, DEATH_HP = 0;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
-				vb01::Quad *hpBackground = nullptr, *hpForeground = nullptr;
-				vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
-				int lenHpBar = 200;
+		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
     protected:
-        Player *player;
-        MoveDir moveDir = MoveDir::FORWARD;
-        unitData::UNIT_TYPE type;
-				vb01::Vector2 screenPos;
+        UnitClass unitClass;
+        UnitType type;
         std::vector<Order> orders;
-				vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, -1), leftVec = vb01::Vector3(1, 0, 0);
-				vb01::Quaternion rot = vb01::Quaternion::QUAT_W;
-        int health, cost, id, patrolPointId = 0, playerId;
-        s64 orderLineDispTime = 0;
-				vb01::Model *model;
-        bool selected = false, selectable, debugging = false, working = true;
-        float lineOfSight, speed, maxTurnAngle, range, width, height, length;
+		sf::SoundBuffer *fireSfxBuffer;
+		sf::Sound *fireSfx = nullptr;
+        int health, damage, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
+        s64 orderLineDispTime = 0, lastFireTime = 0;
+        float lineOfSight, range;
+		std::vector<GarrisonSlot> garrisonSlots;
 
+		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
+		virtual void initProperties();
+		virtual void destroySound();
+		virtual void initSound();
+		virtual void initUnitStats();
         virtual void executeOrders();
+        virtual void eject(Order);
         virtual void attack(Order);
-        virtual void move(Order, float = 0.);
-        virtual void patrol(Order);
-        virtual void launch(Order);
-        virtual void turn(float);
-        virtual void advance(float);
-        void drawCuboid();
+        virtual void garrison(Order){}
+        virtual void build(Order){}
+        virtual void move(Order){}
+        virtual void patrol(Order){}
+        virtual void launch(Order){}
+		float calculateRotation(vb01::Vector3, float, float);
+		virtual void fire();
+		void removeBar(vb01::Node*);
+		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);
+        void displayUnitStats(vb01::Node*, vb01::Node*, int, int, bool, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
+		inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
     };
 }
 

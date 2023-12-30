@@ -1,120 +1,263 @@
 #include <model.h>
 #include <quad.h>
 #include <material.h>
+#include <particleEmitter.h>
 #include <texture.h>
 
 #include <stateManager.h>
+#include <solUtil.h>
 
 #include <glm.hpp>
 #include <ext.hpp>
 
 #include "unit.h"
 #include "util.h"
-#include "inGameAppState.h"
-#include "unitData.h"
+#include "game.h"
+#include "vehicle.h"
+#include "activeGameState.h"
+#include "defConfigs.h"
+#include "pathfinder.h"
 
 using namespace glm;
 using namespace vb01;
+using namespace gameBase;
 using namespace std;
 
 namespace battleship{
-		using namespace unitData;
-
-    Unit::Unit(Player *player, vb01::Vector3 pos, int id) {
+    Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
         this->id = id;
         this->player = player;
-        this->health = unitData::health[id];
-        this->maxTurnAngle = unitData::maxTurnAngle[id];
-        this->range = unitData::range[id];
-        this->lineOfSight = unitData::lineOfSight[id];
-        this->speed = unitData::speed[id];
-        type = unitData::unitType[id];
-        width = unitData::unitCornerPoints[id][0].x - unitData::unitCornerPoints[id][1].x;
-        height = unitData::unitCornerPoints[id][4].y - unitData::unitCornerPoints[id][0].y;
-        length = unitData::unitCornerPoints[id][3].z - unitData::unitCornerPoints[id][0].z;
+		selectable = true;
 
-				GameManager *gm = GameManager::getSingleton();
-				model = new Model(basePath[id] + meshPath[id]);
-				Root *root = Root::getSingleton();
-				string libPath = root->getLibPath();
+		init();
 
-				Material *mat = new Material(libPath + "texture");
-				string f[]{DEFAULT_TEXTURE};
-        Texture *diffuseTexture = new Texture(f, 1, false);
-				mat->addBoolUniform("texturingEnabled", true);
-				mat->addBoolUniform("lightingEnabled", false);
-				mat->addTexUniform("textures[0]", diffuseTexture, true);
-
-				model->setMaterial(mat);
-				root->getRootNode()->attachChild(model);
-        placeUnit(pos);
-
-        selectionSfxBuffer = new sf::SoundBuffer();
-        string p = PATH + "Sounds/" + unitData::name[id] + "s/selection.ogg";
-
-        if(selectionSfxBuffer->loadFromFile(p.c_str()))
-            selectionSfx = new sf::Sound(*selectionSfxBuffer);
-
-				Node *guiNode = root->getGuiNode();
-
-				hpBackground = new Quad(Vector3(lenHpBar, 10, 0), false);
-				Material *hpBackgroundMat = new Material(libPath + "gui");
-				hpBackgroundMat->addBoolUniform("texturingEnabled", false);
-				hpBackgroundMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
-				hpBackground->setMaterial(hpBackgroundMat);
-				hpBackgroundNode = new Node();
-				hpBackgroundNode->attachMesh(hpBackground);
-				guiNode->attachChild(hpBackgroundNode);
-
-				hpForeground = new Quad(Vector3(lenHpBar, 10, 0), false);
-				Material *hpForegroundMat = new Material(libPath + "gui");
-				hpForegroundMat->addBoolUniform("texturingEnabled", false);
-				hpForegroundMat->addVec4Uniform("diffuseColor", Vector4(0, 1, 0, 1));
-				hpForeground->setMaterial(hpForegroundMat);
-				hpForegroundNode = new Node();
-				hpForegroundNode->attachMesh(hpForeground);
-				guiNode->attachChild(hpForegroundNode);
+		Vector2 size = Vector2(lenHpBar, 10);
+		hpBackgroundNode = createBar(Vector2::VEC_ZERO, size, Vector4(0, 0, 0, 1));
+		hpForegroundNode = createBar(Vector2::VEC_ZERO, size, Vector4(0, 1, 0, 1));
     }
 
     Unit::~Unit() {
+		removeBar(hpBackgroundNode);
+		removeBar(hpForegroundNode);
+		destroySound();
+		destroyModel();
     }
 
-    void Unit::update() {
-				leftVec = model->getGlobalAxis(0);
-				upVec = model->getGlobalAxis(1);
-				dirVec = model->getGlobalAxis(2);
+	void Unit::init(){
+		initProperties();
+		initModel();
+		initSound();
+        placeAt(pos);
+		orientAt(rot);
+	}
 
-        if (!orders.empty()){
-						LineRenderer *lineRenderer = LineRenderer::getSingleton();
-						lineRenderer->toggleVisibility(orders[0].line.id, selected && canDisplayOrderLine());
-						lineRenderer->changeLineField(orders[0].line.id, pos, LineRenderer::START);
+	void Unit::initProperties(){
+		GameObject::initProperties();
+
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+		string name = SOL_LUA_STATE["name"][id + 1];
+        health = SOL_LUA_STATE["health"][id + 1];
+		maxHealth = health;
+
+		rateOfFire = SOL_LUA_STATE["rateOfFire"][id + 1];
+        range = SOL_LUA_STATE["range"][id + 1];
+        damage = SOL_LUA_STATE["damage"][id + 1];
+        lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
+        unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
+		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
+		int capacity = SOL_LUA_STATE["garrisonCapacity"][id + 1];
+
+		for(int i = 0; i < capacity; i++){
+			Vector2 size = 10 * Vector2::VEC_IJ;
+			Vector2 pos = Vector2(1.5 * size.x * i, 20);
+			Node *bg = createBar(pos, size, Vector4(0, 0, 0, 1));
+			Node *fg = createBar(pos, size, Vector4(0, 1, 0, 1));
+			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos));
+		}
+
+	}
+	
+	void Unit::destroySound(){
+		selectionSfx->stop();
+		delete selectionSfx;
+		delete selectionSfxBuffer;
+
+		if(fireSfx){
+			fireSfx->stop();
+			delete fireSfx;
+			delete fireSfxBuffer;
+		}
+	}
+
+	void Unit::initSound(){
+		GameObject::initSound();
+
+		selectionSfxBuffer = new sf::SoundBuffer();
+		selectionSfx = GameObject::prepareSfx(selectionSfxBuffer, "selectionSfx");
+
+		fireSfxBuffer = new sf::SoundBuffer();
+		fireSfx = prepareSfx(fireSfxBuffer, "fireSfx");
+	}
+
+	void Unit::reinit(){
+		destroySound();
+		destroyModel();
+		initModel();
+		initSound();
+		initProperties();
+        placeAt(pos);
+		orientAt(rot);
+	}
+
+	Node* Unit::createBar(Vector2 pos, Vector2 size, Vector4 color){
+		Root *root = Root::getSingleton();
+		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addVec4Uniform("diffuseColor", color);
+
+		Quad *quad = new Quad(Vector3(size.x, size.y, 0), false);
+		quad->setMaterial(mat);
+
+		Node *node = new Node(Vector3(pos.x, pos.y, 0));
+		node->attachMesh(quad);
+		node->setVisible(false);
+		root->getGuiNode()->attachChild(node);
+
+		return node;
+	}
+
+	void Unit::removeBar(Node *node){
+		Root::getSingleton()->getGuiNode()->dettachChild(node);
+		delete node;
+	}
+
+	float Unit::calculateRotation(Vector3 dir, float angle, float maxTurnAngle){
+		float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
+
+		if(isTargetToTheRight(dir, leftVec))
+			rotSpeed *= -1;
+
+		return rotSpeed;
+	}
+
+	void Unit::fire(){
+		fireSfx->play();
+
+		Unit *targetUnit = orders[0].targets[0].unit;
+
+		if(targetUnit){
+			targetUnit->takeDamage(damage);
+
+			if(targetUnit->getHealth() <= DEATH_HP){
+				Player *targUnitPlayer = targetUnit->getPlayer();
+
+				if(targetUnit->isVehicle()){
+					player->incVehiclesDestroyed();
+					targUnitPlayer->incVehiclesLost();
+				}
+				else{
+					player->incStructuresDestroyed();
+					targUnitPlayer->incStructuresLost();
+				}
+			}
+		}
+
+		lastFireTime = getTime();
+	}
+
+	void Unit::initUnitStats(){
+	}
+
+	void Unit::renderOrderLine(bool mainPlayerSelecting){
+        if (!orders.empty() && orders[0].lineId != -1 && mainPlayerSelecting){
+			bool display = canDisplayOrderLine();
+			LineRenderer *lineRenderer = LineRenderer::getSingleton();
+			lineRenderer->toggleVisibility(orders[0].lineId, display);
+
+			if(display){
+				lineRenderer->changeLineField(orders[0].lineId, pos, LineRenderer::START);
+				Vector3 targPos = (orders[0].targets[0].unit ? orders[0].targets[0].unit->getPos() : orders[0].targets[0].pos);
+				lineRenderer->changeLineField(orders[0].lineId, targPos, LineRenderer::END);
+			}
         }
+	}
 
+    void Unit::update() {
+		GameObject::update();
+
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
+
+		vector<Player*> selectingPlayers = getSelectingPlayers();
+		bool mainPlayerSelecting = find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end();
+		bool ownerSelecting = (mainPlayer == player && mainPlayerSelecting);
+
+		renderOrderLine(ownerSelecting);
         executeOrders();
 
-				screenPos = spaceToScreen(pos);
-				hpBackgroundNode->setVisible(selected);
-				hpForegroundNode->setVisible(selected);
+		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth, mainPlayerSelecting);
 
-        if (selected) {
-            displayUnitStats();
-        }
+		if(ownerSelecting)
+			for(GarrisonSlot &slot : garrisonSlots)
+				displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, mainPlayerSelecting, slot.offset);
 
-        if (health <= 0) 
-            blowUp();
+        if (health <= DEATH_HP)
+			blowUp();
     }
 
     void Unit::blowUp(){
-        working = false;
+		Root *root = Root::getSingleton();
+
+		const int numFrames = 1;
+		string p[numFrames];
+
+		for(int i = 0; i < numFrames; i++)
+			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion07.png";
+
+		Texture *tex = new Texture(p, numFrames, false);
+
+		Material *mat = new Material(root->getLibPath() + "particle");
+		mat->addTexUniform("tex", tex, true);
+
+		ParticleEmitter *pe = new ParticleEmitter(1);
+		pe->setMaterial(mat);
+		pe->setLowLife(3);
+		pe->setHighLife(3);
+		pe->setSize(10 * Vector2::VEC_IJ);
+		pe->setSpeed(0);
+
+		Node *node = new Node(pos + Vector3(0, 2, 0));
+		node->attachParticleEmitter(pe);
+		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
+		root->getRootNode()->attachChild(node);
+
+		Fx fx(50, 2500, deathSfx, node);
+		fx.activate();
+		Game::getSingleton()->addFx(fx);
+
+		player->removeUnit(this);
     }
 
-    void Unit::displayUnitStats() {
-				float shiftedX = screenPos.x - 0.5 * lenHpBar;
-				hpForegroundNode->setPosition(Vector3(shiftedX, screenPos.y, 0));
-				hpForeground->setSize(Vector3(health / unitData::health[id] * lenHpBar, 10, 0));
-				hpBackgroundNode->setPosition(Vector3(shiftedX, screenPos.y, .1));
+    void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, bool render, Vector2 offset) {
+		foreground->setVisible(render);
+		background->setVisible(render);
+
+		if(render){
+			Vector3 offset3d = Vector3(offset.x, offset.y, 0);
+
+			Quad *bgQuad = (Quad*)background->getMesh(0);
+			Vector3 size = bgQuad->getSize();
+			float shiftedX = screenPos.x - 0.5 * size.x;
+			background->setPosition(Vector3(shiftedX, screenPos.y, .1) + offset3d);
+
+			Quad *fgQuad = (Quad*)foreground->getMesh(0);
+			fgQuad->setSize(Vector3((float)currVal / maxVal * size.x, size.y, 0));
+			fgQuad->updateVerts(fgQuad->getMeshBase());
+			foreground->setPosition(Vector3(shiftedX, screenPos.y, 0) + offset3d);
+		}
     }
 
+	//TODO remove order argument from action methods
     void Unit::executeOrders() {
         if (orders.size() > 0) {
             Order order = orders[0];
@@ -123,9 +266,18 @@ namespace battleship{
                 case Order::TYPE::ATTACK:
                     attack(order);
                     break;
-                case Order::TYPE::MOVE:
-                    move(order, unitData::destinationOffset[id]);
+                case Order::TYPE::BUILD:
+                    build(order);
                     break;
+                case Order::TYPE::MOVE:
+                    move(order);
+                    break;
+				case Order::TYPE::GARRISON:
+					garrison(order);
+					break;
+				case Order::TYPE::EJECT:
+					eject(order);
+					break;
                 case Order::TYPE::PATROL:
                     patrol(order);
                     break;
@@ -138,157 +290,95 @@ namespace battleship{
         }
     }
 
+	void Unit::eject(Order order){
+		if(garrisonSlots.size() > 0){
+			for(Order::Target targ : order.targets)
+				((Vehicle*)targ.unit)->exitGarrisonable();
+
+			removeOrder(0);
+		}
+	}
+
+	void Unit::attack(Order order){
+		vector<Unit*> units;
+
+		for(Player *pl : Game::getSingleton()->getPlayers()){
+			vector<Unit*> un = pl->getUnits();
+			units.insert(units.end(), un.begin(), un.end());
+		}
+
+		for(Order::Target &target : orders[0].targets)
+			if(target.unit){
+				if(find(units.begin(), units.end(), target.unit) != units.end())
+					break;
+
+				removeOrder(0);
+			}
+	}
+
     void Unit::setOrder(Order order) {
         while (!orders.empty())
-						removeOrder(0);
+			removeOrder(0);
 
         addOrder(order);
         orderLineDispTime = getTime();
     }
 
-    void Unit::attack(Order order) {
-    }
-
-    void Unit::move(Order order, float destOffset) {
-        float movementAmmount, radius = getCircleRadius(), angle = 0.;
-				int targetId = (order.type == Order::TYPE::PATROL ? getNextPatrolPointId(order.targets.size()) : 0);
-        Vector3 dest = *order.targets[targetId].pos;
-        dest.y = pos.y;
-        Vector3 center;
-
-        if (leftVec.getAngleBetween(dest - pos) < PI / 2) {
-            moveDir = MoveDir::LEFT;
-            center = pos + leftVec*radius;
-        } else if (-leftVec.getAngleBetween(dest - pos) < PI / 2) {
-            moveDir = MoveDir::RIGHT;
-            center = pos - leftVec*radius;
-        }
-
-        bool withinCircle = center.getDistanceFrom(dest) < radius ? true : false;
-
-        if (moveDir != MoveDir::FORWARD) {
-            if (withinCircle)
-                angle = dirVec.getAngleBetween(center - dest) / PI * 180;
-            else
-                angle = dirVec.getAngleBetween(dest - pos) / PI * 180;
-
-            angle = isnan(angle) ? 0. : angle;
-
-            if (angle > anglePrecision[id]) {
-                float rotAngle = maxTurnAngle > angle ? angle : maxTurnAngle;
-                angle -= rotAngle;
-                turn(moveDir == MoveDir::RIGHT ? -rotAngle : rotAngle);
-            }
-        }
-
-        if (angle > anglePrecision[id])
-            movementAmmount = speed;
-        else {
-            if (withinCircle) {
-                float inDest = ((center - dest).norm() * radius - (center - dest)).getLength();
-                movementAmmount = speed > inDest ? inDest : speed;
-            } else
-                movementAmmount = speed > pos.getDistanceFrom(dest) ? pos.getDistanceFrom(dest) : speed;
-        }
-
-        advance(movementAmmount);
-
-        if (pos.getDistanceFrom(dest) <= destOffset && orders[0].type != Order::TYPE::ATTACK) {
-            moveDir = MoveDir::FORWARD;
-
-						if(orders[0].type == Order::TYPE::MOVE)
-            	removeOrder(0);
-						else if(orders[0].type == Order::TYPE::PATROL)
-							patrolPointId = targetId;
-        }
-    }
-
-    void Unit::patrol(Order order) {
-        move(order, unitData::destinationOffset[id]);
-    }
-
-    void Unit::launch(Order order) {}
-
-    void Unit::advance(float speed) {
-        pos = pos + dirVec * speed;
-        model->setPosition(pos);
-    }
-
-    void Unit::turn(float angle) {
-        Quaternion rotQuat = Quaternion(PI / 180 * angle, Vector3(0, 1, 0));
-        model->setOrientation(rotQuat * model->getOrientation());
-    }
-
     void Unit::halt() {
         while (orders.size() > 0)
             removeOrder(orders.size() - 1);
-
-				patrolPointId = 0;
     }
 
-    float Unit::getCircleRadius() {
-        float radius = 0.;
+	void Unit::updateGarrison(Vehicle *garrVeh, bool entering){
+		for(GarrisonSlot &slot : garrisonSlots){
+			if(entering && !slot.vehicle){
+				slot.vehicle = garrVeh;
+				break;
+			}
+			else if(!entering && slot.vehicle == garrVeh){
+				slot.vehicle = nullptr;
+				break;
+			}
+		}
+	}
 
-        for (int i = 0; i <= 90 / maxTurnAngle; i++)
-            radius += cos(i * (maxTurnAngle / 180 * PI)) * speed;
+	void Unit::addOrder(Order order){
+		orders.push_back(order);
+	}
 
-        return radius;
-    }
+	vector<Player*> Unit::getSelectingPlayers(){
+		vector<Player*> players = Game::getSingleton()->getPlayers(), selectingPlayers;
 
-    void Unit::placeUnit(Vector3 p) {
-        model->setPosition(p);
-        pos = p;
-    }
+		for(Player *pl : players){
+			int numSelectedUnits = pl->getNumSelectedUnits();
 
-    void Unit::orientUnit(Vector3 orientVec){
-        Vector3 orientVecProj = Vector3(orientVec.x, 0, orientVec.z).norm();
-        float projAngle = orientVec.getAngleBetween(orientVecProj);
-        float rotAngle = Vector3(0,0,-1).getAngleBetween(orientVecProj);
+			for(int i = 0; i < numSelectedUnits; i++)
+				if(pl->getSelectedUnit(i) == this){
+					selectingPlayers.push_back(pl);
+					break;
+				}
+		}
 
-        rotAngle *= (orientVec.x < 0 ? 1 : -1) / PI * 180;
-        projAngle *= (orientVec.y > 0 ? 1 : -1) / PI * 180;
-        dirVec = orientVecProj;
-        upVec = Vector3(0,1,0);
-        leftVec = Quaternion(-PI / 2, upVec) * dirVec;
-        Quaternion rotQuat = Quaternion(projAngle / 180 * PI, leftVec);
-        dirVec = rotQuat * dirVec;
-        upVec = rotQuat * upVec;
-    }
-    
-    Vector3 Unit::getCorner(int i) {
-        Vector3 corner = unitCornerPoints[id][i];
-        return pos + (leftVec * corner.x + upVec * corner.y - dirVec * corner.z);
-    }
-
-    std::vector<Projectile*> Unit::getProjectiles(){
-        std::vector<Projectile*> projectiles;
-        InGameAppState *inGameState = ((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-
-        for(Projectile *p: inGameState->getProjectiles())
-            if(p->getUnit() == this)
-                projectiles.push_back(p);
-
-        return projectiles;
-    }
+		return selectingPlayers;
+	}
     
     void Unit::removeOrder(int id) {
-				LineRenderer::getSingleton()->removeLine(orders[id].line.id);
-
-				for(Order::Target t : orders[id].targets)
-						if(t.unit)
-								delete t.pos;
+		if(orders[id].lineId != -1)
+			LineRenderer::getSingleton()->removeLine(orders[id].lineId);
 
         orders.erase(orders.begin() + id);
     }
 
-    void Unit::toggleSelection(bool selection) {
-        selected = selection;
+    void Unit::select() {
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
 
-        if(selection && selectionSfx)
+		vector<Player*> selectingPlayers = getSelectingPlayers();
+		bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
+
+        if(mainPlayer == player && mainPlayerSelecting && selectionSfx)
             selectionSfx->play();
 
         orderLineDispTime = getTime();
     }
-
-    void Unit::addProjectile(Projectile *p) {((InGameAppState*)GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::IN_GAME_STATE))->addProjectile(p);}
 }
