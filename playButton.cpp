@@ -39,10 +39,10 @@ namespace battleship{
 			for(int i = 0; i < numPlayers; i++){
 				bool cpuPlayer = (i < numPlayers - 1);
 				string name = (cpuPlayer ? "CPU player #" + to_string(i) : "Player");
-				Player *player = new Player(0, 0, i, Vector3(1, 1, 1), cpuPlayer, map->getSpawnPoint(i), name);
-				map->loadPlayerGameObjects(player);
-				Game::getSingleton()->addPlayer(player);
+				Game::getSingleton()->addPlayer(new Player(0, 0, i, Vector3(1, 1, 1), cpuPlayer, map->getSpawnPoint(i), name));
 			}
+
+			map->loadPlayerGameObjects();
 
 			ConcreteGuiManager::getSingleton()->readLuaScreenScript("inGame.lua");
 

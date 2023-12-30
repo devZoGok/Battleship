@@ -124,7 +124,7 @@ namespace battleship{
 		}
 	}
 
-	void Map::loadPlayerGameObjects(Player *player){
+	void Map::loadPlayerGameObjects(){
 		AssetManager *assetManager = AssetManager::getSingleton();
 		string path = GameManager::getSingleton()->getPath();
 		assetManager->load(path + DEFAULT_TEXTURE);
@@ -138,23 +138,22 @@ namespace battleship{
 		int numPlayers = SOL_LUA_VIEW["numPlayers"];
 
 		for(int i = 0; i < numPlayers; i++){
-			if(i == 0){
-				string resDepInd = "resourceDeposits";
-				SOL_LUA_VIEW.script("numResourceDeposits = #" + mapTable + "." + playerInd + "[" + to_string(i + 1) + "]." + resDepInd);
-				int numNpcObjs = SOL_LUA_VIEW["numResourceDeposits"];
+			string resDepInd = "resourceDeposits";
+			SOL_LUA_VIEW.script("numResourceDeposits = #" + mapTable + "." + playerInd + "[" + to_string(i + 1) + "]." + resDepInd);
+			int numNpcObjs = SOL_LUA_VIEW["numResourceDeposits"];
+			Player *player = Game::getSingleton()->getPlayer(i);
 
-				for(int j = 0; j < numNpcObjs; j++){
-					sol::table npcObjTable = SOL_LUA_VIEW[mapTable][playerInd][i + 1][resDepInd][j + 1];
-					int id = npcObjTable["id"];
+			for(int j = 0; j < numNpcObjs; j++){
+				sol::table npcObjTable = SOL_LUA_VIEW[mapTable][playerInd][i + 1][resDepInd][j + 1];
+				int id = npcObjTable["id"];
 
-					sol::table posTable = npcObjTable["pos"];
-					Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+				sol::table posTable = npcObjTable["pos"];
+				Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 
-					sol::table rotTable = npcObjTable["rot"];
-					Quaternion rot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
+				sol::table rotTable = npcObjTable["rot"];
+				Quaternion rot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
 
-					player->addResourceDeposit(GameObjectFactory::createResourceDeposit(player, id, pos, rot));
-				}
+				player->addResourceDeposit(GameObjectFactory::createResourceDeposit(player, id, pos, rot));
 			}
 
 			//int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
