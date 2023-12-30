@@ -263,27 +263,31 @@ namespace battleship{
 		}
     }
 
+	//TODO unload skybox assets
 	void Map::unloadSkybox(){
 		Root::getSingleton()->removeSkybox();
-		//unload skybox assets
 	}
 
 	void Map::unloadCells(){
 		while(cellNode->getNumChildren() > 0){
 			Node *node = cellNode->getChild(0);
+			node->getMesh(0)->setMaterial(nullptr);
 			cellNode->dettachChild(node);
-			//delete node;
+			delete node;
 		}
+
+		delete landCellMat;
+		delete waterCellMat;
 
 		cells.clear();
 	}
 
+	//TODO unload terrain assets
 	void Map::unloadTerrainObjects(){
-		//unload terrain assets
 		while(terrainNode->getNumChildren() > 0){
 			Node *node = terrainNode->getChild(0);
 			terrainNode->dettachChild(node);
-			//delete node;
+			delete node;
 		}
 	}
 
