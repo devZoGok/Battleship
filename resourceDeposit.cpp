@@ -9,4 +9,8 @@ namespace battleship{
 		placeAt(pos);
 		orientAt(rot);
 	}
+
+	ResourceDeposit::~ResourceDeposit(){
+		destroyModel();
+	}
 }

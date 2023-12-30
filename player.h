@@ -55,12 +55,12 @@ namespace battleship{
 		inline int getNumStructuresBuilt(){return structuresBuilt;}
 		inline int getNumStructuresDestroyed(){return structuresDestroyed;}
 		inline int getNumStructuresLost(){return structuresLost;}
-		inline void setNumVehiclesBuilt(int vb){vehiclesBuilt = vb;}
-		inline void setNumVehiclesDestroyed(int vd){vehiclesDestroyed = vd;}
-		inline void setNumVehiclesLost(int vl){vehiclesLost = vl;}
-		inline void setNumStructuresBuilt(int sb){structuresBuilt = sb;}
-		inline void setNumStructuresDestroyed(int sd){structuresDestroyed = sd;}
-		inline void setNumStructuresLost(int sl){structuresLost = sl;}
+		inline void incVehiclesBuilt(){vehiclesBuilt++;}
+		inline void incVehiclesDestroyed(){vehiclesDestroyed++;}
+		inline void incVehiclesLost(){vehiclesLost++;}
+		inline void incStructuresBuilt(){structuresBuilt++;}
+		inline void incStructuresDestroyed(){structuresDestroyed++;}
+		inline void incStructuresLost(){structuresLost++;}
 		inline vb01::Vector3 getColor(){return color;}
 		inline std::string getName(){return name;}
     private:

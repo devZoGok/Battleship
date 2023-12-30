@@ -55,6 +55,8 @@ namespace battleship{
 
 				unitQueue.erase(unitQueue.begin());
 				trainingStatus = 0;
+
+				player->incVehiclesBuilt();
 			}
 		}
 	}
