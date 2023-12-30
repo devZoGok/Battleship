@@ -400,6 +400,7 @@ namespace battleship{
 		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
 
 		Text *text = new Text(GameManager::getSingleton()->getPath() + "Fonts/" + (string)guiTable["font"], (wstring)guiTable["text"], guiTable["fontFirstChar"], guiTable["fontLastChar"]);
+		text->setScale((float)guiTable["scale"]);
 		text->setMaterial(mat);
 
 		Vector3 pos = Vector3(posTable["x"], posTable["y"], guiTable["zIndex"]);

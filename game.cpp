@@ -91,6 +91,7 @@ namespace battleship{
 		}
 	}
 
+	//TODO remove the bool flag
 	void Game::removeFx(int id, bool vfx){
 		const sf::SoundBuffer *buffer = fx[id].sfx->getBuffer();
 
@@ -106,6 +107,18 @@ namespace battleship{
 			delete fx[id].peNode;
 			fx[id].peNode = nullptr;
 		}
+	}
+
+	void Game::removeAllElements(){
+		resetLuaGameObjects();
+
+		while(!players.empty()){
+			delete players[0];
+			players.erase(players.begin());
+		}
+
+		ended = false;
+		paused = false;
 	}
 
 	void Game::togglePause(){

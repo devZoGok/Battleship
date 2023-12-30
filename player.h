@@ -12,7 +12,7 @@ namespace battleship{
 
     class Player {
     public:
-        Player(int, int, int, bool = true, vb01::Vector3 = vb01::Vector3::VEC_ZERO);
+        Player(int, int, int, vb01::Vector3, bool = true, vb01::Vector3 = vb01::Vector3::VEC_ZERO, std::string = "");
         ~Player();
         void update();
 		void issueOrder(Order::TYPE, vb01::Vector3, std::vector<Order::Target>, bool);
@@ -49,13 +49,28 @@ namespace battleship{
 		inline void setResearch(int r){this->research = r;}
 		inline void addResearch(int r){this->research += r;}
 		inline bool isCpuPlayer(){return cpuPlayer;}
+		inline int getNumVehiclesBuilt(){return vehiclesBuilt;}
+		inline int getNumVehiclesDestroyed(){return vehiclesDestroyed;}
+		inline int getNumVehiclesLost(){return vehiclesLost;}
+		inline int getNumStructuresBuilt(){return structuresBuilt;}
+		inline int getNumStructuresDestroyed(){return structuresDestroyed;}
+		inline int getNumStructuresLost(){return structuresLost;}
+		inline void setNumVehiclesBuilt(int vb){vehiclesBuilt = vb;}
+		inline void setNumVehiclesDestroyed(int vd){vehiclesDestroyed = vd;}
+		inline void setNumVehiclesLost(int vl){vehiclesLost = vl;}
+		inline void setNumStructuresBuilt(int sb){structuresBuilt = sb;}
+		inline void setNumStructuresDestroyed(int sd){structuresDestroyed = sd;}
+		inline void setNumStructuresLost(int sl){structuresLost = sl;}
+		inline vb01::Vector3 getColor(){return color;}
+		inline std::string getName(){return name;}
     private:
 		bool cpuPlayer = false;
-        int refineds = 0, wealth = 0, research = 0, faction, difficulty, team, luaPlayerId;
+        int refineds = 0, wealth = 0, research = 0, faction, difficulty, team, luaPlayerId, vehiclesBuilt = 0, vehiclesDestroyed = 0, vehiclesLost = 0, structuresBuilt = 0, structuresDestroyed = 0, structuresLost = 0;
+		std::string name;
         std::vector<Unit*> units, selectedUnits;
 		std::vector<Projectile*> projectiles;
 		std::vector<ResourceDeposit*> resourceDeposits;
-        vb01::Vector3 spawnPoint;
+        vb01::Vector3 spawnPoint, color;
 
 		int getOrderLineId(Order::TYPE, vb01::Vector3, vb01::Vector3);
     };

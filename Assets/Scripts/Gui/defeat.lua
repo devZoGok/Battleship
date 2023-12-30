@@ -7,6 +7,7 @@ gui = {
 		name = 'D',
 		pos = {x = 100, y = 100},
 		zIndex = 0,
+		scale = 1,
 		font = 'batang.ttf',
 		fontFirstChar = 0,
 		fontLastChar = 256,

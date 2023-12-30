@@ -9,6 +9,7 @@ namespace battleship {
 			StatsButton(vb01::Vector2, vb01::Vector2, std::string, int, std::string);
 			void onClick();
 		private:
+			void addPlayerDataGuiElements(int);
 	};
 }
 

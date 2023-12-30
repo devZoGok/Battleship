@@ -15,6 +15,7 @@ namespace battleship{
 			void update();
 			void togglePause();
 			void removeFx(int, bool);
+			void removeAllElements();
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline void addProjectile(Projectile *proj){projectiles.push_back(proj);}

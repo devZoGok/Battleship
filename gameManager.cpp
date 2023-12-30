@@ -69,7 +69,7 @@ namespace battleship{
 		);
 
 		SOL_LUA_STATE.new_usertype<Player>(
-			"Player", sol::constructors<Player(int, int, int, bool, Vector3)>(),
+			"Player", sol::constructors<Player(int, int, int, Vector3, bool, Vector3, string)>(),
 			"addUnit", &Player::addUnit,
 			"getUnit", &Player::getUnit,
 			"getNumUnits", &Player::getNumUnits,
