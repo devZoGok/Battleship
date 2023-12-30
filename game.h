@@ -15,6 +15,7 @@ namespace battleship{
 			void update();
 			void togglePause();
 			void removeFx(int, bool);
+			void removeAllElements();
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline void addProjectile(Projectile *proj){projectiles.push_back(proj);}
@@ -24,8 +25,9 @@ namespace battleship{
 		private:
 			Game(){}
 			void resetLuaGameObjects();
+			void endGame(bool);
 
-			bool paused = false;
+			bool paused = false, ended = false;
 			std::vector<Fx> fx;
 			std::vector<Player*> players;
 			std::vector<Projectile*> projectiles;

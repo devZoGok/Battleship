@@ -29,8 +29,6 @@ namespace battleship{
 	Vehicle::~Vehicle(){
 		removeAllPathpoints();
 		delete debugMat;
-
-		Unit::~Unit();
 	}
 
 	void Vehicle::update(){

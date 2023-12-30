@@ -68,7 +68,7 @@ namespace battleship{
 		};
 
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
-        ~Unit();
+        virtual ~Unit();
         virtual void update();
         virtual void blowUp();
         virtual void halt();
@@ -91,6 +91,7 @@ namespace battleship{
         inline UnitClass getUnitClass() {return unitClass;}
         inline void takeDamage(int damage) {health -= damage;}
         inline int getPlayerId() {return playerId;}
+		inline int getHealth(){return health;}
 		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
     private:
@@ -99,7 +100,7 @@ namespace battleship{
 		void init();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
-        const int orderVecDispLength = 2000;
+        const int orderVecDispLength = 2000, DEATH_HP = 0;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
 		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;

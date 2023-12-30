@@ -7,8 +7,13 @@
 #include <utility>
 #include <vector>
 
+namespace vb01{
+	class Node;
+	class Text;
+}
+
 namespace battleship{
-	enum GuiElementType {BUTTON, LISTBOX, CHECKBOX, SLIDER, TEXTBOX};
+	enum GuiElementType {BUTTON, LISTBOX, CHECKBOX, SLIDER, TEXTBOX, GUI_RECTANGLE, TEXT};
 	enum ButtonType {
 		SINGLE_PLAYER,
 	   	EDITOR,
@@ -34,7 +39,8 @@ namespace battleship{
 		CONSOLE_COMMAND_OK,
 		BUILD,
 		LAND_FACTORY_TRAIN,
-		NAVAL_FACTORY_TRAIN
+		NAVAL_FACTORY_TRAIN,
+		STATISTICS
 	};
 	enum ListboxType {
 		CONTROLS,
@@ -59,7 +65,9 @@ namespace battleship{
 					std::vector<vb01Gui::Listbox*> = std::vector<vb01Gui::Listbox*>{},
 					std::vector<vb01Gui::Checkbox*> = std::vector<vb01Gui::Checkbox*>{},
 					std::vector<vb01Gui::Slider*> = std::vector<vb01Gui::Slider*>{},
-					std::vector<vb01Gui::Textbox*> = std::vector<vb01Gui::Textbox*>{}
+					std::vector<vb01Gui::Textbox*> = std::vector<vb01Gui::Textbox*>{},
+					std::vector<vb01::Node*> = std::vector<vb01::Node*>{},
+					std::vector<vb01::Text*> = std::vector<vb01::Text*>{}
 				);
 		private:
 			ConcreteGuiManager(){}
@@ -69,6 +77,8 @@ namespace battleship{
 			vb01Gui::Checkbox* parseCheckbox(int);
 			vb01Gui::Slider* parseSlider(int);
 			vb01Gui::Textbox* parseTextbox(int);
+			vb01::Node* parseGuiRectangle(int);
+			vb01::Text* parseText(int);
 
 			std::vector<std::pair<int*, void*>> guiElements;
 	};

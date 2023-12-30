@@ -56,18 +56,17 @@ namespace battleship{
 		map->load(name, newMap);
 
 		if(newMap){
-			addPlayer(new Player(0, 0, 0));
+			addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
 			map->addSpawnPoint(Vector3::VEC_ZERO);
 			generatePlane(size);
 		}
 		else{
 			int numPlayers = map->getNumSpawnPoints();
 
-			for(int i = 0; i < numPlayers; i++){
-				Player *player = new Player(0, 0, 0);
-				map->loadPlayerGameObjects(player);
-				addPlayer(player);
-			}
+			for(int i = 0; i < numPlayers; i++)
+				addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
+
+			map->loadPlayerGameObjects();
 		}
 	}
 
@@ -443,7 +442,7 @@ namespace battleship{
 				mapScript += "},\n";
 			}
 
-			int numUnits = players[i]->getNumberOfUnits();
+			int numUnits = players[i]->getNumUnits();
 			mapScript += "numUnits = " + to_string(numUnits) + ",\n";
 
 			if(numUnits > 0){

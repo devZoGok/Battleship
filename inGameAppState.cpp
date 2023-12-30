@@ -91,7 +91,12 @@ namespace battleship{
         stateManager->attachAppState(activeState);
     }
 
-    void InGameAppState::onDettached() {}
+    void InGameAppState::onDettached() {
+		StateManager *sm = GameManager::getSingleton()->getStateManager();
+		ActiveGameState *activeState = (ActiveGameState*)sm->getAppStateByType(int(AppStateType::ACTIVE_STATE));
+		sm->dettachAppState(activeState);
+		delete activeState;
+	}
 
     void InGameAppState::update() {
 		Game::getSingleton()->update();

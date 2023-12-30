@@ -145,8 +145,22 @@ namespace battleship{
 
 		Unit *targetUnit = orders[0].targets[0].unit;
 
-		if(targetUnit)
+		if(targetUnit){
 			targetUnit->takeDamage(damage);
+
+			if(targetUnit->getHealth() <= DEATH_HP){
+				Player *targUnitPlayer = targetUnit->getPlayer();
+
+				if(targetUnit->isVehicle()){
+					player->incVehiclesDestroyed();
+					targUnitPlayer->incVehiclesLost();
+				}
+				else{
+					player->incStructuresDestroyed();
+					targUnitPlayer->incStructuresLost();
+				}
+			}
+		}
 
 		lastFireTime = getTime();
 	}
@@ -187,7 +201,7 @@ namespace battleship{
 			for(GarrisonSlot &slot : garrisonSlots)
 				displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, mainPlayerSelecting, slot.offset);
 
-        if (health <= 0) 
+        if (health <= DEATH_HP)
 			blowUp();
     }
 

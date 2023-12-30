@@ -11,7 +11,7 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace std;
 
-    Player::Player(int diff, int fac, int t, bool cpuPl, Vector3 sp) : difficulty(diff), faction(fac), team(t), cpuPlayer(cpuPl), spawnPoint(sp) {}
+    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n) {}
 
     Player::~Player() {}
 
@@ -112,6 +112,11 @@ namespace battleship{
 	void Player::removeUnit(int id){
 		delete units[id];
 		units.erase(units.begin() + id);
+	}
+
+	void Player::removeResourceDeposit(int id){
+		delete resourceDeposits[id];
+		resourceDeposits.erase(resourceDeposits.begin() + id);
 	}
 
 	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){

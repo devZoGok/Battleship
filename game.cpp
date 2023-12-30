@@ -43,11 +43,41 @@ namespace battleship{
 			}
 	}
 
+	void Game::endGame(bool victory){
+		ended = true;
+
+		StateManager *sm = GameManager::getSingleton()->getStateManager();
+		sm->dettachAppState(sm->getAppStateByType(AppStateType::ACTIVE_STATE));
+
+			togglePause();
+
+		string endGameScreen = (victory ? "victory.lua" : "defeat.lua");
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript(endGameScreen);
+	}
+
 	void Game::update(){
 		resetLuaGameObjects();
 
-		for(int i = 0; i < players.size(); i++)
+		int numPlayersWithUnits = 0;
+
+		for(int i = 0; i < players.size(); i++){
 			players[i]->update();
+
+			if(players[i]->getNumUnits() > 0)
+				numPlayersWithUnits++;
+		}
+
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
+
+		if(mainPlayer && !ended){
+			int numMainPlayerUnits = mainPlayer->getNumUnits();
+
+			if(numMainPlayerUnits > 0 && numPlayersWithUnits == 1)
+				endGame(true);
+			else if(numMainPlayerUnits == 0)
+				endGame(false);
+		}
 
 		for(Projectile *proj : projectiles)
 			proj->update();
@@ -61,6 +91,7 @@ namespace battleship{
 		}
 	}
 
+	//TODO remove the bool flag
 	void Game::removeFx(int id, bool vfx){
 		const sf::SoundBuffer *buffer = fx[id].sfx->getBuffer();
 
@@ -76,6 +107,18 @@ namespace battleship{
 			delete fx[id].peNode;
 			fx[id].peNode = nullptr;
 		}
+	}
+
+	void Game::removeAllElements(){
+		resetLuaGameObjects();
+
+		while(!players.empty()){
+			delete players[0];
+			players.erase(players.begin());
+		}
+
+		ended = false;
+		paused = false;
 	}
 
 	void Game::togglePause(){

@@ -21,8 +21,10 @@ namespace battleship{
 					structure->incrementBuildStatus();
 					lastIncrementTime = getTime();
 				}
-				else if(structure->getBuildStatus() >= 100)
+				else if(structure->getBuildStatus() >= 100){
 					removeOrder(0);
+					player->incStructuresBuilt();
+				}
 			}
 		}
 		else{
