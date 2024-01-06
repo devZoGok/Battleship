@@ -249,6 +249,17 @@ namespace battleship{
 
 		XMLElement *nodeEl = doc->NewElement(nodeTagName);
 		nodeEl->SetAttribute("name", "plane");
+		Node *landmassNode = map->getNodeParent()->getChild(0);
+		nodeEl->SetAttribute("px", landmassNode->getPosition().x);
+		nodeEl->SetAttribute("py", landmassNode->getPosition().y);
+		nodeEl->SetAttribute("pz", landmassNode->getPosition().z);
+		nodeEl->SetAttribute("rw", landmassNode->getOrientation().w);
+		nodeEl->SetAttribute("rx", landmassNode->getOrientation().x);
+		nodeEl->SetAttribute("ry", landmassNode->getOrientation().y);
+		nodeEl->SetAttribute("rz", landmassNode->getOrientation().z);
+		nodeEl->SetAttribute("sx", landmassNode->getScale().x);
+		nodeEl->SetAttribute("sy", landmassNode->getScale().y);
+		nodeEl->SetAttribute("sz", landmassNode->getScale().z);
 		XMLNode *nodeTag = rootTag->InsertEndChild(nodeEl);
 
 		XMLElement *meshEl = doc->NewElement("mesh");
@@ -306,7 +317,7 @@ namespace battleship{
 		for(int i = 0; i < numVertCells; i++)
 			for(int j = 0; j < numHorCells; j++){
 				Vector3 rayPos = startPos + Vector3(cellSize.x * j, 100, cellSize.z * i);
-				vector<RayCaster::CollisionResult> res = RayCaster::cast(rayPos, -Vector3::VEC_J, terrainNode->getChild(0));
+				vector<RayCaster::CollisionResult> res = RayCaster::cast(rayPos, -Vector3::VEC_J, terrainNode->getChild(0), 0, 4);
 
 				if(res.empty()){
 					RayCaster::CollisionResult r;
