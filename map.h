@@ -38,11 +38,11 @@ namespace battleship{
 		
 			Cell(){}
 			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}, std::vector<int> uc = std::vector<int>{}): pos(p), type(t), edges(e), underWaterCellIds(uc){}
-			int getEdgeWeight(int);
 		};
 
 		static Map* getSingleton();
         ~Map(){}
+		static std::vector<Edge> generateAdjacentNodeEdges(int, int, int, int, int);
         void update();
         void load(std::string, bool = false);
         void unload();

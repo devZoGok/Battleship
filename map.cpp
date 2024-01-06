@@ -22,17 +22,6 @@ using namespace gameBase;
 namespace battleship{
 	using namespace configData;
 
-	//TODO check if edges have lower weight than impassible weight value for the Pathfinder 
-	int Map::Cell::getEdgeWeight(int destCellId){
-		int weight = Pathfinder::getSingleton()->getImpassibleNodeVal();
-
-		for(Edge e : edges)
-			if(e.destCellId == destCellId)
-				weight = e.weight;
-
-		return weight;
-	}
-
 	Map *map = nullptr;
 
 	Map* Map::getSingleton(){
@@ -40,6 +29,37 @@ namespace battleship{
 			map = new Map;
 
 		return map;
+	}
+
+	vector<Map::Edge> Map::generateAdjacentNodeEdges(int numVertCells, int i, int numHorCells, int j, int weight){
+		vector<Map::Edge> edges;
+		bool up = (i > 0), right = (j < numHorCells - 1), down = (i < numVertCells - 1), left = (j > 0);
+
+		if(left)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j - 1));
+
+		if(right)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j + 1));
+
+		if(up)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j));
+
+		if(down)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
+
+		if(up && left)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j - 1));
+
+		if(up && right)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j + 1));
+
+		if(down && left)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j - 1));
+
+		if(down && right)
+			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j + 1));
+
+		return edges;
 	}
 
 	void Map::update(){
@@ -230,7 +250,7 @@ namespace battleship{
 
 			Node *node = new Node(cellPos + Vector3::VEC_J * .1);
 			node->attachMesh(quad);
-			cellNode->attachChild(node);
+			//cellNode->attachChild(node);
 
 			cells.push_back(Cell(cellPos, cellType, edges, underWaterCellIds));
 		}
