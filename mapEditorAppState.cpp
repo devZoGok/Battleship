@@ -340,34 +340,7 @@ namespace battleship{
 					}
 				}
 
-				vector<Map::Edge> edges;
-				int weight = 1;
-				bool up = (i > 0), right = (j < numHorCells - 1), down = (i < numVertCells - 1), left = (j > 0);
-
-				if(left)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j - 1));
-
-				if(right)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j + 1));
-
-				if(up)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j));
-
-				if(down)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
-
-				if(up && left)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j - 1));
-
-				if(up && right)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j + 1));
-
-				if(down && left)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j - 1));
-
-				if(down && right)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j + 1));
-
+				vector<Map::Edge> edges = Map::generateAdjacentNodeEdges(numVertCells, i, numHorCells, j, 1);
 				cells.push_back(Map::Cell(pos, type, edges));
 			}
 
