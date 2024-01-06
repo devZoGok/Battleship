@@ -10,11 +10,13 @@ namespace battleship{
 		class PathfinderTest : public CppUnit::TestFixture{
 				CPPUNIT_TEST_SUITE(PathfinderTest);
 				CPPUNIT_TEST(testFindPath);
+				CPPUNIT_TEST(testFindBigPath);
 				CPPUNIT_TEST_SUITE_END();
 
 				public:
 						PathfinderTest(){}
 						void testFindPath();
+						void testFindBigPath();
 						void setUp();
 						void tearDown();
 				private:

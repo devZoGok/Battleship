@@ -16,56 +16,65 @@ namespace battleship{
 				return pathfinder;
 		}
 
-		Pathfinder::Pathfinder(){
+		int Pathfinder::findMinDistVert(vector<Map::Cell> &cells, u32 distances[]){
+			int numCells = cells.size(), minDistVert;
+
+			for(int i = 0; i < numCells; i++)
+				if(!cells[i].checked){
+					minDistVert = i;
+					break;
+				}
+
+			for(int i = 0; i < numCells; i++){
+				bool checked = cells[i].checked;
+
+				if(!checked && distances[i] < distances[minDistVert])
+					minDistVert = i;
+			}
+
+			return minDistVert;
 		}
 
 		vector<int> Pathfinder::findPath(vector<Map::Cell> &cells, int source, int dest, int unitType){
 			int size = cells.size();
-				u32 distances[size];
-				vector<int> paths[size];
-				paths[source].push_back(source);
+			u32 distances[size];
+			vector<int> paths[size];
+			paths[source].push_back(source);
 
-				for(int i = 0; i < size; i++)
-					distances[i] = (i == source ? 0 : impassibleNodeVal);
+			for(int i = 0; i < size; i++){
+				cells[i].checked = false;
+				distances[i] = (i == source ? 0 : impassibleNodeVal);
+			}
 
-				vector<int> checkedNodes;
+			while(!cells[dest].checked){
+				int vertStrich = findMinDistVert(cells, distances);
+				cells[vertStrich].checked = true;
 
-				while(find(checkedNodes.begin(), checkedNodes.end(), dest) == checkedNodes.end()){
-					bool initVertStrichSet = false;
-					int vertStrich;
+				int numEdges = cells[vertStrich].edges.size();
 
-					for(int i = 0; i < size; i++){
-						bool isChecked = find(checkedNodes.begin(), checkedNodes.end(), i) != checkedNodes.end();
+				for(int i = 0; i < numEdges; i++){
+					bool canMoveToStrichCell = true;
+					bool ship = ((UnitType)unitType == UnitType::UNDERWATER || (UnitType)unitType == UnitType::SEA_LEVEL);
 
-						if(!isChecked){
-							if(!initVertStrichSet){
-								vertStrich = i;
-								initVertStrichSet = true;
-							}
+					if((ship && cells[vertStrich].type != Map::Cell::WATER) || ((UnitType)unitType == UnitType::LAND && cells[vertStrich].type != Map::Cell::LAND))
+						canMoveToStrichCell = false;
 
-							if(initVertStrichSet && (distances[vertStrich] > distances[i]))
-								vertStrich = i;
-						}
-					}
+					if(canMoveToStrichCell){
+						int edgeNode = cells[vertStrich].edges[i].destCellId;
+						bool isChecked = cells[edgeNode].checked;
 
-					checkedNodes.push_back(vertStrich);
-
-					for(int i = 0; i < size; i++){
-						bool isChecked = find(checkedNodes.begin(), checkedNodes.end(), i) != checkedNodes.end();
-						bool canMoveToStrichCell = true;
-						bool ship = ((UnitType)unitType == UnitType::UNDERWATER || (UnitType)unitType == UnitType::SEA_LEVEL);
-
-						if((ship && cells[vertStrich].type != Map::Cell::WATER) || ((UnitType)unitType == UnitType::LAND && cells[vertStrich].type != Map::Cell::LAND))
-							canMoveToStrichCell = false;
-
-						if(!isChecked && (canMoveToStrichCell && distances[vertStrich] + cells[vertStrich].getEdgeWeight(i) < distances[i])){
-							distances[i] = distances[vertStrich] + cells[vertStrich].getEdgeWeight(i);
-							paths[i] = paths[vertStrich];
-							paths[i].push_back(i);
+						if(!isChecked && (distances[vertStrich] + cells[vertStrich].edges[i].weight < distances[edgeNode])){
+							distances[edgeNode] = distances[vertStrich] + cells[vertStrich].edges[i].weight;
+							paths[edgeNode] = paths[vertStrich];
+							paths[edgeNode].push_back(edgeNode);
 						}
 					}
 				}
+			}
 
-				return paths[dest];
+			for(int i = 0; i < size; i++)
+				cells[i].checked = false;
+
+			return paths[dest];
 		}
 }

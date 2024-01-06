@@ -15,7 +15,8 @@ namespace battleship{
 					inline vb01::u32 getImpassibleNodeVal(){return impassibleNodeVal;}
 					inline void setImpassibleNodeVal(vb01::u32 val){this->impassibleNodeVal = val;}
 				private:
-					Pathfinder();
+					Pathfinder(){}
+					int findMinDistVert(std::vector<Map::Cell>&, vb01::u32[]);
 
 					vb01::u32 impassibleNodeVal;
 		};

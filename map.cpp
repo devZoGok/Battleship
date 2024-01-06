@@ -22,16 +22,6 @@ using namespace gameBase;
 namespace battleship{
 	using namespace configData;
 
-	//TODO check if edges have lower weight than impassible weight value for the Pathfinder 
-	int Map::Cell::getEdgeWeight(int destCellId){
-		int weight = Pathfinder::getSingleton()->getImpassibleNodeVal();
-
-		for(Edge e : edges)
-			if(e.destCellId == destCellId)
-				weight = e.weight;
-
-		return weight;
-	}
 
 	Map *map = nullptr;
 
@@ -230,7 +220,7 @@ namespace battleship{
 
 			Node *node = new Node(cellPos + Vector3::VEC_J * .1);
 			node->attachMesh(quad);
-			cellNode->attachChild(node);
+			//cellNode->attachChild(node);
 
 			cells.push_back(Cell(cellPos, cellType, edges, underWaterCellIds));
 		}
