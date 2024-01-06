@@ -16,17 +16,17 @@ namespace battleship{
 			return pathfinder;
 		}
 
-		int Pathfinder::findMinDistVert(vector<Map::Cell> &cells, u32 distances[]){
+		int Pathfinder::findMinDistVert(vector<pair<int, bool>> &cells, u32 distances[]){
 			int numCells = cells.size(), minDistVert;
 
 			for(int i = 0; i < numCells; i++)
-				if(!cells[i].checked){
+				if(!cells[i].second){
 					minDistVert = i;
 					break;
 				}
 
 			for(int i = 0; i < numCells; i++){
-				bool checked = cells[i].checked;
+				bool checked = cells[i].second;
 
 				if(!checked && distances[i] < distances[minDistVert])
 					minDistVert = i;
@@ -40,15 +40,16 @@ namespace battleship{
 			u32 distances[size];
 			vector<int> paths[size];
 			paths[source].push_back(source);
+			vector<pair<int, bool>> cellsByCheck;
 
 			for(int i = 0; i < size; i++){
-				cells[i].checked = false;
+				cellsByCheck.push_back(pair(i, false));
 				distances[i] = (i == source ? 0 : impassibleNodeVal);
 			}
 
-			while(!cells[dest].checked){
-				int vertStrich = findMinDistVert(cells, distances);
-				cells[vertStrich].checked = true;
+			while(!cellsByCheck[dest].second){
+				int vertStrich = findMinDistVert(cellsByCheck, distances);
+				cellsByCheck[vertStrich].second = true;
 
 				int numEdges = cells[vertStrich].edges.size();
 
@@ -61,7 +62,7 @@ namespace battleship{
 
 					if(canMoveToStrichCell){
 						int edgeNode = cells[vertStrich].edges[i].destCellId;
-						bool isChecked = cells[edgeNode].checked;
+						bool isChecked = cellsByCheck[edgeNode].second;
 
 						if(!isChecked && (distances[vertStrich] + cells[vertStrich].edges[i].weight < distances[edgeNode])){
 							distances[edgeNode] = distances[vertStrich] + cells[vertStrich].edges[i].weight;
@@ -71,9 +72,6 @@ namespace battleship{
 					}
 				}
 			}
-
-			for(int i = 0; i < size; i++)
-				cells[i].checked = false;
 
 			return paths[dest];
 		}

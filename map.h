@@ -31,7 +31,6 @@ namespace battleship{
 		struct Cell{
 			enum Type{LAND, WATER};
 		
-			bool checked = false;
 			Type type;
 			vb01::Vector3 pos;
 			std::vector<Edge> edges;
@@ -39,7 +38,6 @@ namespace battleship{
 		
 			Cell(){}
 			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}, std::vector<int> uc = std::vector<int>{}): pos(p), type(t), edges(e), underWaterCellIds(uc){}
-			//int getEdgeWeight(int);
 		};
 
 		static Map* getSingleton();
