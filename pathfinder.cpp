@@ -10,10 +10,10 @@ namespace battleship{
 		static Pathfinder *pathfinder = nullptr;
 
 		Pathfinder* Pathfinder::getSingleton(){
-				if(!pathfinder)
-						pathfinder = new Pathfinder();
+			if(!pathfinder)
+				pathfinder = new Pathfinder();
 
-				return pathfinder;
+			return pathfinder;
 		}
 
 		int Pathfinder::findMinDistVert(vector<Map::Cell> &cells, u32 distances[]){

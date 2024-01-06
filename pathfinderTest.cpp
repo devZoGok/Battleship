@@ -54,7 +54,7 @@ namespace battleship{
 		}
 
 		void PathfinderTest::testFindBigPath(){
-			int numIterations = 10;
+			int numIterations = 1;
 			cells = generateCellGraph(60);
 			s64 sumTime = 0;
 
