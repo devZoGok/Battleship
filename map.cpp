@@ -220,6 +220,7 @@ namespace battleship{
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
 	}
 
+	//TODO implement toggleable cell rendering
 	void Map::loadCells(){
 		sol::state_view SOL_LUA_VIEW = generateView();
 		int numCells = SOL_LUA_VIEW[mapTable]["numCells"];
@@ -250,7 +251,6 @@ namespace battleship{
 
 			Node *node = new Node(cellPos + Vector3::VEC_J * .1);
 			node->attachMesh(quad);
-			//cellNode->attachChild(node);
 
 			cells.push_back(Cell(cellPos, cellType, edges, underWaterCellIds));
 		}
