@@ -25,7 +25,11 @@ namespace battleship{
 
 		unitId = atoi(arguments[1].c_str());
 
-		if(!(0 <= unitId && unitId <= (int)generateView()["units"]["num"]))
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script("numUnits = #units.unitClass");
+		int numUnits = SOL_LUA_VIEW["numUnits"];
+
+		if(!(0 <= unitId && unitId <= numUnits))
 			return;
 
 		if(arguments.size() >= 5){

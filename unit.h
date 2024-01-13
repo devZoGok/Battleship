@@ -29,6 +29,7 @@ namespace battleship{
 	class Unit;
 	class Vehicle;
 	class Factory;
+	class Cruiser;
 	class Transport;
 	class PointDefense;
 	class Engineer;
@@ -54,7 +55,7 @@ namespace battleship{
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CARRIER, SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
+    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CRUISER, CARRIER, SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
     enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
     
     class Unit : public GameObject{
@@ -81,6 +82,7 @@ namespace battleship{
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Transport* toTransport(){return (Transport*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}
+		inline Cruiser* toCruiser(){return (Cruiser*)this;}
 		inline PointDefense* toPointDefense(){return (PointDefense*)this;}
 		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
