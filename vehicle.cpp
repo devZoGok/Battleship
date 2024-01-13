@@ -49,7 +49,7 @@ namespace battleship{
 		if(order.type != Order::TYPE::EJECT){
 			Order::Target targ = order.targets[0];
 			Vector3 targPos = (targ.unit ? targ.unit->getPos() : targ.pos);
-			preparePathpoints(targPos);
+			preparePathpoints(order, targPos);
 
 			if(!pathPoints.empty())
 				orders.push_back(order);
@@ -87,6 +87,7 @@ namespace battleship{
         maxTurnAngle = SOL_LUA_STATE["maxTurnAngle"][id + 1];
         speed = SOL_LUA_STATE["speed"][id + 1];
 		anglePrecision = SOL_LUA_STATE["anglePrecision"][id + 1];
+		garrisonCategory = SOL_LUA_STATE["garrisonCategory"][id + 1];
 	}
 
 
@@ -184,7 +185,7 @@ namespace battleship{
 	void Vehicle::navigateToTarget(float minDist){
 		if(!pursuingTarget){
 			Vector3 targPos = (orders[0].targets[0].unit ? orders[0].targets[0].unit->getPos() : orders[0].targets[0].pos);
-			preparePathpoints(targPos);
+			preparePathpoints(orders[0], targPos);
 			pursuingTarget = true;
 
 			if(orders[0].type == Order::TYPE::GARRISON) addPathpoint(targPos);
@@ -195,7 +196,7 @@ namespace battleship{
 
 	void Vehicle::garrison(Order order){
 		Unit *targUnit = order.targets[0].unit;
-		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos()), garrisonDist = .1;
+		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos()), garrisonDist = .5 * Map::getSingleton()->getCellSize().x;
 
 		if(distToGarrisonable > garrisonDist)
 			navigateToTarget(garrisonDist);
@@ -206,7 +207,7 @@ namespace battleship{
 	void Vehicle::patrol(Order order){
 		if(pathPoints.empty()){
 			patrolPointId = getNextPatrolPointId(order.targets.size());
-			preparePathpoints(order.targets[patrolPointId].pos);
+			preparePathpoints(order, order.targets[patrolPointId].pos);
 		}
 
 		navigate(.5 * Map::getSingleton()->getCellSize().x);
@@ -226,24 +227,30 @@ namespace battleship{
 		debugPathPoints.push_back(n);
 	}
 
-	void Vehicle::preparePathpoints(Vector3 destPos){
+	void Vehicle::preparePathpoints(Order &order, Vector3 destPos){
 		removeAllPathpoints();
 
 		Map *map = Map::getSingleton();
 		vector<Map::Cell> &cells = map->getCells();
 
 		int source = map->getCellId(pos);
-		int dest = map->getCellId(destPos);
+		bool ship = (type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL);
+		bool waterVehCanMove = (ship && cells[source].type == Map::Cell::WATER);
+		bool landVehCanMove = (type == UnitType::LAND && cells[source].type == Map::Cell::LAND);
 
-		if(type == UnitType::UNDERWATER || type == UnitType::SEA_LEVEL || type == UnitType::LAND){
-			Map::Cell::Type cellType = (type == UnitType::LAND ? Map::Cell::LAND : Map::Cell::WATER);
-			bool canReach = (cells[source].type == cellType && cells[dest].type == cellType);
-
-			if(!canReach) return;
-		}
+		if(!(waterVehCanMove || landVehCanMove)) return;
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
+		int dest = map->getCellId(destPos);
 		vector<int> path = pathfinder->findPath(cells, source, dest, (int)type);
+
+		for(int i = 0; i < path.size(); i++)
+			if((ship && cells[path[i]].type != Map::Cell::WATER) || (type == UnitType::LAND && cells[path[i]].type != Map::Cell::LAND)){
+				path = vector<int>(path.begin(), path.begin() + i);
+				order.targets[0].unit = nullptr;
+				order.targets[0].pos = cells[path[i - 1]].pos;
+				break;
+			}
 
 		for(int p : path)
 			addPathpoint(cells[p].pos);

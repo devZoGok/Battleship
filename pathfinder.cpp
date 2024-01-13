@@ -60,15 +60,13 @@ namespace battleship{
 					if((ship && cells[vertStrich].type != Map::Cell::WATER) || ((UnitType)unitType == UnitType::LAND && cells[vertStrich].type != Map::Cell::LAND))
 						canMoveToStrichCell = false;
 
-					if(canMoveToStrichCell){
-						int edgeNode = cells[vertStrich].edges[i].destCellId;
-						bool isChecked = cellsByCheck[edgeNode].second;
+					int edgeNode = cells[vertStrich].edges[i].destCellId, cellTypeFactor = (canMoveToStrichCell ? 1 : 100);
+					bool isChecked = cellsByCheck[edgeNode].second;
 
-						if(!isChecked && (distances[vertStrich] + cells[vertStrich].edges[i].weight < distances[edgeNode])){
-							distances[edgeNode] = distances[vertStrich] + cells[vertStrich].edges[i].weight;
-							paths[edgeNode] = paths[vertStrich];
-							paths[edgeNode].push_back(edgeNode);
-						}
+					if(!isChecked && (distances[vertStrich] + cells[vertStrich].edges[i].weight * cellTypeFactor < distances[edgeNode])){
+						distances[edgeNode] = distances[vertStrich] + cells[vertStrich].edges[i].weight * cellTypeFactor;
+						paths[edgeNode] = paths[vertStrich];
+						paths[edgeNode].push_back(edgeNode);
 					}
 				}
 			}

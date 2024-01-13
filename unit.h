@@ -62,10 +62,11 @@ namespace battleship{
     public:
 		struct GarrisonSlot{
 			Vehicle *vehicle = nullptr;
+			int category;
 			vb01::Node *background, *foreground;
 			vb01::Vector2 offset;
 
-			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), vehicle(v){}
+			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, int cat, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), category(cat), vehicle(v){}
 		};
 
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
@@ -79,6 +80,7 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		virtual void reinit();
+		bool canGarrison(Vehicle*);
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Transport* toTransport(){return (Transport*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}

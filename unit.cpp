@@ -54,7 +54,8 @@ namespace battleship{
 	void Unit::initProperties(){
 		GameObject::initProperties();
 
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+		sol::state_view SOL_LUA_VIEW = generateView();
+		sol::table SOL_LUA_STATE = SOL_LUA_VIEW[GameObject::getGameObjTableName()];
 		string name = SOL_LUA_STATE["name"][id + 1];
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
@@ -65,16 +66,18 @@ namespace battleship{
         lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
         unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
 		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
-		int capacity = SOL_LUA_STATE["garrisonCapacity"][id + 1];
 
-		for(int i = 0; i < capacity; i++){
+		SOL_LUA_VIEW.script("numGarrisonSlots = #units.garrisonCapacity[" + to_string(id + 1) + "]");
+		int numGarrisonSlots = SOL_LUA_VIEW["numGarrisonSlots"];
+
+		for(int i = 0; i < numGarrisonSlots; i++){
 			Vector2 size = 10 * Vector2::VEC_IJ;
 			Vector2 pos = Vector2(1.5 * size.x * i, 20);
 			Node *bg = createBar(pos, size, Vector4(0, 0, 0, 1));
 			Node *fg = createBar(pos, size, Vector4(0, 1, 0, 1));
-			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos));
+			int category = SOL_LUA_STATE["garrisonCapacity"][id + 1][i + 1];
+			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos, category));
 		}
-
 	}
 	
 	void Unit::destroySound(){
@@ -107,6 +110,14 @@ namespace battleship{
 		initProperties();
         placeAt(pos);
 		orientAt(rot);
+	}
+
+	bool Unit::canGarrison(Vehicle *vehicle){
+		for(int i = 0; i < garrisonSlots.size(); i++)
+			if(!garrisonSlots[i].vehicle && garrisonSlots[i].category >= vehicle->getGarrisonCategory())
+				return true;
+
+		return false;
 	}
 
 	Node* Unit::createBar(Vector2 pos, Vector2 size, Vector4 color){
@@ -189,17 +200,17 @@ namespace battleship{
 		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
 
 		vector<Player*> selectingPlayers = getSelectingPlayers();
-		bool mainPlayerSelecting = find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end();
-		bool ownerSelecting = (mainPlayer == player && mainPlayerSelecting);
+		bool mainPlayerSelecting = (find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
+		bool mainPlayerOwner = (player == mainPlayer);
+		bool renderSelectables = (mainPlayer && mainPlayerOwner);
 
-		renderOrderLine(ownerSelecting);
+		renderOrderLine(renderSelectables);
         executeOrders();
 
 		displayUnitStats(hpForegroundNode, hpBackgroundNode, health, maxHealth, mainPlayerSelecting);
 
-		if(ownerSelecting)
-			for(GarrisonSlot &slot : garrisonSlots)
-				displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, mainPlayerSelecting, slot.offset);
+		for(GarrisonSlot &slot : garrisonSlots)
+			displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, renderSelectables, slot.offset);
 
         if (health <= DEATH_HP)
 			blowUp();
