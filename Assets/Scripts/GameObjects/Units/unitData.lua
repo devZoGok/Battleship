@@ -16,6 +16,7 @@ UnitClass = {
 	POINT_DEFENSE = 13
 }
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
+ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
 
 modelPrefix = "Models/GameObjects/"
 vehiclePrefix = modelPrefix .. "Units/Vehicles/"
@@ -60,6 +61,26 @@ units = {
 		UnitType.LAND,
 		UnitType.LAND,
 		UnitType.LAND
+	},
+
+	armor = {
+		{ArmorType.MECHANIC},
+		{ArmorType.STEEL},
+		{ArmorType.MECHANIC},
+		{ArmorType.MECHANIC},
+		{ArmorType.CAST},
+		{ArmorType.MECHANIC},
+		{ArmorType.CAST},
+		{ArmorType.STEEL},
+		{ArmorType.CAST},
+		{ArmorType.CAST},
+		{ArmorType.STEEL, ArmorType.COMBINED},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{}
 	},
 	
 	isVehicle = {

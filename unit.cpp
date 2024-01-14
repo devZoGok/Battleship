@@ -78,6 +78,14 @@ namespace battleship{
 			int category = SOL_LUA_STATE["garrisonCapacity"][id + 1][i + 1];
 			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos, category));
 		}
+
+		SOL_LUA_VIEW.script("numArmorTypes = #units.armor[" + to_string(id + 1) + "]");
+		int numArmorTypes = SOL_LUA_VIEW["numArmorTypes"];
+
+		for(int i = 0; i < numArmorTypes; i++){
+			Armor arm = (Armor)SOL_LUA_STATE["armor"][id + 1][i + 1];
+			armorTypes.push_back(arm);
+		}
 	}
 	
 	void Unit::destroySound(){
