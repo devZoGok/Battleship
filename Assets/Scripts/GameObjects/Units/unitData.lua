@@ -8,12 +8,13 @@ UnitClass = {
 	CARGO_SHIP = 5,
 	CRUISER = 6,
 	CARRIER = 7,
-	SUBMARINE = 8,
-	LAND_FACTORY = 9,
-	NAVAL_FACTORY = 10,
-	MARKET = 11,
-	LAB = 12,
-	POINT_DEFENSE = 13
+	MISSILE_SUBMARINE = 8,
+	STEALTH_SUBMARINE = 9,
+	LAND_FACTORY = 10,
+	NAVAL_FACTORY = 11,
+	MARKET = 12,
+	LAB = 13,
+	POINT_DEFENSE = 14
 }
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
 ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
@@ -35,7 +36,8 @@ units = {
 		UnitClass.CRUISER,
 		UnitClass.CRUISER,
 		UnitClass.CARRIER,
-		UnitClass.SUBMARINE,
+		UnitClass.MISSILE_SUBMARINE,
+		UnitClass.STEALTH_SUBMARINE,
 		UnitClass.LAND_FACTORY,
 		UnitClass.NAVAL_FACTORY,
 		UnitClass.MARKET,
@@ -55,6 +57,7 @@ units = {
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
+		UnitType.UNDERWATER,
 		UnitType.UNDERWATER,
 		UnitType.LAND,
 		UnitType.LAND,
@@ -80,18 +83,19 @@ units = {
 		{},
 		{},
 		{},
+		{},
 		{}
 	},
 	
 	isVehicle = {
-		true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false
+		true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false
 	},
 	
-	health = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
-	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
-	range = {15, 20, 45, 15, 14, 14, 14, 14, 14, 14, 13, 13, 12, 12, 15, 0, 40},
-	damage = {15, 120, 250, 15, 14, 14, 13, 13, 12, 12, 15, 100, 100},
-	rateOfFire = {50, 2000, 5000, 100, 100, 100, 100, 100, 100, 100, 0, 0, 100},
+	health = {500, 500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
+	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
+	range = {15, 20, 45, 15, 14, 14, 14, 14, 14, 14, 13, 13, 12, 12, 12, 15, 0, 40},
+	damage = {15, 120, 250, 15, 14, 14, 13, 13, 12, 12, 15, 15, 100, 100, 100, 100, 100, 100, 100},
+	rateOfFire = {50, 2000, 5000, 100, 100, 100, 100, 100, 100, 100, 1000, 1000, 100, 100, 100, 100, 100, 100},
 	garrisonCapacity = {
 		{}, 
 		{}, 
@@ -101,6 +105,12 @@ units = {
 		{}, 
 		{},
 		{2, 2, 2},
+		{}, 
+		{}, 
+		{}, 
+		{}, 
+		{}, 
+		{}, 
 		{}, 
 		{}, 
 		{}, 
@@ -268,6 +278,16 @@ units = {
 					{x = -.6, y =.3, z =-1.3},
 					{x = -.6, y =.3, z =.8},
 					{x = .6, y =.3, z =.8}
+	    },
+	    {
+					{x = .5, y =-.1, z =-1.3},
+					{x = -.5, y =-.1, z =-1.3},
+					{x = -.5, y =-.1, z =.7},
+					{x = .5, y =-.1, z =.7},
+					{x = .5, y =.15, z =-1.3},
+					{x = -.5, y =.15, z =-1.3},
+					{x = -.5, y =.15, z =.7},
+					{x = .5, y =.15, z =.7}
 	    },
 	    {
 					{x = .5, y =-.1, z =-1.3},
@@ -530,11 +550,21 @@ units = {
 					{x = .1, y = .1, z = .1},
 					{x = .1, y = .1, z = .1}, 
 					{x = .1, y = .1, z = .1}
+	    },
+	    {
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1},
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}
 	    }
 	},
 	
-	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2},
-	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1},
+	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2, 2},
+	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1, 1},
 	name = {
 		'War mech',
 		'Tank',
@@ -547,7 +577,8 @@ units = {
 		'Cheap cruiser',
 		'Transport cruiser',
 		'Heavy carrier',
-		'Submarine',
+		'Missile submarine',
+		'Stealth submarine',
 		'Land factory',
 		'Naval factory',
 		'Market',
@@ -566,7 +597,8 @@ units = {
 		'cheapCruiser.xml',
 		'transportCruiser.xml',
 		'heavyCarrier.xml',
-		'submarine.xml',
+		'missileSubmarine.xml',
+		'stealthSubmarine.xml',
 		'landFactory.xml',
 		'navalFactory.xml',
 		'market.xml',
@@ -585,6 +617,7 @@ units = {
 		PATH .. vehiclePrefix .. 'Cruisers/',
 		PATH .. vehiclePrefix .. 'Cruisers/',
 		PATH .. vehiclePrefix .. 'Carriers/',
+		PATH .. vehiclePrefix .. 'Submarines/',
 		PATH .. vehiclePrefix .. 'Submarines/',
 		PATH .. structurePrefix .. 'LandFactory/',
 		PATH .. structurePrefix .. 'NavalFactory/',
@@ -605,6 +638,7 @@ units = {
 		PATH .. 'Sounds/Units/Cruisers/selection.ogg',
 		PATH .. 'Sounds/Units/Carriers/selection.ogg',
 		PATH .. 'Sounds/Units/Submarines/selection.ogg',
+		PATH .. 'Sounds/Units/Submarines/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
@@ -623,7 +657,8 @@ units = {
 		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
 		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+		PATH .. 'Sounds/Units/Submarines/fire.ogg',
+		PATH .. 'Sounds/Units/Submarines/fire.ogg',
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
@@ -631,6 +666,7 @@ units = {
 		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 	},
 	deathSfx = {
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
