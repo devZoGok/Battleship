@@ -202,7 +202,7 @@ namespace battleship{
 		vector<Player*> selectingPlayers = getSelectingPlayers();
 		bool mainPlayerSelecting = (find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
 		bool mainPlayerOwner = (player == mainPlayer);
-		bool renderSelectables = (mainPlayer && mainPlayerOwner);
+		bool renderSelectables = (mainPlayerSelecting && mainPlayerOwner);
 
 		renderOrderLine(renderSelectables);
         executeOrders();
