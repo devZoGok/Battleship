@@ -14,7 +14,7 @@ namespace battleship{
 			~Vehicle();
 			virtual void update();
         	void move(Order);
-			void exitGarrisonable();
+			void exitGarrisonable(vb01::Vector3);
 			inline Unit* getGarrisonable(){return garrisonable;}
 			inline int getGarrisonCategory(){return garrisonCategory;}
 		private:

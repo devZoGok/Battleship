@@ -302,9 +302,26 @@ namespace battleship{
     }
 
 	void Unit::eject(Order order){
+		Map *map = Map::getSingleton();
+		int currCellId = map->getCellId(pos);
+		vector<Map::Cell> &cells = map->getCells(); 
+		int adjWaterCellId = -1, adjLandCellId = -1;
+
+		for(Map::Edge edge : cells[currCellId].edges){
+			if(adjLandCellId == -1 && cells[edge.destCellId].type == Map::Cell::LAND)
+				adjLandCellId = edge.destCellId;
+			if(adjWaterCellId == -1 && cells[edge.destCellId].type == Map::Cell::WATER)
+				adjWaterCellId = edge.destCellId;
+		}
+
 		if(garrisonSlots.size() > 0){
-			for(Order::Target targ : order.targets)
-				((Vehicle*)targ.unit)->exitGarrisonable();
+			for(Order::Target targ : order.targets){
+				bool exitToLandCell = (targ.unit->getType() == UnitType::LAND && adjLandCellId != -1);
+				bool exitToWaterCell = ((targ.unit->getType() == UnitType::SEA_LEVEL || targ.unit->getType() == UnitType::UNDERWATER) && adjWaterCellId != -1);
+
+				if(exitToLandCell || exitToWaterCell)
+					((Vehicle*)targ.unit)->exitGarrisonable(cells[exitToLandCell ? adjLandCellId : adjWaterCellId].pos);
+			}
 
 			removeOrder(0);
 		}

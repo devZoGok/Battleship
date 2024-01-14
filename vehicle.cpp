@@ -165,8 +165,8 @@ namespace battleship{
 			removeOrder(0);
     }
 
-	void Vehicle::exitGarrisonable(){
-		placeAt(garrisonable->getPos());
+	void Vehicle::exitGarrisonable(Vector3 exitPos){
+		placeAt(exitPos);
 		garrisonable->updateGarrison(this, false);
 		garrisonable = nullptr;
 	}
@@ -196,7 +196,7 @@ namespace battleship{
 
 	void Vehicle::garrison(Order order){
 		Unit *targUnit = order.targets[0].unit;
-		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos()), garrisonDist = .5 * Map::getSingleton()->getCellSize().x;
+		float distToGarrisonable = pos.getDistanceFrom(targUnit->getPos()), garrisonDist = Map::getSingleton()->getCellSize().x;
 
 		if(distToGarrisonable > garrisonDist)
 			navigateToTarget(garrisonDist);
@@ -244,13 +244,16 @@ namespace battleship{
 		int dest = map->getCellId(destPos);
 		vector<int> path = pathfinder->findPath(cells, source, dest, (int)type);
 
-		for(int i = 0; i < path.size(); i++)
-			if((ship && cells[path[i]].type != Map::Cell::WATER) || (type == UnitType::LAND && cells[path[i]].type != Map::Cell::LAND)){
+		for(int i = 0; i < path.size(); i++){
+			if((ship && cells[path[i]].type != Map::Cell::WATER) || (order.type != Order::TYPE::GARRISON && type == UnitType::LAND && cells[path[i]].type != Map::Cell::LAND)){
 				path = vector<int>(path.begin(), path.begin() + i);
 				order.targets[0].unit = nullptr;
 				order.targets[0].pos = cells[path[i - 1]].pos;
 				break;
 			}
+			else if(order.type == Order::TYPE::GARRISON && type == UnitType::LAND && cells[path[i]].type != Map::Cell::LAND && path.size() - 1 != i)
+				return;
+		}
 
 		for(int p : path)
 			addPathpoint(cells[p].pos);
