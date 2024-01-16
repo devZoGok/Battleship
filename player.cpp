@@ -21,6 +21,9 @@ namespace battleship{
 		for(Unit *u : units)
 			u->update();
 
+		for(Projectile *proj : projectiles)
+			proj->update();
+
 		for(ResourceDeposit *rd : resourceDeposits)
 			rd->update();
     }

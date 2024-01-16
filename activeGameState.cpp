@@ -343,7 +343,7 @@ namespace battleship{
 							bool canSelect = canSelectHoveredOnGameObj();
 							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getTeam() == mainPlayer->getTeam());
 
-							if(gameObjHoveredOn && (gameObjHoveredOn->getType() == GameObject::Type::UNIT && ownGameObj)){
+							if(gameObjHoveredOn && gameObjHoveredOn->getType() == GameObject::Type::UNIT && ownGameObj && ((Unit*)gameObjHoveredOn)->getNumGarrisonSlots() > 0){
 								bool canGarrison = true;
 
 								for(int i = 0; i < mainPlayer->getNumSelectedUnits(); i++)

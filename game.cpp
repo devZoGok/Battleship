@@ -79,9 +79,6 @@ namespace battleship{
 				endGame(false);
 		}
 
-		for(Projectile *proj : projectiles)
-			proj->update();
-
 		for(int i = 0; i < fx.size(); i++){
 			if(getTime() - fx[i].initTime > fx[i].vfxTime)
 				removeFx(i, true);

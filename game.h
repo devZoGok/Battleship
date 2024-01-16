@@ -18,7 +18,6 @@ namespace battleship{
 			void removeAllElements();
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
-			inline void addProjectile(Projectile *proj){projectiles.push_back(proj);}
 			inline std::vector<Player*>& getPlayers(){return players;}
 			inline Player* getPlayer(int id){return players[id];}
 			inline int getNumPlayers(){return players.size();}
@@ -30,7 +29,6 @@ namespace battleship{
 			bool paused = false, ended = false;
 			std::vector<Fx> fx;
 			std::vector<Player*> players;
-			std::vector<Projectile*> projectiles;
 	};
 }
 

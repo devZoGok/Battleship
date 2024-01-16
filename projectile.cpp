@@ -3,6 +3,7 @@
 #include <node.h>
 #include <model.h>
 #include <material.h>
+#include <particleEmitter.h>
 #include <quaternion.h>
 
 #include <stateManager.h>
@@ -19,82 +20,41 @@ using namespace std;
 using namespace vb01;
 
 namespace battleship{
+	using namespace vb01;
 	using namespace configData;
 	using namespace gameBase;
 
-    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) : GameObject(GameObject::Type::PROJECTILE, id, unit->getPlayer(), pos, Quaternion::QUAT_W){
-        this->unit = unit;
-        this->id = id;
-        this->weaponTypeId = weaponTypeId;
-        this->pos = pos;
-        initPos = pos;
-
-        dirVec = dir;
-        leftVec = left;
-        upVec = up;
-
-		initProperties(weaponId);
-		initModel(node);
+    Projectile::Projectile(Unit *un, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::PROJECTILE, id, un->getPlayer(), pos, rot), unit(un){
+		initProperties();
+		initModel();
 		initSound();
+		placeAt(pos);
+		orientAt(rot);
     }
 
-    Projectile::~Projectile(){
-    }
+    Projectile::~Projectile(){}
 
-	void Projectile::initProperties(int weaponId){
+	void Projectile::initProperties(){
 		GameObject::initProperties();
 
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-        rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
-        damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
-        speed = SOL_LUA_STATE["speed"][id + 1][weaponTypeId + 1][weaponId + 1];
-	}
-
-	void Projectile::initModel(Node *node){
-        if(!node){
-			sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-			string meshPath = SOL_LUA_STATE["meshPath"][id + 1][weaponTypeId + 1];
-			this->node = new Model(meshPath);
-
-			Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
-			mat->addBoolUniform("lightingEnabled", false);
-
-			string diffTexPath = SOL_LUA_STATE["diffuseMapTextPath"][id + 1][weaponTypeId + 1];
-			string f[]{diffTexPath};
-            Texture *diffuseTexture = new Texture(f, 1, false);
-			mat->addTexUniform("textures[0]", diffuseTexture, true);
-
-			this->node->setMaterial(mat);
-        }
-
-        this->node->setPosition(pos);
+        rayLength = SOL_LUA_STATE["rayLength"][id + 1];
+        damage = SOL_LUA_STATE["damage"][id + 1];
+        speed = SOL_LUA_STATE["speed"][id + 1];
 	}
 
 	void Projectile::initSound(){
 		GameManager *gm = GameManager::getSingleton();
-
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-		string unitName = SOL_LUA_STATE["name"][id + 1];
-		string projectileName = SOL_LUA_STATE["projectileName"][id + 1][weaponTypeId + 1];
-        string p1 = gm->getPath() + "Sounds/" + unitName + "s/" + projectileName + ".ogg";
-        string p2 = gm->getPath() + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
-
-        shotSfxBuffer = new sf::SoundBuffer();
         explosionSfxBuffer = new sf::SoundBuffer();
-
-        if(shotSfxBuffer->loadFromFile(p1.c_str())){
-            shotSfx = new sf::Sound(*shotSfxBuffer);
-            shotSfx->play();
-        }
+        string p2 = gm->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
 
         if(explosionSfxBuffer->loadFromFile(p2.c_str()))
             explosionSfx = new sf::Sound(*explosionSfxBuffer);
 	}
     
     void Projectile::update() {
-        if(unit->isDebuggable())
-            debug();
-
+		GameObject::update();
+		placeAt(pos + speed * dirVec);
         checkForCollision();
     }
 
@@ -110,16 +70,36 @@ namespace battleship{
                     u->takeDamage(damage);
         }
 
-		StateManager *sm = GameManager::getSingleton()->getStateManager();
-        InGameAppState *inGameState = ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-		string path = GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
+		Root *root = Root::getSingleton();
+
+		const int numFrames = 1;
+		string p[numFrames];
+
+		for(int i = 0; i < numFrames; i++)
+			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion07.png";
+
+		Texture *tex = new Texture(p, numFrames, false);
+
+		Material *mat = new Material(root->getLibPath() + "particle");
+		mat->addTexUniform("tex", tex, true);
+
+		ParticleEmitter *pe = new ParticleEmitter(1);
+		pe->setMaterial(mat);
+		pe->setLowLife(3);
+		pe->setHighLife(3);
+		pe->setSize(10 * Vector2::VEC_IJ);
+		pe->setSpeed(0);
+
+		Node *node = new Node(pos + Vector3(0, 2, 0));
+		node->attachParticleEmitter(pe);
+		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
+		root->getRootNode()->attachChild(node);
+
+		Fx fx(50, 2500, explosionSfx, node);
+		fx.activate();
+		Game::getSingleton()->addFx(fx);
     }
     
     void Projectile::debug(){
-    }
-    
-    void Projectile::orientProjectile(Quaternion rot){
-		node->setOrientation(rot);
-		this->rot = rot;
     }
 }
