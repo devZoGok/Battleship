@@ -122,6 +122,19 @@ namespace battleship{
 		resourceDeposits.erase(resourceDeposits.begin() + id);
 	}
 
+	void Player::removeProjectile(Projectile *proj){
+		for(int i = 0; i < projectiles.size(); i++)
+			if(proj == projectiles[i]){
+				removeProjectile(i);
+				break;
+			}
+	}
+
+	void Player::removeProjectile(int id){
+		delete projectiles[id];
+		projectiles.erase(projectiles.begin() + id);
+	}
+
 	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
 		vector<Unit*> selectedUnits = getSelectedUnits(), unitsByClass;
 

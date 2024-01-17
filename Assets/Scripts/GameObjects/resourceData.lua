@@ -1,6 +1,4 @@
 resources = {
-	num = 1,
-
 	meshPath = {
 		"resource.xml"
 	},
@@ -21,5 +19,6 @@ resources = {
 			{x = -1, y = .571, z = 1}, 
 			{x = 1, y = .571, z = 1}
 		}
-	}
+	},
+	hitboxOffset = {{x = 0, y = 0, z = 0}}
 }

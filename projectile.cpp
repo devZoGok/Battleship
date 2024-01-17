@@ -1,10 +1,9 @@
-#include <algorithm>
-
 #include <node.h>
 #include <model.h>
 #include <material.h>
 #include <particleEmitter.h>
 #include <quaternion.h>
+#include <rayCaster.h>
 
 #include <stateManager.h>
 
@@ -12,6 +11,7 @@
 #include "unit.h"
 #include "util.h"
 #include "projectile.h"
+#include "resourceDeposit.h"
 #include "defConfigs.h"
 #include "inGameAppState.h"
 #include "fx.h"
@@ -32,7 +32,9 @@ namespace battleship{
 		orientAt(rot);
     }
 
-    Projectile::~Projectile(){}
+    Projectile::~Projectile(){
+		destroyModel();
+	}
 
 	void Projectile::initProperties(){
 		GameObject::initProperties();
@@ -46,7 +48,7 @@ namespace battleship{
 	void Projectile::initSound(){
 		GameManager *gm = GameManager::getSingleton();
         explosionSfxBuffer = new sf::SoundBuffer();
-        string p2 = gm->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
+        string p2 = gm->getPath() + "Sounds/SFX/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
 
         if(explosionSfxBuffer->loadFromFile(p2.c_str()))
             explosionSfx = new sf::Sound(*explosionSfxBuffer);
@@ -55,21 +57,43 @@ namespace battleship{
     void Projectile::update() {
 		GameObject::update();
 		placeAt(pos + speed * dirVec);
-        checkForCollision();
+
+        if(!exploded) checkForCollision();
     }
 
     void Projectile::checkForCollision() {
+		Map *map = Map::getSingleton();
+		int cellId = map->getCellId(pos);
+
+		if(map->getCells()[cellId].type == Map::Cell::LAND)
+			player->removeProjectile(this);
+
+		vector<Player*> players = Game::getSingleton()->getPlayers();
+		vector<Unit*> targetUnits;
+		vector<Node*> targetNodes;
+
+		for(Player *pl : players){
+			vector<Unit*> units = pl->getUnits();
+
+			for(Unit *u : units)
+				if(unit && unit != u){
+					targetUnits.push_back(u);
+					targetNodes.push_back(u->getHitbox());
+				}
+		}
+
+		vector<RayCaster::CollisionResult> results = RayCaster::cast(pos, dirVec, targetNodes, rayLength);
+
+		if(!results.empty()){
+			for(int i = 0; i < targetNodes.size(); i++)
+				if(targetNodes[i]->getMesh(0) == results[0].mesh)
+					explode(targetUnits[i]);
+		}
     }
 
-    void Projectile::explode(Node *collNode) {
+    void Projectile::explode(Unit *target) {
         exploded = true;
-
-        for (Player *p : Game::getSingleton()->getPlayers()) {
-            for (Unit *u : p->getUnits())
-                if (collNode == u->getNode())
-                    u->takeDamage(damage);
-        }
-
+		target->takeDamage(damage);
 		Root *root = Root::getSingleton();
 
 		const int numFrames = 1;
@@ -98,6 +122,8 @@ namespace battleship{
 		Fx fx(50, 2500, explosionSfx, node);
 		fx.activate();
 		Game::getSingleton()->addFx(fx);
+
+		player->removeProjectile(this);
     }
     
     void Projectile::debug(){

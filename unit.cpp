@@ -40,12 +40,14 @@ namespace battleship{
 		removeBar(hpBackgroundNode);
 		removeBar(hpForegroundNode);
 		destroySound();
+		destroyHitbox();
 		destroyModel();
     }
 
 	void Unit::init(){
 		initProperties();
 		initModel();
+		initHitbox();
 		initSound();
         placeAt(pos);
 		orientAt(rot);
@@ -112,10 +114,12 @@ namespace battleship{
 
 	void Unit::reinit(){
 		destroySound();
+		destroyHitbox();
 		destroyModel();
-		initModel();
-		initSound();
 		initProperties();
+		initModel();
+		initHitbox();
+		initSound();
         placeAt(pos);
 		orientAt(rot);
 	}

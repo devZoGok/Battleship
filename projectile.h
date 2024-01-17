@@ -5,6 +5,8 @@
 
 #include "gameObject.h"
 
+#include <algorithm>
+
 namespace vb01{
 	class Node;
 }
@@ -25,7 +27,7 @@ namespace battleship {
 		void initSound();
     protected:
         virtual void checkForCollision();
-        void explode(vb01::Node*);
+        void explode(Unit*);
 
         bool exploded = false;
         float speed, rayLength;

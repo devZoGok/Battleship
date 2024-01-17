@@ -5,6 +5,7 @@
 #include <solUtil.h>
 
 #include <material.h>
+#include <box.h>
 
 #include <SFML/Audio.hpp>
 
@@ -32,6 +33,27 @@ namespace battleship{
 		model->setOrientation(rotQuat);
 		rot = rotQuat;
     }
+
+	//TODO remove neccessity to create a material for an invisible mesh
+	void GameObject::initHitbox(){
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+		sol::table offsetPosTable = SOL_LUA_STATE["hitboxOffset"][id + 1];
+
+		Box *box = new Box(Vector3(width, height, length));
+		box->setMaterial(new Material(Root::getSingleton()->getLibPath() + "texture"));
+		box->setWireframe(false);
+
+		hitbox = new Node(Vector3(offsetPosTable["x"], offsetPosTable["y"], offsetPosTable["z"]));
+		hitbox->attachMesh(box);
+		hitbox->setVisible(false);
+		model->attachChild(hitbox);
+	}
+
+	void GameObject::destroyHitbox(){
+		hitbox->dettachMesh(0);
+		model->dettachChild(hitbox);
+		delete hitbox;
+	}
 
 	void GameObject::initProperties(){
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];

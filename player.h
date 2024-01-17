@@ -19,6 +19,8 @@ namespace battleship{
 		void removeUnit(Unit*);
 		void removeUnit(int);
 		void removeResourceDeposit(int);
+		void removeProjectile(int);
+		void removeProjectile(Projectile*);
         bool isThisPlayersUnit(GameObject*);
 		std::vector<Unit*> getSelectedUnitsByClass(UnitClass);
 		void selectUnits(std::vector<Unit*>);
