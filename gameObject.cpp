@@ -1,6 +1,8 @@
 #include "gameObject.h"
 #include "gameManager.h"
 #include "defConfigs.h"
+#include "unit.h"
+#include "player.h"
 
 #include <solUtil.h>
 
@@ -102,13 +104,11 @@ namespace battleship{
 		root->getRootNode()->attachChild(model);
 	}
 
+	//TODO implement death SFX destruction 
 	void GameObject::destroySound(){
 	}
 
-	sf::Sound* GameObject::prepareSfx(sf::SoundBuffer *buffer, string key){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-        string sfxPath = SOL_LUA_STATE[key][id + 1];
-
+	sf::Sound* GameObject::prepareSfx(sf::SoundBuffer *buffer, string sfxPath){
 		sf::Sound *sfx = nullptr;
 
         if(buffer->loadFromFile(sfxPath.c_str())){
@@ -121,7 +121,8 @@ namespace battleship{
 
 	void GameObject::initSound(){
 		deathSfxBuffer = new sf::SoundBuffer();
-		deathSfx = prepareSfx(deathSfxBuffer, "deathSfx");
+		string sfxPath = generateView()[getGameObjTableName()]["deathSfx"][id + 1];
+		deathSfx = prepareSfx(deathSfxBuffer, sfxPath);
 	}
 
 	string GameObject::getGameObjTableName(){
@@ -166,5 +167,20 @@ namespace battleship{
 		float sizeX = cornersOnScreen[rightMostPointId].x - cornersOnScreen[leftMostPointId].x;
 		float sizeY = cornersOnScreen[bottomMostPointId].y - cornersOnScreen[topMostPointId].y;
 		return Vector2(sizeX, sizeY);
+	}
+
+	void GameObject::updateGameStats(Unit *targetUnit){
+		if(targetUnit->getHealth() <= targetUnit->getDeathHp()){
+			Player *targUnitPlayer = targetUnit->getPlayer();
+
+			if(targetUnit->isVehicle()){
+				player->incVehiclesDestroyed();
+				targUnitPlayer->incVehiclesLost();
+			}
+			else{
+				player->incStructuresDestroyed();
+				targUnitPlayer->incStructuresLost();
+			}
+		}
 	}
 }

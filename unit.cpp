@@ -14,6 +14,7 @@
 #include "util.h"
 #include "game.h"
 #include "vehicle.h"
+#include "gameObjectFactory.h"
 #include "activeGameState.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
@@ -24,6 +25,60 @@ using namespace gameBase;
 using namespace std;
 
 namespace battleship{
+	Unit::Weapon::Weapon(Unit *u, sol::table weaponTable) : 
+		unit(u), 
+		hitscan(weaponTable["hitscan"]), 
+		rateOfFire(weaponTable["rateOfFire"]),
+		damage(weaponTable["damage"].get_or(0)),
+		minRange(weaponTable["minRange"].get_or(0))
+	{
+		maxRange = weaponTable["maxRange"];
+		fireSfxBuffer = new sf::SoundBuffer();
+		string sfxPath = weaponTable["fireSfx"];
+		fireSfx = GameObject::prepareSfx(fireSfxBuffer, sfxPath);
+
+		string projTable = "projectile";
+		sol::optional<sol::table> proj = weaponTable[projTable];
+
+		if(proj != sol::nullopt){
+			projId = weaponTable[projTable]["id"];
+			sol::table posTable = weaponTable[projTable]["pos"];
+			projPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+			sol::table rotTable = weaponTable[projTable]["rot"];
+			projRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
+		}
+	}
+
+	Unit::Weapon::~Weapon(){
+		if(fireSfx){
+			fireSfx->stop();
+			delete fireSfx;
+			delete fireSfxBuffer;
+		}
+	}
+
+	void Unit::Weapon::fire(Order order){
+		if(!canFire()) return;
+
+		fireSfx->play();
+		Unit *targetUnit = order.targets[0].unit;
+
+		if(targetUnit && hitscan){
+			targetUnit->takeDamage(damage);
+			unit->updateGameStats(targetUnit);
+		}
+		else if(!hitscan){
+			Vector3 leftVec = unit->getLeftVec();
+			Vector3 upVec = unit->getUpVec();
+			Vector3 dirVec = unit->getDirVec();
+			Vector3 p = unit->getPos() + leftVec * projPos.x + upVec * projPos.y + dirVec * projPos.z;
+			Quaternion r = projRot * unit->getRot();
+			unit->getPlayer()->addProjectile(GameObjectFactory::createProjectile(unit, projId, p, r));
+		}
+
+		lastFireTime = getTime();
+	}
+
     Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
         this->id = id;
         this->player = player;
@@ -42,6 +97,7 @@ namespace battleship{
 		destroySound();
 		destroyHitbox();
 		destroyModel();
+		destroyWeapons();
     }
 
 	void Unit::init(){
@@ -49,6 +105,7 @@ namespace battleship{
 		initModel();
 		initHitbox();
 		initSound();
+		initWeapons();
         placeAt(pos);
 		orientAt(rot);
 	}
@@ -62,9 +119,6 @@ namespace battleship{
         health = SOL_LUA_STATE["health"][id + 1];
 		maxHealth = health;
 
-		rateOfFire = SOL_LUA_STATE["rateOfFire"][id + 1];
-        range = SOL_LUA_STATE["range"][id + 1];
-        damage = SOL_LUA_STATE["damage"][id + 1];
         lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
         unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
 		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
@@ -89,27 +143,37 @@ namespace battleship{
 			armorTypes.push_back(arm);
 		}
 	}
+
+	void Unit::initWeapons(){
+		sol::state_view SOL_STATE_VIEW = generateView();
+		sol::table unitTable = SOL_STATE_VIEW[GameObject::getGameObjTableName()];
+
+		string varName = "numWeapons", tblName = "weapons";
+		SOL_STATE_VIEW.script(varName + " = #units." + tblName + "[" + to_string(id + 1) + "]");
+		int numWeapons = SOL_STATE_VIEW[varName];
+
+		for(int i = 0; i < numWeapons; i++)
+			weapons.push_back(new Weapon(this, unitTable[tblName][id + 1][i + 1]));
+	}
+
+	void Unit::destroyWeapons(){
+		for(Weapon *weapon : weapons)
+			delete weapon;
+
+		weapons.clear();
+	}
 	
 	void Unit::destroySound(){
 		selectionSfx->stop();
 		delete selectionSfx;
 		delete selectionSfxBuffer;
-
-		if(fireSfx){
-			fireSfx->stop();
-			delete fireSfx;
-			delete fireSfxBuffer;
-		}
 	}
 
 	void Unit::initSound(){
 		GameObject::initSound();
-
 		selectionSfxBuffer = new sf::SoundBuffer();
-		selectionSfx = GameObject::prepareSfx(selectionSfxBuffer, "selectionSfx");
-
-		fireSfxBuffer = new sf::SoundBuffer();
-		fireSfx = prepareSfx(fireSfxBuffer, "fireSfx");
+		string sfxPath = generateView()[getGameObjTableName()]["selectionSfx"][id + 1];
+		selectionSfx = GameObject::prepareSfx(selectionSfxBuffer, sfxPath);
 	}
 
 	void Unit::reinit(){
@@ -163,30 +227,6 @@ namespace battleship{
 		return rotSpeed;
 	}
 
-	void Unit::fire(){
-		fireSfx->play();
-
-		Unit *targetUnit = orders[0].targets[0].unit;
-
-		if(targetUnit){
-			targetUnit->takeDamage(damage);
-
-			if(targetUnit->getHealth() <= DEATH_HP){
-				Player *targUnitPlayer = targetUnit->getPlayer();
-
-				if(targetUnit->isVehicle()){
-					player->incVehiclesDestroyed();
-					targUnitPlayer->incVehiclesLost();
-				}
-				else{
-					player->incStructuresDestroyed();
-					targUnitPlayer->incStructuresLost();
-				}
-			}
-		}
-
-		lastFireTime = getTime();
-	}
 
 	void Unit::initUnitStats(){
 	}

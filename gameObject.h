@@ -12,6 +12,7 @@ namespace sf{
 
 namespace battleship{
 	class Player;
+	class Unit;
 
 	class GameObject{
 		public:
@@ -25,6 +26,8 @@ namespace battleship{
 			void orientAt(vb01::Quaternion);
 			std::string getGameObjTableName();
 			vb01::Vector2 calculateSelectionRect();
+			void updateGameStats(Unit*);
+			static sf::Sound* prepareSfx(sf::SoundBuffer*, std::string);
         	inline vb01::Vector2 getScreenPos(){return screenPos;}
 			inline vb01::Vector3 getCorner(int i){return corners[i];}
 			inline bool isSelectable(){return selectable;}
@@ -53,7 +56,6 @@ namespace battleship{
 			virtual void destroyHitbox();
 			virtual void destroySound();
 			virtual void initSound();
-			sf::Sound* prepareSfx(sf::SoundBuffer*, std::string);
 
 			Type type;
 			int id;

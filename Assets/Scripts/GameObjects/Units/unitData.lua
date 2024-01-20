@@ -1,4 +1,5 @@
 --TYPE = {ATTACK = 0, BUILD = 1, MOVE = 2, GARRISON = 3, EJECT = 4, PATROL = 5, LAUNCH = 6};
+WeaponClass = {HITSCAN = 0, SHELL = 1, TORPEDO = 2, CRUISE_MISSILE = 3}
 UnitClass = {
 	WAR_MECH = 0,
 	TANK = 1,
@@ -24,6 +25,29 @@ vehiclePrefix = modelPrefix .. "Units/Vehicles/"
 structurePrefix = modelPrefix .. "Units/Structures/"
 
 units = {
+	weapons = {
+		{{hitscan = true, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 3}},
+		{{hitscan = true, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
+		{{hitscan = true, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
+		{},
+		{},
+		{},
+		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{},
+		{
+			{hitscan = false, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}, 
+			{hitscan = false, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', minRange = 5, maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}}
+		},
+		{{hitscan = false, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}},
+		{},
+		{},
+		{},
+		{},
+		{{hitscan = true, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
+	},
 	unitClass = {
 		UnitClass.WAR_MECH,
 		UnitClass.TANK,
@@ -93,9 +117,6 @@ units = {
 	
 	health = {500, 500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
-	range = {15, 20, 45, 15, 14, 14, 14, 14, 14, 14, 13, 13, 12, 12, 12, 15, 0, 40},
-	damage = {15, 120, 250, 15, 14, 14, 13, 13, 12, 12, 15, 15, 100, 100, 100, 100, 100, 100, 100},
-	rateOfFire = {50, 2000, 5000, 100, 100, 100, 100, 100, 100, 100, 1000, 1000, 100, 100, 100, 100, 100, 100},
 	garrisonCapacity = {
 		{}, 
 		{}, 
@@ -663,26 +684,6 @@ units = {
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
-	},
-	fireSfx = {
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/Tanks/attack.ogg',
-		PATH .. 'Sounds/Units/Tanks/attack.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/Submarines/fire.ogg',
-		PATH .. 'Sounds/Units/Submarines/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 	},
 	deathSfx = {
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',

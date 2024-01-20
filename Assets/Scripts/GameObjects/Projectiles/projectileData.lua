@@ -7,8 +7,6 @@ projectiles = {
 	},
 	speed = {.5, .06},
 	rayLength = {1.25, .75},
-	pos = {{x = 0, y = 2.44, z = -3.5}, {x = 0, y = -.27, z = 4.6}},
-	rot = {{w = .707, x = -.707, y = 0, z = 0}, {w = 1, x = 0, y = 0, z = 0}},
 	damage = {450, 300},
 	name = {
 	    "Guided missile",
