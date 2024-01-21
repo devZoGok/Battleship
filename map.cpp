@@ -373,7 +373,7 @@ namespace battleship{
 	}
 
 	//TODO replace search with binary search
-	int Map::getCellId(Vector3 pos){
+	int Map::getCellId(Vector3 pos, bool checkUnderwaterCells){
 		int numHorCells = int(mapSize.x / CELL_SIZE.x), horId = -1;
 
 		for(int i = 0; i < numHorCells; i++)
@@ -392,7 +392,7 @@ namespace battleship{
 
 		int surfaceCellId = vertId * numHorCells + horId;
 
-		if(cells[surfaceCellId].type == Cell::Type::WATER && !cells[surfaceCellId].underWaterCellIds.empty()){
+		if(checkUnderwaterCells && cells[surfaceCellId].type == Cell::Type::WATER && !cells[surfaceCellId].underWaterCellIds.empty()){
 			int cellId = surfaceCellId;
 
 			for(int i = 0; i <= cells[surfaceCellId].underWaterCellIds.size(); i++){

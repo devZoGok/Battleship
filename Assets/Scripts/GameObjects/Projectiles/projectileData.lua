@@ -5,7 +5,7 @@ projectiles = {
 		ProjectileClass.CRUISE_MISSILE,
 		ProjectileClass.TORPEDO,
 	},
-	speed = {.1, .06},
+	speed = {.5, .06},
 	rayLength = {1.25, .75},
 	damage = {450, 300},
 	name = {

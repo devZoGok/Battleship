@@ -53,21 +53,19 @@ namespace battleship{
         if(explosionSfxBuffer->loadFromFile(p2.c_str()))
             explosionSfx = new sf::Sound(*explosionSfxBuffer);
 	}
-    
+
     void Projectile::update() {
 		GameObject::update();
 		placeAt(pos + speed * dirVec);
 
-        if(!exploded) checkForCollision();
+        if(!exploded){
+			checkSurfaceCollision();
+			if(exploded) return;
+			checkUnitCollision();
+		}
     }
 
-    void Projectile::checkForCollision() {
-		Map *map = Map::getSingleton();
-		int cellId = map->getCellId(pos);
-
-		if(map->getCells()[cellId].type == Map::Cell::LAND)
-			player->removeProjectile(this);
-
+	void Projectile::checkUnitCollision(){
 		vector<Player*> players = Game::getSingleton()->getPlayers();
 		vector<Unit*> targetUnits;
 		vector<Node*> targetNodes;
@@ -87,13 +85,22 @@ namespace battleship{
 		if(!results.empty()){
 			for(int i = 0; i < targetNodes.size(); i++)
 				if(targetNodes[i]->getMesh(0) == results[0].mesh)
-					explode(targetUnits[i]);
+					explode();
 		}
-    }
+	}
 
-    void Projectile::explode(Unit *target) {
+	void Projectile::checkSurfaceCollision(){
+		Map *map = Map::getSingleton();
+		int cellId = map->getCellId(pos, false);
+
+		if(map->getCells()[cellId].type == Map::Cell::LAND)
+			player->removeProjectile(this);
+	}
+
+	//TODO implement splash damage to units
+    void Projectile::explode(){
         exploded = true;
-		target->takeDamage(damage);
+		//target->takeDamage(damage);
 		Root *root = Root::getSingleton();
 
 		const int numFrames = 1;

@@ -15,6 +15,7 @@ namespace battleship{
 
 			void pitch(float);
 			void cruise();
+			void checkSurfaceCollision();
 	};
 }
 

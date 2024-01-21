@@ -25,9 +25,11 @@ namespace battleship {
 	private:
 		void initProperties();
 		void initSound();
+        void checkCollision();
     protected:
-        virtual void checkForCollision();
-        void explode(Unit*);
+        void explode();
+		virtual void checkUnitCollision();
+		virtual void checkSurfaceCollision();
 
         bool exploded = false;
         float speed, rayLength;

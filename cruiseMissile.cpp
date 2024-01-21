@@ -1,5 +1,7 @@
 #include "cruiseMissile.h"
+#include "player.h"
 #include "unit.h"
+#include "map.h"
 
 #include <util.h>
 
@@ -50,6 +52,14 @@ namespace battleship{
 			flightStage = FlightStage::DESCENT;
 	}
 
+	void CruiseMissile::checkSurfaceCollision(){
+		Map *map = Map::getSingleton();
+		int cellId = map->getCellId(pos, false);
+
+		if((pos + dirVec * rayLength).y <= map->getCells()[cellId].pos.y)
+			explode();
+	}
+
 	void CruiseMissile::update(){
 		GameObject::update();
 		placeAt(pos + dirVec * speed);
@@ -64,6 +74,10 @@ namespace battleship{
 				break;
 		}
 
-		//if(!exploded && flightStage == FlightStage::DESCENT) checkForCollision();
+		if(!exploded && flightStage == FlightStage::DESCENT){
+		   	checkSurfaceCollision();
+			if(exploded) return;
+		   	checkUnitCollision();
+		}
 	}
 }
