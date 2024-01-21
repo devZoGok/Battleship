@@ -13,7 +13,7 @@ namespace battleship{
 			FlightStage flightStage;
 			vb01::Vector3 targetPoint;
 
-			void pitch(float);
+			void pitch(float, vb01::Vector3);
 			void cruise();
 			void checkSurfaceCollision();
 	};
