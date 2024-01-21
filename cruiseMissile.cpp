@@ -19,24 +19,32 @@ namespace battleship{
 		orientAt(Quaternion(angle, Vector3::VEC_J) * rot);
 	}
 
+	//TODO clean up method code
 	void CruiseMissile::pitch(float rotAngle){
-		Vector3 horDir = Vector3(dirVec.x, 0, dirVec.z).norm();
-		float angleToVertDir = dirVec.getAngleBetween(horDir);
-		Quaternion rotQuat = Quaternion(angleToVertDir > rotAngle ? rotAngle : angleToVertDir, leftVec) * rot; 
 		float minHeight = 20;
 
 		if(flightStage == FlightStage::ASCENT && pos.y - initPos.y > minHeight){
+			Vector3 horDir = Vector3(dirVec.x, 0, dirVec.z).norm();
+			float angleToVertDir = dirVec.getAngleBetween(horDir);
+			Quaternion rotQuat = Quaternion(angleToVertDir > rotAngle ? rotAngle : angleToVertDir, leftVec) * rot; 
 			orientAt(rotQuat);
 
 			if(dirVec.y <= 0)
 				flightStage = FlightStage::CRUISE;
 		}
-		else if(flightStage == FlightStage::DESCENT && dirVec.getAngleBetween((Vector3(targetPoint.x, initPos.y, targetPoint.z) - initPos).norm()) < PI / 2)
-			orientAt(rotQuat);
+		else if(flightStage == FlightStage::DESCENT){
+			float angleFromHorDir = dirVec.getAngleBetween(-Vector3::VEC_J);
+			float angle = (angleFromHorDir > rotAngle ? rotAngle : angleFromHorDir);
+			Vector3 targDir = (Vector3(targetPoint.x, initPos.y, targetPoint.z) - initPos).norm();
+
+			if(dirVec.getAngleBetween(targDir) < PI / 2)
+				orientAt(Quaternion(angle, leftVec) * rot);
+		}
 	}
 
 	void CruiseMissile::cruise(){
-		float minDist = 3;
+		float minDist = 6;
+		float initDist = Vector3(targetPoint.x, initPos.y, targetPoint.z).getDistanceFrom(initPos);
 		
 		if(pos.getDistanceFrom(Vector3(targetPoint.x, pos.y, targetPoint.z)) < minDist)
 			flightStage = FlightStage::DESCENT;
@@ -46,12 +54,10 @@ namespace battleship{
 		GameObject::update();
 		placeAt(pos + dirVec * speed);
 
-		float rotAngle = .1, eps = .0001;
-
 		switch(flightStage){
 			case FlightStage::ASCENT:
 			case FlightStage::DESCENT:
-				pitch(rotAngle);
+				pitch(.1);
 				break;
 			case FlightStage::CRUISE:
 				cruise();
