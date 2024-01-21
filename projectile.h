@@ -12,7 +12,7 @@ namespace vb01{
 }
 
 namespace battleship {
-	enum class ProjectileClass{GUIDED_MISSILE, TORPEDO};
+	enum class ProjectileClass{CRUISE_MISSILE, TORPEDO};
 	class Unit;
 
     class Projectile : public GameObject{
@@ -32,6 +32,7 @@ namespace battleship {
         bool exploded = false;
         float speed, rayLength;
         int damage;
+		vb01::Vector3 initPos;
 		Unit *unit = nullptr;
         sf::SoundBuffer *shotSfxBuffer, *explosionSfxBuffer;
         sf::Sound *shotSfx = nullptr, *explosionSfx = nullptr;

@@ -21,7 +21,7 @@ mappings = {
 		{bind = 17, trigger = 341, action = true, bindType = 0, inOptions = true},
 		{bind = 18, trigger = 340, action = true, bindType = 0, inOptions = true},
 		{bind = 19, trigger = 80, action = true, bindType = 0, inOptions = true},
-		{bind = 20, trigger = 67, action = true, bindType = 0, inOptions = true},
+		{bind = 20, trigger = 76, action = true, bindType = 0, inOptions = true},
 		{bind = 21, trigger = 83, action = true, bindType = 0, inOptions = true},
 		{bind = 22, trigger = 48, action = true, bindType = 0, inOptions = true},
 		{bind = 23, trigger = 49, action = true, bindType = 0, inOptions = true},

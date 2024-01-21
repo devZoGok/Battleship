@@ -3,11 +3,10 @@
 #include "factory.h"
 #include "engineer.h"
 #include "transport.h"
-#include "submarine.h"
 #include "projectile.h"
 #include "resourceDeposit.h"
 #include "pointDefense.h"
-#include "projectile.h"
+#include "cruiseMissile.h"
 #include "defConfigs.h"
 
 #include <solUtil.h>
@@ -28,9 +27,6 @@ namespace battleship{
 				return new Engineer(player, id, pos, rot);
 			case UnitClass::TRANSPORT:
 				return new Transport(player, id, pos, rot);
-			case UnitClass::MISSILE_SUBMARINE:
-			case UnitClass::STEALTH_SUBMARINE:
-				return new Submarine(player, id, pos, rot);
 			case UnitClass::LAND_FACTORY:
 			case UnitClass::NAVAL_FACTORY:
 				return new Factory(player, id, pos, rot, buildStatus);
@@ -49,6 +45,12 @@ namespace battleship{
 		int projectileClass = SOL_LUA_STATE["projectiles"]["projectileClass"][id + 1];
 
 		switch((ProjectileClass)projectileClass){
+			case ProjectileClass::CRUISE_MISSILE:
+			{
+				Order::Target target = unit->getOrder(0).targets[0];
+				Vector3 targetPos = (target.unit ? target.unit->getPos() : target.pos);
+				return new CruiseMissile(unit, targetPos, pos, rot);
+			}
 			default:
 				return new Projectile(unit, id, pos, rot);
 		}

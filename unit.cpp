@@ -218,6 +218,16 @@ namespace battleship{
 		delete node;
 	}
 
+	void Unit::launch(Order order){
+		for(Weapon *weapon : weapons)
+			if(weapon->getProjectileId() == 0){
+				weapon->fire(order);
+				break;
+			}
+
+		removeOrder(0);
+	}
+
 	float Unit::calculateRotation(Vector3 dir, float angle, float maxTurnAngle){
 		float rotSpeed = (maxTurnAngle > angle ? angle : maxTurnAngle); 
 

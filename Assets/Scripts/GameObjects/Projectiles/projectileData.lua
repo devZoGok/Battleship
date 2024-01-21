@@ -1,15 +1,15 @@
-ProjectileClass = {GUIDED_MISSILE = 0, TORPEDO = 1}
+ProjectileClass = {CRUISE_MISSILE = 0, TORPEDO = 1}
 
 projectiles = {
 	projectileClass = {
-		ProjectileClass.GUIDED_MISSILE,
+		ProjectileClass.CRUISE_MISSILE,
 		ProjectileClass.TORPEDO,
 	},
-	speed = {.5, .06},
+	speed = {.1, .06},
 	rayLength = {1.25, .75},
 	damage = {450, 300},
 	name = {
-	    "Guided missile",
+	    "Cruise missile",
 	    "Torpedo"
 	},
 	basePath = {
@@ -17,7 +17,7 @@ projectiles = {
 	    PATH .. "Models/GameObjects/Projectiles/Torpedos/",
 	},
 	meshPath = {
-	    "guidedMissile.xml",
+	    "cruiseMissile.xml",
 	    "torpedo.xml",
 	},
 	unitCornerPoints = {

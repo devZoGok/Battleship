@@ -24,7 +24,7 @@ namespace battleship{
 	using namespace configData;
 	using namespace gameBase;
 
-    Projectile::Projectile(Unit *un, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::PROJECTILE, id, un->getPlayer(), pos, rot), unit(un){
+    Projectile::Projectile(Unit *un, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::PROJECTILE, id, un->getPlayer(), pos, rot), unit(un), initPos(pos){
 		initProperties();
 		initModel();
 		initSound();

@@ -67,6 +67,7 @@ namespace battleship{
 				Weapon(Unit*, sol::table);
 				~Weapon();
 				virtual void fire(Order);
+				inline int getProjectileId(){return projId;}
 				inline int getRateOfFire(){return rateOfFire;}
 				inline int getDamage(){return damage;}
 				inline int getMinRange(){return minRange;}
@@ -125,6 +126,8 @@ namespace battleship{
 		inline int getDeathHp(){return DEATH_HP;}
 		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
+		inline Order getOrder(int i){return orders[i];}
+		inline int getNumOrders(){return orders.size();}
     private:
 		void renderOrderLine(bool);
         void updateScreenCoordinates();
@@ -161,7 +164,7 @@ namespace battleship{
         virtual void build(Order){}
         virtual void move(Order){}
         virtual void patrol(Order){}
-        virtual void launch(Order){}
+        virtual void launch(Order);
 		float calculateRotation(vb01::Vector3, float, float);
 		void removeBar(vb01::Node*);
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);

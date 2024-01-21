@@ -408,6 +408,13 @@ namespace battleship{
 			case Bind::EJECT_GARRISON:
 				if(isPressed) issueOrder(Order::TYPE::EJECT, vector<Order::Target>{}, shiftPressed);
 				break;
+			case Bind::LAUNCH:
+				if(isPressed){
+					castRayToTerrain();
+					issueOrder(Order::TYPE::LAUNCH, targets, shiftPressed);
+				}
+
+				break;
 			case Bind::TOGGLE_SUB:
                 break;
 			case Bind::ZOOM_IN:
