@@ -46,6 +46,7 @@ namespace battleship{
         explosionDamage = projTable[explKey][id + 1]["damage"];
         explosionRadius = projTable[explKey][id + 1]["radius"];
         speed = projTable["speed"][id + 1];
+		rotAngle = projTable["rotAngle"][id + 1];;
 	}
 
 	void Projectile::initSound(){

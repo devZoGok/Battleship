@@ -27,24 +27,40 @@ using namespace std;
 namespace battleship{
 	Unit::Weapon::Weapon(Unit *u, sol::table weaponTable) : 
 		unit(u), 
-		hitscan(weaponTable["hitscan"]), 
+		type((Weapon::Type)weaponTable["type"]), 
 		rateOfFire(weaponTable["rateOfFire"]),
-		damage(weaponTable["damage"].get_or(0)),
-		minRange(weaponTable["minRange"].get_or(0))
+		damage(weaponTable["damage"].get_or(0))
 	{
 		maxRange = weaponTable["maxRange"];
 		fireSfxBuffer = new sf::SoundBuffer();
 		string sfxPath = weaponTable["fireSfx"];
 		fireSfx = GameObject::prepareSfx(fireSfxBuffer, sfxPath);
 
-		string projTable = "projectile";
-		sol::optional<sol::table> proj = weaponTable[projTable];
+		string projTableKey = "projectile";
+		sol::optional<sol::table> proj = weaponTable[projTableKey];
 
 		if(proj != sol::nullopt){
-			projId = weaponTable[projTable]["id"];
-			sol::table posTable = weaponTable[projTable]["pos"];
+			projId = weaponTable[projTableKey]["id"];
+			sol::table projTable = generateView()["projectiles"];
+			ProjectileClass pc = (ProjectileClass)projTable["projectileClass"][projId + 1];
+
+			if(pc == ProjectileClass::CRUISE_MISSILE){
+				minRange = 0;
+				float rotAngle = projTable["rotAngle"][projId + 1];
+				float speed = projTable["speed"][projId + 1];
+				float base = PI / 2, alpha = 0;
+
+				while(base - alpha > .001){
+					minRange += speed * sin(alpha);
+					alpha += (base - alpha > rotAngle ? rotAngle : base - alpha);
+				}
+
+				minRange *= 2;
+			}
+
+			sol::table posTable = weaponTable[projTableKey]["pos"];
 			projPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
-			sol::table rotTable = weaponTable[projTable]["rot"];
+			sol::table rotTable = weaponTable[projTableKey]["rot"];
 			projRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
 		}
 	}
@@ -63,11 +79,11 @@ namespace battleship{
 		fireSfx->play();
 		Unit *targetUnit = order.targets[0].unit;
 
-		if(targetUnit && hitscan){
+		if(targetUnit && projId == -1){
 			targetUnit->takeDamage(damage);
 			unit->updateGameStats(targetUnit);
 		}
-		else if(!hitscan){
+		else if(projId != -1){
 			Vector3 leftVec = unit->getLeftVec();
 			Vector3 upVec = unit->getUpVec();
 			Vector3 dirVec = unit->getDirVec();
@@ -219,11 +235,14 @@ namespace battleship{
 	}
 
 	void Unit::launch(Order order){
-		for(Weapon *weapon : weapons)
-			if(weapon->getProjectileId() == 0){
+		for(Weapon *weapon : weapons){
+			Vector3 targPos = Vector3(order.targets[0].pos.x, pos.y, order.targets[0].pos.z);
+
+			if(weapon->getProjectileId() == 0 && weapon->getMinRange() < targPos.getDistanceFrom(pos)){
 				weapon->fire(order);
 				break;
 			}
+		}
 
 		removeOrder(0);
 	}

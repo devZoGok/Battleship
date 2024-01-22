@@ -67,6 +67,7 @@ namespace battleship{
 				Weapon(Unit*, sol::table);
 				~Weapon();
 				virtual void fire(Order);
+				inline Type getType(){return type;}
 				inline int getProjectileId(){return projId;}
 				inline int getRateOfFire(){return rateOfFire;}
 				inline int getDamage(){return damage;}
@@ -74,8 +75,9 @@ namespace battleship{
 				inline int getMaxRange(){return maxRange;}
 				inline Unit* getUnit(){return unit;}
 			private:
-				bool hitscan;
-				int projId = -1, rateOfFire, damage = 0, minRange, maxRange;
+				Type type;
+				int projId = -1, rateOfFire, damage = 0;
+				float minRange = 0, maxRange;
 				vb01::Vector3 projPos;
 				vb01::Quaternion projRot;
 				vb01::s64 lastFireTime = 0;

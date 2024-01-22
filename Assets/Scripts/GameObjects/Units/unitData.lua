@@ -26,27 +26,27 @@ structurePrefix = modelPrefix .. "Units/Structures/"
 
 units = {
 	weapons = {
-		{{hitscan = true, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 3}},
-		{{hitscan = true, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
-		{{hitscan = true, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 3}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
 		{},
 		{},
 		{},
-		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
-		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
-		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
-		{{hitscan = true, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
 		{},
 		{
-			{hitscan = false, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}, 
-			{hitscan = false, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', minRange = 5, maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}}
+			{type = WeaponClass.CRUISE_MISSILE, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}, 
+			{type = WeaponClass.TORPEDO, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}}
 		},
-		{{hitscan = false, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}},
+		{{type = WeaponClass.TORPEDO, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}},
 		{},
 		{},
 		{},
 		{},
-		{{hitscan = true, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
 	},
 	unitClass = {
 		UnitClass.WAR_MECH,

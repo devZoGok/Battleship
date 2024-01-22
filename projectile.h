@@ -31,7 +31,7 @@ namespace battleship {
 		virtual void checkSurfaceCollision();
 
         bool exploded = false;
-        float speed, rayLength, explosionRadius;
+        float speed, rayLength, explosionRadius, rotAngle;
         int directHitDamage, explosionDamage;
 		vb01::Vector3 initPos;
 		Unit *unit = nullptr;

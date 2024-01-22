@@ -61,7 +61,6 @@ namespace battleship{
 	void CruiseMissile::update(){
 		GameObject::update();
 		placeAt(pos + dirVec * speed);
-		float rotAngle = .1;
 
 		switch(flightStage){
 			case FlightStage::ASCENT:

@@ -6,6 +6,7 @@ projectiles = {
 		ProjectileClass.TORPEDO,
 	},
 	speed = {.5, .06},
+	rotAngle = {.1, 0},
 	explosion = {{damage = 100, radius = 20}, {damage = 20, radius = 3}},
 	rayLength = {1.25, .75},
 	directHitDamage = {450, 300},
