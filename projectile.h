@@ -27,13 +27,12 @@ namespace battleship {
 		void initSound();
         void checkCollision();
     protected:
-        void explode();
 		virtual void checkUnitCollision();
 		virtual void checkSurfaceCollision();
 
         bool exploded = false;
-        float speed, rayLength;
-        int damage;
+        float speed, rayLength, explosionRadius;
+        int directHitDamage, explosionDamage;
 		vb01::Vector3 initPos;
 		Unit *unit = nullptr;
         sf::SoundBuffer *shotSfxBuffer, *explosionSfxBuffer;

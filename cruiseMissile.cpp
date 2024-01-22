@@ -2,6 +2,7 @@
 #include "player.h"
 #include "unit.h"
 #include "map.h"
+#include "game.h"
 
 #include <util.h>
 
@@ -50,8 +51,11 @@ namespace battleship{
 		Map *map = Map::getSingleton();
 		int cellId = map->getCellId(pos, false);
 
-		if((pos + dirVec * rayLength).y <= map->getCells()[cellId].pos.y)
-			explode();
+		if((pos + dirVec * rayLength).y <= map->getCells()[cellId].pos.y){
+			exploded = true;
+			Game::getSingleton()->explode(pos, explosionDamage, explosionRadius, explosionSfx);
+			player->removeProjectile(this);
+		}
 	}
 
 	void CruiseMissile::update(){

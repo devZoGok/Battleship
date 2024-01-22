@@ -5,6 +5,10 @@
 
 #include <vector>
 
+namespace sf{
+	class Sound;
+}
+
 namespace battleship{
 	class Player;
 	class Projectile;
@@ -16,6 +20,7 @@ namespace battleship{
 			void togglePause();
 			void removeFx(int, bool);
 			void removeAllElements();
+			void explode(vb01::Vector3, int, float, sf::Sound*);
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline std::vector<Player*>& getPlayers(){return players;}

@@ -274,41 +274,10 @@ namespace battleship{
 		for(GarrisonSlot &slot : garrisonSlots)
 			displayUnitStats(slot.foreground, slot.background, (int)((bool)slot.vehicle), (int)true, renderSelectables, slot.offset);
 
-        if (health <= DEATH_HP)
-			blowUp();
-    }
-
-    void Unit::blowUp(){
-		Root *root = Root::getSingleton();
-
-		const int numFrames = 1;
-		string p[numFrames];
-
-		for(int i = 0; i < numFrames; i++)
-			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion07.png";
-
-		Texture *tex = new Texture(p, numFrames, false);
-
-		Material *mat = new Material(root->getLibPath() + "particle");
-		mat->addTexUniform("tex", tex, true);
-
-		ParticleEmitter *pe = new ParticleEmitter(1);
-		pe->setMaterial(mat);
-		pe->setLowLife(3);
-		pe->setHighLife(3);
-		pe->setSize(10 * Vector2::VEC_IJ);
-		pe->setSpeed(0);
-
-		Node *node = new Node(pos + Vector3(0, 2, 0));
-		node->attachParticleEmitter(pe);
-		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
-		root->getRootNode()->attachChild(node);
-
-		Fx fx(50, 2500, deathSfx, node);
-		fx.activate();
-		Game::getSingleton()->addFx(fx);
-
-		player->removeUnit(this);
+        if (health <= DEATH_HP){
+			Game::getSingleton()->explode(pos, 0, 0, deathSfx);
+			player->removeUnit(this);
+		}
     }
 
     void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, bool render, Vector2 offset) {

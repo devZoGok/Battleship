@@ -6,8 +6,9 @@ projectiles = {
 		ProjectileClass.TORPEDO,
 	},
 	speed = {.5, .06},
+	explosion = {{damage = 100, radius = 20}, {damage = 20, radius = 3}},
 	rayLength = {1.25, .75},
-	damage = {450, 300},
+	directHitDamage = {450, 300},
 	name = {
 	    "Cruise missile",
 	    "Torpedo"

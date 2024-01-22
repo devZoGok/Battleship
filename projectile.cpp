@@ -39,10 +39,13 @@ namespace battleship{
 	void Projectile::initProperties(){
 		GameObject::initProperties();
 
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-        rayLength = SOL_LUA_STATE["rayLength"][id + 1];
-        damage = SOL_LUA_STATE["damage"][id + 1];
-        speed = SOL_LUA_STATE["speed"][id + 1];
+		sol::table projTable = generateView()[GameObject::getGameObjTableName()];
+        rayLength = projTable["rayLength"][id + 1];
+        directHitDamage = projTable["directHitDamage"][id + 1];
+		string explKey = "explosion";
+        explosionDamage = projTable[explKey][id + 1]["damage"];
+        explosionRadius = projTable[explKey][id + 1]["radius"];
+        speed = projTable["speed"][id + 1];
 	}
 
 	void Projectile::initSound(){
@@ -84,8 +87,12 @@ namespace battleship{
 
 		if(!results.empty()){
 			for(int i = 0; i < targetNodes.size(); i++)
-				if(targetNodes[i]->getMesh(0) == results[0].mesh)
-					explode();
+				if(targetNodes[i]->getMesh(0) == results[0].mesh){
+					exploded = true;
+					targetUnits[i]->takeDamage(directHitDamage);
+					Game::getSingleton()->explode(pos, explosionDamage, explosionRadius, explosionSfx);
+					player->removeProjectile(this);
+				}
 		}
 	}
 
@@ -93,46 +100,12 @@ namespace battleship{
 		Map *map = Map::getSingleton();
 		int cellId = map->getCellId(pos, false);
 
-		if(map->getCells()[cellId].type == Map::Cell::LAND)
+		if(map->getCells()[cellId].type == Map::Cell::LAND){
+			exploded = true;
 			player->removeProjectile(this);
+		}
 	}
 
-	//TODO implement splash damage to units
-    void Projectile::explode(){
-        exploded = true;
-		//target->takeDamage(damage);
-		Root *root = Root::getSingleton();
-
-		const int numFrames = 1;
-		string p[numFrames];
-
-		for(int i = 0; i < numFrames; i++)
-			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion07.png";
-
-		Texture *tex = new Texture(p, numFrames, false);
-
-		Material *mat = new Material(root->getLibPath() + "particle");
-		mat->addTexUniform("tex", tex, true);
-
-		ParticleEmitter *pe = new ParticleEmitter(1);
-		pe->setMaterial(mat);
-		pe->setLowLife(3);
-		pe->setHighLife(3);
-		pe->setSize(10 * Vector2::VEC_IJ);
-		pe->setSpeed(0);
-
-		Node *node = new Node(pos + Vector3(0, 2, 0));
-		node->attachParticleEmitter(pe);
-		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
-		root->getRootNode()->attachChild(node);
-
-		Fx fx(50, 2500, explosionSfx, node);
-		fx.activate();
-		Game::getSingleton()->addFx(fx);
-
-		player->removeProjectile(this);
-    }
-    
     void Projectile::debug(){
     }
 }
