@@ -6,6 +6,8 @@
 #include <util.h>
 
 namespace battleship{
+	class Structure;
+
 	class ResourceRover : public Vehicle{
 		public:
 			ResourceRover(Player*, int, vb01::Vector3, vb01::Quaternion);
@@ -13,7 +15,7 @@ namespace battleship{
 			void update();
 		private:
 			void supply(Order);
-			Unit* getClosestUnit(std::vector<Unit*>);
+			Unit* getClosestUnit(std::vector<Structure*>);
 			inline bool canLoad(){return vb01::getTime() - lastLoadTime > loadRate && load < capacity;}
 			inline bool canUnload(){return vb01::getTime() - lastLoadTime > loadRate && load > 0;}
 

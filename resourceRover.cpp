@@ -1,6 +1,8 @@
 #include "resourceRover.h"
 #include "map.h"
 #include "player.h"
+#include "extractor.h"
+#include "structure.h"
 #include "activeGameState.h"
 
 #include <stateManager.h>
@@ -17,7 +19,7 @@ namespace battleship{
 	{
 		Vector2 size = Vector2(lenHpBar, 10);
 		loadBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
-		loadForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 1, 1, 1));
+		loadForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(1, 1, 0, 1));
 	}
 
 	ResourceRover::~ResourceRover(){
@@ -31,13 +33,14 @@ namespace battleship{
 		if(!pathPoints.empty())
 			navigate(minDist);
 		else{
-			vector<Unit*> units = player->getUnits(), extractors, refineries;
+			vector<Unit*> units = player->getUnits();
+			vector<Structure*> extractors, refineries;
 
 			for(Unit *unit : units){
 				if(unit->getUnitClass() == UnitClass::EXTRACTOR)
-					extractors.push_back(unit);
+					extractors.push_back((Structure*)unit);
 				else if(unit->getUnitClass() == UnitClass::REFINERY)
-					refineries.push_back(unit);
+					refineries.push_back((Structure*)unit);
 			}
 
 			nearestExtractor = getClosestUnit(extractors);
@@ -45,6 +48,7 @@ namespace battleship{
 
 			if(nearestExtractor->getPos().getDistanceFrom(pos) <= minDist){
 				if(canLoad()){
+					((Extractor*)nearestExtractor)->draw();
 					load++;
 					lastLoadTime = getTime();
 				}
@@ -74,15 +78,23 @@ namespace battleship{
 		Unit::displayUnitStats(loadForeground, loadBackground, load, capacity, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
 	}
 
-	Unit* ResourceRover::getClosestUnit(vector<Unit*> units){
-		if(units.empty()) return nullptr;
+	Unit* ResourceRover::getClosestUnit(vector<Structure*> structs){
+		if(structs.empty()) return nullptr;
 
-		int minDistId = 0;
+		int minDistId = -1;
 
-		for(int i = 0; i < units.size(); i++)
-			if(units[minDistId]->getPos().getDistanceFrom(pos) > units[i]->getPos().getDistanceFrom(pos))
+		for(int i = 0; i < structs.size(); i++)
+			if(structs[i]->getBuildStatus() == 100){
+				minDistId = i;
+				break;
+			}
+
+		if(minDistId == -1) return nullptr;
+
+		for(int i = 0; i < structs.size(); i++)
+			if(structs[i]->getBuildStatus() == 100 && structs[minDistId]->getPos().getDistanceFrom(pos) > structs[i]->getPos().getDistanceFrom(pos))
 				minDistId = i;
 
-		return units[minDistId];
+		return structs[minDistId];
 	}
 }

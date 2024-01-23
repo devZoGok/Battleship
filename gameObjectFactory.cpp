@@ -63,7 +63,7 @@ namespace battleship{
 		}
 	}
 	
-	ResourceDeposit* GameObjectFactory::createResourceDeposit(Player *player, int id, Vector3 pos, Quaternion rot){
-		return new ResourceDeposit(player, id, pos, rot);
+	ResourceDeposit* GameObjectFactory::createResourceDeposit(Player *player, int id, Vector3 pos, Quaternion rot, int initAmmount){
+		return new ResourceDeposit(player, id, pos, rot, initAmmount);
 	}
 }

@@ -28,7 +28,7 @@ structurePrefix = modelPrefix .. "Units/Structures/"
 
 units = {
 	weapons = {
-		{{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 3}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
 		{},
@@ -373,14 +373,14 @@ units = {
 					{x = .5, y =.15, z =.7}
 	    },
 	    {
-					{x = .5, y =-.1, z =-1.3},
-					{x = -.5, y =-.1, z =-1.3},
-					{x = -.5, y =-.1, z =.7},
-					{x = .5, y =-.1, z =.7},
-					{x = .5, y =.15, z =-1.3},
-					{x = -.5, y =.15, z =-1.3},
-					{x = -.5, y =.15, z =.7},
-					{x = .5, y =.15, z =.7}
+					{x = 2, y =-.1, z =-2},
+					{x = -2, y =-.1, z =-2},
+					{x = -2, y =-.1, z =2},
+					{x = 2, y =-.1, z =2},
+					{x = 2, y =.15, z =-2},
+					{x = -2, y =.15, z =-2},
+					{x = -2, y =.15, z =2},
+					{x = 2, y =.15, z =2}
 	    },
 	    {
 					{x = .5, y =-.1, z =-1.3},
