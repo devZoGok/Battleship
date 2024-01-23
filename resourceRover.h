@@ -9,6 +9,8 @@ namespace battleship{
 	class ResourceRover : public Vehicle{
 		public:
 			ResourceRover(Player*, int, vb01::Vector3, vb01::Quaternion);
+			~ResourceRover();
+			void update();
 		private:
 			void supply(Order);
 			Unit* getClosestUnit(std::vector<Unit*>);
@@ -18,6 +20,7 @@ namespace battleship{
 			vb01::s64 lastLoadTime = 0;
 			int load = 0, capacity, loadRate;
 			Unit *nearestExtractor = nullptr, *nearestRefinery = nullptr;
+			vb01::Node *loadBackground = nullptr, *loadForeground = nullptr;
 	};
 }
 
