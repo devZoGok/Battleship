@@ -3,11 +3,21 @@
 
 #include "vehicle.h"
 
+#include <util.h>
+
 namespace battleship{
 	class ResourceRover : public Vehicle{
 		public:
 			ResourceRover(Player*, int, vb01::Vector3, vb01::Quaternion);
 		private:
+			void supply(Order);
+			Unit* getClosestUnit(std::vector<Unit*>);
+			inline bool canLoad(){return vb01::getTime() - lastLoadTime > loadRate && load < capacity;}
+			inline bool canUnload(){return vb01::getTime() - lastLoadTime > loadRate && load > 0;}
+
+			vb01::s64 lastLoadTime = 0;
+			int load = 0, capacity, loadRate;
+			Unit *nearestExtractor = nullptr, *nearestRefinery = nullptr;
 	};
 }
 

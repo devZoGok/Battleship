@@ -44,6 +44,7 @@ namespace battleship{
 				color = Vector3::VEC_K;
 				break;
       	    case Order::TYPE::BUILD:
+      	    case Order::TYPE::SUPPLY:
 				color = Vector3(1, 1, 0);
       	        break;
       	}

@@ -345,6 +345,9 @@ namespace battleship{
                 case Order::TYPE::LAUNCH:
                     launch(order);
                     break;
+                case Order::TYPE::SUPPLY:
+                    supply(order);
+                    break;
                 default:
                     break;
             }
