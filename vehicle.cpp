@@ -238,7 +238,7 @@ namespace battleship{
 		bool waterVehCanMove = (ship && cells[source].type == Map::Cell::WATER);
 		bool landVehCanMove = (type == UnitType::LAND && cells[source].type == Map::Cell::LAND);
 
-		if(!(waterVehCanMove || landVehCanMove)) return;
+		if(type != UnitType::HOVER && !(waterVehCanMove || landVehCanMove)) return;
 
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		int dest = map->getCellId(destPos);

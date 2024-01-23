@@ -191,7 +191,8 @@ namespace battleship{
 				Quaternion rot = Quaternion(unitTable[rotInd]["w"], unitTable[rotInd]["x"], unitTable[rotInd]["x"], unitTable[rotInd]["x"]);
 
 				int id = unitTable["id"];
-				player->addUnit(GameObjectFactory::createUnit(player, id, pos, rot));
+				int buildStatus = unitTable["buildStatus"].get_or(0);
+				player->addUnit(GameObjectFactory::createUnit(player, id, pos, rot, buildStatus));
 			}
 		}
 	}
