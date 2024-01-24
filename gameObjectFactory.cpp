@@ -25,12 +25,6 @@ namespace battleship{
 		int unitClass = SOL_LUA_STATE["units"]["unitClass"][id + 1];
 
 		switch((UnitClass)unitClass){
-			case UnitClass::ENGINEER:
-				return new Engineer(player, id, pos, rot);
-			case UnitClass::TRANSPORT:
-				return new Transport(player, id, pos, rot);
-			case UnitClass::RESOURCE_ROVER:
-				return new ResourceRover(player, id, pos, rot);
 			case UnitClass::LAND_FACTORY:
 			case UnitClass::NAVAL_FACTORY:
 				return new Factory(player, id, pos, rot, buildStatus);
@@ -42,6 +36,10 @@ namespace battleship{
 			case UnitClass::LAB:
 			case UnitClass::REFINERY:
 				return new Structure(player, id, pos, rot, buildStatus);
+			case UnitClass::ENGINEER:
+				return new Engineer(player, id, pos, rot);
+			case UnitClass::RESOURCE_ROVER:
+				return new ResourceRover(player, id, pos, rot);
 			default:
 				return new Vehicle(player, id, pos, rot);
 		}
