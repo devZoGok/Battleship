@@ -38,7 +38,7 @@ namespace battleship{
 			vector<Structure*> extractors, refineries;
 
 			for(Unit *unit : units){
-				if(unit->getUnitClass() == UnitClass::EXTRACTOR)
+				if(unit->getUnitClass() == UnitClass::EXTRACTOR && ((Extractor*)unit)->getDeposit()->getAmmount() > 0)
 					extractors.push_back((Structure*)unit);
 				else if(unit->getUnitClass() == UnitClass::REFINERY)
 					refineries.push_back((Structure*)unit);
@@ -46,11 +46,6 @@ namespace battleship{
 
 			nearestExtractor = (Extractor*)getClosestUnit(extractors);
 			nearestRefinery = getClosestUnit(refineries);
-
-			if(!nearestExtractor){
-				removeOrder(0);
-				return;
-			}
 
 			if(nearestExtractor && nearestExtractor->getPos().getDistanceFrom(pos) <= minDist){
 				ResourceDeposit *deposit = nearestExtractor->getDeposit();
@@ -62,10 +57,17 @@ namespace battleship{
 						lastLoadTime = getTime();
 					}
 				}
-				else if((deposit->getAmmount() == 0 || load == capacity) && nearestRefinery)
+				else if(load == capacity && nearestRefinery)
 					preparePathpoints(order, nearestRefinery->getPos(), true);
 			}
-			else if(nearestRefinery && nearestRefinery->getPos().getDistanceFrom(pos) <= minDist){
+			else if(!nearestExtractor){
+				if(nearestRefinery && load > 0)
+					preparePathpoints(order, nearestRefinery->getPos(), true);
+				else
+					removeOrder(0);
+			}
+
+			if(nearestRefinery && nearestRefinery->getPos().getDistanceFrom(pos) <= minDist){
 				if(canUnload()){
 					load--;
 					player->addRefineds(1);
