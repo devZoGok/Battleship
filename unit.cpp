@@ -295,7 +295,7 @@ namespace battleship{
 
         if (health <= DEATH_HP){
 			Game::getSingleton()->explode(pos, 0, 0, deathSfx);
-			player->removeUnit(this);
+			remove = true;
 		}
     }
 
@@ -344,6 +344,9 @@ namespace battleship{
                     break;
                 case Order::TYPE::LAUNCH:
                     launch(order);
+                    break;
+                case Order::TYPE::SUPPLY:
+                    supply(order);
                     break;
                 default:
                     break;

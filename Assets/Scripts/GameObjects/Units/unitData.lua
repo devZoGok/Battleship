@@ -6,7 +6,7 @@ UnitClass = {
 	ARTILLERY = 2,
 	ENGINEER = 3,
 	TRANSPORT = 4,
-	CARGO_SHIP = 5,
+	RESOURCE_ROVER = 5,
 	CRUISER = 6,
 	CARRIER = 7,
 	MISSILE_SUBMARINE = 8,
@@ -15,7 +15,9 @@ UnitClass = {
 	NAVAL_FACTORY = 11,
 	MARKET = 12,
 	LAB = 13,
-	POINT_DEFENSE = 14
+	POINT_DEFENSE = 14,
+	EXTRACTOR = 15,
+	REFINERY = 16
 }
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
 ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
@@ -26,7 +28,7 @@ structurePrefix = modelPrefix .. "Units/Structures/"
 
 units = {
 	weapons = {
-		{{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 3}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
 		{},
@@ -47,6 +49,8 @@ units = {
 		{},
 		{},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
+		{},
+		{}
 	},
 	unitClass = {
 		UnitClass.WAR_MECH,
@@ -54,7 +58,7 @@ units = {
 		UnitClass.ARTILLERY,
 		UnitClass.ENGINEER,
 		UnitClass.TRANSPORT,
-		UnitClass.CARGO_SHIP,
+		UnitClass.RESOURCE_ROVER,
 		UnitClass.CRUISER,
 		UnitClass.CRUISER,
 		UnitClass.CRUISER,
@@ -66,7 +70,9 @@ units = {
 		UnitClass.NAVAL_FACTORY,
 		UnitClass.MARKET,
 		UnitClass.LAB,
-		UnitClass.POINT_DEFENSE
+		UnitClass.POINT_DEFENSE,
+		UnitClass.EXTRACTOR,
+		UnitClass.REFINERY,
 	},
 	
 	unitType = {
@@ -83,6 +89,8 @@ units = {
 		UnitType.SEA_LEVEL,
 		UnitType.UNDERWATER,
 		UnitType.UNDERWATER,
+		UnitType.LAND,
+		UnitType.LAND,
 		UnitType.LAND,
 		UnitType.LAND,
 		UnitType.LAND,
@@ -108,15 +116,17 @@ units = {
 		{},
 		{},
 		{},
+		{},
+		{},
 		{}
 	},
 	
 	isVehicle = {
-		true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false
+		true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false
 	},
 	
-	health = {500, 500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
-	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
+	health = {500, 500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 200, 600},
+	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	garrisonCapacity = {
 		{}, 
 		{}, 
@@ -126,6 +136,8 @@ units = {
 		{}, 
 		{},
 		{2, 2, 2},
+		{}, 
+		{}, 
 		{}, 
 		{}, 
 		{}, 
@@ -359,6 +371,26 @@ units = {
 					{x = -.5, y =.15, z =-1.3},
 					{x = -.5, y =.15, z =.7},
 					{x = .5, y =.15, z =.7}
+	    },
+	    {
+					{x = 2, y =-.1, z =-2},
+					{x = -2, y =-.1, z =-2},
+					{x = -2, y =-.1, z =2},
+					{x = 2, y =-.1, z =2},
+					{x = 2, y =.15, z =-2},
+					{x = -2, y =.15, z =-2},
+					{x = -2, y =.15, z =2},
+					{x = 2, y =.15, z =2}
+	    },
+	    {
+					{x = .5, y =-.1, z =-1.3},
+					{x = -.5, y =-.1, z =-1.3},
+					{x = -.5, y =-.1, z =.7},
+					{x = .5, y =-.1, z =.7},
+					{x = .5, y =.15, z =-1.3},
+					{x = -.5, y =.15, z =-1.3},
+					{x = -.5, y =.15, z =.7},
+					{x = .5, y =.15, z =.7}
 	    }
 	},
 	unitCuboidDimensions = {
@@ -581,6 +613,26 @@ units = {
 					{x = .1, y = .1, z = .1},
 					{x = .1, y = .1, z = .1}, 
 					{x = .1, y = .1, z = .1}
+	    },
+	    {
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1},
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}
+	    },
+	    {
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1},
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}
 	    }
 	},
 	hitboxOffset = {
@@ -601,10 +653,13 @@ units = {
 		{x = 0, y = 0, z = 0},
 		{x = 0, y = 0, z = 0},
 		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
 	},
 	
-	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2, 2},
-	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1, 1},
+	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1, 1, 1, 1},
 	name = {
 		'War mech',
 		'Tank',
@@ -624,6 +679,8 @@ units = {
 		'Market',
 		'Lab',
 		'Point defense',
+		'Extractor',
+		'Refinery',
 	},
 	meshPath = {
 		'warMech.xml',
@@ -644,6 +701,8 @@ units = {
 		'market.xml',
 		'lab.xml',
 		'pointDefense.xml',
+		'extractor.xml',
+		'refinery.xml',
 	},
 	basePath = {
 		PATH .. vehiclePrefix .. 'WarMechs/',
@@ -659,11 +718,13 @@ units = {
 		PATH .. vehiclePrefix .. 'Carriers/',
 		PATH .. vehiclePrefix .. 'Submarines/',
 		PATH .. vehiclePrefix .. 'Submarines/',
-		PATH .. structurePrefix .. 'LandFactory/',
-		PATH .. structurePrefix .. 'NavalFactory/',
-		PATH .. structurePrefix .. 'Market/',
-		PATH .. structurePrefix .. 'Lab/',
-		PATH .. structurePrefix .. 'PointDefenses/'
+		PATH .. structurePrefix .. 'LandFactories/',
+		PATH .. structurePrefix .. 'NavalFactories/',
+		PATH .. structurePrefix .. 'Markets/',
+		PATH .. structurePrefix .. 'Labs/',
+		PATH .. structurePrefix .. 'PointDefenses/',
+		PATH .. structurePrefix .. 'Extractors/',
+		PATH .. structurePrefix .. 'Refineries/'
 	},
 	selectionSfx = {
 		PATH .. 'Sounds/Units/WarMechs/selection.ogg',
@@ -684,8 +745,12 @@ units = {
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
+		PATH .. 'Sounds/Units/Sample/selection.ogg',
+		PATH .. 'Sounds/Units/Sample/selection.ogg',
 	},
 	deathSfx = {
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',

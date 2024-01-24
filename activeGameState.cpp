@@ -355,7 +355,10 @@ namespace battleship{
 								if(canGarrison)
 									issueOrder(Order::TYPE::GARRISON, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
 							}
-							else if(gameObjHoveredOn && (controlPressed || !ownGameObj))
+							else if(gameObjHoveredOn && ownGameObj && ((Unit*)gameObjHoveredOn)->getUnitClass() == UnitClass::EXTRACTOR && !controlPressed){
+								issueOrder(Order::TYPE::SUPPLY, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn)}, shiftPressed);
+							}
+							else if(gameObjHoveredOn && (controlPressed || (!ownGameObj && gameObjHoveredOn->getType() == GameObject::Type::UNIT)))
 								issueOrder(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
 							else if(controlPressed && !gameObjHoveredOn){
                     			castRayToTerrain();

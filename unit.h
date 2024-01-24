@@ -35,7 +35,7 @@ namespace battleship{
 	class Engineer;
     
     struct Order {
-        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH};
+        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH, SUPPLY};
 			struct Target{
 				Unit *unit = nullptr;
 				vb01::Vector3 pos;
@@ -55,8 +55,26 @@ namespace battleship{
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CRUISER, CARRIER, MISSILE_SUBMARINE, STEALTH_SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
     enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
+    enum class UnitClass {
+		WAR_MECH,
+	   	TANK,
+	   	ARTILLERY,
+	   	ENGINEER,
+	   	TRANSPORT,
+	   	RESOURCE_ROVER,
+	   	CRUISER,
+	   	CARRIER,
+	   	MISSILE_SUBMARINE,
+	   	STEALTH_SUBMARINE,
+	   	LAND_FACTORY,
+	   	NAVAL_FACTORY,
+	   	MARKET,
+	   	LAB,
+	   	POINT_DEFENSE,
+	   	EXTRACTOR,
+	   	REFINERY
+	};
     
     class Unit : public GameObject{
     public:
@@ -166,6 +184,7 @@ namespace battleship{
         virtual void move(Order){}
         virtual void patrol(Order){}
         virtual void launch(Order);
+		virtual void supply(Order){}
 		float calculateRotation(vb01::Vector3, float, float);
 		void removeBar(vb01::Node*);
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);

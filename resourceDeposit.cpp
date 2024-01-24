@@ -3,7 +3,11 @@
 namespace battleship{
 	using namespace vb01;
 
-	ResourceDeposit::ResourceDeposit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::RESOURCE_DEPOSIT, id, player, pos, rot){
+	ResourceDeposit::ResourceDeposit(Player *player, int id, Vector3 pos, Quaternion rot, int ia) : 
+		GameObject(GameObject::Type::RESOURCE_DEPOSIT, id, player, pos, rot),
+		initAmmount(ia),
+		ammount(ia)
+	{
 		initProperties();
 		initModel();
 		initHitbox();

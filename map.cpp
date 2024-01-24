@@ -172,8 +172,9 @@ namespace battleship{
 
 				sol::table rotTable = npcObjTable["rot"];
 				Quaternion rot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
+				int initAmmount = SOL_LUA_VIEW[mapTable][playerInd][i + 1][resDepInd][j + 1]["initAmmount"];
 
-				player->addResourceDeposit(GameObjectFactory::createResourceDeposit(player, id, pos, rot));
+				player->addResourceDeposit(GameObjectFactory::createResourceDeposit(player, id, pos, rot, initAmmount));
 			}
 
 			//int spawnPointId = SOL_LUA_STATE[mapTable]["spawnPointInd"][i + 1][spawnPointId];
@@ -191,7 +192,8 @@ namespace battleship{
 				Quaternion rot = Quaternion(unitTable[rotInd]["w"], unitTable[rotInd]["x"], unitTable[rotInd]["x"], unitTable[rotInd]["x"]);
 
 				int id = unitTable["id"];
-				player->addUnit(GameObjectFactory::createUnit(player, id, pos, rot));
+				int buildStatus = unitTable["buildStatus"].get_or(0);
+				player->addUnit(GameObjectFactory::createUnit(player, id, pos, rot, buildStatus));
 			}
 		}
 	}

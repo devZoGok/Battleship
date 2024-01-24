@@ -33,7 +33,6 @@ namespace battleship{
 			void addOrder(Order);
 			void advance(float, MoveDir = MoveDir::FORW);
 			void addPathpoint(vb01::Vector3);
-			void preparePathpoints(Order&, vb01::Vector3);
 			void removePathpoint(int = 0);
 			void removeAllPathpoints();
 			void select();
@@ -41,6 +40,7 @@ namespace battleship{
 			std::vector<vb01::Vector3> pathPoints;
 
         	void navigate(float = 0.);
+			void preparePathpoints(Order&, vb01::Vector3, bool = false);
 			void alignToSurface();
 			void attack(Order);
 			void garrison(Order);
