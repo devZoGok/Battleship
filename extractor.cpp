@@ -11,7 +11,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 
-	Extractor::Extractor(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, ResourceDeposit *rd) : Structure(player, id, pos, rot, buildStatus){
+	Extractor::Extractor(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, ResourceDeposit *rd) : Structure(player, id, pos, rot, buildStatus), drawRate(10){
 		if(!rd){
 			vector<ResourceDeposit*> deposits;
 
@@ -56,11 +56,7 @@ namespace battleship{
 	}
 
 	void Extractor::draw(){
-		if(canDraw()){
-			deposit->decrementAmmount();
-			lastDrawTime = getTime();
-		}
+		deposit->decrementAmmount();
+		lastDrawTime = getTime();
 	}
-
-	bool Extractor::canDraw(){return vb01::getTime() - lastDrawTime > drawRate && deposit->getAmmount() > 0;}
 }

@@ -1,4 +1,5 @@
 #include "resourceRover.h"
+#include "resourceDeposit.h"
 #include "map.h"
 #include "player.h"
 #include "extractor.h"
@@ -43,7 +44,7 @@ namespace battleship{
 					refineries.push_back((Structure*)unit);
 			}
 
-			nearestExtractor = getClosestUnit(extractors);
+			nearestExtractor = (Extractor*)getClosestUnit(extractors);
 			nearestRefinery = getClosestUnit(refineries);
 
 			if(!nearestExtractor){
@@ -52,12 +53,16 @@ namespace battleship{
 			}
 
 			if(nearestExtractor && nearestExtractor->getPos().getDistanceFrom(pos) <= minDist){
-				if(canLoad()){
-					((Extractor*)nearestExtractor)->draw();
-					load++;
-					lastLoadTime = getTime();
+				ResourceDeposit *deposit = nearestExtractor->getDeposit();
+
+				if(canLoad() && deposit->getAmmount() > 0){
+					if(nearestExtractor->canDraw()){
+						nearestExtractor->draw();
+						load++;
+						lastLoadTime = getTime();
+					}
 				}
-				else if(load == capacity && nearestRefinery)
+				else if((deposit->getAmmount() == 0 || load == capacity) && nearestRefinery)
 					preparePathpoints(order, nearestRefinery->getPos(), true);
 			}
 			else if(nearestRefinery && nearestRefinery->getPos().getDistanceFrom(pos) <= minDist){
