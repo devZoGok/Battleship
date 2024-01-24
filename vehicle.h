@@ -8,20 +8,19 @@ namespace vb01{
 }
 
 namespace battleship{
-	class Garrisonable;
-
 	class Vehicle : public Unit{
 		public:
 			Vehicle(Player*, int, vb01::Vector3, vb01::Quaternion);
 			~Vehicle();
 			virtual void update();
         	void move(Order);
-			void exitGarrisonable();
+			void exitGarrisonable(vb01::Vector3);
 			inline Unit* getGarrisonable(){return garrisonable;}
+			inline int getGarrisonCategory(){return garrisonCategory;}
 		private:
 		   	Unit *garrisonable = nullptr;
 			bool pursuingTarget = false;
-			int patrolPointId = 0;
+			int patrolPointId = 0, garrisonCategory;
         	float speed, maxTurnAngle, anglePrecision;
 			vb01::Material *debugMat = nullptr;
 			std::vector<vb01::Node*> debugPathPoints;
@@ -34,7 +33,7 @@ namespace battleship{
 			void addOrder(Order);
 			void advance(float, MoveDir = MoveDir::FORW);
 			void addPathpoint(vb01::Vector3);
-			void preparePathpoints(vb01::Vector3);
+			void preparePathpoints(Order&, vb01::Vector3);
 			void removePathpoint(int = 0);
 			void removeAllPathpoints();
 			void select();

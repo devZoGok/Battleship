@@ -343,8 +343,18 @@ namespace battleship{
 							bool canSelect = canSelectHoveredOnGameObj();
 							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getTeam() == mainPlayer->getTeam());
 
-							if(gameObjHoveredOn && (gameObjHoveredOn->getType() == GameObject::Type::UNIT && ((Unit*)gameObjHoveredOn)->getNumGarrisonSlots() > 0 && ownGameObj))
-								issueOrder(Order::TYPE::GARRISON, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
+							if(gameObjHoveredOn && (gameObjHoveredOn->getType() == GameObject::Type::UNIT && ownGameObj)){
+								bool canGarrison = true;
+
+								for(int i = 0; i < mainPlayer->getNumSelectedUnits(); i++)
+									if(!((Unit*)gameObjHoveredOn)->canGarrison((Vehicle*)mainPlayer->getSelectedUnit(i))){
+										canGarrison = false;
+										break;
+									}
+
+								if(canGarrison)
+									issueOrder(Order::TYPE::GARRISON, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
+							}
 							else if(gameObjHoveredOn && (controlPressed || !ownGameObj))
 								issueOrder(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn, gameObjHoveredOn->getPos())}, shiftPressed);
 							else if(controlPressed && !gameObjHoveredOn){

@@ -29,6 +29,7 @@ namespace battleship{
 	class Unit;
 	class Vehicle;
 	class Factory;
+	class Cruiser;
 	class Transport;
 	class PointDefense;
 	class Engineer;
@@ -54,18 +55,21 @@ namespace battleship{
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CARRIER, SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
+    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CRUISER, CARRIER, SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
     enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
     
     class Unit : public GameObject{
     public:
 		struct GarrisonSlot{
 			Vehicle *vehicle = nullptr;
+			int category;
 			vb01::Node *background, *foreground;
 			vb01::Vector2 offset;
 
-			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), vehicle(v){}
+			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, int cat, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), category(cat), vehicle(v){}
 		};
+
+		enum class Armor {CAST, COMBINED, MECHANIC, SHELL, STEEL};
 
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
         virtual ~Unit();
@@ -78,9 +82,11 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		virtual void reinit();
+		bool canGarrison(Vehicle*);
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Transport* toTransport(){return (Transport*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}
+		inline Cruiser* toCruiser(){return (Cruiser*)this;}
 		inline PointDefense* toPointDefense(){return (PointDefense*)this;}
 		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
@@ -114,6 +120,7 @@ namespace battleship{
         s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight, range;
 		std::vector<GarrisonSlot> garrisonSlots;
+		std::vector<Armor> armorTypes;
 
 		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
@@ -135,6 +142,7 @@ namespace battleship{
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);
         void displayUnitStats(vb01::Node*, vb01::Node*, int, int, bool, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
 		inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
+		inline std::vector<Armor> getArmorTypes(){return armorTypes;}
     };
 }
 
