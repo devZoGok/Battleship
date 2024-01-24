@@ -39,7 +39,13 @@ units = {
 		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
-		{},
+		{
+			{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 80, maxRange = 50},
+		},
+		{
+			{type = WeaponClass.HITSCAN, rateOfFire = 300, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 500, maxRange = 100},
+			{type = WeaponClass.CRUISE_MISSILE, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 1, z = 0}, rot = {w = .707, x = -.707, y = 0, z = 0}}}
+		},
 		{
 			{type = WeaponClass.TORPEDO, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}, 
 			{type = WeaponClass.CRUISE_MISSILE, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}}
@@ -66,6 +72,7 @@ units = {
 		UnitClass.CRUISER,
 		UnitClass.CRUISER,
 		UnitClass.CARRIER,
+		UnitClass.CARRIER,
 		UnitClass.MISSILE_SUBMARINE,
 		UnitClass.STEALTH_SUBMARINE,
 		UnitClass.LAND_FACTORY,
@@ -85,6 +92,7 @@ units = {
 		UnitType.HOVER,
 		UnitType.HOVER,
 		UnitType.HOVER,
+		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
@@ -114,7 +122,6 @@ units = {
 		{ArmorType.CAST},
 		{ArmorType.CAST},
 		{ArmorType.STEEL, ArmorType.COMBINED},
-		{},
 		{},
 		{},
 		{},
@@ -679,6 +686,7 @@ units = {
 		'Cheap cruiser',
 		'Transport cruiser',
 		'Heavy carrier',
+		'Champion carrier',
 		'Missile submarine',
 		'Stealth submarine',
 		'Land factory',
@@ -702,6 +710,7 @@ units = {
 		'cheapCruiser.xml',
 		'transportCruiser.xml',
 		'heavyCarrier.xml',
+		'championCarrier.xml',
 		'missileSubmarine.xml',
 		'stealthSubmarine.xml',
 		'landFactory.xml',
@@ -724,6 +733,7 @@ units = {
 		PATH .. vehiclePrefix .. 'Cruisers/',
 		PATH .. vehiclePrefix .. 'Cruisers/',
 		PATH .. vehiclePrefix .. 'Cruisers/',
+		PATH .. vehiclePrefix .. 'Carriers/',
 		PATH .. vehiclePrefix .. 'Carriers/',
 		PATH .. vehiclePrefix .. 'Submarines/',
 		PATH .. vehiclePrefix .. 'Submarines/',
@@ -748,6 +758,7 @@ units = {
 		PATH .. 'Sounds/Units/Cruisers/selection.ogg',
 		PATH .. 'Sounds/Units/Cruisers/selection.ogg',
 		PATH .. 'Sounds/Units/Carriers/selection.ogg',
+		PATH .. 'Sounds/Units/Carriers/selection.ogg',
 		PATH .. 'Sounds/Units/Submarines/selection.ogg',
 		PATH .. 'Sounds/Units/Submarines/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
@@ -759,6 +770,7 @@ units = {
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 	},
 	deathSfx = {
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
