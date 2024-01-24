@@ -16,13 +16,21 @@ namespace battleship{
     Player::~Player() {}
 
     void Player::update() {
-		vector<Unit*> units = this->units;
+		vector<Unit*> units = this->units; 
+		for(Unit *u : units){
+			if(!u->isRemove())
+				u->update();
+			else
+				removeUnit(u);
+		}
 
-		for(Unit *u : units)
-			u->update();
-
-		for(Projectile *proj : projectiles)
-			proj->update();
+		vector<Projectile*> projectiles = this->projectiles; 
+		for(Projectile *proj : projectiles){
+			if(!proj->isRemove())
+				proj->update();
+			else
+				removeProjectile(proj);
+		}
 
 		for(ResourceDeposit *rd : resourceDeposits)
 			rd->update();

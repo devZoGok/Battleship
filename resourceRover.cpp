@@ -28,7 +28,7 @@ namespace battleship{
 	}
 
 	void ResourceRover::supply(Order order){
-		float minDist = .6 * Map::getSingleton()->getCellSize().x;
+		float minDist = .5 * Map::getSingleton()->getCellSize().x;
 
 		if(!pathPoints.empty())
 			navigate(minDist);
@@ -46,18 +46,24 @@ namespace battleship{
 			nearestExtractor = getClosestUnit(extractors);
 			nearestRefinery = getClosestUnit(refineries);
 
-			if(nearestExtractor->getPos().getDistanceFrom(pos) <= minDist){
+			if(!nearestExtractor){
+				removeOrder(0);
+				return;
+			}
+
+			if(nearestExtractor && nearestExtractor->getPos().getDistanceFrom(pos) <= minDist){
 				if(canLoad()){
 					((Extractor*)nearestExtractor)->draw();
 					load++;
 					lastLoadTime = getTime();
 				}
 				else if(load == capacity && nearestRefinery)
-					preparePathpoints(order, nearestRefinery->getPos());
+					preparePathpoints(order, nearestRefinery->getPos(), true);
 			}
-			else if(nearestRefinery->getPos().getDistanceFrom(pos) <= minDist){
+			else if(nearestRefinery && nearestRefinery->getPos().getDistanceFrom(pos) <= minDist){
 				if(canUnload()){
 					load--;
+					player->addRefineds(1);
 					lastLoadTime = getTime();
 				}
 				else if(load == 0 && nearestExtractor)
@@ -68,6 +74,10 @@ namespace battleship{
 
 	void ResourceRover::update(){
 		Vehicle::update();
+
+		vector<Unit*> units = player->getUnits();
+		nearestExtractor = (find(units.begin(), units.end(), nearestExtractor) != units.end() ? nearestExtractor : nullptr);
+		nearestRefinery = (find(units.begin(), units.end(), nearestRefinery) != units.end() ? nearestRefinery : nullptr);
 
 		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
 		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);

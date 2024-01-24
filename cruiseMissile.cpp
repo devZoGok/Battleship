@@ -52,9 +52,8 @@ namespace battleship{
 		int cellId = map->getCellId(pos, false);
 
 		if((pos + dirVec * rayLength).y <= map->getCells()[cellId].pos.y){
-			exploded = true;
 			Game::getSingleton()->explode(pos, explosionDamage, explosionRadius, explosionSfx);
-			player->removeProjectile(this);
+			remove = true;
 		}
 	}
 
@@ -74,9 +73,9 @@ namespace battleship{
 				break;
 		}
 
-		if(!exploded && flightStage == FlightStage::DESCENT){
+		if(!remove && flightStage == FlightStage::DESCENT){
 		   	checkSurfaceCollision();
-			if(exploded) return;
+			if(remove) return;
 		   	checkUnitCollision();
 		}
 	}

@@ -227,7 +227,7 @@ namespace battleship{
 		debugPathPoints.push_back(n);
 	}
 
-	void Vehicle::preparePathpoints(Order &order, Vector3 destPos){
+	void Vehicle::preparePathpoints(Order &order, Vector3 destPos, bool appendDestPos){
 		removeAllPathpoints();
 
 		Map *map = Map::getSingleton();
@@ -243,12 +243,14 @@ namespace battleship{
 		Pathfinder *pathfinder = Pathfinder::getSingleton();
 		int dest = map->getCellId(destPos);
 		vector<int> path = pathfinder->findPath(cells, source, dest, (int)type);
+		bool pathTruncated = false;
 
 		for(int i = 0; i < path.size(); i++){
 			if((ship && cells[path[i]].type != Map::Cell::WATER) || (order.type != Order::TYPE::GARRISON && type == UnitType::LAND && cells[path[i]].type != Map::Cell::LAND)){
 				path = vector<int>(path.begin(), path.begin() + i);
 				order.targets[0].unit = nullptr;
 				order.targets[0].pos = cells[path[i - 1]].pos;
+				pathTruncated = true;
 				break;
 			}
 			else if(order.type == Order::TYPE::GARRISON && type == UnitType::LAND && cells[path[i]].type != Map::Cell::LAND && path.size() - 1 != i)
@@ -257,6 +259,9 @@ namespace battleship{
 
 		for(int p : path)
 			addPathpoint(cells[p].pos);
+
+		if(appendDestPos && !pathTruncated)
+			addPathpoint(destPos);
 	}
 
 	void Vehicle::removePathpoint(int i){

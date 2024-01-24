@@ -46,6 +46,7 @@ namespace battleship{
         	inline int getId() {return id;}
 			inline Type getType(){return type;}
 			inline vb01::Node* getHitbox(){return hitbox;}
+			inline bool isRemove(){return remove;}
 		private:
 			int sortCorners(std::vector<vb01::Vector2>&, bool, bool);
 		protected:
@@ -67,7 +68,7 @@ namespace battleship{
 			vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
 			vb01::Vector2 screenPos;
 			vb01::Quaternion rot;
-			bool selectable = false, debugging = false;
+			bool selectable = false, debugging = false, remove = false;
 			float width, height, length;
 	};
 }

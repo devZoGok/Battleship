@@ -21,7 +21,6 @@ namespace battleship {
         virtual ~Projectile();
         virtual void update();
         virtual void debug();
-        inline bool isExploded() {return exploded;}
 	private:
 		void initProperties();
 		void initSound();
@@ -30,7 +29,6 @@ namespace battleship {
 		virtual void checkUnitCollision();
 		virtual void checkSurfaceCollision();
 
-        bool exploded = false;
         float speed, rayLength, explosionRadius, rotAngle;
         int directHitDamage, explosionDamage;
 		vb01::Vector3 initPos;
