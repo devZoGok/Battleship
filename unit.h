@@ -30,7 +30,6 @@ namespace battleship{
 	class Vehicle;
 	class Factory;
 	class Cruiser;
-	class Transport;
 	class PointDefense;
 	class Engineer;
     
@@ -129,7 +128,6 @@ namespace battleship{
 		virtual void reinit();
 		bool canGarrison(Vehicle*);
 		inline Engineer* toEngineer(){return (Engineer*)this;}
-		inline Transport* toTransport(){return (Transport*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}
 		inline Cruiser* toCruiser(){return (Cruiser*)this;}
 		inline PointDefense* toPointDefense(){return (PointDefense*)this;}
