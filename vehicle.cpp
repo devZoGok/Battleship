@@ -227,6 +227,7 @@ namespace battleship{
 		debugPathPoints.push_back(n);
 	}
 
+	//TODO allow ships to attack land targets and vice versa 
 	void Vehicle::preparePathpoints(Order &order, Vector3 destPos, bool appendDestPos){
 		removeAllPathpoints();
 
