@@ -1,244 +1,47 @@
+ProjectileClass = {CRUISE_MISSILE = 0, TORPEDO = 1}
+
 projectiles = {
-	numberOfTypesOfWeapons = 2,
-	g = 2.2,
-	speed = {
-	    {
-	        {10,10,10,10,10,10,10,10,10,10,10}
-	    },
-	    {
-	        {10,10,10,10,10,10,10,10,10,10,10}
-	    },
-	    {
-	        {10, 10, 10, 10}
-	    },
-	    {
-	        {10, 10, 10, 10}
-	    },
-	    {
-	        {5,5}
-	    },
-	    {
-	        {7,7,7,7,7}
-	    },
-	    {},
-	    {},
-	    {.05},
-	    {
-	        {.1, .1},
-	        {.1, .1}
-	    }
+	projectileClass = {
+		ProjectileClass.CRUISE_MISSILE,
+		ProjectileClass.TORPEDO,
 	},
-	length = {
-	    {
-	        {1,1,1,1,1,1,1,1,1,1,1,1,1}
-	    },
-	    {
-	        {1,1,1,1,1,1,1,1,1,1,1,1,1}
-	    },
-	    {
-	        {1,1,1,1}
-	    },
-	    {
-	        {1,1,1,1}
-	    },
-	    {
-	        {1,1}
-	    },
-	    {
-	        {1,1,1,1,1}
-	    },
-	    {},
-	    {},
-	    {
-	        {.5}
-	    },
-	    {
-	        {1,1},
-	        {1,1}
-	    },
-	    {}
+	speed = {.5, .06},
+	rotAngle = {.1, 0},
+	explosion = {{damage = 100, radius = 20}, {damage = 20, radius = 3}},
+	rayLength = {1.25, .75},
+	directHitDamage = {450, 300},
+	name = {
+	    "Cruise missile",
+	    "Torpedo"
 	},
-	scale = {
-	    {
-	        {1, 1, 1, .5, .5, .5, .5, .5, .5, .5, .5, .5, .5}
-	    },
-	    {
-	        {1, 1, 1, .23, .23, .23, .23, .23, .23, .23, .23, .23, .23}
-	    },
-	    {
-	        {.45, .45, .45, .45}
-	    },
-	    {
-	        {.5, .5, .5, .5}
-	    },
-	    {
-	        {.95, .95}
-	    },
-	    {
-	        {.6, .6, .6, .6, .6}
-	    }
-	},
-	pos = {
-	    {
-	        {
-				{x = 0, y = 0, z = 1.05}, 
-				{x = 0, y = 0, z = 1.05}, 
-				{x = 0, y = 0, z = 1.05},
-				{x = 0, y = 0, z = 1.5}, 
-				{x = 0, y = 0, z = 2.5}, 
-				{x = 0, y = 0, z = 2.5}, 
-				{x = 0, y = 0, z = 2.5}, 
-				{x = 0, y = 0, z = 2.5},
-				{x = 0, y = 0, z = 2.5}, 
-				{x = 0, y = 0, z = 2.5}, 
-				{x = 0, y = 0, z = 2.5}, 
-				{x = 0, y = 0, z = 2.5}, 
-				{x = 0, y = 0, z = 2.5}
-	        }
-	    },
-	    {
-	        {
-				{x = 0, y = 0, z = 0.79254}, 
-				{x = 0, y = 0, z = 0.79254}, 
-				{x = 0, y = 0, z = 0.79254},
-				{x = 0, y = 0, z = 0.17723}, 
-				{x = 0, y = 0, z = 0.17723}, 
-				{x = 0, y = 0, z = 0.17723},
-				{x = 0, y = 0, z = 0.17723}, 
-				{x = 0, y = 0, z = 0.17723}, 
-				{x = 0, y = 0, z = 0.17723},
-				{x = 0, y = 0, z = 0.17723}, 
-				{x = 0, y = 0, z = 0.17723}, 
-				{x = 0, y = 0, z = 0.17723},
-				{x = 0, y = 0, z = 0.17723}
-	        }
-	    },
-	    {
-	        {
-				{x = 0, y = 0, z = -0.36178}, 
-				{x = 0, y = 0, z = -0.36178}, 
-				{x = 0, y = 0, z = -0.36178}, 
-				{x = 0, y = 0, z = -0.36178}
-	        },
-	        {x = 0, y = -3, z = 0}
-	    },
-	    {
-	        {
-				{x = 0, y = 0, z = -0.30074}, 
-				{x = 0, y = 0, z = -0.30074}, 
-				{x = 0, y = 0, z = -0.30074}, 
-				{x = 0, y = 0, z = -0.30074}
-	        },
-	        {x = 0, y = -2, z = 0}
-	    },
-	    {
-	        {
-				{x = 0, y = 0, z = -0.62118},
-				{x = 0, y = 0, z = -0.62118}
-			},
-	        {
-				{x = 0.24482, y = 1.14985, z = 1.32775}, 
-				{x = 0.24482, y = 1.14985, z = 1.62698}, 
-				{x = 0.24482, y = 1.14985, z = 1.88017},
-				{x = -0.24482, y = 1.14985, z = 1.32775}, 
-				{x = -0.24482, y = 1.14985, z = 1.62698}, 
-				{x = -0.24482, y = 1.14985, z = 1.88017}
-	        }
-	    },
-	    {
-	        {
-				{x = 0, y = 0, z = -0.59117}, 
-				{x = 0, y = 0, z = -0.59117}, 
-				{x = 0, y = 0, z = -0.59117}, 
-				{x = 0, y = 0, z = -0.59117}, 
-				{x = 0, y = 0, z = -0.59117}
-	        },
-	        {{x = 0.17192, y = 0.57858, z = 0.64471}, {x = -0.17192, y = 0.57858, z = 0.64471}}
-	    },
-	    {},
-	    {},
-	    {
-	        {x = 0, y =-.3, z =-1.5}
-	    },
-	    {
-	        {
-				{x = -.25, y =0, z =0},
-				{x = .25, y =0, z =0}
-			},
-	        {
-				{x = -.25, y =0, z =0},
-				{x = .25, y =0, z =0}
-			}
-	    },
-	    {}
-	},
-	damage = {
-	    {
-	        {50, 50, 50, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
-	    },
-	    {
-	        {50, 50, 50, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
-	    },
-	    {
-	        {50,50,50,50},
-	        {50}
-	    },
-	    {
-	        {50,50,50,50},
-	        {50}
-	    },
-	    {
-	        {10,10},
-	        {}
-	    },
-	    {
-	        {10,10,10,10,10},
-	        {}
-	    },
-	    {},
-	    {},
-	    {
-	        {}
-	    },
-	    {
-	        {50,50},
-	        {50,50}
-	    },
-	    {}
-	},
-	projectileName = {
-	    {"shell"},
-	    {"shell"},
-	    {"shell"},
-	    {"shell"},
-	    {"shell","guidedMissile"},
-	    {"shell","guidedMissile"},
-	    {""},
-	    {""},
-	    {"torpedo"},
-	    {"missile","missile"},
+	basePath = {
+	    PATH .. "Models/GameObjects/Projectiles/Missiles/",
+	    PATH .. "Models/GameObjects/Projectiles/Torpedos/",
 	},
 	meshPath = {
-	    {PATH .. "Models/GameObjects/Shell/shell.x"},
-	    {PATH .. "Models/GameObjects/Shell/shell.x"},
-	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Depth charge/depthCharge.x"},
-	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Depth charge/depthCharge.x"},
-	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Guided missile/guidedMissile.x"},
-	    {PATH .. "Models/GameObjects/Shell/shell.x", PATH .. "Models/GameObjects/Guided missile/guidedMissile.x"},
-	    {},
-	    {},
-	    {PATH .. "Models/GameObjects/Torpedo/torpedo.x"},
-	    {PATH .. "Models/GameObjects/Jets/aam.x", PATH .. "Models/GameObjects/Jets/awm.x"}
+	    "cruiseMissile.xml",
+	    "torpedo.xml",
 	},
-	diffuseMapTextPath = {
-	    {},
-	    {},
-	    {},
-	    {},
-	    {},
-	    {},
-	    {},
-	    {},
-    	{}
+	unitCornerPoints = {
+		{
+			{x = .592, y = -1.3475, z = -.2755},
+			{x = -.592, y = -1.3475, z = -.2755},
+			{x = -.592, y = -1.3475, z = .2755},
+			{x = .592, y = -1.3475, z = .2755},
+			{x = .592, y = 1.3475, z = -.2755},
+			{x = -.592, y = 1.3475, z = -.2755},
+			{x = -.592, y = 1.3475, z = .2755},
+			{x = .592, y = 1.3475, z = .2755}
+		},
+		{
+			{x = .1, y = -.796, z = -.1},
+			{x = -.1, y = -.796, z = -.1},
+			{x = -.1, y = -.796, z = .1},
+			{x = .1, y = -.796, z = .1},
+			{x = .1, y = .796, z = -.1},
+			{x = -.1, y = .796, z = -.1},
+			{x = -.1, y = .796, z = .1},
+			{x = .1, y = .796, z = .1}
+		}
 	}
 }

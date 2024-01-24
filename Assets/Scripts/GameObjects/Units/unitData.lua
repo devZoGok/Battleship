@@ -1,4 +1,5 @@
 --TYPE = {ATTACK = 0, BUILD = 1, MOVE = 2, GARRISON = 3, EJECT = 4, PATROL = 5, LAUNCH = 6};
+WeaponClass = {HITSCAN = 0, SHELL = 1, TORPEDO = 2, CRUISE_MISSILE = 3}
 UnitClass = {
 	WAR_MECH = 0,
 	TANK = 1,
@@ -8,12 +9,13 @@ UnitClass = {
 	CARGO_SHIP = 5,
 	CRUISER = 6,
 	CARRIER = 7,
-	SUBMARINE = 8,
-	LAND_FACTORY = 9,
-	NAVAL_FACTORY = 10,
-	MARKET = 11,
-	LAB = 12,
-	POINT_DEFENSE = 13
+	MISSILE_SUBMARINE = 8,
+	STEALTH_SUBMARINE = 9,
+	LAND_FACTORY = 10,
+	NAVAL_FACTORY = 11,
+	MARKET = 12,
+	LAB = 13,
+	POINT_DEFENSE = 14
 }
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
 ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
@@ -23,6 +25,29 @@ vehiclePrefix = modelPrefix .. "Units/Vehicles/"
 structurePrefix = modelPrefix .. "Units/Structures/"
 
 units = {
+	weapons = {
+		{{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 3}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
+		{},
+		{},
+		{},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		{},
+		{
+			{type = WeaponClass.TORPEDO, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}, 
+			{type = WeaponClass.CRUISE_MISSILE, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}}
+		},
+		{{type = WeaponClass.TORPEDO, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}},
+		{},
+		{},
+		{},
+		{},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
+	},
 	unitClass = {
 		UnitClass.WAR_MECH,
 		UnitClass.TANK,
@@ -35,7 +60,8 @@ units = {
 		UnitClass.CRUISER,
 		UnitClass.CRUISER,
 		UnitClass.CARRIER,
-		UnitClass.SUBMARINE,
+		UnitClass.MISSILE_SUBMARINE,
+		UnitClass.STEALTH_SUBMARINE,
 		UnitClass.LAND_FACTORY,
 		UnitClass.NAVAL_FACTORY,
 		UnitClass.MARKET,
@@ -55,6 +81,7 @@ units = {
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
+		UnitType.UNDERWATER,
 		UnitType.UNDERWATER,
 		UnitType.LAND,
 		UnitType.LAND,
@@ -80,18 +107,16 @@ units = {
 		{},
 		{},
 		{},
+		{},
 		{}
 	},
 	
 	isVehicle = {
-		true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false
+		true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false
 	},
 	
-	health = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
-	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
-	range = {15, 20, 45, 15, 14, 14, 14, 14, 14, 14, 13, 13, 12, 12, 15, 0, 40},
-	damage = {15, 120, 250, 15, 14, 14, 13, 13, 12, 12, 15, 100, 100},
-	rateOfFire = {50, 2000, 5000, 100, 100, 100, 100, 100, 100, 100, 0, 0, 100},
+	health = {500, 500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
+	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	garrisonCapacity = {
 		{}, 
 		{}, 
@@ -101,6 +126,12 @@ units = {
 		{}, 
 		{},
 		{2, 2, 2},
+		{}, 
+		{}, 
+		{}, 
+		{}, 
+		{}, 
+		{}, 
 		{}, 
 		{}, 
 		{}, 
@@ -268,6 +299,16 @@ units = {
 					{x = -.6, y =.3, z =-1.3},
 					{x = -.6, y =.3, z =.8},
 					{x = .6, y =.3, z =.8}
+	    },
+	    {
+					{x = .5, y =-.1, z =-1.3},
+					{x = -.5, y =-.1, z =-1.3},
+					{x = -.5, y =-.1, z =.7},
+					{x = .5, y =-.1, z =.7},
+					{x = .5, y =.15, z =-1.3},
+					{x = -.5, y =.15, z =-1.3},
+					{x = -.5, y =.15, z =.7},
+					{x = .5, y =.15, z =.7}
 	    },
 	    {
 					{x = .5, y =-.1, z =-1.3},
@@ -530,11 +571,40 @@ units = {
 					{x = .1, y = .1, z = .1},
 					{x = .1, y = .1, z = .1}, 
 					{x = .1, y = .1, z = .1}
+	    },
+	    {
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1},
+					{x = .1, y = .1, z = .1}, 
+					{x = .1, y = .1, z = .1}
 	    }
 	},
+	hitboxOffset = {
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
+	},
 	
-	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2},
-	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1},
+	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2, 2},
+	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1, 1},
 	name = {
 		'War mech',
 		'Tank',
@@ -547,7 +617,8 @@ units = {
 		'Cheap cruiser',
 		'Transport cruiser',
 		'Heavy carrier',
-		'Submarine',
+		'Missile submarine',
+		'Stealth submarine',
 		'Land factory',
 		'Naval factory',
 		'Market',
@@ -566,7 +637,8 @@ units = {
 		'cheapCruiser.xml',
 		'transportCruiser.xml',
 		'heavyCarrier.xml',
-		'submarine.xml',
+		'missileSubmarine.xml',
+		'stealthSubmarine.xml',
 		'landFactory.xml',
 		'navalFactory.xml',
 		'market.xml',
@@ -585,6 +657,7 @@ units = {
 		PATH .. vehiclePrefix .. 'Cruisers/',
 		PATH .. vehiclePrefix .. 'Cruisers/',
 		PATH .. vehiclePrefix .. 'Carriers/',
+		PATH .. vehiclePrefix .. 'Submarines/',
 		PATH .. vehiclePrefix .. 'Submarines/',
 		PATH .. structurePrefix .. 'LandFactory/',
 		PATH .. structurePrefix .. 'NavalFactory/',
@@ -605,32 +678,15 @@ units = {
 		PATH .. 'Sounds/Units/Cruisers/selection.ogg',
 		PATH .. 'Sounds/Units/Carriers/selection.ogg',
 		PATH .. 'Sounds/Units/Submarines/selection.ogg',
+		PATH .. 'Sounds/Units/Submarines/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
-	},
-	fireSfx = {
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/Tanks/attack.ogg',
-		PATH .. 'Sounds/Units/Tanks/attack.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/Cruisers/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-		PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 	},
 	deathSfx = {
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',

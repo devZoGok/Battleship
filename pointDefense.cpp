@@ -11,7 +11,7 @@ namespace battleship{
 		Unit *targUnit = order.targets[0].unit;
 		Vector3 targDir = (targUnit ? targUnit->getPos() : order.targets[0].pos) - pos;
 
-		if(targDir.getLength() > range){
+		if(targDir.getLength() > weapons[0]->getMaxRange()){
 			removeOrder(0);
 			return;
 		}
@@ -20,8 +20,8 @@ namespace battleship{
 		
 		if(angleToTarg > .05)
 			rotateTurret(calculateRotation(targDir.norm(), angleToTarg, .1));
-		else if(canFire())
-			fire();
+		else
+			weapons[0]->fire(order);
 
 		Unit::attack(order);
 	}

@@ -46,7 +46,7 @@ namespace battleship{
 	}
 
 	void Vehicle::addOrder(Order order){
-		if(order.type != Order::TYPE::EJECT){
+		if(!(order.type == Order::TYPE::EJECT || order.type == Order::TYPE::LAUNCH)){
 			Order::Target targ = order.targets[0];
 			Vector3 targPos = (targ.unit ? targ.unit->getPos() : targ.pos);
 			preparePathpoints(order, targPos);
@@ -290,7 +290,8 @@ namespace battleship{
 		Order::Target target = order.targets[0];
 		Vector3 targVec = (target.unit ? target.unit->getPos() : target.pos) - pos;
 		float distToTarg = targVec.getLength();
-		float minDist = range;
+		Weapon *weapon = weapons[0];
+		float minDist = weapon->getMaxRange();
 
 		if(distToTarg > minDist)
 			navigateToTarget(.5 *  Map::getSingleton()->getCellSize().x);
@@ -299,9 +300,9 @@ namespace battleship{
 
 		float angleToTarg = targVec.norm().getAngleBetween(dirVec);
 
-		if(distToTarg <= range){
-			if(angleToTarg <= anglePrecision && canFire())
-				fire();
+		if(distToTarg <= weapon->getMaxRange()){
+			if(angleToTarg <= anglePrecision)
+				weapon->fire(order);
 			else if(angleToTarg > anglePrecision)
 				turn(calculateRotation(targVec.norm(), angleToTarg, maxTurnAngle));
 		}

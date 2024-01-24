@@ -55,11 +55,39 @@ namespace battleship{
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CRUISER, CARRIER, SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
+    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CRUISER, CARRIER, MISSILE_SUBMARINE, STEALTH_SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
     enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
     
     class Unit : public GameObject{
     public:
+		class Weapon{
+			public:
+				enum class Type{HITSCAN, SHELL, TORPEDO, CRUISE_MISSILE};
+
+				Weapon(Unit*, sol::table);
+				~Weapon();
+				virtual void fire(Order);
+				inline Type getType(){return type;}
+				inline int getProjectileId(){return projId;}
+				inline int getRateOfFire(){return rateOfFire;}
+				inline int getDamage(){return damage;}
+				inline int getMinRange(){return minRange;}
+				inline int getMaxRange(){return maxRange;}
+				inline Unit* getUnit(){return unit;}
+			private:
+				Type type;
+				int projId = -1, rateOfFire, damage = 0;
+				float minRange = 0, maxRange;
+				vb01::Vector3 projPos;
+				vb01::Quaternion projRot;
+				vb01::s64 lastFireTime = 0;
+				Unit *unit = nullptr;
+				sf::SoundBuffer *fireSfxBuffer;
+				sf::Sound *fireSfx = nullptr;
+
+				inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
+		};
+
 		struct GarrisonSlot{
 			Vehicle *vehicle = nullptr;
 			int category;
@@ -74,7 +102,6 @@ namespace battleship{
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
         virtual ~Unit();
         virtual void update();
-        virtual void blowUp();
         virtual void halt();
 		void updateGarrison(Vehicle*, bool);
         virtual void select();
@@ -90,7 +117,6 @@ namespace battleship{
 		inline PointDefense* toPointDefense(){return (PointDefense*)this;}
 		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
-        inline vb01::Vector3* getPosPtr() {return &pos;}
         inline float getLineOfSight() {return lineOfSight;}
         inline vb01::Model* getNode() {return model;}
         inline UnitType getType() {return type;}
@@ -98,12 +124,17 @@ namespace battleship{
         inline void takeDamage(int damage) {health -= damage;}
         inline int getPlayerId() {return playerId;}
 		inline int getHealth(){return health;}
+		inline int getDeathHp(){return DEATH_HP;}
 		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
+		inline Order getOrder(int i){return orders[i];}
+		inline int getNumOrders(){return orders.size();}
     private:
 		void renderOrderLine(bool);
         void updateScreenCoordinates();
 		void init();
+		void initWeapons();
+		void destroyWeapons();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         const int orderVecDispLength = 2000, DEATH_HP = 0;
@@ -114,13 +145,12 @@ namespace battleship{
         UnitClass unitClass;
         UnitType type;
         std::vector<Order> orders;
-		sf::SoundBuffer *fireSfxBuffer;
-		sf::Sound *fireSfx = nullptr;
-        int health, damage, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
+        int health, maxHealth, cost, id, playerId, lenHpBar = 200;
         s64 orderLineDispTime = 0, lastFireTime = 0;
-        float lineOfSight, range;
+        float lineOfSight;
 		std::vector<GarrisonSlot> garrisonSlots;
 		std::vector<Armor> armorTypes;
+		std::vector<Weapon*> weapons;
 
 		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
@@ -135,13 +165,11 @@ namespace battleship{
         virtual void build(Order){}
         virtual void move(Order){}
         virtual void patrol(Order){}
-        virtual void launch(Order){}
+        virtual void launch(Order);
 		float calculateRotation(vb01::Vector3, float, float);
-		virtual void fire();
 		void removeBar(vb01::Node*);
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);
         void displayUnitStats(vb01::Node*, vb01::Node*, int, int, bool, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
-		inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
 		inline std::vector<Armor> getArmorTypes(){return armorTypes;}
     };
 }

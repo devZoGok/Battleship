@@ -1,10 +1,13 @@
 #include "gameObject.h"
 #include "gameManager.h"
 #include "defConfigs.h"
+#include "unit.h"
+#include "player.h"
 
 #include <solUtil.h>
 
 #include <material.h>
+#include <box.h>
 
 #include <SFML/Audio.hpp>
 
@@ -32,6 +35,27 @@ namespace battleship{
 		model->setOrientation(rotQuat);
 		rot = rotQuat;
     }
+
+	//TODO remove neccessity to create a material for an invisible mesh
+	void GameObject::initHitbox(){
+		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
+		sol::table offsetPosTable = SOL_LUA_STATE["hitboxOffset"][id + 1];
+
+		Box *box = new Box(Vector3(width, height, length));
+		box->setMaterial(new Material(Root::getSingleton()->getLibPath() + "texture"));
+		box->setWireframe(false);
+
+		hitbox = new Node(Vector3(offsetPosTable["x"], offsetPosTable["y"], offsetPosTable["z"]));
+		hitbox->attachMesh(box);
+		hitbox->setVisible(false);
+		model->attachChild(hitbox);
+	}
+
+	void GameObject::destroyHitbox(){
+		hitbox->dettachMesh(0);
+		model->dettachChild(hitbox);
+		delete hitbox;
+	}
 
 	void GameObject::initProperties(){
 		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
@@ -80,13 +104,11 @@ namespace battleship{
 		root->getRootNode()->attachChild(model);
 	}
 
+	//TODO implement death SFX destruction 
 	void GameObject::destroySound(){
 	}
 
-	sf::Sound* GameObject::prepareSfx(sf::SoundBuffer *buffer, string key){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-        string sfxPath = SOL_LUA_STATE[key][id + 1];
-
+	sf::Sound* GameObject::prepareSfx(sf::SoundBuffer *buffer, string sfxPath){
 		sf::Sound *sfx = nullptr;
 
         if(buffer->loadFromFile(sfxPath.c_str())){
@@ -99,7 +121,8 @@ namespace battleship{
 
 	void GameObject::initSound(){
 		deathSfxBuffer = new sf::SoundBuffer();
-		deathSfx = prepareSfx(deathSfxBuffer, "deathSfx");
+		string sfxPath = generateView()[getGameObjTableName()]["deathSfx"][id + 1];
+		deathSfx = prepareSfx(deathSfxBuffer, sfxPath);
 	}
 
 	string GameObject::getGameObjTableName(){
@@ -144,5 +167,20 @@ namespace battleship{
 		float sizeX = cornersOnScreen[rightMostPointId].x - cornersOnScreen[leftMostPointId].x;
 		float sizeY = cornersOnScreen[bottomMostPointId].y - cornersOnScreen[topMostPointId].y;
 		return Vector2(sizeX, sizeY);
+	}
+
+	void GameObject::updateGameStats(Unit *targetUnit){
+		if(targetUnit->getHealth() <= targetUnit->getDeathHp()){
+			Player *targUnitPlayer = targetUnit->getPlayer();
+
+			if(targetUnit->isVehicle()){
+				player->incVehiclesDestroyed();
+				targUnitPlayer->incVehiclesLost();
+			}
+			else{
+				player->incStructuresDestroyed();
+				targUnitPlayer->incStructuresLost();
+			}
+		}
 	}
 }

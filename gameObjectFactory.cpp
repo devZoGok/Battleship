@@ -6,6 +6,7 @@
 #include "projectile.h"
 #include "resourceDeposit.h"
 #include "pointDefense.h"
+#include "cruiseMissile.h"
 #include "defConfigs.h"
 
 #include <solUtil.h>
@@ -39,8 +40,20 @@ namespace battleship{
 		}
 	}
 
-	Projectile* GameObjectFactory::createProjectile(Unit *unti, int id, Vector3 pos, Quaternion rot){
-		return nullptr;
+	Projectile* GameObjectFactory::createProjectile(Unit *unit, int id, Vector3 pos, Quaternion rot){
+		sol::state_view SOL_LUA_STATE = generateView();
+		int projectileClass = SOL_LUA_STATE["projectiles"]["projectileClass"][id + 1];
+
+		switch((ProjectileClass)projectileClass){
+			case ProjectileClass::CRUISE_MISSILE:
+			{
+				Order::Target target = unit->getOrder(0).targets[0];
+				Vector3 targetPos = (target.unit ? target.unit->getPos() : target.pos);
+				return new CruiseMissile(unit, targetPos, pos, rot);
+			}
+			default:
+				return new Projectile(unit, id, pos, rot);
+		}
 	}
 	
 	ResourceDeposit* GameObjectFactory::createResourceDeposit(Player *player, int id, Vector3 pos, Quaternion rot){

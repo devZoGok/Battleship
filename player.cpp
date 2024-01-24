@@ -21,6 +21,9 @@ namespace battleship{
 		for(Unit *u : units)
 			u->update();
 
+		for(Projectile *proj : projectiles)
+			proj->update();
+
 		for(ResourceDeposit *rd : resourceDeposits)
 			rd->update();
     }
@@ -117,6 +120,19 @@ namespace battleship{
 	void Player::removeResourceDeposit(int id){
 		delete resourceDeposits[id];
 		resourceDeposits.erase(resourceDeposits.begin() + id);
+	}
+
+	void Player::removeProjectile(Projectile *proj){
+		for(int i = 0; i < projectiles.size(); i++)
+			if(proj == projectiles[i]){
+				removeProjectile(i);
+				break;
+			}
+	}
+
+	void Player::removeProjectile(int id){
+		delete projectiles[id];
+		projectiles.erase(projectiles.begin() + id);
 	}
 
 	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
