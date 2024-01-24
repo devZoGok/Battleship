@@ -40,7 +40,7 @@ units = {
 		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
 		{
-			{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 80, maxRange = 50},
+			{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 80, maxRange = 100},
 		},
 		{
 			{type = WeaponClass.HITSCAN, rateOfFire = 300, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 500, maxRange = 100},
@@ -55,7 +55,7 @@ units = {
 		{},
 		{},
 		{},
-		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 50}},
 		{},
 		{}
 	},
