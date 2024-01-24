@@ -23,7 +23,7 @@ set(CONSOLE console.cpp abstractCommand.cpp addUnitCommand.cpp addResourceComman
 set(CORE gameManager.cpp game.cpp defConfigs.cpp ${CONSOLE} ${CONTROLLERS})
 set(PROJECTILES projectile.cpp cruiseMissile.cpp)
 set(FX fx.cpp)
-set(VEHICLES vehicle.cpp engineer.cpp transport.cpp resourceRover.cpp)
+set(VEHICLES vehicle.cpp engineer.cpp resourceRover.cpp)
 set(STRUCTURES structure.cpp factory.cpp pointDefense.cpp extractor.cpp)
 set(UNITS gameObjectFactory.cpp unit.cpp ${STRUCTURES} ${VEHICLES})
 set(CONTENT player.cpp pathfinder.cpp map.cpp gameObject.cpp gameObjectFrame.h resourceDeposit.cpp ${UNITS} ${PROJECTILES} ${FX})

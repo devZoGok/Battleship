@@ -12,7 +12,6 @@
 #include "defConfigs.h"
 #include "player.h"
 #include "factory.h"
-#include "transport.h"
 #include "engineer.h"
 #include "pointDefense.h"
 #include "resourceDeposit.h"
@@ -58,7 +57,6 @@ namespace battleship{
 			"getUnitClass", &Unit::getUnitClass,
 			"toEngineer", &Unit::toEngineer,
 			"toPointDefense", &Unit::toPointDefense,
-			"toTransport", &Unit::toTransport,
 			"toFactory", &Unit::toFactory
 		);
 

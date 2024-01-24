@@ -32,7 +32,8 @@ units = {
 		{{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
 		{},
-		{},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 20}},
+		{{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 100, maxRange = 25}},
 		{},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
 		{{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
@@ -58,6 +59,7 @@ units = {
 		UnitClass.ARTILLERY,
 		UnitClass.ENGINEER,
 		UnitClass.TRANSPORT,
+		UnitClass.TRANSPORT,
 		UnitClass.RESOURCE_ROVER,
 		UnitClass.CRUISER,
 		UnitClass.CRUISER,
@@ -82,6 +84,7 @@ units = {
 		UnitType.LAND,
 		UnitType.HOVER,
 		UnitType.HOVER,
+		UnitType.HOVER,
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
 		UnitType.SEA_LEVEL,
@@ -103,7 +106,8 @@ units = {
 		{ArmorType.STEEL},
 		{ArmorType.MECHANIC},
 		{ArmorType.MECHANIC},
-		{ArmorType.CAST},
+		{},
+		{},
 		{ArmorType.MECHANIC},
 		{ArmorType.CAST},
 		{ArmorType.STEEL},
@@ -122,17 +126,18 @@ units = {
 	},
 	
 	isVehicle = {
-		true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false
+		true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false
 	},
 	
-	health = {500, 500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 200, 600},
-	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
+	health = {500, 500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 200, 600},
+	cost = {500, 600, 200, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500},
 	garrisonCapacity = {
 		{}, 
 		{}, 
 		{}, 
 		{}, 
-		{}, 
+		{2, 2, 2}, 
+		{2, 2, 2}, 
 		{}, 
 		{},
 		{2, 2, 2},
@@ -191,16 +196,6 @@ units = {
 					{x = -.5, y = 3, z = -7.05}, 
 					{x = -.5, y = 3, z = 6.4}, 
 					{x = .5, y = 3, z = 6.4}
-	    },
-	    {
-					{x = .5, y = -.5, z = -3.4}, 
-					{x = -.5, y = -.5, z = -3.4}, 
-					{x = -.5, y = -.5, z = 3.4},
-					{x = .5, y = -.4, z = 3.4}, 
-					{x = .5, y = 2.1, z = -3.4}, 
-					{x = -.5, y = 2, z = -3.4},
-					{x = -.5, y = 2, z = 3.4}, 
-					{x = .5, y = 2, z = 3.4}
 	    },
 	    {
 					{x = 1, y = -.25, z = -1}, 
@@ -535,6 +530,16 @@ units = {
 					{x = 1, y = 1, z = 1}
 	    },
 	    {
+					{x = 1, y = 1, z = 1}, 
+					{x = 1, y = 1, z = 1}, 
+					{x = 1, y = 1, z = 1}, 
+					{x = 1, y = 1, z = 1}, 
+					{x = 1, y = 1, z = 1}, 
+					{x = 1, y = 1, z = 1}, 
+					{x = 1, y = 1, z = 1}, 
+					{x = 1, y = 1, z = 1}
+	    },
+	    {
 					{x = .1, y = .1, z = .1}, 
 					{x = .1, y = .1, z = .1}, 
 					{x = .1, y = .1, z = .1}, 
@@ -656,16 +661,18 @@ units = {
 		{x = 0, y = 0, z = 0},
 		{x = 0, y = 0, z = 0},
 		{x = 0, y = 0, z = 0},
+		{x = 0, y = 0, z = 0},
 	},
 	
-	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1, 1, 1, 1},
+	unitAxisLength = {8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 6, 5, 5, 8, 8, 7, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+	lineOfSight = {5, 8, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 6, 6, 3, 3, 8, 1, 1, 1, 1, 1, 1, 1},
 	name = {
 		'War mech',
 		'Tank',
 		'Artillery',
 		'Engineer',
-		'Transport',
+		'Scout transport',
+		'Hover transport',
 		'Cargo ship',
 		'Tactical cruiser',
 		'Defensive cruiser',
@@ -687,7 +694,8 @@ units = {
 		'tank.xml',
 		'artillery.xml',
 		'engineer.xml',
-		'transport.xml',
+		'scoutTransport.xml',
+		'hoverTransport.xml',
 		'cargoship.xml',
 		'tacticalCruiser.xml',
 		'defensiveCruiser.xml',
@@ -709,6 +717,7 @@ units = {
 		PATH .. vehiclePrefix .. 'Tanks/',
 		PATH .. vehiclePrefix .. 'Artillery/',
 		PATH .. vehiclePrefix .. 'Engineers/',
+		PATH .. vehiclePrefix .. 'Transports/',
 		PATH .. vehiclePrefix .. 'Transports/',
 		PATH .. vehiclePrefix .. 'Cargoships/',
 		PATH .. vehiclePrefix .. 'Cruisers/',
@@ -732,6 +741,7 @@ units = {
 		PATH .. 'Sounds/Units/Tanks/selection.ogg',
 		PATH .. 'Sounds/Units/Engineers/selection.ogg',
 		PATH .. 'Sounds/Units/Transports/selection.ogg',
+		PATH .. 'Sounds/Units/Transports/selection.ogg',
 		PATH .. 'Sounds/Units/Cargoships/selection.ogg',
 		PATH .. 'Sounds/Units/Cruisers/selection.ogg',
 		PATH .. 'Sounds/Units/Cruisers/selection.ogg',
@@ -749,6 +759,7 @@ units = {
 		PATH .. 'Sounds/Units/Sample/selection.ogg',
 	},
 	deathSfx = {
+		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
