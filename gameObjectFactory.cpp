@@ -20,8 +20,8 @@ namespace battleship{
 	using namespace gameBase;
 
 	Unit* GameObjectFactory::createUnit(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus){
-		sol::state_view SOL_LUA_STATE = generateView();
-		int unitClass = SOL_LUA_STATE["units"]["unitClass"][id + 1];
+		sol::state_view SOL_LUA_VIEW = generateView();
+		int unitClass = SOL_LUA_VIEW["units"][id + 1]["unitClass"];
 
 		switch((UnitClass)unitClass){
 			case UnitClass::LAND_FACTORY:
@@ -45,8 +45,8 @@ namespace battleship{
 	}
 
 	Projectile* GameObjectFactory::createProjectile(Unit *unit, int id, Vector3 pos, Quaternion rot){
-		sol::state_view SOL_LUA_STATE = generateView();
-		int projectileClass = SOL_LUA_STATE["projectiles"]["projectileClass"][id + 1];
+		sol::state_view SOL_LUA_VIEW = generateView();
+		int projectileClass = SOL_LUA_VIEW["projectiles"][id + 1]["projectileClass"];
 
 		switch((ProjectileClass)projectileClass){
 			case ProjectileClass::CRUISE_MISSILE:

@@ -1,47 +1,27 @@
 ProjectileClass = {CRUISE_MISSILE = 0, TORPEDO = 1}
 
 projectiles = {
-	projectileClass = {
-		ProjectileClass.CRUISE_MISSILE,
-		ProjectileClass.TORPEDO,
+	{
+		projectileClass = ProjectileClass.CRUISE_MISSILE,
+		size = {x = 1.2, y = 2.7, z = .54},
+		speed = .5,
+		rotAngle = .1,
+		explosion = {damage = 100, radius = 20},
+		directHitDamage = 450,
+		rayLength = 1.25,
+		name = "Cruise missile",
+	    basePath = PATH .. "Models/GameObjects/Projectiles/Missiles/",
+		meshPath = "cruiseMissile.xml",
 	},
-	speed = {.5, .06},
-	rotAngle = {.1, 0},
-	explosion = {{damage = 100, radius = 20}, {damage = 20, radius = 3}},
-	rayLength = {1.25, .75},
-	directHitDamage = {450, 300},
-	name = {
-	    "Cruise missile",
-	    "Torpedo"
-	},
-	basePath = {
-	    PATH .. "Models/GameObjects/Projectiles/Missiles/",
-	    PATH .. "Models/GameObjects/Projectiles/Torpedos/",
-	},
-	meshPath = {
-	    "cruiseMissile.xml",
-	    "torpedo.xml",
-	},
-	unitCornerPoints = {
-		{
-			{x = .592, y = -1.3475, z = -.2755},
-			{x = -.592, y = -1.3475, z = -.2755},
-			{x = -.592, y = -1.3475, z = .2755},
-			{x = .592, y = -1.3475, z = .2755},
-			{x = .592, y = 1.3475, z = -.2755},
-			{x = -.592, y = 1.3475, z = -.2755},
-			{x = -.592, y = 1.3475, z = .2755},
-			{x = .592, y = 1.3475, z = .2755}
-		},
-		{
-			{x = .1, y = -.796, z = -.1},
-			{x = -.1, y = -.796, z = -.1},
-			{x = -.1, y = -.796, z = .1},
-			{x = .1, y = -.796, z = .1},
-			{x = .1, y = .796, z = -.1},
-			{x = -.1, y = .796, z = -.1},
-			{x = -.1, y = .796, z = .1},
-			{x = .1, y = .796, z = .1}
-		}
+	{
+		projectileClass = ProjectileClass.TORPEDO,
+		size = {x = .2, y = 1.6, z = .2},
+		speed = .06,
+		explosion = {damage = 20, radius = 3},
+		directHitDamage = 450,
+		rayLength = .75,
+		name = "Torpedo",
+	    basePath = PATH .. "Models/GameObjects/Projectiles/Torpedos/",
+		meshPath = "torpedo.xml",
 	}
 }

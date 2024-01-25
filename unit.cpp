@@ -42,12 +42,12 @@ namespace battleship{
 		if(proj != sol::nullopt){
 			projId = weaponTable[projTableKey]["id"];
 			sol::table projTable = generateView()["projectiles"];
-			ProjectileClass pc = (ProjectileClass)projTable["projectileClass"][projId + 1];
+			ProjectileClass pc = (ProjectileClass)projTable[projId + 1]["projectileClass"];
 
 			if(pc == ProjectileClass::CRUISE_MISSILE){
 				minRange = 0;
-				float rotAngle = projTable["rotAngle"][projId + 1];
-				float speed = projTable["speed"][projId + 1];
+				float rotAngle = projTable[projId + 1]["rotAngle"];
+				float speed = projTable[projId + 1]["speed"];
 				float base = PI / 2, alpha = 0;
 
 				while(base - alpha > .001){
@@ -130,46 +130,66 @@ namespace battleship{
 		GameObject::initProperties();
 
 		sol::state_view SOL_LUA_VIEW = generateView();
-		sol::table SOL_LUA_STATE = SOL_LUA_VIEW[GameObject::getGameObjTableName()];
-		string name = SOL_LUA_STATE["name"][id + 1];
-        health = SOL_LUA_STATE["health"][id + 1];
+		string objType = GameObject::getGameObjTableName();
+		sol::table unitTable = SOL_LUA_VIEW[objType][id + 1];
+		string name = unitTable["name"];
+        health = unitTable["health"];
+        vehicle = unitTable["isVehicle"];
 		maxHealth = health;
 
-        lineOfSight = SOL_LUA_STATE["lineOfSight"][id + 1];
-        unitClass = (UnitClass)SOL_LUA_STATE["unitClass"][id + 1];
-		type = (UnitType)SOL_LUA_STATE["unitType"][id + 1];
+        lineOfSight = unitTable["lineOfSight"];
+        unitClass = (UnitClass)unitTable["unitClass"];
+		type = (UnitType)unitTable["unitType"];
 
-		SOL_LUA_VIEW.script("numGarrisonSlots = #units.garrisonCapacity[" + to_string(id + 1) + "]");
-		int numGarrisonSlots = SOL_LUA_VIEW["numGarrisonSlots"];
+		string tblName = "garrisonCapacity";
+		sol::optional<sol::table> gc = unitTable[tblName];
 
-		for(int i = 0; i < numGarrisonSlots; i++){
-			Vector2 size = 10 * Vector2::VEC_IJ;
-			Vector2 pos = Vector2(1.5 * size.x * i, 20);
-			Node *bg = createBar(pos, size, Vector4(0, 0, 0, 1));
-			Node *fg = createBar(pos, size, Vector4(0, 1, 0, 1));
-			int category = SOL_LUA_STATE["garrisonCapacity"][id + 1][i + 1];
-			garrisonSlots.push_back(GarrisonSlot(bg, fg, pos, category));
+		if(gc != sol::nullopt){
+			string varName = "numGarrisonSlots";
+			SOL_LUA_VIEW.script(varName + " = #" + objType + "[" + to_string(id + 1) + "]." + tblName);
+			int numGarrisonSlots = SOL_LUA_VIEW[varName];
+
+			for(int i = 0; i < numGarrisonSlots; i++){
+				Vector2 size = 10 * Vector2::VEC_IJ;
+				Vector2 pos = Vector2(1.5 * size.x * i, 20);
+				Node *bg = createBar(pos, size, Vector4(0, 0, 0, 1));
+				Node *fg = createBar(pos, size, Vector4(0, 1, 0, 1));
+				int category = unitTable[tblName][i + 1];
+				garrisonSlots.push_back(GarrisonSlot(bg, fg, pos, category));
+			}
 		}
 
-		SOL_LUA_VIEW.script("numArmorTypes = #units.armor[" + to_string(id + 1) + "]");
-		int numArmorTypes = SOL_LUA_VIEW["numArmorTypes"];
+		tblName = "armor";
+		sol::optional<sol::table> at = unitTable[tblName];
 
-		for(int i = 0; i < numArmorTypes; i++){
-			Armor arm = (Armor)SOL_LUA_STATE["armor"][id + 1][i + 1];
-			armorTypes.push_back(arm);
+		if(at != sol::nullopt){
+			string varName = "numArmorTypes"; 
+			SOL_LUA_VIEW.script(varName + " = #" + objType + "[" + to_string(id + 1) + "]." + tblName);
+			int numArmorTypes = SOL_LUA_VIEW[varName];
+
+			for(int i = 0; i < numArmorTypes; i++){
+				Armor arm = (Armor)unitTable[tblName][i + 1];
+				armorTypes.push_back(arm);
+			}
 		}
 	}
 
 	void Unit::initWeapons(){
 		sol::state_view SOL_STATE_VIEW = generateView();
-		sol::table unitTable = SOL_STATE_VIEW[GameObject::getGameObjTableName()];
+		string objType = GameObject::getGameObjTableName();
+		sol::table unitTable = SOL_STATE_VIEW[objType][id + 1];
 
-		string varName = "numWeapons", tblName = "weapons";
-		SOL_STATE_VIEW.script(varName + " = #units." + tblName + "[" + to_string(id + 1) + "]");
-		int numWeapons = SOL_STATE_VIEW[varName];
+		string tblName = "weapons";
+		sol::optional<sol::table> wt = unitTable[tblName];
 
-		for(int i = 0; i < numWeapons; i++)
-			weapons.push_back(new Weapon(this, unitTable[tblName][id + 1][i + 1]));
+		if(wt != sol::nullopt){
+			string varName = "numWeapons";
+			SOL_STATE_VIEW.script(varName + " = #" + objType + "[" + to_string(id + 1) + "]." + tblName);
+			int numWeapons = SOL_STATE_VIEW[varName];
+
+			for(int i = 0; i < numWeapons; i++)
+				weapons.push_back(new Weapon(this, unitTable[tblName][i + 1]));
+		}
 	}
 
 	void Unit::destroyWeapons(){
@@ -188,7 +208,7 @@ namespace battleship{
 	void Unit::initSound(){
 		GameObject::initSound();
 		selectionSfxBuffer = new sf::SoundBuffer();
-		string sfxPath = generateView()[getGameObjTableName()]["selectionSfx"][id + 1];
+		string sfxPath = generateView()[getGameObjTableName()][id + 1]["selectionSfx"];
 		selectionSfx = GameObject::prepareSfx(selectionSfxBuffer, sfxPath);
 	}
 

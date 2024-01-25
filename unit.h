@@ -141,7 +141,7 @@ namespace battleship{
         inline int getPlayerId() {return playerId;}
 		inline int getHealth(){return health;}
 		inline int getDeathHp(){return DEATH_HP;}
-		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
+		inline bool isVehicle(){return vehicle;}
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
 		inline Order getOrder(int i){return orders[i];}
 		inline int getNumOrders(){return orders.size();}
@@ -157,6 +157,7 @@ namespace battleship{
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
 		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
+		bool vehicle;
     protected:
         UnitClass unitClass;
         UnitType type;

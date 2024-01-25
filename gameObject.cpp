@@ -38,13 +38,12 @@ namespace battleship{
 
 	//TODO remove neccessity to create a material for an invisible mesh
 	void GameObject::initHitbox(){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-		sol::table offsetPosTable = SOL_LUA_STATE["hitboxOffset"][id + 1];
-
 		Box *box = new Box(Vector3(width, height, length));
 		box->setMaterial(new Material(Root::getSingleton()->getLibPath() + "texture"));
 		box->setWireframe(false);
 
+		sol::table gameObjTable = generateView()[GameObject::getGameObjTableName()][id + 1];
+		sol::table offsetPosTable = gameObjTable["hitboxOffset"];
 		hitbox = new Node(Vector3(offsetPosTable["x"], offsetPosTable["y"], offsetPosTable["z"]));
 		hitbox->attachMesh(box);
 		hitbox->setVisible(false);
@@ -58,16 +57,10 @@ namespace battleship{
 	}
 
 	void GameObject::initProperties(){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-
-		for(int i = 0; i < 8; i++){
-			sol::table cornerTable = SOL_LUA_STATE["unitCornerPoints"][id + 1][i + 1];
-			corners[i] = Vector3(cornerTable["x"], cornerTable["y"], cornerTable["z"]);
-		}
-
-        width = corners[0].x - corners[1].x;
-        height = corners[4].y - corners[0].y;
-        length = corners[3].z - corners[0].z;
+		sol::table sizeTable = generateView()[GameObject::getGameObjTableName()][id + 1]["size"];
+        width = sizeTable["x"];
+        height = sizeTable["y"];
+        length = sizeTable["z"];
 	}
 	
 	void GameObject::destroyModel(){
@@ -76,9 +69,9 @@ namespace battleship{
 	}
 
 	void GameObject::initModel(bool textured){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-		string basePath = SOL_LUA_STATE["basePath"][id + 1];
-		string meshPath = SOL_LUA_STATE["meshPath"][id + 1];
+		sol::table gameObjTable = generateView()[GameObject::getGameObjTableName()][id + 1];
+		string basePath = gameObjTable["basePath"];
+		string meshPath = gameObjTable["meshPath"];
 
 		model = new Model(basePath + meshPath);
 		Root *root = Root::getSingleton();
@@ -121,7 +114,7 @@ namespace battleship{
 
 	void GameObject::initSound(){
 		deathSfxBuffer = new sf::SoundBuffer();
-		string sfxPath = generateView()[getGameObjTableName()]["deathSfx"][id + 1];
+		string sfxPath = generateView()[getGameObjTableName()][id + 1]["deathSfx"];
 		deathSfx = prepareSfx(deathSfxBuffer, sfxPath);
 	}
 
@@ -152,6 +145,17 @@ namespace battleship{
 
 	Vector2 GameObject::calculateSelectionRect(){
 		const int NUM_CORNERS = 8;
+		Vector3 corners[NUM_CORNERS]{
+			Vector3(-.5 * width, -.5 * height, -.5 * length),
+			Vector3(-.5 * width, -.5 * height, .5 * length),
+			Vector3(.5 * width, -.5 * height, .5 * length),
+			Vector3(.5 * width, -.5 * height, -.5 * length),
+			Vector3(-.5 * width, .5 * height, -.5 * length),
+			Vector3(-.5 * width, .5 * height, .5 * length),
+			Vector3(.5 * width, .5 * height, .5 * length),
+			Vector3(.5 * width, .5 * height, -.5 * length)
+		};
+
 		vector<Vector2> cornersOnScreen;
 
 		for(int i = 0; i < NUM_CORNERS; i++){

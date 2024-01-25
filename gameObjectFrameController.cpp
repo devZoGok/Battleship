@@ -61,7 +61,7 @@ namespace battleship{
 		MeshData::Vertex *verts = meshData.vertices;
 		int numVerts = 3 * meshData.numTris;
 
-		float maxUnevenness = generateView()["maxUnevenness"], unevenness = 0;
+		float maxUnevenness = .5, unevenness = 0;
 
 		for(int i = 0; i < numVerts; i++){
 			float diffX = fabs(s.getPos().x - verts[i].pos.x);
@@ -101,9 +101,8 @@ namespace battleship{
 		if(results.empty()) return;
 
 		Vector3 newPos, rowEnd;
-		sol::table unitTable = generateView()[gameObjectFrames[0].getGameObjTableName()]["unitCornerPoints"][gameObjectFrames[0].getId() + 1]; 
-    	float width = (float)unitTable[1]["x"] - (float)unitTable[2]["x"];
-    	float length = (float)unitTable[4]["z"] - (float)unitTable[1]["z"];
+		sol::table sizeTable = generateView()[gameObjectFrames[0].getGameObjTableName()][gameObjectFrames[0].getId() + 1]["size"]; 
+    	float width = sizeTable["x"], length = sizeTable["z"];
 
 		if(paintSelecting)
 			paintSelect(results[0].pos, width, length);
