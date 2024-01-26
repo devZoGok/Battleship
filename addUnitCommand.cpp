@@ -12,6 +12,7 @@
 namespace battleship{
 	using namespace gameBase;
 	using namespace vb01;
+	using namespace std;
 
 	//TODO implement structure build status argument
 	void AddUnitCommand::validate(){
@@ -26,8 +27,9 @@ namespace battleship{
 		unitId = atoi(arguments[1].c_str());
 
 		sol::state_view SOL_LUA_VIEW = generateView();
-		SOL_LUA_VIEW.script("numUnits = #units.unitClass");
-		int numUnits = SOL_LUA_VIEW["numUnits"];
+		string varName = "numUnits";
+		SOL_LUA_VIEW.script(varName + " = #units");
+		int numUnits = SOL_LUA_VIEW[varName];
 
 		if(!(0 <= unitId && unitId <= numUnits))
 			return;
