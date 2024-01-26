@@ -33,7 +33,20 @@ namespace battleship{
     }
 
     Projectile::~Projectile(){
+		destroySound();
 		destroyModel();
+	}
+
+	void Projectile::reinit(){
+		destroySound();
+		destroyModel();
+
+		initProperties();
+
+		initModel();
+		initSound();
+
+		GameObject::reinit();
 	}
 
 	void Projectile::initProperties(){

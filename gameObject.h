@@ -20,6 +20,7 @@ namespace battleship{
 
 			GameObject(Type t, int i, Player *pl, vb01::Vector3 vec, vb01::Quaternion quat) : type(t), id(i), player(pl), pos(vec), rot(quat){}
 			~GameObject(){}
+			virtual void reinit();
 			virtual void update();
         	virtual void select(){}
 			void placeAt(vb01::Vector3);

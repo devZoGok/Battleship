@@ -19,4 +19,16 @@ namespace battleship{
 		destroyHitbox();
 		destroyModel();
 	}
+
+	void ResourceDeposit::reinit(){
+		destroyHitbox();
+		destroyModel();
+
+		initProperties();
+
+		initModel();
+		initHitbox();
+
+		GameObject::reinit();
+	}
 }
