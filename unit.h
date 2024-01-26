@@ -160,7 +160,7 @@ namespace battleship{
         UnitClass unitClass;
         UnitType type;
         std::vector<Order> orders;
-        int health, maxHealth, cost, id, playerId, lenHpBar = 200;
+        int health, maxHealth, id, playerId, lenHpBar = 200;
         s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight;
 		std::vector<GarrisonSlot> garrisonSlots;
