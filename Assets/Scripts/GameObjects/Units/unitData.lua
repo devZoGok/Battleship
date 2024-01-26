@@ -363,7 +363,7 @@ units = {
 				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}
 			},
 		},
-		unitClass = UnitClass.MISSILE_SUBMARINE,
+		unitClass = UnitClass.SUBMARINE,
 		unitType = UnitType.UNDERWATER,
 		isVehicle = true,
 		health = 500,
@@ -393,7 +393,7 @@ units = {
 				projectile = {id = ProjectileId.TORPEDO, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}
 			}
 		},
-		unitClass = UnitClass.STEALTH_SUBMARINE,
+		unitClass = UnitClass.SUBMARINE,
 		unitType = UnitType.UNDERWATER,
 		isVehicle = true,
 		health = 500,

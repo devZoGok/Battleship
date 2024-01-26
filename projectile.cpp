@@ -39,15 +39,15 @@ namespace battleship{
 	void Projectile::initProperties(){
 		GameObject::initProperties();
 
-		sol::table projTable = generateView()[GameObject::getGameObjTableName()];
-        rayLength = projTable[id + 1]["rayLength"];
-        directHitDamage = projTable[id + 1]["directHitDamage"];
+		sol::table projTable = generateView()[GameObject::getGameObjTableName()][id + 1];
+        rayLength = projTable["rayLength"];
+        directHitDamage = projTable["directHitDamage"];
 
 		string explKey = "explosion";
-        explosionDamage = projTable[id + 1][explKey]["damage"];
-        explosionRadius = projTable[id + 1][explKey]["radius"];
-        speed = projTable[id + 1]["speed"];
-		rotAngle = projTable[id + 1]["rotAngle"];
+        explosionDamage = projTable[explKey]["damage"];
+        explosionRadius = projTable[explKey]["radius"];
+        speed = projTable["speed"];
+		rotAngle = projTable["rotAngle"].get_or(0.0);
 	}
 
 	void Projectile::initSound(){
