@@ -40,6 +40,7 @@ namespace battleship{
 		BUILD,
 		LAND_FACTORY_TRAIN,
 		NAVAL_FACTORY_TRAIN,
+		FORT_TRAIN,
 		STATISTICS
 	};
 	enum ListboxType {

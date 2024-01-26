@@ -24,6 +24,7 @@ namespace battleship{
 		int unitClass = SOL_LUA_VIEW["units"][id + 1]["unitClass"];
 
 		switch((UnitClass)unitClass){
+			case UnitClass::FORT:
 			case UnitClass::LAND_FACTORY:
 			case UnitClass::NAVAL_FACTORY:
 				return new Factory(player, id, pos, rot, buildStatus);

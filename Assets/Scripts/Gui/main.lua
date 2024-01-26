@@ -26,7 +26,8 @@ ButtonType = {
 	BUILD = 22,
 	LAND_FACTORY_TRAIN = 23,
 	NAVAL_FACTORY_TRAIN = 24,
-	STATISTICS = 25
+	FORT_TRAIN = 25,
+	STATISTICS = 26
 }
 
 ListboxType = {

@@ -1,4 +1,3 @@
-numGui = 5
 res = graphics.resolution
 Size = {x = 100, y = 100}
 
@@ -47,5 +46,14 @@ gui = {
 		buttonType = ButtonType.BUILD,
 		trigger = 68,
 		structureId = UnitId.POINT_DEFENSE
-	}
+	},
+	{
+		pos = {x = res.x - 5 * Size.x - 200, y = res.y - 200},
+		size = Size,
+		imagePath = '',
+		guiType = GuiType.BUTTON,
+		buttonType = ButtonType.BUILD,
+		trigger = 70,
+		structureId = UnitId.FORT 
+	},
 }
