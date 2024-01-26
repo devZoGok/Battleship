@@ -51,7 +51,9 @@ namespace battleship{
 		sol::table sizeTable = guiTable["size"];
 		Vector2 size = Vector2(sizeTable["x"], sizeTable["y"]);
 
-		string name = guiTable["name"];
+		string nk = "name";
+		sol::optional<string> nameOpt = guiTable[nk];
+		string name = (nameOpt != sol::nullopt ? (string)guiTable[nk] : "");
 		ButtonType type = (ButtonType)guiTable["buttonType"];
 
 		Button *button = nullptr;
@@ -160,14 +162,26 @@ namespace battleship{
 				break;
 			}
 			case BUILD:
-				button = new BuildButton(pos, size, (int)guiTable["structureId"], name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
+			{
+				int strId = guiTable["structureId"];
+				string buttonName = SOL_LUA_STATE["units"][strId + 1]["name"];
+				button = new BuildButton(pos, size, strId, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;
+			}
 			case LAND_FACTORY_TRAIN:
-				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["LAND_FACTORY"], (int)guiTable["unitId"]);
+			{
+				int unitId = guiTable["unitId"];
+				string buttonName = SOL_LUA_STATE["units"][unitId + 1]["name"];
+				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["LAND_FACTORY"], unitId);
 				break;
+			}
 			case NAVAL_FACTORY_TRAIN:
-				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["NAVAL_FACTORY"], (int)guiTable["unitId"]);
+			{
+				int unitId = guiTable["unitId"];
+				string buttonName = SOL_LUA_STATE["units"][unitId + 1]["name"];
+				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["NAVAL_FACTORY"], unitId);
 				break;
+			}
 			case STATISTICS:
 				button = new StatsButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;
