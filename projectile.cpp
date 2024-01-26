@@ -64,12 +64,9 @@ namespace battleship{
 	}
 
 	void Projectile::initSound(){
-		GameManager *gm = GameManager::getSingleton();
         explosionSfxBuffer = new sf::SoundBuffer();
-        string p2 = gm->getPath() + "Sounds/SFX/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
-
-        if(explosionSfxBuffer->loadFromFile(p2.c_str()))
-            explosionSfx = new sf::Sound(*explosionSfxBuffer);
+        string sfxPath = generateView()[GameObject::getGameObjTableName()][id + 1]["explosion"]["sfx"];
+		explosionSfx = GameObject::prepareSfx(explosionSfxBuffer, sfxPath);
 	}
 
     void Projectile::update() {
