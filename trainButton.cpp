@@ -18,7 +18,7 @@ namespace battleship{
 	void TrainButton::onClick(){
 		ActiveGameState *activeState = (ActiveGameState*)(GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::ACTIVE_STATE));
 		Player *player = activeState->getPlayer();
-		UnitClass facClass = (UnitClass)generateView()["units"]["unitClass"][factoryId + 1]; 
+		UnitClass facClass = (UnitClass)generateView()["units"][factoryId + 1]["unitClass"]; 
 		vector<Unit*> factories = player->getSelectedUnitsByClass(facClass);
 
 		for(Unit *fac : factories)

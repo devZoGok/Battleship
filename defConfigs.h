@@ -36,9 +36,9 @@ namespace battleship{
 			CORE_MAIN,
 			GUI_MAIN,
 			OPTIONS,
-			UNIT_DATA,
 			RESOURCE_DATA,
 			PROJECTILE_DATA,
+			UNIT_DATA,
 			AI_AGENT,
 			PLAYER
 		};
@@ -46,9 +46,9 @@ namespace battleship{
 			"Scripts/Core/main.lua",
 			"Scripts/Gui/main.lua",
 			"Scripts/Core/options.lua",
-			"Scripts/GameObjects/Units/unitData.lua",
 			"Scripts/GameObjects/resourceData.lua",
 			"Scripts/GameObjects/Projectiles/projectileData.lua",
+			"Scripts/GameObjects/Units/unitData.lua",
 			"Scripts/aiAgent.lua",
 			"Scripts/Core/player.lua"
 		};

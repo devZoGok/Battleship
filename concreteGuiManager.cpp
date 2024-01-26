@@ -163,10 +163,10 @@ namespace battleship{
 				button = new BuildButton(pos, size, (int)guiTable["structureId"], name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;
 			case LAND_FACTORY_TRAIN:
-				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)UnitClass::LAND_FACTORY, (int)guiTable["unitId"]);
+				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["LAND_FACTORY"], (int)guiTable["unitId"]);
 				break;
 			case NAVAL_FACTORY_TRAIN:
-				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)UnitClass::NAVAL_FACTORY, (int)guiTable["unitId"]);
+				button = new TrainButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["NAVAL_FACTORY"], (int)guiTable["unitId"]);
 				break;
 			case STATISTICS:
 				button = new StatsButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
