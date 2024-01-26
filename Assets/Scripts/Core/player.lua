@@ -83,7 +83,7 @@ function Player:issueBuildOrder()
 	end
 
 	spawnPoint = self:getSpawnPoint()
-	structure = GameObjectFactory.createUnit(self, 15, spawnPoint, Quaternion:new(1, 0, 0, 0), 0)
+	structure = GameObjectFactory.createUnit(self, UnitId.LAND_FACTORY, spawnPoint, Quaternion:new(1, 0, 0, 0), 0)
 	self:addUnit(structure)
 
 	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(structure, Vector3:new(0, 0, 0))}, false)

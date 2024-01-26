@@ -1,4 +1,28 @@
 --TYPE = {ATTACK = 0, BUILD = 1, MOVE = 2, GARRISON = 3, EJECT = 4, PATROL = 5, LAUNCH = 6};
+UnitId = {
+	WAR_MECH = 0,
+	TANK = 1,
+	ARTILLERY = 2,
+	ENGINEER = 3,
+	SCOUT_TRANSPORT = 4,
+	HOVER_TRANSPORT = 5,
+	RESOURCE_ROVER = 6,
+	TACTICAL_CRUISER = 7,
+	DEFENSIVE_CRUISER = 8,
+	CHEAP_CRUISER = 9,
+	TRANSPORT_CRUISER = 10,
+	HEAVY_CARRIER = 11,
+	CHAMPION_CARRIER = 12,
+	MISSILE_SUBMARINE = 13,
+	STEALTH_SUBMARINE = 14,
+	LAND_FACTORY = 15,
+	NAVAL_FACTORY = 16,
+	MARKET = 17,
+	LAB = 18,
+	POINT_DEFENSE = 19,
+	EXTRACTOR = 19,
+	REFINERY = 20
+}
 WeaponClass = {HITSCAN = 0, SHELL = 1, TORPEDO = 2, CRUISE_MISSILE = 3}
 UnitClass = {
 	WAR_MECH = 0,
@@ -9,15 +33,14 @@ UnitClass = {
 	RESOURCE_ROVER = 5,
 	CRUISER = 6,
 	CARRIER = 7,
-	MISSILE_SUBMARINE = 8,
-	STEALTH_SUBMARINE = 9,
-	LAND_FACTORY = 10,
-	NAVAL_FACTORY = 11,
-	MARKET = 12,
-	LAB = 13,
-	POINT_DEFENSE = 14,
-	EXTRACTOR = 15,
-	REFINERY = 16
+	SUBMARINE = 8,
+	LAND_FACTORY = 9,
+	NAVAL_FACTORY = 10,
+	MARKET = 11,
+	LAB = 12,
+	POINT_DEFENSE = 13,
+	EXTRACTOR = 14,
+	REFINERY = 15
 }
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
 ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
@@ -295,7 +318,13 @@ units = {
 	{
 		weapons = {
 			{type = WeaponClass.HITSCAN, rateOfFire = 300, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 500, maxRange = 100},
-			{type = WeaponClass.CRUISE_MISSILE, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 1, z = 0}, rot = {w = .707, x = -.707, y = 0, z = 0}}}
+			{
+				type = WeaponClass.CRUISE_MISSILE, 
+				rateOfFire = 500, 
+				fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', 
+				maxRange = 30, 
+				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 1, z = 0}, rot = {w = .707, x = -.707, y = 0, z = 0}}
+			}
 		},
 		unitClass = UnitClass.CARRIER,
 		unitType = UnitType.SEA_LEVEL,
@@ -318,9 +347,21 @@ units = {
 	},
 	{
 		weapons = {
-			{type = WeaponClass.TORPEDO, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}, 
-			{type = WeaponClass.CRUISE_MISSILE, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', maxRange = 30, projectile = {id = 0, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}},
-		basePath = PATH .. vehiclePrefix .. 'Submarines/',
+			{
+				type = WeaponClass.TORPEDO, 
+				rateOfFire = 500, 
+				fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', 
+				damage = 200, 
+				maxRange = 20, 
+				projectile = {id = ProjectileId.TORPEDO, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}
+			},
+			{
+				type = WeaponClass.CRUISE_MISSILE, 
+				rateOfFire = 500, 
+				fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', 
+				maxRange = 30, 
+				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}
+			},
 		},
 		unitClass = UnitClass.MISSILE_SUBMARINE,
 		unitType = UnitType.UNDERWATER,
@@ -342,7 +383,16 @@ units = {
 		garrisonCategory = 3
 	},
 	{
-		weapons = {{type = WeaponClass.TORPEDO, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', damage = 200, maxRange = 20, projectile = {id = 1, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}}},
+		weapons = {
+			{
+				type = WeaponClass.TORPEDO, 
+				rateOfFire = 500, 
+				fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', 
+				damage = 200, 
+				maxRange = 20, 
+				projectile = {id = ProjectileId.TORPEDO, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}
+			}
+		},
 		unitClass = UnitClass.STEALTH_SUBMARINE,
 		unitType = UnitType.UNDERWATER,
 		isVehicle = true,

@@ -1,3 +1,4 @@
+ProjectileId = {CRUISE_MISSILE = 0, TORPEDO = 1}
 ProjectileClass = {CRUISE_MISSILE = 0, TORPEDO = 1}
 
 projectiles = {

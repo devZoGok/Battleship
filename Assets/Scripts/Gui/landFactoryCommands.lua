@@ -6,21 +6,19 @@ gui = {
 	{
 		pos = {x = res.x - 200, y = res.y - 200},
 		size = Size,
-		name = 'Tank',
 		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.LAND_FACTORY_TRAIN,
 		trigger = 84,
-		unitId = 1
+		unitId = UnitId.TANK
 	},
 	{
 		pos = {x = res.x - Size.x - 200, y = res.y - 200},
 		size = Size,
-		name = 'Artillery',
 		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.LAND_FACTORY_TRAIN,
 		trigger = 65,
-		unitId = 2
+		unitId = UnitId.ARTILLERY
 	}
 }
