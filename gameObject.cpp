@@ -19,6 +19,11 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace configData;
 
+	void GameObject::reinit(){
+		placeAt(pos);
+		orientAt(rot);
+	}
+
 	void GameObject::update(){
 		leftVec = model->getGlobalAxis(0);
 		upVec = model->getGlobalAxis(1);

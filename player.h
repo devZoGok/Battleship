@@ -36,6 +36,7 @@ namespace battleship{
 		inline int getNumResourceDeposits(){return resourceDeposits.size();}
 		inline void addProjectile(Projectile *proj){projectiles.push_back(proj);}
 		inline int getNumProjectiles(){return projectiles.size();}
+        inline std::vector<Projectile*>& getProjectiles(){return projectiles;}
         inline Unit* getUnit(int i){return units[i];}
         inline std::vector<Unit*>& getUnits(){return units;}
         inline void setTeam(int t){team = t;}

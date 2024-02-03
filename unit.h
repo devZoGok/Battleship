@@ -124,7 +124,6 @@ namespace battleship{
         void setOrder(Order);
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
-		virtual void reinit();
 		bool canGarrison(Vehicle*);
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}
@@ -147,7 +146,6 @@ namespace battleship{
     private:
 		void renderOrderLine(bool);
         void updateScreenCoordinates();
-		void init();
 		void initWeapons();
 		void destroyWeapons();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
@@ -170,6 +168,7 @@ namespace battleship{
 
 		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
+		virtual void reinit();
 		virtual void initProperties();
 		virtual void destroySound();
 		virtual void initSound();

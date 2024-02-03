@@ -26,6 +26,7 @@ namespace battleship {
 		void initSound();
         void checkCollision();
     protected:
+		virtual void reinit();
 		virtual void checkUnitCollision();
 		virtual void checkSurfaceCollision();
 

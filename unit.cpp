@@ -100,7 +100,13 @@ namespace battleship{
         this->player = player;
 		selectable = true;
 
-		init();
+		initProperties();
+		initModel();
+		initHitbox();
+		initSound();
+		initWeapons();
+        placeAt(pos);
+		orientAt(rot);
 
 		Vector2 size = Vector2(lenHpBar, 10);
 		hpBackgroundNode = createBar(Vector2::VEC_ZERO, size, Vector4(0, 0, 0, 1));
@@ -115,16 +121,6 @@ namespace battleship{
 		destroyModel();
 		destroyWeapons();
     }
-
-	void Unit::init(){
-		initProperties();
-		initModel();
-		initHitbox();
-		initSound();
-		initWeapons();
-        placeAt(pos);
-		orientAt(rot);
-	}
 
 	void Unit::initProperties(){
 		GameObject::initProperties();
@@ -205,6 +201,7 @@ namespace battleship{
 		delete selectionSfxBuffer;
 	}
 
+	//TODO factor out initSound()
 	void Unit::initSound(){
 		GameObject::initSound();
 		selectionSfxBuffer = new sf::SoundBuffer();
@@ -216,12 +213,16 @@ namespace battleship{
 		destroySound();
 		destroyHitbox();
 		destroyModel();
+		destroyWeapons();
+
 		initProperties();
+
 		initModel();
 		initHitbox();
 		initSound();
-        placeAt(pos);
-		orientAt(rot);
+		initWeapons();
+
+		GameObject::reinit();
 	}
 
 	bool Unit::canGarrison(Vehicle *vehicle){

@@ -13,6 +13,8 @@ namespace battleship{
 			inline void decrementAmmount(){ammount--;}
 		private:
 			int ammount, initAmmount;
+
+			void reinit();
 	};
 }
 

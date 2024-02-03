@@ -1,3 +1,5 @@
+ResourceId = {RESOURCE = 0}
+
 resources = {
 	{
 		name = 'Resource',

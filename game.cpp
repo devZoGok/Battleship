@@ -135,9 +135,21 @@ namespace battleship{
 			guiManager->readLuaScreenScript("inGame.lua", activeState->getButtons());
 			AssetManager::getSingleton()->load(gm->getPath() + (string)generateView()["modelPrefix"], true);
 
-			for(Player *p : Game::getSingleton()->getPlayers())
-				for(Unit *u : p->getUnits())
-					u->reinit();
+			vector<GameObject*> gameObjs;
+
+			for(Player *pl : Game::getSingleton()->getPlayers()){
+				for(Unit *u : pl->getUnits())
+					gameObjs.push_back((GameObject*)u);
+
+				for(Projectile *proj : pl->getProjectiles())
+					gameObjs.push_back((GameObject*)proj);
+
+				for(ResourceDeposit *dep : pl->getResourceDeposits())
+					gameObjs.push_back((GameObject*)dep);
+			}
+
+			for(GameObject *obj : gameObjs)
+				obj->reinit();
 
             gm->getStateManager()->attachAppState(activeState);
         }
