@@ -83,13 +83,12 @@ namespace battleship{
 	}
 
 	void Vehicle::initProperties(){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-        maxTurnAngle = SOL_LUA_STATE["maxTurnAngle"][id + 1];
-        speed = SOL_LUA_STATE["speed"][id + 1];
-		anglePrecision = SOL_LUA_STATE["anglePrecision"][id + 1];
-		garrisonCategory = SOL_LUA_STATE["garrisonCategory"][id + 1];
+		sol::table unitTable = generateView()[GameObject::getGameObjTableName()][id + 1];
+        maxTurnAngle = unitTable["maxTurnAngle"];
+        speed = unitTable["speed"];
+		anglePrecision = unitTable["anglePrecision"];
+		garrisonCategory = unitTable["garrisonCategory"];
 	}
-
 
 	void Vehicle::navigate(float destOffset){
 		Vector3 hypVec = (pathPoints[0] - pos);
