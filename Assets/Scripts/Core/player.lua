@@ -1,106 +1,48 @@
-Player.sizeTaskForce = 5
-Player.trainingStarted = false 
-Player.taskForceSent = false 
-Player.buildOrdered = false 
+Player.numStartEngis = 3
+Player.startedFort = false 
 
-function Player:sendTaskForce()
-	if self.taskForceSent then
+function Player:buildFort()
+	if self.startedFort then
 		return true
 	end
 
-	self:deselectUnits()
-	taskForce = {}
+	engis = self:getUnitsByClass(UnitClass.ENGINEER, 1)
 
-	for i = 1, self:getNumUnits() do
-		if self:getUnit(i - 1):getUnitClass() == UnitClass.TANK then
-			taskForce[#taskForce + 1] = self:getUnit(i - 1)
-		end
-	end
-
-	if #taskForce >= self.sizeTaskForce then
-		self.taskForceSent = true
-		self:selectUnits(taskForce)
-		self:issueOrder(2, Vector3:new(0, 0, 0), {Target:new(nil, Vector3:new(0, 0, 0))}, false)
-		return true
-	else
+	if #engis == 0 then
 		return false
 	end
+
+	engineer = engis[1]
+	self:selectUnits({engineer})
+
+	fort = GameObjectFactory.createUnit(self, UnitId.FORT, engineer:getPos(), Quaternion:new(1, 0, 0, 0), 0)
+	self:addUnit(fort)
+	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(fort, Vector3:new(0, 0, 0))}, false)
+
+	self.startedFort = true
+	return true
 end
 
-function Player:trainTaskForce()
-	if self.trainingStarted then
-		return true
-	end
+function Player:trainEngineers()
+	forts = self:getUnitsByClass(UnitClass.FORT, 1)
 
-	landFactory = nil
-
-	for i = 1, self:getNumUnits() do
-		if self:getUnit(i - 1):getUnitClass() == UnitClass.LAND_FACTORY then
-			landFactory = self:getUnit(i - 1):toFactory()
-			break
-		end
-	end
-
-	if landFactory ~= nil then
-		print('Training...')
-		for i = 1, self.sizeTaskForce do
-			landFactory:appendToQueue(UnitClass.TANK)
-		end
-
-		self.trainingStarted = true
-		return true
-	else
+	if #forts == 0 or (#forts > 0 and forts[1]:toFactory():getBuildStatus() < 100) then
 		return false
 	end
-	
-end
 
-function Player:selectEngi()
-	taskForce = self:getSelectedUnitsByClass(UnitClass.ENGINEER)
+	fort = forts[1]:toFactory()
 
-	if #taskForce == 0 then
-		for i = 1, self:getNumUnits() do
-			if self:getUnit(i - 1):getUnitClass() == UnitClass.ENGINEER then
-				taskForce = {self:getUnit(i - 1)}
-				self:selectUnits(taskForce)
-				break
-			end
-		end
+	while #fort:getQueue() + #self:getUnitsByClass(UnitClass.ENGINEER, -1) < self.numStartEngis do
+		fort:appendToQueue(UnitId.ENGINEER)
 	end
 
-	return #taskForce > 0
-end
-
-function Player:issueBuildOrder()
-	if self.buildOrdered then
-		return true
-	end
-
-	for i = 1, self:getNumUnits() do
-		if self:getUnit(i - 1):getUnitClass() == UnitClass.LAND_FACTORY then
-			return true
-		end
-	end
-
-	spawnPoint = self:getSpawnPoint()
-	structure = GameObjectFactory.createUnit(self, UnitId.LAND_FACTORY, spawnPoint, Quaternion:new(1, 0, 0, 0), 0)
-	self:addUnit(structure)
-
-	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(structure, Vector3:new(0, 0, 0))}, false)
-	self.buildOrdered = true
 	return true
 end
 
 Player.behaviour = {
-	type = BTNodeType.SELECTOR,
+	type = BTNodeType.SEQUENCE,
 	children = {
-		{type = BTNodeType.FUNCTION, func = 'sendTaskForce'},
-		{type = BTNodeType.FUNCTION, func = 'trainTaskForce'},
-		{
-			type = BTNodeType.SEQUENCE, children = {
-				{type = BTNodeType.FUNCTION, func = 'selectEngi'},
-				{type = BTNodeType.FUNCTION, func = 'issueBuildOrder'},
-			}
-		}
+		{type = BTNodeType.FUNCTION, func = 'buildFort'},
+		{type = BTNodeType.FUNCTION, func = 'trainEngineers'},
 	}
 }

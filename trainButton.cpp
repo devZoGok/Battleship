@@ -19,9 +19,10 @@ namespace battleship{
 		ActiveGameState *activeState = (ActiveGameState*)(GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::ACTIVE_STATE));
 		Player *player = activeState->getPlayer();
 		UnitClass facClass = (UnitClass)generateView()["units"][factoryId + 1]["unitClass"]; 
-		vector<Unit*> factories = player->getSelectedUnitsByClass(facClass);
+		vector<Unit*> selUnits = player->getSelectedUnits(), factories = player->getUnitsByClass(facClass);
 
 		for(Unit *fac : factories)
-			((Factory*)fac)->appendToQueue(trainableUnitId);
+			if(find(selUnits.begin(), selUnits.end(), fac) != selUnits.end())
+				((Factory*)fac)->appendToQueue(trainableUnitId);
 	}
 }

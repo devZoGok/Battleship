@@ -11,7 +11,7 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace std;
 
-    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n) {}
+    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n), refineds(10000) {}
 
     Player::~Player() {}
 
@@ -144,20 +144,39 @@ namespace battleship{
 		projectiles.erase(projectiles.begin() + id);
 	}
 
-	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
-		vector<Unit*> selectedUnits = getSelectedUnits(), unitsByClass;
-
-		for(Unit *u : selectedUnits)
-			if(u->getUnitClass() == uc)
-				unitsByClass.push_back(u);
-
-		return unitsByClass;
+	void Player::selectUnits(vector<Unit*> selUnits){
+		for(Unit *u : selUnits)
+			if(find(selectedUnits.begin(), selectedUnits.end(), u) == selectedUnits.end()){
+				selectedUnits.push_back(u);
+				u->select();
+			}
 	}
 
-	void Player::selectUnits(vector<Unit*> selUnits){
-		for(Unit *u : selUnits){
-			selectedUnits.push_back(u);
-			u->select();
+	vector<Unit*> Player::getUnitsById(int id, int numUnits){
+		vector<Unit*> idUnits;
+
+		for(Unit *unit : units){
+			if(numUnits != -1 && idUnits.size() == numUnits)
+				break;
+
+			if(unit->getId() == id)
+				idUnits.push_back(unit);
 		}
+
+		return idUnits;
+	}
+
+	vector<Unit*> Player::getUnitsByClass(UnitClass uc, int numUnits){
+		vector<Unit*> ucUnits;
+
+		for(Unit *unit : units){
+			if(numUnits != -1 && ucUnits.size() == numUnits)
+				break;
+
+			if(unit->getUnitClass() == uc)
+				ucUnits.push_back(unit);
+		}
+
+		return ucUnits;
 	}
 }

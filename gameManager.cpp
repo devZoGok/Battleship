@@ -54,6 +54,7 @@ namespace battleship{
 
 		SOL_LUA_STATE.new_usertype<Unit>(
 			"Unit", sol::constructors<Unit(Player*, int, Vector3, Quaternion)>(),
+			"getPos", &GameObject::getPos,
 			"getUnitClass", &Unit::getUnitClass,
 			"toEngineer", &Unit::toEngineer,
 			"toPointDefense", &Unit::toPointDefense,
@@ -63,6 +64,7 @@ namespace battleship{
 		SOL_LUA_STATE.new_usertype<Factory>(
 			"Factory", sol::constructors<Factory(Player*, int, Vector3, Quaternion, int)>(),
 			"appendToQueue", &Factory::appendToQueue,
+			"getBuildStatus", &Structure::getBuildStatus,
 			"getQueue", &Factory::getQueue
 		);
 
@@ -75,7 +77,8 @@ namespace battleship{
 			"selectUnits", &Player::selectUnits,
 			"deselectUnits", &Player::deselectUnits,
 			"getSpawnPoint", &Player::getSpawnPoint,
-			"getSelectedUnitsByClass", &Player::getSelectedUnitsByClass
+			"getUnitsById", &Player::getUnitsById,
+			"getUnitsByClass", &Player::getUnitsByClass
 		);
 
 		SOL_LUA_STATE.new_usertype<Vector3>(
