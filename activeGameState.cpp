@@ -194,6 +194,8 @@ namespace battleship{
 				if(buttons.empty()){
 					if(!mainPlayer->getSelectedUnitsByClass(UnitClass::ENGINEER).empty())
 						guiManager->readLuaScreenScript("engineerCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
+					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::FORT).empty())
+						guiManager->readLuaScreenScript("fortCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::LAND_FACTORY).empty())
 						guiManager->readLuaScreenScript("landFactoryCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::NAVAL_FACTORY).empty())

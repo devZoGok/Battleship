@@ -182,6 +182,13 @@ namespace battleship{
 				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["NAVAL_FACTORY"], unitId);
 				break;
 			}
+			case FORT_TRAIN:
+			{
+				int unitId = guiTable["unitId"];
+				string buttonName = SOL_LUA_STATE["units"][unitId + 1]["name"];
+				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["FORT"], unitId);
+				break;
+			}
 			case STATISTICS:
 				button = new StatsButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;

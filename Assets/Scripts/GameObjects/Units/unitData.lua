@@ -20,8 +20,9 @@ UnitId = {
 	MARKET = 17,
 	LAB = 18,
 	POINT_DEFENSE = 19,
-	EXTRACTOR = 19,
-	REFINERY = 20
+	EXTRACTOR = 20,
+	REFINERY = 21,
+	FORT = 22
 }
 WeaponClass = {HITSCAN = 0, SHELL = 1, TORPEDO = 2, CRUISE_MISSILE = 3}
 UnitClass = {
@@ -40,7 +41,8 @@ UnitClass = {
 	LAB = 12,
 	POINT_DEFENSE = 13,
 	EXTRACTOR = 14,
-	REFINERY = 15
+	REFINERY = 15,
+	FORT = 16
 }
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
 ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
@@ -515,6 +517,21 @@ units = {
 		name = 'Refinery',
 		basePath = PATH .. structurePrefix .. 'Refineries/',
 		meshPath = 'refinery.xml',
+		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
+		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
+	},
+	{
+		unitClass = UnitClass.FORT,
+		unitType = UnitType.LAND,
+		isVehicle = false,
+		health = 1000,
+		cost = 1000,
+		size = {x = 1, y = 1.15, z = 2},
+		hitboxOffset = {x = 0, y = 0, z = 0},
+		lineOfSight = 5,
+		name = 'Fort',
+		basePath = PATH .. structurePrefix .. 'Forts/',
+		meshPath = 'fort.xml',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},

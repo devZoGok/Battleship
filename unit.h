@@ -71,7 +71,8 @@ namespace battleship{
 	   	LAB,
 	   	POINT_DEFENSE,
 	   	EXTRACTOR,
-	   	REFINERY
+	   	REFINERY,
+		FORT
 	};
     
     class Unit : public GameObject{
