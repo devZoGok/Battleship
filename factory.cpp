@@ -4,29 +4,22 @@
 #include "activeGameState.h"
 
 #include <stateManager.h>
+#include <solUtil.h>
 
 #include <vector>
 
 namespace battleship{
 	using namespace vb01;
 	using namespace std;
+	using namespace gameBase;
 
-	Factory::Factory(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Structure(player, id, pos, rot, buildStatus){
-		initProperties();
-	}
-
-	void Factory::initProperties(){
-	}
+	Factory::Factory(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Structure(player, id, pos, rot, buildStatus){}
 
 	void Factory::update(){
 		Structure::update();
 
 		if(!unitQueue.empty())
 			train();
-	}
-
-	void Factory::appendToQueue(int uc){
-		unitQueue.push_back(uc);
 	}
 
 	void Factory::train(){
@@ -42,9 +35,12 @@ namespace battleship{
 			bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
 
 			Unit::displayUnitStats(buildStatusForeground, buildStatusBackground, trainingStatus, 100, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
+			sol::table targTable = generateView()["units"][unitQueue[0]];
+			int costRate = (int)targTable["cost"] / 100, trainRate = (int)targTable["buildTime"] / 100;
 
-			if(canTrain()){
+			if(player->getRefineds() >= costRate && getTime() - lastTrainTime > trainRate){
 				trainingStatus++;
+				player->setRefineds(player->getRefineds() - costRate);
 				lastTrainTime = getTime();
 			}
 
