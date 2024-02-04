@@ -63,6 +63,7 @@ namespace battleship{
 
 		SOL_LUA_STATE.new_usertype<Factory>(
 			"Factory", sol::constructors<Factory(Player*, int, Vector3, Quaternion, int)>(),
+			"getPos", &GameObject::getPos,
 			"appendToQueue", &Factory::appendToQueue,
 			"getBuildStatus", &Structure::getBuildStatus,
 			"getQueue", &Factory::getQueue
@@ -73,6 +74,7 @@ namespace battleship{
 			"addUnit", &Player::addUnit,
 			"getUnit", &Player::getUnit,
 			"getNumUnits", &Player::getNumUnits,
+			"getResourceDeposits", &Player::getResourceDeposits,
 			"issueOrder", &Player::issueOrder,
 			"selectUnits", &Player::selectUnits,
 			"deselectUnits", &Player::deselectUnits,
@@ -81,19 +83,30 @@ namespace battleship{
 			"getUnitsByClass", &Player::getUnitsByClass
 		);
 
+		SOL_LUA_STATE.new_usertype<ResourceDeposit>(
+			"ResourceDeposit", sol::constructors<ResourceDeposit(Player*, int, Vector3, Quaternion, int)>(),
+			"getPos", &GameObject::getPos
+		);
+
 		SOL_LUA_STATE.new_usertype<Vector3>(
 			"Vector3", sol::constructors<Vector3(), Vector3(float, float, float)>(),
 			"x", &Vector3::x,
 			"y", &Vector3::y,
-			"z", &Vector3::z
+			"z", &Vector3::z,
+			"norm", &Vector3::norm,
+			"add", [](Vector3 v1, Vector3 v2){return v1 + v2;},
+			"subtr", [](Vector3 v1, Vector3 v2){return v1 - v2;},
+			"mult", [](Vector3 v1, float s){return v1 * s;},
+			"div", [](Vector3 v1, float s){return v1 / s;}
 		);
 
 		SOL_LUA_STATE.new_usertype<Quaternion>(
-			"Quaternion", sol::constructors<Quaternion(), Quaternion(float, float, float, float)>(),
+			"Quaternion", sol::constructors<Quaternion(), Quaternion(float, float, float, float), Quaternion(float, Vector3)>(),
 			"w", &Quaternion::w,
 			"x", &Quaternion::x,
 			"y", &Quaternion::y,
-			"z", &Quaternion::z
+			"z", &Quaternion::z,
+			"multVec", [](Quaternion q, Vector3 v){return q * v;}
 		);
 	}
 

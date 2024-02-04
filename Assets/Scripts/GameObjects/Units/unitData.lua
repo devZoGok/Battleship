@@ -194,7 +194,7 @@ units = {
 	{
 		weapons = {},
 		unitClass = UnitClass.RESOURCE_ROVER,
-		unitType = UnitType.SEA_LEVEL,
+		unitType = UnitType.HOVER,
 		armor = {ArmorType.CAST},
 		isVehicle = true,
 		health = 500,
