@@ -11,7 +11,7 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace std;
 
-    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n), refineds(10000) {}
+    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n), refineds(30000) {}
 
     Player::~Player() {}
 

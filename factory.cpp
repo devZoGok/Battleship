@@ -35,7 +35,7 @@ namespace battleship{
 			bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
 
 			Unit::displayUnitStats(buildStatusForeground, buildStatusBackground, trainingStatus, 100, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
-			sol::table targTable = generateView()["units"][unitQueue[0]];
+			sol::table targTable = generateView()["units"][unitQueue[0] + 1];
 			int costRate = (int)targTable["cost"] / 100, trainRate = (int)targTable["buildTime"] / 100;
 
 			if(player->getRefineds() >= costRate && getTime() - lastTrainTime > trainRate){

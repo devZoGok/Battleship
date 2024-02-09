@@ -11,7 +11,11 @@ Player.finishedNavalFactory = false
 Player.startedExtractor = false
 Player.finishedExtractor = false
 Player.startedHarvesting = false
+Player.startedBuildingTaskforce = false
+Player.finishedBuildingTaskforce = false
 
+--TODO use enum-like values instead of literals for order types
+--TODO simplify building construction
 function Player:buildFort()
 	if self.startedFort then
 		return true
@@ -159,6 +163,36 @@ function Player:startHarvesting()
 	return true
 end
 
+function Player:buildTaskforce()
+	landFactory = self:getUnitsByClass(UnitClass.LAND_FACTORY, 1)[1]:toFactory()
+
+	numWarMechs = 10
+	numTanks = 5
+	numArtillery = 5
+
+	if not self.startedBuildingTaskforce then
+		self.startedBuildingTaskforce = true
+
+		for i = 0, numWarMechs do
+			landFactory:appendToQueue(UnitId.WAR_MECH)
+		end
+		
+		for i = 0, numTanks do
+			landFactory:appendToQueue(UnitId.TANK)
+		end
+		
+		for i = 0, numArtillery do
+			landFactory:appendToQueue(UnitId.ARTILLERY)
+		end
+	end
+
+	currWarMechs = self:getUnitsByClass(UnitClass.WAR_MECH, -1)
+	currTanks = self:getUnitsByClass(UnitClass.TANK, -1)
+	currArtillery = self:getUnitsByClass(UnitClass.ARTILLERY, -1)
+
+	return #currWarMechs == numWarMechs and #currTanks == numTanks and #currArtillery == numArtillery
+end
+
 Player.behaviour = {
 	type = BTNodeType.SEQUENCE,
 	children = {
@@ -169,5 +203,6 @@ Player.behaviour = {
 		{type = BTNodeType.FUNCTION, func = 'buildLandFactory'},
 		{type = BTNodeType.FUNCTION, func = 'buildHarvester'},
 		{type = BTNodeType.FUNCTION, func = 'startHarvesting'},
+		{type = BTNodeType.FUNCTION, func = 'buildTaskforce'},
 	}
 }
