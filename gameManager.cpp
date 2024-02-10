@@ -8,6 +8,7 @@
 
 #include "gameManager.h"
 #include "gameObjectFactory.h"
+#include "game.h"
 #include "guiAppState.h"
 #include "defConfigs.h"
 #include "player.h"
@@ -96,6 +97,12 @@ namespace battleship{
 		SOL_LUA_STATE.new_usertype<ResourceDeposit>(
 			"ResourceDeposit", sol::constructors<ResourceDeposit(Player*, int, Vector3, Quaternion, int)>(),
 			"getPos", &GameObject::getPos
+		);
+
+		SOL_LUA_STATE.new_usertype<Game>(
+			"Game",
+			"getSingleton", &Game::getSingleton,
+			"getPlayers", &Game::getPlayers
 		);
 
 		SOL_LUA_STATE.new_usertype<Vector3>(

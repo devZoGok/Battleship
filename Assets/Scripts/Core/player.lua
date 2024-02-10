@@ -210,7 +210,17 @@ function Player:sendTaskforce()
 	self:selectUnits(taskForceTanks)
 	self:selectUnits(taskForceArtillery)
 
-	self:issueOrder(2, Vector3:new(0, 0, 0), {Target:new(nil, Vector3:new(0, 0, 0))}, false)
+	players = Game.getSingleton():getPlayers()
+	enemySpawnPoint = nil
+
+	for i = 1, #players do
+		if players[i] ~= self then
+			enemySpawnPoint = players[i]:getSpawnPoint()
+			break
+		end
+	end
+
+	self:issueOrder(2, Vector3:new(0, 0, 0), {Target:new(nil, enemySpawnPoint)}, false)
 	self.givenOrder = true
 
 	return true
