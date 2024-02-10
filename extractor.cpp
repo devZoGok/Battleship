@@ -29,6 +29,7 @@ namespace battleship{
 
 		sol::table unitTable = generateView()["units"][id + 1];
 		drawRate = unitTable["drawRate"];
+		drawSpeed = unitTable["drawSpeed"];
 
 		Vector2 size = Vector2(lenHpBar, 10);
 		ammountBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
@@ -59,7 +60,7 @@ namespace battleship{
 	}
 
 	void Extractor::draw(){
-		deposit->decrementAmmount();
+		deposit->decreaseAmmount(drawSpeed);
 		lastDrawTime = getTime();
 	}
 }

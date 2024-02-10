@@ -10,7 +10,7 @@ namespace battleship{
 			~ResourceDeposit();
 			inline int getAmmount(){return ammount;}
 			inline int getInitAmmount(){return initAmmount;}
-			inline void decrementAmmount(){ammount--;}
+			inline void decreaseAmmount(int amnt){ammount -= amnt;}
 		private:
 			int ammount, initAmmount;
 
