@@ -22,6 +22,16 @@ namespace battleship{
 			train();
 	}
 
+	int Factory::getNumQueueUnitsById(int unitId){
+		int numUnits = 0;
+
+		for(int qu : unitQueue)
+			if(qu == unitId)
+				numUnits++;
+
+		return numUnits;
+	}
+
 	void Factory::train(){
 		bool training = !unitQueue.empty();
 		buildStatusForeground->setVisible(training);

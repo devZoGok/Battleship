@@ -28,6 +28,7 @@ namespace battleship{
     class Player;
 	class Unit;
 	class Vehicle;
+	class Structure;
 	class Factory;
 	class Cruiser;
 	class PointDefense;
@@ -127,6 +128,7 @@ namespace battleship{
         virtual void addOrder(Order);
 		bool canGarrison(Vehicle*);
 		inline Engineer* toEngineer(){return (Engineer*)this;}
+		inline Structure* toStructure(){return (Structure*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}
 		inline Cruiser* toCruiser(){return (Cruiser*)this;}
 		inline PointDefense* toPointDefense(){return (PointDefense*)this;}

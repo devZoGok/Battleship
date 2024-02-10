@@ -18,7 +18,8 @@ namespace battleship{
 			Factory(Player*, int, vb01::Vector3, vb01::Quaternion, int = 0);
 			~Factory(){}
 			void update();
-			void appendToQueue(int uc){unitQueue.push_back(uc);}
+			int getNumQueueUnitsById(int);
+			void appendToQueue(int uid){unitQueue.push_back(uid);}
 			inline std::vector<int> getQueue(){return unitQueue;}
 		private:
 			const int MAX_LEN_QUEUE = 10;

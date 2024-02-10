@@ -1,40 +1,29 @@
 Player.numStartEngis = 3
 Player.dirToCenter = nil 
-Player.startedFort = false 
-Player.finishedFort = false 
-Player.startedRefinery = false 
-Player.finishedRefinery = false 
-Player.startedLandFactory = false 
-Player.finishedLandFactory = false 
-Player.startedNavalFactory = false 
-Player.finishedNavalFactory = false 
-Player.startedExtractor = false
-Player.finishedExtractor = false
-Player.startedHarvesting = false
-Player.startedBuildingTaskforce = false
-Player.finishedBuildingTaskforce = false
+Player.numDefWarMechs = 5
+Player.numTaskForceWarMechs = 5
+Player.numTaskForceTanks = 5
+Player.numTaskForceArtillery = 5
+Player.givenOrder = false
 
 --TODO use enum-like values instead of literals for order types
 --TODO simplify building construction
 function Player:buildFort()
-	if self.startedFort then
+	if #self:getUnitsByClass(UnitClass.FORT, 1) > 0 then
 		return true
 	end
 
 	engis = self:getUnitsByClass(UnitClass.ENGINEER, 1)
-
-	if #engis == 0 then
-		return false
-	end
+	if #engis == 0 then return false end
 
 	engineer = engis[1]
+	self:deselectUnits()
 	self:selectUnits({engineer})
 
-	fort = GameObjectFactory.createUnit(self, UnitId.FORT, engineer:getPos(), Quaternion:new(1, 0, 0, 0), 0)
+	fort = GameObjectFactory.createUnit(self, UnitId.FORT, self:getSpawnPoint(), Quaternion:new(1, 0, 0, 0), 0)
 	self:addUnit(fort)
 	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(fort, Vector3:new(0, 0, 0))}, false)
 
-	self.startedFort = true
 	return true
 end
 
@@ -52,11 +41,12 @@ function Player:trainEngineers()
 		fort:appendToQueue(UnitId.ENGINEER)
 	end
 
-	return #self:getUnitsByClass(UnitClass.ENGINEER, -1) == 3
+	return #self:getUnitsByClass(UnitClass.ENGINEER, -1) == self.numStartEngis
 end
 
+--Correct resource deposit selection
 function Player:buildExtractor()
-	if self.startedExtractor then
+	if #self:getUnitsByClass(UnitClass.EXTRACTOR, 1) > 0 then
 		return true
 	end
 
@@ -78,7 +68,6 @@ function Player:buildExtractor()
 	extractor = GameObjectFactory.createUnit(self, UnitId.EXTRACTOR, depPos, Quaternion:new(1, 0, 0, 0), 0)
 	self:addUnit(extractor)
 	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(extractor, Vector3:new(0, 0, 0))}, false)
-	self.startedExtractor = true
  
 	return true
 end
@@ -90,43 +79,45 @@ function Player:startBuilding(buildingId, engiId, angle)
 	
 	dirVec = Quaternion:new(angle, Vector3:new(0, 1, 0)):multVec(dirToCenter)
 	refPos = self:getSpawnPoint():add(dirVec:mult(20))
-	refinery = GameObjectFactory.createUnit(self, buildingId, refPos, Quaternion:new(1, 0, 0, 0), 0)
-	self:addUnit(refinery)
-	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(refinery, Vector3:new(0, 0, 0))}, false)
+	building = GameObjectFactory.createUnit(self, buildingId, refPos, Quaternion:new(1, 0, 0, 0), 0)
+	self:addUnit(building)
+	self:issueOrder(1, Vector3:new(0, 0, 0), {Target:new(building, Vector3:new(0, 0, 0))}, false)
 end
 
 function Player:buildRefinery()
-	if not self.startedRefinery then
-		self.startedRefinery = true
+	if #self:getUnitsByClass(UnitClass.REFINERY, 1) == 0 then
 		self:startBuilding(UnitId.REFINERY, 2, -.6)
 	end
 
-	if not self.finishedRefinery then
-		refTable = self:getUnitsByClass(UnitClass.REFINERY, 1)
-		
-		if #refTable == 1 and refTable[1]:toFactory():getBuildStatus() == 100 then
-			self.finishedRefinery = true
+	refineries = self:getUnitsByClass(UnitClass.REFINERY, -1)
+	refineryBuilt = false
+
+	for i = 1, #refineries do
+		if refineries[i]:toStructure():getBuildStatus() == 100 then
+			refineryBuilt = true
+			break
 		end
 	end
 
-	return self.finishedRefinery
+	return refineryBuilt
 end
 
 function Player:buildLandFactory()
-	if not self.startedLandFactory then
-		self.startedLandFactory = true
+	if #self:getUnitsByClass(UnitClass.LAND_FACTORY, 1) == 0 then
 		self:startBuilding(UnitId.LAND_FACTORY, 3, .6)
 	end
 
-	if not self.finishedLandFactory then
-		facTable = self:getUnitsByClass(UnitClass.LAND_FACTORY, 1)
-		
-		if #facTable == 1 and facTable[1]:toFactory():getBuildStatus() == 100 then
-			self.finishedLandFactory = true
+	factories = self:getUnitsByClass(UnitClass.LAND_FACTORY, -1)
+	factoryBuilt = false
+
+	for i = 1, #factories do
+		if factories[i]:toStructure():getBuildStatus() == 100 then
+			factoryBuilt = true
+			break
 		end
 	end
 
-	return self.finishedLandFactory
+	return factoryBuilt
 end
 
 function Player:buildHarvester()
@@ -143,54 +134,86 @@ function Player:buildHarvester()
 		factory:appendToQueue(UnitId.RESOURCE_ROVER)
 	end
 
-	return true
+	return false
 end
 
 function Player:startHarvesting()
-	if self.startedHarvesting then return true end
+	harvesters = self:getUnitsByClass(UnitClass.RESOURCE_ROVER, -1)
 
-	harvs = self:getUnitsByClass(UnitClass.RESOURCE_ROVER, 1)
+	for i = 1, #harvesters do
+		if harvesters[i]:getNumOrders() > 0 and harvesters[i]:getOrder(0).type == 7 then
+			return true
+		end
+	end
+
 	extrs = self:getUnitsByClass(UnitClass.EXTRACTOR, 1)
-
-	if #harvs == 0 or (#extrs == 0) then return false end
+	if #extrs == 0 then return false end
 
 	self:deselectUnits()
-	self:selectUnits({harvs[1]})
+	self:selectUnits({harvesters[1]})
 	self:issueOrder(7, Vector3:new(0, 0, 0), {Target:new(extrs[1], Vector3:new(0, 0, 0))}, false)
-
-	self.startedHarvesting = true
 
 	return true
 end
 
-function Player:buildTaskforce()
-	landFactory = self:getUnitsByClass(UnitClass.LAND_FACTORY, 1)[1]:toFactory()
-
-	numWarMechs = 10
-	numTanks = 5
-	numArtillery = 5
-
-	if not self.startedBuildingTaskforce then
-		self.startedBuildingTaskforce = true
-
-		for i = 0, numWarMechs do
-			landFactory:appendToQueue(UnitId.WAR_MECH)
-		end
-		
-		for i = 0, numTanks do
-			landFactory:appendToQueue(UnitId.TANK)
-		end
-		
-		for i = 0, numArtillery do
-			landFactory:appendToQueue(UnitId.ARTILLERY)
+function Player:buildTaskforceUnitGroup(numUnits, currNumUnits, factory, unitId)
+	if currNumUnits < numUnits then
+		for i = 1, numUnits - currNumUnits do
+			factory:appendToQueue(unitId)
 		end
 	end
+end
 
-	currWarMechs = self:getUnitsByClass(UnitClass.WAR_MECH, -1)
-	currTanks = self:getUnitsByClass(UnitClass.TANK, -1)
-	currArtillery = self:getUnitsByClass(UnitClass.ARTILLERY, -1)
+function Player:buildTaskforce()
+	currNumBuiltWarMechs = #self:getUnitsByClass(UnitClass.WAR_MECH, -1)
+	currNumBuiltTanks = #self:getUnitsByClass(UnitClass.TANK, -1)
+	currNumBuiltArtillery = #self:getUnitsByClass(UnitClass.ARTILLERY, -1)
+	currNumWarMechs = currNumBuiltWarMechs
+	currNumTanks = currNumBuiltTanks
+	currNumArtillery = currNumBuiltArtillery
+	currLandFactories = self:getUnitsByClass(UnitClass.LAND_FACTORY, -1)
 
-	return #currWarMechs == numWarMechs and #currTanks == numTanks and #currArtillery == numArtillery
+	for i = 1, #currLandFactories do
+		currNumWarMechs = currNumWarMechs + currLandFactories[i]:toFactory():getNumQueueUnitsById(UnitId.WAR_MECH)
+		currNumTanks = currNumTanks + currLandFactories[i]:toFactory():getNumQueueUnitsById(UnitId.TANK)
+		currNumArtillery = currNumArtillery + currLandFactories[i]:toFactory():getNumQueueUnitsById(UnitId.ARTILLERY)
+	end
+
+	numWarMechs = self.numDefWarMechs + self.numTaskForceWarMechs
+	numTanks = self.numTaskForceTanks
+	numArtillery = self.numTaskForceArtillery
+
+	if currNumBuiltWarMechs >= numWarMechs and currNumBuiltTanks >= numTanks and currNumBuiltArtillery >= numArtillery then
+		return true
+	end
+
+	landFactory = currLandFactories[1]:toFactory()
+
+	self:buildTaskforceUnitGroup(numWarMechs, currNumWarMechs, landFactory, UnitId.WAR_MECH)
+	self:buildTaskforceUnitGroup(numTanks, currNumTanks, landFactory, UnitId.TANK)
+	self:buildTaskforceUnitGroup(numArtillery, currNumArtillery, landFactory, UnitId.ARTILLERY)
+
+	return false
+end
+
+function Player:sendTaskforce()
+	if --[[taskForceMechs[1]:getNumOrders() > 0 and taskForceMechs[1]:getOrder(0).type == 2--]] self.givenOrder then
+		return true
+	end
+
+	taskForceMechs = self:getUnitsByClass(UnitClass.WAR_MECH, self.numTaskForceWarMechs)
+	taskForceTanks = self:getUnitsByClass(UnitClass.TANK, self.numTaskForceTanks)
+	taskForceArtillery = self:getUnitsByClass(UnitClass.ARTILLERY, self.numTaskForceArtillery)
+
+	self:deselectUnits()
+	self:selectUnits(taskForceMechs)
+	self:selectUnits(taskForceTanks)
+	self:selectUnits(taskForceArtillery)
+
+	self:issueOrder(2, Vector3:new(0, 0, 0), {Target:new(nil, Vector3:new(0, 0, 0))}, false)
+	self.givenOrder = true
+
+	return true
 end
 
 Player.behaviour = {
@@ -204,5 +227,6 @@ Player.behaviour = {
 		{type = BTNodeType.FUNCTION, func = 'buildHarvester'},
 		{type = BTNodeType.FUNCTION, func = 'startHarvesting'},
 		{type = BTNodeType.FUNCTION, func = 'buildTaskforce'},
+		{type = BTNodeType.FUNCTION, func = 'sendTaskforce'},
 	}
 }
