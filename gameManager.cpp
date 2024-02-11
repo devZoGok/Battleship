@@ -111,6 +111,7 @@ namespace battleship{
 			"y", &Vector3::y,
 			"z", &Vector3::z,
 			"norm", &Vector3::norm,
+			"getDistanceFrom", &Vector3::getDistanceFrom,
 			"add", [](Vector3 v1, Vector3 v2){return v1 + v2;},
 			"subtr", [](Vector3 v1, Vector3 v2){return v1 - v2;},
 			"mult", [](Vector3 v1, float s){return v1 * s;},

@@ -55,14 +55,15 @@ function Player:buildExtractor()
 	self:selectUnits({engineer})
 
 	deposits = self:getResourceDeposits()
-	depPos = nil
+	if #deposits == 0 then return false end
 
-	if #deposits > 0 then
-		depPos = deposits[1]:getPos()
-	end
+	depPos = deposits[1]:getPos()
+	spawnPoint = self:getSpawnPoint()
 
-	if depPos == nil then
-		return false
+	for i = 1, #deposits do
+		if deposits[i]:getPos():getDistanceFrom(spawnPoint) < depPos:getDistanceFrom(spawnPoint) then
+			depPos = deposits[i]:getPos()
+		end
 	end
 
 	extractor = GameObjectFactory.createUnit(self, UnitId.EXTRACTOR, depPos, Quaternion:new(1, 0, 0, 0), 0)
