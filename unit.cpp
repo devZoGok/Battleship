@@ -308,7 +308,7 @@ namespace battleship{
 		if(orders.empty())
 			for(Unit *unit : units)
 				if(unit->getPos().getDistanceFrom(pos) < lineOfSight){
-					setOrder(Order(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target(unit)}, Vector3::VEC_ZERO, false));
+					setOrder(Order(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target(unit)}, Vector3::VEC_ZERO, -1, false));
 					break;
 				}
 	}

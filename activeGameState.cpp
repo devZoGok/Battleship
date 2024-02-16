@@ -423,13 +423,13 @@ namespace battleship{
 
                 break;
 			case Bind::ENABLE_CHASE_STATE:
-				enableUnitState(Unit::State::CHASE);
+				if(isPressed) enableUnitState(Unit::State::CHASE);
 				break;
 			case Bind::ENABLE_STAND_GROUND_STATE:
-				enableUnitState(Unit::State::STAND_GROUND);
+				if(isPressed) enableUnitState(Unit::State::STAND_GROUND);
 				break;
 			case Bind::ENABLE_HOLD_FIRE_STATE:
-				enableUnitState(Unit::State::HOLD_FIRE);
+				if(isPressed) enableUnitState(Unit::State::HOLD_FIRE);
 				break;
 			case Bind::DESELECT:
 				if(ufCtr->isPlacingFrames()) ufCtr->setRotatingFrames(isPressed);

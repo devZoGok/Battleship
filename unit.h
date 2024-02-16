@@ -51,7 +51,7 @@ namespace battleship{
         std::vector<Target> targets;
 
 		Order(){}
-		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, bool pa = true, int lid = -1) : type(t), playerAssigned(pa), lineId(lid), targets(targ), direction(dir){}
+		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1, bool pa = true) : type(t), playerAssigned(pa), lineId(lid), targets(targ), direction(dir){}
     };
     
     enum class MoveDir {LEFT, UP, FORW};
