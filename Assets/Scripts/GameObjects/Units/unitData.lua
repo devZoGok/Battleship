@@ -506,7 +506,7 @@ units = {
 		cost = 500,
 		size = {x = 2, y = 10, z = 2},
 		hitboxOffset = {x = 0, y = 0, z = 0},
-		lineOfSight = 5,
+		lineOfSight = 55,
 		name = 'Point defense',
 		basePath = PATH .. structurePrefix .. 'PointDefenses/',
 		meshPath = 'pointDefense.xml',

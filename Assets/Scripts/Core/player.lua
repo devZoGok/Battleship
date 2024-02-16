@@ -211,6 +211,12 @@ function Player:sendTaskforce()
 	self:selectUnits(taskForceTanks)
 	self:selectUnits(taskForceArtillery)
 
+	taskForce = self:getSelectedUnits()
+
+	for i = 1, #taskForce do
+		taskForce[i]:setState(0)
+	end
+
 	players = Game.getSingleton():getPlayers()
 	enemySpawnPoint = nil
 
