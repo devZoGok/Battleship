@@ -11,7 +11,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 
-	Extractor::Extractor(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, ResourceDeposit *rd) : Structure(player, id, pos, rot, buildStatus), drawRate(10){
+	Extractor::Extractor(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, ResourceDeposit *rd) : Structure(player, id, pos, rot, buildStatus){
 		if(!rd){
 			vector<ResourceDeposit*> deposits;
 
@@ -26,6 +26,10 @@ namespace battleship{
 					break;
 				}
 		}
+
+		sol::table unitTable = generateView()["units"][id + 1];
+		drawRate = unitTable["drawRate"];
+		drawSpeed = unitTable["drawSpeed"];
 
 		Vector2 size = Vector2(lenHpBar, 10);
 		ammountBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
@@ -56,7 +60,7 @@ namespace battleship{
 	}
 
 	void Extractor::draw(){
-		deposit->decrementAmmount();
+		deposit->decreaseAmmount(drawSpeed);
 		lastDrawTime = getTime();
 	}
 }

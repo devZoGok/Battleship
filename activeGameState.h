@@ -31,6 +31,7 @@ namespace battleship{
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
+		bool selectedUnitsAmongst(std::vector<Unit*>);
 		void updateGameObjHoveredOn();
 		void initDragbox();
 		void removeDragbox();

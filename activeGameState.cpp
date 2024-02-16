@@ -163,6 +163,16 @@ namespace battleship{
 		buttons.clear();
 	}
 
+	bool ActiveGameState::selectedUnitsAmongst(vector<Unit*> units){
+		vector<Unit*> selUnits = mainPlayer->getSelectedUnits();
+
+		for(Unit *unit : units)
+			if(find(selUnits.begin(), selUnits.end(), unit) != selUnits.end())
+				return true;
+
+		return false;
+	}
+
 	//TODO fix fog of war for hostile units
     void ActiveGameState::renderUnits() {
 		vector<Unit*> units;
@@ -192,13 +202,13 @@ namespace battleship{
             	Vector2 pos = u->getScreenPos();
 
 				if(buttons.empty()){
-					if(!mainPlayer->getSelectedUnitsByClass(UnitClass::ENGINEER).empty())
+					if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::ENGINEER)))
 						guiManager->readLuaScreenScript("engineerCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
-					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::FORT).empty())
+					else if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::FORT)))
 						guiManager->readLuaScreenScript("fortCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
-					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::LAND_FACTORY).empty())
+					else if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::LAND_FACTORY)))
 						guiManager->readLuaScreenScript("landFactoryCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
-					else if(!mainPlayer->getSelectedUnitsByClass(UnitClass::NAVAL_FACTORY).empty())
+					else if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::NAVAL_FACTORY)))
 						guiManager->readLuaScreenScript("navalFactoryCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 				}
 

@@ -22,8 +22,9 @@ namespace battleship{
 		void removeProjectile(int);
 		void removeProjectile(Projectile*);
         bool isThisPlayersUnit(GameObject*);
-		std::vector<Unit*> getSelectedUnitsByClass(UnitClass);
 		void selectUnits(std::vector<Unit*>);
+		std::vector<Unit*> getUnitsById(int, int = -1);
+		std::vector<Unit*> getUnitsByClass(UnitClass, int = -1);
 		inline void deselectUnits(){selectedUnits.clear();}
 		inline Unit* getSelectedUnit(int id){return selectedUnits[id];}
 		inline std::vector<Unit*> getSelectedUnits(){return selectedUnits;}
