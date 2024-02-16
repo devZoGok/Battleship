@@ -46,11 +46,12 @@ namespace battleship{
 
         TYPE type;
 		int lineId = -1;
+		bool playerAssigned = true;
 		vb01::Vector3 direction;
         std::vector<Target> targets;
 
 		Order(){}
-		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1) : type(t), lineId(lid), targets(targ), direction(dir){}
+		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, bool pa = true, int lid = -1) : type(t), playerAssigned(pa), lineId(lid), targets(targ), direction(dir){}
     };
     
     enum class MoveDir {LEFT, UP, FORW};
@@ -116,6 +117,7 @@ namespace battleship{
 		};
 
 		enum class Armor {CAST, COMBINED, MECHANIC, SHELL, STEEL};
+		enum class State {CHASE, STAND_GROUND, HOLD_FIRE};
 
         Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
         virtual ~Unit();
@@ -168,9 +170,11 @@ namespace battleship{
 		std::vector<GarrisonSlot> garrisonSlots;
 		std::vector<Armor> armorTypes;
 		std::vector<Weapon*> weapons;
+		State state = State::STAND_GROUND;
 
 		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
+		virtual void targetUnitsAutomatically();
 		virtual void reinit();
 		virtual void initProperties();
 		virtual void destroySound();

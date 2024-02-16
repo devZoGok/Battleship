@@ -295,11 +295,31 @@ namespace battleship{
         }
 	}
 
+	void Unit::targetUnitsAutomatically(){
+		vector<Player*> players = Game::getSingleton()->getPlayers();
+		vector<Unit*> units;
+
+		for(Player *pl : players)
+			if(!(pl == player || pl->getTeam() == player->getTeam())){
+				vector<Unit*> un = pl->getUnits();
+				units.insert(units.end(), un.begin(), un.end());
+			}
+
+		if(orders.empty())
+			for(Unit *unit : units)
+				if(unit->getPos().getDistanceFrom(pos) < lineOfSight){
+					setOrder(Order(Order::TYPE::ATTACK, vector<Order::Target>{Order::Target(unit)}, Vector3::VEC_ZERO, false));
+					break;
+				}
+	}
+
     void Unit::update() {
 		GameObject::update();
 
 		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
 		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
+
+		targetUnitsAutomatically();
 
 		vector<Player*> selectingPlayers = getSelectingPlayers();
 		bool mainPlayerSelecting = (find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());

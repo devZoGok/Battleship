@@ -63,7 +63,7 @@ units = {
 		cost = 500,
 		size = {x = 2.9, y = 8.22, z = 2.42},
 		hitboxOffset = {x = 0, y = 0, z = 0},
-		lineOfSight = 5,
+		lineOfSight = 20,
 		name = 'War mech',
 		basePath = PATH .. vehiclePrefix .. 'WarMechs/',
 		meshPath = 'warMech.xml',
