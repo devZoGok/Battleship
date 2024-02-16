@@ -298,10 +298,16 @@ namespace battleship{
 		Weapon *weapon = weapons[0];
 		float minDist = weapon->getMaxRange();
 
-		if(distToTarg > minDist)
-			navigateToTarget(.5 *  Map::getSingleton()->getCellSize().x);
-		else
-			pursuingTarget = false;
+		if(order.playerAssigned || (!order.playerAssigned && state == Unit::State::CHASE)){
+			if(distToTarg > minDist)
+				navigateToTarget(.5 * Map::getSingleton()->getCellSize().x);
+			else
+				pursuingTarget = false;
+		}
+		else if(!order.playerAssigned && state == Unit::State::STAND_GROUND && distToTarg > minDist){
+			removeOrder(0);
+			return;
+		}
 
 		float angleToTarg = targVec.norm().getAngleBetween(dirVec);
 

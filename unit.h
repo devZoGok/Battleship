@@ -129,6 +129,7 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		bool canGarrison(Vehicle*);
+		inline void setState(State s){state = s;}
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Structure* toStructure(){return (Structure*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}

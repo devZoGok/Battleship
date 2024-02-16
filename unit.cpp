@@ -319,7 +319,8 @@ namespace battleship{
 		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
 		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
 
-		targetUnitsAutomatically();
+		if(state != State::HOLD_FIRE)
+			targetUnitsAutomatically();
 
 		vector<Player*> selectingPlayers = getSelectingPlayers();
 		bool mainPlayerSelecting = (find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
