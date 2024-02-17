@@ -119,7 +119,7 @@ namespace battleship{
 		enum class Armor {CAST, COMBINED, MECHANIC, SHELL, STEEL};
 		enum class State {CHASE, STAND_GROUND, HOLD_FIRE};
 
-        Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
+        Unit(Player*, int, vb01::Vector3, vb01::Quaternion, State = State::STAND_GROUND);
         virtual ~Unit();
         virtual void update();
         virtual void halt();
@@ -165,7 +165,7 @@ namespace battleship{
         UnitClass unitClass;
         UnitType type;
         std::vector<Order> orders;
-        int health, maxHealth, id, playerId, lenHpBar = 200;
+        int health, maxHealth, playerId, lenHpBar = 200;
         s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight;
 		std::vector<GarrisonSlot> garrisonSlots;

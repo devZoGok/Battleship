@@ -11,7 +11,7 @@ namespace battleship{
 
 	class ResourceRover : public Vehicle{
 		public:
-			ResourceRover(Player*, int, vb01::Vector3, vb01::Quaternion);
+			ResourceRover(Player*, int, vb01::Vector3, vb01::Quaternion, Unit::State = Unit::State::STAND_GROUND);
 			~ResourceRover();
 			void update();
 		private:

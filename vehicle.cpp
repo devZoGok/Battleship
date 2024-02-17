@@ -17,7 +17,7 @@ using namespace vb01;
 using namespace std;
 
 namespace battleship{
-	Vehicle::Vehicle(Player *player, int id, Vector3 pos, Quaternion rot) : Unit(player, id, pos, rot){
+	Vehicle::Vehicle(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Unit(player, id, pos, rot, state){
 		initProperties();
 
 		debugMat = new Material(Root::getSingleton()->getLibPath() + "texture");

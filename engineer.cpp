@@ -9,7 +9,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 
-	Engineer::Engineer(Player *player, int id, Vector3 pos, Quaternion rot) : Vehicle(player, id, pos, rot){}
+	Engineer::Engineer(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Vehicle(player, id, pos, rot, state){}
 
 	void Engineer::build(Order order){
 		if(pathPoints.empty()){

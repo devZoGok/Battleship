@@ -15,7 +15,7 @@ namespace battleship{
 
 	class Factory : public Structure{
 		public:
-			Factory(Player*, int, vb01::Vector3, vb01::Quaternion, int = 0);
+			Factory(Player*, int, vb01::Vector3, vb01::Quaternion, int = 0, Unit::State = Unit::State::STAND_GROUND);
 			~Factory(){}
 			void update();
 			int getNumQueueUnitsById(int);

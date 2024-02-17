@@ -95,9 +95,7 @@ namespace battleship{
 		lastFireTime = getTime();
 	}
 
-    Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::UNIT, id, player, pos, rot){
-        this->id = id;
-        this->player = player;
+    Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot, State st) : GameObject(GameObject::Type::UNIT, id, player, pos, rot), state(st){
 		selectable = true;
 
 		initProperties();

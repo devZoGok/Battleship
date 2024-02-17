@@ -13,7 +13,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 
-	ResourceRover::ResourceRover(Player *player, int id, Vector3 pos, Quaternion rot) : Vehicle(player, id, pos, rot) {
+	ResourceRover::ResourceRover(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Vehicle(player, id, pos, rot, state) {
 		sol::table unitTable = generateView()["units"][id + 1];
 		capacity = unitTable["capacity"];
 		loadSpeed = unitTable["loadSpeed"];
