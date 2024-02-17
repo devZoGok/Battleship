@@ -6,7 +6,7 @@
 namespace battleship{
 	class PointDefense : public Structure{
 		public:
-			PointDefense(Player*, int, vb01::Vector3, vb01::Quaternion, int);
+			PointDefense(Player*, int, vb01::Vector3, vb01::Quaternion, int, Unit::State);
 		private:
 			vb01::Vector3 turretDir;
 

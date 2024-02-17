@@ -18,7 +18,7 @@ namespace battleship{
 		public:
 			enum class Type{UNIT, PROJECTILE, RESOURCE_DEPOSIT};
 
-			GameObject(Type t, int i, Player *pl, vb01::Vector3 vec, vb01::Quaternion quat) : type(t), id(i), player(pl), pos(vec), rot(quat){}
+			GameObject(Type, int, Player*, vb01::Vector3, vb01::Quaternion);
 			~GameObject(){}
 			virtual void reinit();
 			virtual void update();

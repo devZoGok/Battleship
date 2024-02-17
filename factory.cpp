@@ -13,7 +13,7 @@ namespace battleship{
 	using namespace std;
 	using namespace gameBase;
 
-	Factory::Factory(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Structure(player, id, pos, rot, buildStatus){}
+	Factory::Factory(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, Unit::State state) : Structure(player, id, pos, rot, buildStatus, state){}
 
 	void Factory::update(){
 		Structure::update();

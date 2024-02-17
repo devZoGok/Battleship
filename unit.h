@@ -46,11 +46,12 @@ namespace battleship{
 
         TYPE type;
 		int lineId = -1;
+		bool playerAssigned = true;
 		vb01::Vector3 direction;
         std::vector<Target> targets;
 
 		Order(){}
-		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1) : type(t), lineId(lid), targets(targ), direction(dir){}
+		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1, bool pa = true) : type(t), playerAssigned(pa), lineId(lid), targets(targ), direction(dir){}
     };
     
     enum class MoveDir {LEFT, UP, FORW};
@@ -116,8 +117,9 @@ namespace battleship{
 		};
 
 		enum class Armor {CAST, COMBINED, MECHANIC, SHELL, STEEL};
+		enum class State {CHASE, STAND_GROUND, HOLD_FIRE};
 
-        Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
+        Unit(Player*, int, vb01::Vector3, vb01::Quaternion, State = State::STAND_GROUND);
         virtual ~Unit();
         virtual void update();
         virtual void halt();
@@ -127,6 +129,7 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		bool canGarrison(Vehicle*);
+		inline void setState(State s){state = s;}
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Structure* toStructure(){return (Structure*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}
@@ -162,15 +165,17 @@ namespace battleship{
         UnitClass unitClass;
         UnitType type;
         std::vector<Order> orders;
-        int health, maxHealth, id, playerId, lenHpBar = 200;
+        int health, maxHealth, playerId, lenHpBar = 200;
         s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight;
 		std::vector<GarrisonSlot> garrisonSlots;
 		std::vector<Armor> armorTypes;
 		std::vector<Weapon*> weapons;
+		State state = State::STAND_GROUND;
 
 		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
+		virtual void targetUnitsAutomatically();
 		virtual void reinit();
 		virtual void initProperties();
 		virtual void destroySound();

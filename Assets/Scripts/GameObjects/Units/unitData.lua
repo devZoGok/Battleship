@@ -63,7 +63,7 @@ units = {
 		cost = 500,
 		size = {x = 2.9, y = 8.22, z = 2.42},
 		hitboxOffset = {x = 0, y = 0, z = 0},
-		lineOfSight = 5,
+		lineOfSight = 20,
 		name = 'War mech',
 		basePath = PATH .. vehiclePrefix .. 'WarMechs/',
 		meshPath = 'warMech.xml',
@@ -76,7 +76,7 @@ units = {
 		garrisonCategory = 1
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 20}},
+		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 25}},
 		unitClass = UnitClass.TANK,
 		unitType = UnitType.LAND,
 		armor = {ArmorType.STEEL},
@@ -86,7 +86,7 @@ units = {
 		cost = 500,
 		size = {x = 2.9, y = 8.22, z = 2.42},
 		hitboxOffset = {x = 0, y = 0, z = 0},
-		lineOfSight = 5,
+		lineOfSight = 25,
 		name = 'Tank',
 		basePath = PATH .. vehiclePrefix .. 'Tanks/',
 		meshPath = 'tank.xml',
@@ -99,7 +99,7 @@ units = {
 		garrisonCategory = 2
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 45}},
+		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 30}},
 		unitClass = UnitClass.ARTILLERY,
 		unitType = UnitType.LAND,
 		armor = {ArmorType.MECHANIC},
@@ -109,7 +109,7 @@ units = {
 		cost = 500,
 		size = {x = 2.9, y = 8.22, z = 2.42},
 		hitboxOffset = {x = 0, y = 0, z = 0},
-		lineOfSight = 5,
+		lineOfSight = 30,
 		name = 'Artillery',
 		basePath = PATH .. vehiclePrefix .. 'Artillery/',
 		meshPath = 'artillery.xml',
@@ -506,7 +506,7 @@ units = {
 		cost = 500,
 		size = {x = 2, y = 10, z = 2},
 		hitboxOffset = {x = 0, y = 0, z = 0},
-		lineOfSight = 5,
+		lineOfSight = 55,
 		name = 'Point defense',
 		basePath = PATH .. structurePrefix .. 'PointDefenses/',
 		meshPath = 'pointDefense.xml',

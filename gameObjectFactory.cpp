@@ -27,21 +27,21 @@ namespace battleship{
 			case UnitClass::FORT:
 			case UnitClass::LAND_FACTORY:
 			case UnitClass::NAVAL_FACTORY:
-				return new Factory(player, id, pos, rot, buildStatus);
+				return new Factory(player, id, pos, rot, buildStatus, Unit::State::STAND_GROUND);
 			case UnitClass::POINT_DEFENSE:
-				return new PointDefense(player, id, pos, rot, buildStatus);
+				return new PointDefense(player, id, pos, rot, buildStatus, Unit::State::STAND_GROUND);
 			case UnitClass::EXTRACTOR:
 				return new Extractor(player, id, pos, rot, buildStatus);
 			case UnitClass::MARKET:
 			case UnitClass::LAB:
 			case UnitClass::REFINERY:
-				return new Structure(player, id, pos, rot, buildStatus);
+				return new Structure(player, id, pos, rot, buildStatus, Unit::State::STAND_GROUND);
 			case UnitClass::ENGINEER:
-				return new Engineer(player, id, pos, rot);
+				return new Engineer(player, id, pos, rot, Unit::State::STAND_GROUND);
 			case UnitClass::RESOURCE_ROVER:
-				return new ResourceRover(player, id, pos, rot);
+				return new ResourceRover(player, id, pos, rot, Unit::State::STAND_GROUND);
 			default:
-				return new Vehicle(player, id, pos, rot);
+				return new Vehicle(player, id, pos, rot, Unit::State::STAND_GROUND);
 		}
 	}
 

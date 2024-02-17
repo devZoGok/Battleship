@@ -323,6 +323,12 @@ namespace battleship{
 		}
     }
 
+	void ActiveGameState::enableUnitState(Unit::State state){
+		vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
+
+		for(Unit *unit : selectedUnits)
+			unit->setState(state);
+	}
     
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
@@ -416,6 +422,15 @@ namespace battleship{
                 }
 
                 break;
+			case Bind::ENABLE_CHASE_STATE:
+				if(isPressed) enableUnitState(Unit::State::CHASE);
+				break;
+			case Bind::ENABLE_STAND_GROUND_STATE:
+				if(isPressed) enableUnitState(Unit::State::STAND_GROUND);
+				break;
+			case Bind::ENABLE_HOLD_FIRE_STATE:
+				if(isPressed) enableUnitState(Unit::State::HOLD_FIRE);
+				break;
 			case Bind::DESELECT:
 				if(ufCtr->isPlacingFrames()) ufCtr->setRotatingFrames(isPressed);
                 if (!isPressed) deselectUnits();

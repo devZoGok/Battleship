@@ -10,7 +10,7 @@ namespace battleship{
 
 	class Extractor : public Structure{
 		public:
-			Extractor(Player*, int, vb01::Vector3, vb01::Quaternion, int, ResourceDeposit *rd = nullptr);
+			Extractor(Player*, int, vb01::Vector3, vb01::Quaternion, int, ResourceDeposit *rd = nullptr, Unit::State = Unit::State::STAND_GROUND);
 			~Extractor();
 			void update();
 			void draw();

@@ -10,7 +10,7 @@ using namespace vb01;
 using namespace std;
 
 namespace battleship{
-	Structure::Structure(Player *player, int id, Vector3 pos, Quaternion rot, int bldSt) : buildStatus(bldSt), Unit(player, id, pos, rot){
+	Structure::Structure(Player *player, int id, Vector3 pos, Quaternion rot, int bldSt, Unit::State state) : Unit(player, id, pos, rot, state), buildStatus(bldSt){
 		Vector2 size = Vector2(lenHpBar, 10);
 		buildStatusBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
 		buildStatusForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 1, 1));

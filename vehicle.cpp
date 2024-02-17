@@ -17,7 +17,7 @@ using namespace vb01;
 using namespace std;
 
 namespace battleship{
-	Vehicle::Vehicle(Player *player, int id, Vector3 pos, Quaternion rot) : Unit(player, id, pos, rot){
+	Vehicle::Vehicle(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Unit(player, id, pos, rot, state){
 		initProperties();
 
 		debugMat = new Material(Root::getSingleton()->getLibPath() + "texture");
@@ -290,7 +290,7 @@ namespace battleship{
 		Unit::attack(order);
 		int currNumOrders = orders.size();
 
-		if(prevNumOrders != currNumOrders) return;
+		if(weapons.empty() || prevNumOrders != currNumOrders) return;
 
 		Order::Target target = order.targets[0];
 		Vector3 targVec = (target.unit ? target.unit->getPos() : target.pos) - pos;
@@ -298,10 +298,16 @@ namespace battleship{
 		Weapon *weapon = weapons[0];
 		float minDist = weapon->getMaxRange();
 
-		if(distToTarg > minDist)
-			navigateToTarget(.5 *  Map::getSingleton()->getCellSize().x);
-		else
-			pursuingTarget = false;
+		if(order.playerAssigned || (!order.playerAssigned && state == Unit::State::CHASE)){
+			if(distToTarg > minDist)
+				navigateToTarget(.5 * Map::getSingleton()->getCellSize().x);
+			else
+				pursuingTarget = false;
+		}
+		else if(!order.playerAssigned && state == Unit::State::STAND_GROUND && distToTarg > minDist){
+			removeOrder(0);
+			return;
+		}
 
 		float angleToTarg = targVec.norm().getAngleBetween(dirVec);
 

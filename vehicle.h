@@ -10,7 +10,7 @@ namespace vb01{
 namespace battleship{
 	class Vehicle : public Unit{
 		public:
-			Vehicle(Player*, int, vb01::Vector3, vb01::Quaternion);
+			Vehicle(Player*, int, vb01::Vector3, vb01::Quaternion, Unit::State);
 			~Vehicle();
 			virtual void update();
         	void move(Order);

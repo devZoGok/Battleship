@@ -3,7 +3,7 @@
 namespace battleship{
 	using namespace vb01;
 
-	PointDefense::PointDefense(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Structure(player, id, pos, rot, buildStatus){
+	PointDefense::PointDefense(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, Unit::State state) : Structure(player, id, pos, rot, buildStatus, state){
 		turretDir = dirVec;
 	}
 

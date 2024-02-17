@@ -11,7 +11,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 
-	Extractor::Extractor(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, ResourceDeposit *rd) : Structure(player, id, pos, rot, buildStatus){
+	Extractor::Extractor(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, ResourceDeposit *rd, Unit::State state) : Structure(player, id, pos, rot, buildStatus, state){
 		if(!rd){
 			vector<ResourceDeposit*> deposits;
 
