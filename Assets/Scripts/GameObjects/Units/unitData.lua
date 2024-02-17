@@ -130,6 +130,7 @@ units = {
 		armor = {ArmorType.MECHANIC},
 		isVehicle = true,
 		health = 500,
+		hackRange = 30,
 		buildTime = 1000,
 		hackTime = 1000,
 		cost = 500,

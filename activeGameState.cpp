@@ -330,6 +330,7 @@ namespace battleship{
 			unit->setState(state);
 	}
     
+	//TODO only allow appropriate orders for units
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 

@@ -16,6 +16,8 @@ namespace battleship{
 	using namespace gameBase;
 
 	Engineer::Engineer(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Vehicle(player, id, pos, rot, state){
+		hackRange = generateView()["units"][id + 1]["hackRange"];
+
 		Vector2 size = Vector2(lenHpBar, 10);
 		hackStatusBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
 		hackStatusForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(1, 0, 1, 1));
@@ -41,6 +43,9 @@ namespace battleship{
 			hackStatusBackground->setVisible(false);
 			hackStatusForeground->setVisible(false);
 		}
+
+		if(orders.empty() || orders[0].type != Order::TYPE::HACK)
+			hackStatus = 0;
 	}
 
 	void Engineer::build(Order order){
@@ -72,11 +77,25 @@ namespace battleship{
 	}
 
 	void Engineer::hack(Order order){
+		Unit *targUnit = order.targets[0].unit;
+		bool withinRange = (targUnit->getPos().getDistanceFrom(pos) < hackRange);
 		int hackRate = int(generateView()["units"][id + 1]["hackTime"]) / 100;
 		bool canHack = (getTime() - lastIncrementTime > hackRate);
 
-		if(canHack)
+		if(withinRange && canHack){
 			hackStatus++;
+			pursuingTarget = false;
+		}
+		else if(!withinRange){
+			hackStatus = 0;
+
+			if(!pursuingTarget){
+				preparePathpoints(order, targUnit->getPos());
+				pursuingTarget = true;
+			}
+			else
+				navigateToTarget(.9 * hackRange);
+		}
 
 		if(hackStatus >= 100){
 			Game::getSingleton()->changeUnitPlayer(order.targets[0].unit, player);
