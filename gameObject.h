@@ -39,6 +39,7 @@ namespace battleship{
 			inline float getHeight() {return height;}
 			inline float getLength() {return length;}
 			inline vb01::Model* getModel() {return model;}
+			inline void setPlayer(Player *pl){player = pl;}
 			inline Player* getPlayer(){return player;}
 			inline void toggleDebugging(bool d){this->debugging=d;}
 			inline vb01::Vector3 getDirVec() {return dirVec;}

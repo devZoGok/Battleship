@@ -211,5 +211,7 @@ namespace battleship{
 
 		oldPlayerUnits.erase(oldPlayerUnits.begin() + oldId);
 		newPlayer->addUnit(unit);
+		unit->setPlayer(newPlayer);
+		unit->halt();
 	}
 }
