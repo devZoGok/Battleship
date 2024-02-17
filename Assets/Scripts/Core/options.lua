@@ -39,6 +39,7 @@ mappings = {
 		{bind = 48, trigger = 84, action = true, bindType = 0, inOptions = false},
 		{bind = 49, trigger = 89, action = true, bindType = 0, inOptions = false},
 		{bind = 50, trigger = 85, action = true, bindType = 0, inOptions = false},
+		{bind = 51, trigger = 79, action = true, bindType = 0, inOptions = false},
 
 		{bind = 7, trigger = 312, action = false, bindType = 2, inOptions = false},
 		{bind = 8, trigger = 313, action = false, bindType = 2, inOptions = false},

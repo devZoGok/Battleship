@@ -35,7 +35,7 @@ namespace battleship{
 	class Engineer;
     
     struct Order {
-        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH, SUPPLY};
+        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH, SUPPLY, HACK};
 			struct Target{
 				Unit *unit = nullptr;
 				vb01::Vector3 pos;
@@ -81,7 +81,7 @@ namespace battleship{
     public:
 		class Weapon{
 			public:
-				enum class Type{HITSCAN, SHELL, TORPEDO, CRUISE_MISSILE};
+				enum class Type{HITSCAN, SHELL, TORPEDO, CRUISE_MISSILE, HACK};
 
 				Weapon(Unit*, sol::table);
 				~Weapon();
@@ -190,6 +190,7 @@ namespace battleship{
         virtual void patrol(Order){}
         virtual void launch(Order);
 		virtual void supply(Order){}
+		virtual void hack(Order){}
 		float calculateRotation(vb01::Vector3, float, float);
 		void removeBar(vb01::Node*);
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);

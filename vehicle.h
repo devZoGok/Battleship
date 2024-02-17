@@ -19,7 +19,6 @@ namespace battleship{
 			inline int getGarrisonCategory(){return garrisonCategory;}
 		private:
 		   	Unit *garrisonable = nullptr;
-			bool pursuingTarget = false;
 			int patrolPointId = 0, garrisonCategory;
         	float speed, maxTurnAngle, anglePrecision;
 			vb01::Material *debugMat = nullptr;
@@ -27,7 +26,6 @@ namespace battleship{
 
         	inline int getNextPatrolPointId(int numPoints) {return patrolPointId == numPoints - 1 ? 0 : patrolPointId + 1;}
 			void enterGarrisonable();
-			void navigateToTarget(float);
 			void halt();
 			void turn(float);
 			void addOrder(Order);
@@ -38,8 +36,10 @@ namespace battleship{
 			void select();
 		protected:
 			std::vector<vb01::Vector3> pathPoints;
+			bool pursuingTarget = false;
 
         	void navigate(float = 0.);
+			void navigateToTarget(float);
 			void preparePathpoints(Order&, vb01::Vector3, bool = false);
 			void alignToSurface();
 			void attack(Order);

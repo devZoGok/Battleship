@@ -330,6 +330,7 @@ namespace battleship{
 			unit->setState(state);
 	}
     
+	//TODO only allow appropriate orders for units
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
 
@@ -445,6 +446,13 @@ namespace battleship{
 				}
 
 				break;
+			case Bind::HACK:
+				if(isPressed){
+					if(gameObjHoveredOn && gameObjHoveredOn->getType() == GameObject::Type::UNIT && gameObjHoveredOn->getPlayer()->getTeam() != mainPlayer->getTeam())
+						issueOrder(Order::TYPE::HACK, vector<Order::Target>{Order::Target((Unit*)gameObjHoveredOn)}, shiftPressed);
+
+					break;
+				}
 			case Bind::TOGGLE_SUB:
                 break;
 			case Bind::ZOOM_IN:
