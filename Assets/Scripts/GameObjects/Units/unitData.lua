@@ -123,8 +123,7 @@ units = {
 	},
 	{
 		weapons = {
-			{type = WeaponClass.HITSCAN, rateOfFire = 20000, fireSfx = PATH .. 'Sounds/Units/WarMechs/attack.ogg', damage = 20, maxRange = 30},
-			--{type = WeaponClass.HACK, hackTime = 600, maxRange = 30},
+			{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 20, maxRange = 8},
 		},
 		unitClass = UnitClass.ENGINEER,
 		unitType = UnitType.HOVER,
@@ -136,7 +135,7 @@ units = {
 		cost = 500,
 		size = {x = 1, y = 8, z = 13.45},
 		hitboxOffset = {x = 0, y = 0, z = 0},
-		lineOfSight = 5,
+		lineOfSight = 20,
 		name = 'Engineer',
 		basePath = PATH .. vehiclePrefix .. 'Engineers/',
 		meshPath = 'engineer.xml',
