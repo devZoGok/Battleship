@@ -388,6 +388,9 @@ namespace battleship{
                 case Order::TYPE::SUPPLY:
                     supply(order);
                     break;
+                case Order::TYPE::HACK:
+                    hack(order);
+                    break;
                 default:
                     break;
             }

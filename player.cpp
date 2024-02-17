@@ -55,6 +55,9 @@ namespace battleship{
       	    case Order::TYPE::SUPPLY:
 				color = Vector3(1, 1, 0);
       	        break;
+      	    case Order::TYPE::HACK:
+				color = Vector3(1, 0, 1);
+      	        break;
       	}
 
 		LineRenderer *lineRenderer = LineRenderer::getSingleton();

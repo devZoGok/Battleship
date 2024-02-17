@@ -10,6 +10,7 @@ namespace sf{
 }
 
 namespace battleship{
+	class Unit;
 	class Player;
 	class Projectile;
 
@@ -21,6 +22,7 @@ namespace battleship{
 			void removeFx(int, bool);
 			void removeAllElements();
 			void explode(vb01::Vector3, int, float, sf::Sound*);
+			void changeUnitPlayer(Unit*, Player*);
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline std::vector<Player*>& getPlayers(){return players;}

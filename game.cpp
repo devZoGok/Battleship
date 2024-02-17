@@ -197,4 +197,19 @@ namespace battleship{
 		fx.activate();
 		addFx(fx);
 	}
+
+	void Game::changeUnitPlayer(Unit *unit, Player *newPlayer){
+		Player *oldPlayer = unit->getPlayer();
+		vector<Unit*> &oldPlayerUnits = oldPlayer->getUnits();
+		int oldId = -1;
+
+		for(int i = 0; i < oldPlayerUnits.size(); i++)
+			if(oldPlayerUnits[i] == unit){
+				oldId = i;
+				break;
+			}
+
+		oldPlayerUnits.erase(oldPlayerUnits.begin() + oldId);
+		newPlayer->addUnit(unit);
+	}
 }

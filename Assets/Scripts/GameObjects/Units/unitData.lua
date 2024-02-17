@@ -24,7 +24,7 @@ UnitId = {
 	REFINERY = 21,
 	FORT = 22
 }
-WeaponClass = {HITSCAN = 0, SHELL = 1, TORPEDO = 2, CRUISE_MISSILE = 3}
+WeaponClass = {HITSCAN = 0, SHELL = 1, TORPEDO = 2, CRUISE_MISSILE = 3, HACK = 4}
 UnitClass = {
 	WAR_MECH = 0,
 	TANK = 1,
@@ -122,13 +122,17 @@ units = {
 		garrisonCategory = 2
 	},
 	{
-		weapons = {},
+		weapons = {
+			{type = WeaponClass.HITSCAN, rateOfFire = 20000, fireSfx = PATH .. 'Sounds/Units/WarMechs/attack.ogg', damage = 20, maxRange = 30},
+			--{type = WeaponClass.HACK, hackTime = 600, maxRange = 30},
+		},
 		unitClass = UnitClass.ENGINEER,
 		unitType = UnitType.HOVER,
 		armor = {ArmorType.MECHANIC},
 		isVehicle = true,
 		health = 500,
 		buildTime = 1000,
+		hackTime = 1000,
 		cost = 500,
 		size = {x = 1, y = 8, z = 13.45},
 		hitboxOffset = {x = 0, y = 0, z = 0},

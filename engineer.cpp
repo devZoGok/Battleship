@@ -1,15 +1,47 @@
 #include "engineer.h"
-#include "map.h"
-#include "player.h"
+#include "activeGameState.h"
 #include "structure.h"
+#include "player.h"
+#include "game.h"
+#include "map.h"
 
 #include <solUtil.h>
+#include <stateManager.h>
+
+#include <vector>
 
 namespace battleship{
+	using namespace std;
 	using namespace vb01;
 	using namespace gameBase;
 
-	Engineer::Engineer(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Vehicle(player, id, pos, rot, state){}
+	Engineer::Engineer(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Vehicle(player, id, pos, rot, state){
+		Vector2 size = Vector2(lenHpBar, 10);
+		hackStatusBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
+		hackStatusForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(1, 0, 1, 1));
+	}
+
+	Engineer::~Engineer(){
+		removeBar(hackStatusBackground);
+		removeBar(hackStatusForeground);
+	}
+
+	void Engineer::update(){
+		Vehicle::update();
+
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
+
+		vector<Player*> selectingPlayers = Unit::getSelectingPlayers();
+		bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
+
+		if(hackStatus < 100)
+			Unit::displayUnitStats(hackStatusForeground, hackStatusBackground, hackStatus, 100, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
+		else{
+			hackStatusBackground->setVisible(false);
+			hackStatusForeground->setVisible(false);
+		}
+	}
 
 	void Engineer::build(Order order){
 		if(pathPoints.empty()){
@@ -36,6 +68,19 @@ namespace battleship{
 
 			if(type == UnitType::LAND)
 				alignToSurface();
+		}
+	}
+
+	void Engineer::hack(Order order){
+		int hackRate = int(generateView()["units"][id + 1]["hackTime"]) / 100;
+		bool canHack = (getTime() - lastIncrementTime > hackRate);
+
+		if(canHack)
+			hackStatus++;
+
+		if(hackStatus >= 100){
+			Game::getSingleton()->changeUnitPlayer(order.targets[0].unit, player);
+			removeOrder(0);
 		}
 	}
 }
