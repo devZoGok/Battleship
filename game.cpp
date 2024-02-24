@@ -214,4 +214,43 @@ namespace battleship{
 		unit->setPlayer(newPlayer);
 		unit->halt();
 	}
+
+	vector<int> Game::parseTechTable(int tid, string techKey, string numVarKey, string varKey){
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script(numVarKey + " = #" + techKey + "[" + to_string(tid + 1) + "]." + varKey);
+		int numVar = SOL_LUA_VIEW[numVarKey];
+		sol::table techTable = SOL_LUA_VIEW[techKey][tid + 1];
+
+		vector<int> varVec;
+
+		for(int i = 0; i < numVar; i++)
+			varVec.push_back(techTable[varKey][i + 1]);
+
+		return varVec;
+	}
+
+	void Game::initTechnologies(){
+		technologies.clear();
+
+		sol::state_view SOL_LUA_VIEW = generateView();
+		string techKey = "technologies";
+		SOL_LUA_VIEW.script("numTechs = #" + techKey);
+		int numTechs = SOL_LUA_VIEW["numTechs"]; 
+
+		for(int i = 0; i < numTechs; i++){
+			sol::table techTable = SOL_LUA_VIEW[techKey][i + 1];
+
+			Technology t;
+			t.id = techTable["id"];
+			t.cost = techTable["cost"];
+			t.name = techTable["name"];
+			t.icon = techTable["icon"];
+			t.description = techTable["description"];
+			t.parents = parseTechTable(i, techKey, "numParents", "parents");
+			t.children = parseTechTable(i, techKey, "numChildren", "children");
+			t.abilities = parseTechTable(i, techKey, "numAbilities", "abilities");
+
+			technologies.push_back(t);
+		}
+	}
 }

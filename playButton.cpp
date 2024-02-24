@@ -28,6 +28,9 @@ namespace battleship{
 	
 	        for(int i = 0; i < factionsListboxes.size(); i++)
 	            factions.push_back(to_string(factionsListboxes[i]->getSelectedOption()));
+
+			Game *game = Game::getSingleton();
+			game->initTechnologies();
 	
 			int selectedMap = mapListbox->getSelectedOption();
 			string mapName = wstringToString(mapListbox->getContents()[selectedMap]);
@@ -39,7 +42,7 @@ namespace battleship{
 			for(int i = 0; i < numPlayers; i++){
 				bool cpuPlayer = (i < numPlayers - 1);
 				string name = (cpuPlayer ? "CPU player #" + to_string(i) : "Player");
-				Game::getSingleton()->addPlayer(new Player(0, 0, i, Vector3(1, 1, 1), cpuPlayer, map->getSpawnPoint(i), name));
+				game->addPlayer(new Player(0, 0, i, Vector3(1, 1, 1), cpuPlayer, map->getSpawnPoint(i), name));
 			}
 
 			map->loadPlayerGameObjects();

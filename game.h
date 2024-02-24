@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "fx.h"
+#include "technology.h"
 
 #include <vector>
 
@@ -23,6 +24,7 @@ namespace battleship{
 			void removeAllElements();
 			void explode(vb01::Vector3, int, float, sf::Sound*);
 			void changeUnitPlayer(Unit*, Player*);
+			void initTechnologies();
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline std::vector<Player*>& getPlayers(){return players;}
@@ -32,9 +34,11 @@ namespace battleship{
 			Game(){}
 			void resetLuaGameObjects();
 			void endGame(bool);
+			std::vector<int> parseTechTable(int, std::string, std::string, std::string);
 
 			bool paused = false, ended = false;
 			std::vector<Fx> fx;
+			std::vector<Technology> technologies;
 			std::vector<Player*> players;
 	};
 }
