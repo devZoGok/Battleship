@@ -494,6 +494,8 @@ units = {
 		size = {x = 1, y = 1.15, z = 2},
 		hitboxOffset = {x = 0, y = 0, z = 0},
 		lineOfSight = 5,
+		generationRate = 10000,
+		generationSpeed = 10,
 		name = 'Lab',
 		basePath = PATH .. structurePrefix .. 'Labs/',
 		meshPath = 'lab.xml',

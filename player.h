@@ -48,12 +48,15 @@ namespace battleship{
 		inline int getRefineds(){return refineds;}
 		inline void setRefineds(int ref){this->refineds = ref;}
 		inline void addRefineds(int ref){this->refineds += ref;}
+		inline void subtractRefineds(int ref){this->refineds -= ref;}
 		inline int getWealth(){return wealth;}
 		inline void setWealth(int w){this->wealth = w;}
 		inline void addWealth(int w){this->wealth += w;}
+		inline void subtractWealth(int w){this->wealth -= w;}
 		inline int getResearch(){return research;}
 		inline void setResearch(int r){this->research = r;}
 		inline void addResearch(int r){this->research += r;}
+		inline void subtractResearch(int r){this->research -= r;}
 		inline bool isCpuPlayer(){return cpuPlayer;}
 		inline int getNumVehiclesBuilt(){return vehiclesBuilt;}
 		inline int getNumVehiclesDestroyed(){return vehiclesDestroyed;}

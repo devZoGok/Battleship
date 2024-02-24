@@ -8,6 +8,7 @@
 #include "pointDefense.h"
 #include "extractor.h"
 #include "cruiseMissile.h"
+#include "researchStruct.h"
 #include "defConfigs.h"
 
 #include <solUtil.h>
@@ -32,8 +33,9 @@ namespace battleship{
 				return new PointDefense(player, id, pos, rot, buildStatus, Unit::State::STAND_GROUND);
 			case UnitClass::EXTRACTOR:
 				return new Extractor(player, id, pos, rot, buildStatus);
-			case UnitClass::MARKET:
 			case UnitClass::LAB:
+				return new ResearchStruct(player, id, pos, rot, buildStatus);
+			case UnitClass::MARKET:
 			case UnitClass::REFINERY:
 				return new Structure(player, id, pos, rot, buildStatus, Unit::State::STAND_GROUND);
 			case UnitClass::ENGINEER:
