@@ -7,7 +7,7 @@ TechnologyId = {
 
 technologies = {
 	{
-		id = TechnologyId.APT
+		id = TechnologyId.APT,
 		name = 'Advanced power technology',
 		cost = 1000,
 		icon = '',
@@ -17,7 +17,7 @@ technologies = {
 		abilities = {},
 	},
 	{
-		id = TechnologyId.EFT
+		id = TechnologyId.EFT,
 		name = 'Energy field technology',
 		cost = 1000,
 		icon = '',
@@ -27,7 +27,7 @@ technologies = {
 		abilities = {},
 	},
 	{
-		id = TechnologyId.PCT
+		id = TechnologyId.PCT,
 		name = 'Plasma casting technology',
 		cost = 1000,
 		icon = '',
@@ -37,7 +37,7 @@ technologies = {
 		abilities = {},
 	},
 	{
-		id = TechnologyId.FPT
+		id = TechnologyId.FPT,
 		name = 'Fusion power technology',
 		cost = 1000,
 		icon = '',
