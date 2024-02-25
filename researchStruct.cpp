@@ -16,7 +16,9 @@ namespace battleship{
 	void ResearchStruct::update(){
 		Structure::update();
 
-		if(player->getRefineds() >= researchCost && canGenerateResearch()){
+		if(!isComplete()) return;
+
+		if(health > .3 * maxHealth && player->getRefineds() >= researchCost && canGenerateResearch()){
 			player->addResearch(generationSpeed);
 			player->subtractRefineds(researchCost);
 			lastGenTime = getTime();

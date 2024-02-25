@@ -109,7 +109,7 @@ namespace battleship{
 		int minDistId = -1;
 
 		for(int i = 0; i < structs.size(); i++)
-			if(structs[i]->getBuildStatus() == 100){
+			if(structs[i]->isComplete()){
 				minDistId = i;
 				break;
 			}
@@ -117,7 +117,7 @@ namespace battleship{
 		if(minDistId == -1) return nullptr;
 
 		for(int i = 0; i < structs.size(); i++)
-			if(structs[i]->getBuildStatus() == 100 && structs[minDistId]->getPos().getDistanceFrom(pos) > structs[i]->getPos().getDistanceFrom(pos))
+			if(structs[i]->isComplete() && structs[minDistId]->getPos().getDistanceFrom(pos) > structs[i]->getPos().getDistanceFrom(pos))
 				minDistId = i;
 
 		return structs[minDistId];

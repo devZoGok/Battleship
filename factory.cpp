@@ -18,6 +18,8 @@ namespace battleship{
 	void Factory::update(){
 		Structure::update();
 
+		if(!isComplete()) return;
+
 		if(!unitQueue.empty())
 			train();
 	}
