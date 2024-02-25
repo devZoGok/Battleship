@@ -18,13 +18,24 @@ namespace battleship{
 
 		if(!isComplete()) return;
 
-		if(health > .3 * maxHealth && player->getRefineds() >= researchCost && canGenerateResearch()){
+		if(researchQueue.empty() && health > .3 * maxHealth && player->getRefineds() >= researchCost && canUpdateResearch()){
 			player->addResearch(generationSpeed);
 			player->subtractRefineds(researchCost);
-			lastGenTime = getTime();
+			lastUpdateTime = getTime();
 		}
-	}
+		else if(!researchQueue.empty()){
+			int techCost = Game::getSingleton()->getTechnology(researchQueue[0]).cost;
+			int playerResearch = player->getResearch();
 
-	void ResearchStruct::researchTechnology(int techId){
+			if(techCost > playerResearch && canUpdateResearch()){
+				researchStatus += (int)((float)playerResearch / techCost);
+				lastUpdateTime = getTime();
+			}
+			else if(researchStatus >= 100 || techCost <= playerResearch){
+				player->addTechnology(researchQueue[0]);
+				researchQueue.erase(researchQueue.begin());
+				researchStatus = 0;
+			}
+		}
 	}
 }
