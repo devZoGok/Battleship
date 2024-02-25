@@ -10,15 +10,15 @@ namespace battleship{
 		sol::table unitTable = generateView()["units"][id + 1];
 		generationRate = unitTable["generationRate"];
 		generationSpeed = unitTable["generationSpeed"];
+		researchCost = unitTable["researchCost"];
 	}
 
 	void ResearchStruct::update(){
 		Structure::update();
-		int cost = 1;
 
-		if(player->getRefineds() >= cost && canGenerateResearch()){
+		if(player->getRefineds() >= researchCost && canGenerateResearch()){
 			player->addResearch(generationSpeed);
-			player->subtractRefineds(cost);
+			player->subtractRefineds(researchCost);
 			lastGenTime = getTime();
 		}
 	}

@@ -10,7 +10,7 @@ namespace battleship{
 			void update();
 		private:
 			vb01::s64 lastGenTime = 0;
-			int generationRate, generationSpeed;
+			int researchCost, generationRate, generationSpeed;
 
 			bool canGenerateResearch(){return vb01::getTime() - lastGenTime > generationRate;}
 			void generateResearch();

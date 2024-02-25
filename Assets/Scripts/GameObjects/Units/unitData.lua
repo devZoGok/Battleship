@@ -496,6 +496,7 @@ units = {
 		lineOfSight = 5,
 		generationRate = 10000,
 		generationSpeed = 10,
+		researchCost = 1,
 		name = 'Lab',
 		basePath = PATH .. structurePrefix .. 'Labs/',
 		meshPath = 'lab.xml',
