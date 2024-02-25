@@ -27,10 +27,6 @@ namespace battleship{
 				}
 		}
 
-		sol::table unitTable = generateView()["units"][id + 1];
-		drawRate = unitTable["drawRate"];
-		drawSpeed = unitTable["drawSpeed"];
-
 		Vector2 size = Vector2(lenHpBar, 10);
 		ammountBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
 		ammountForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 1, 1));
@@ -39,6 +35,16 @@ namespace battleship{
 	Extractor::~Extractor(){
 		removeBar(ammountForeground);
 		removeBar(ammountBackground);
+	}
+
+	void Extractor::initProperties(){
+		Structure::initProperties();
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
+		sol::table unitTable = generateView()["units"][id + 1];
+		drawRate = unitTable["drawRate"]; drawRate += game->calcAbilFromTech(Ability::Type::DRAW_RATE, currTechs, (int)GameObject::type, id);
+		drawSpeed = unitTable["drawSpeed"]; drawSpeed += game->calcAbilFromTech(Ability::Type::DRAW_SPEED, currTechs, (int)GameObject::type, id);
 	}
 
 	void Extractor::update(){

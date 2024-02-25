@@ -16,7 +16,9 @@ namespace battleship{
 	using namespace gameBase;
 
 	Engineer::Engineer(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Vehicle(player, id, pos, rot, state){
-		hackRange = generateView()["units"][id + 1]["hackRange"];
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+		hackRange = generateView()["units"][id + 1]["hackRange"]; hackRange += game->calcAbilFromTech(Ability::Type::HACK_RANGE, currTechs, (int)GameObject::type, id);
 
 		Vector2 size = Vector2(lenHpBar, 10);
 		hackStatusBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));

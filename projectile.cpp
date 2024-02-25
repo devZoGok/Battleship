@@ -1,20 +1,21 @@
 #include <node.h>
 #include <model.h>
 #include <material.h>
-#include <particleEmitter.h>
-#include <quaternion.h>
 #include <rayCaster.h>
+#include <quaternion.h>
+#include <particleEmitter.h>
 
 #include <stateManager.h>
 
+#include "fx.h"
 #include "game.h"
 #include "unit.h"
 #include "util.h"
+#include "player.h"
 #include "projectile.h"
-#include "resourceDeposit.h"
 #include "defConfigs.h"
+#include "resourceDeposit.h"
 #include "inGameAppState.h"
-#include "fx.h"
 
 using namespace std;
 using namespace vb01;
@@ -51,14 +52,16 @@ namespace battleship{
 
 	void Projectile::initProperties(){
 		GameObject::initProperties();
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
 
 		sol::table projTable = generateView()[GameObject::getGameObjTableName()][id + 1];
         rayLength = projTable["rayLength"];
-        directHitDamage = projTable["directHitDamage"];
+        directHitDamage = projTable["directHitDamage"]; directHitDamage += game->calcAbilFromTech(Ability::Type::DIRECT_HIT_DAMAGE, currTechs, (int)GameObject::type, id);
 
 		string explKey = "explosion";
-        explosionDamage = projTable[explKey]["damage"];
-        explosionRadius = projTable[explKey]["radius"];
+        explosionDamage = projTable[explKey]["damage"]; explosionDamage += game->calcAbilFromTech(Ability::Type::EXPLOSION_DAMAGE, currTechs, (int)GameObject::type, id);
+        explosionRadius = projTable[explKey]["radius"]; explosionRadius += game->calcAbilFromTech(Ability::Type::EXPLOSION_RADIUS, currTechs, (int)GameObject::type, id);
         speed = projTable["speed"];
 		rotAngle = projTable["rotAngle"].get_or(0.0);
 	}

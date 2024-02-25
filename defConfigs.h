@@ -52,6 +52,7 @@ namespace battleship{
 			"Scripts/aiAgent.lua",
 			"Scripts/Core/player.lua",
 			"Scripts/Technologies/technologyData.lua",
+			"Scripts/Abilities/abilityData.lua",
 		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{

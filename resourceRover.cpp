@@ -1,6 +1,7 @@
 #include "resourceRover.h"
 #include "resourceDeposit.h"
 #include "map.h"
+#include "game.h"
 #include "player.h"
 #include "extractor.h"
 #include "structure.h"
@@ -14,11 +15,6 @@ namespace battleship{
 	using namespace gameBase;
 
 	ResourceRover::ResourceRover(Player *player, int id, Vector3 pos, Quaternion rot, Unit::State state) : Vehicle(player, id, pos, rot, state) {
-		sol::table unitTable = generateView()["units"][id + 1];
-		capacity = unitTable["capacity"];
-		loadSpeed = unitTable["loadSpeed"];
-		loadRate = unitTable["loadRate"];
-
 		Vector2 size = Vector2(lenHpBar, 10);
 		loadBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
 		loadForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(1, 1, 0, 1));
@@ -27,6 +23,17 @@ namespace battleship{
 	ResourceRover::~ResourceRover(){
 		removeBar(loadForeground);
 		removeBar(loadBackground);
+	}
+
+	void ResourceRover::initProperties(){
+		Vehicle::initProperties();
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
+		sol::table unitTable = generateView()["units"][id + 1];
+		capacity = unitTable["capacity"]; capacity += game->calcAbilFromTech(Ability::Type::CAPACITY, currTechs, (int)GameObject::type, id);
+		loadSpeed = unitTable["loadSpeed"]; loadSpeed += game->calcAbilFromTech(Ability::Type::LOAD_SPEED, currTechs, (int)GameObject::type, id);
+		loadRate = unitTable["loadRate"]; loadRate += game->calcAbilFromTech(Ability::Type::LOAD_RATE, currTechs, (int)GameObject::type, id);
 	}
 
 	void ResourceRover::supply(Order order){

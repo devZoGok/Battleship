@@ -14,7 +14,7 @@ technologies = {
 		description = '',
 		parents = {},
 		children = {},
-		abilities = {},
+		abilities = {0},
 	},
 	{
 		id = TechnologyId.EFT,

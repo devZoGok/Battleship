@@ -18,6 +18,7 @@
 #include "activeGameState.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
+#include "ability.h"
 
 using namespace glm;
 using namespace vb01;
@@ -126,12 +127,16 @@ namespace battleship{
 		sol::state_view SOL_LUA_VIEW = generateView();
 		string objType = GameObject::getGameObjTableName();
 		sol::table unitTable = SOL_LUA_VIEW[objType][id + 1];
+
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
 		string name = unitTable["name"];
-        health = unitTable["health"];
+        health = unitTable["health"]; health += game->calcAbilFromTech(Ability::Type::HEALTH, currTechs, (int)GameObject::type, id);
         vehicle = unitTable["isVehicle"];
 		maxHealth = health;
 
-        lineOfSight = unitTable["lineOfSight"];
+        lineOfSight = unitTable["lineOfSight"]; lineOfSight += game->calcAbilFromTech(Ability::Type::LINE_OF_SIGHT, currTechs, (int)GameObject::type, id);
         unitClass = (UnitClass)unitTable["unitClass"];
 		type = (UnitType)unitTable["unitType"];
 

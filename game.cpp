@@ -7,6 +7,8 @@
 #include "concreteGuiManager.h"
 #include "defConfigs.h"
 
+#include <algorithm>
+
 #include <assetManager.h>
 #include <particleEmitter.h>
 
@@ -215,11 +217,11 @@ namespace battleship{
 		unit->halt();
 	}
 
-	vector<int> Game::parseTechTable(int tid, string techKey, string numVarKey, string varKey){
+	vector<int> Game::parseTechTable(int tid, string key, string numVarKey, string varKey){
 		sol::state_view SOL_LUA_VIEW = generateView();
-		SOL_LUA_VIEW.script(numVarKey + " = #" + techKey + "[" + to_string(tid + 1) + "]." + varKey);
+		SOL_LUA_VIEW.script(numVarKey + " = #" + key + "[" + to_string(tid + 1) + "]." + varKey);
 		int numVar = SOL_LUA_VIEW[numVarKey];
-		sol::table techTable = SOL_LUA_VIEW[techKey][tid + 1];
+		sol::table techTable = SOL_LUA_VIEW[key][tid + 1];
 
 		vector<int> varVec;
 
@@ -252,5 +254,36 @@ namespace battleship{
 
 			technologies.push_back(t);
 		}
+
+		techKey = "abilities";
+		SOL_LUA_VIEW.script("numAbilities = #" + techKey);
+		int numAbilities = SOL_LUA_VIEW["numAbilities"]; 
+
+		for(int i = 0; i < numAbilities; i++){
+			sol::table techTable = SOL_LUA_VIEW[techKey][i + 1];
+
+			Ability ability;
+			ability.type = techTable["type"];
+			ability.ammount = techTable["ammount"];
+			ability.gameObjType = techTable["gameObjType"];
+			ability.gameObjIds = parseTechTable(i, techKey, "numGameObjIds", "gameObjIds");
+			abilities.push_back(ability);
+		}
+	}
+
+	float Game::calcAbilFromTech(Ability::Type type, vector<int> techResearch, int gameObjType, int unitId){
+		float ammount = 0;
+
+		for(int techId : techResearch)
+			for(int abilId : technologies[techId].abilities)
+				if(
+					abilities[abilId].type == type &&
+					abilities[abilId].gameObjType == gameObjType && 
+					find(abilities[abilId].gameObjIds.begin(), abilities[abilId].gameObjIds.end(), unitId) != abilities[abilId].gameObjIds.end()
+				){
+					ammount += abilities[abilId].ammount;
+				}
+
+		return ammount;
 	}
 }

@@ -10,6 +10,8 @@
 
 #include "vehicle.h"
 #include "pathfinder.h"
+#include "player.h"
+#include "game.h"
 #include "map.h"
 
 using namespace gameBase;
@@ -83,9 +85,12 @@ namespace battleship{
 	}
 
 	void Vehicle::initProperties(){
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
 		sol::table unitTable = generateView()[GameObject::getGameObjTableName()][id + 1];
-        maxTurnAngle = unitTable["maxTurnAngle"];
-        speed = unitTable["speed"];
+        maxTurnAngle =  unitTable["maxTurnAngle"]; maxTurnAngle += game->calcAbilFromTech(Ability::Type::MAX_TURN_ANGLE, currTechs, (int)GameObject::type, id);
+        speed = unitTable["speed"]; speed += game->calcAbilFromTech(Ability::Type::SPEED, currTechs, (int)GameObject::type, id);
 		anglePrecision = unitTable["anglePrecision"];
 		garrisonCategory = unitTable["garrisonCategory"];
 	}

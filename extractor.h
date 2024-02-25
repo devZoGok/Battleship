@@ -17,6 +17,8 @@ namespace battleship{
 			bool canDraw(){return vb01::getTime() - lastDrawTime > drawRate;}
 			inline ResourceDeposit* getDeposit(){return deposit;}
 		private:
+			void initProperties();
+
 			int drawSpeed, drawRate;
 			vb01::s64 lastDrawTime = 0;
 			vb01::Node *ammountBackground = nullptr, *ammountForeground = nullptr;
