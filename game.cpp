@@ -231,6 +231,7 @@ namespace battleship{
 		return varVec;
 	}
 
+	//TODO clean this method up
 	void Game::initTechnologies(){
 		technologies.clear();
 
@@ -264,7 +265,7 @@ namespace battleship{
 
 			Ability ability;
 			ability.type = techTable["type"];
-			ability.ammount = techTable["ammount"];
+			ability.ammount = techTable["ammount"].get_or(0);
 			ability.gameObjType = techTable["gameObjType"];
 			ability.gameObjIds = parseTechTable(i, techKey, "numGameObjIds", "gameObjIds");
 			abilities.push_back(ability);

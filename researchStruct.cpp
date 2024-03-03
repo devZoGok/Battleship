@@ -1,5 +1,6 @@
 #include "researchStruct.h"
 #include "player.h"
+#include "game.h"
 
 namespace battleship{
 	using namespace std;

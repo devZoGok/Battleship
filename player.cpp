@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "structure.h"
+#include "projectile.h"
 #include "stateManager.h"
 #include "activeGameState.h"
 #include "resourceDeposit.h"

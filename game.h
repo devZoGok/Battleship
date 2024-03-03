@@ -32,6 +32,7 @@ namespace battleship{
 			inline std::vector<Player*>& getPlayers(){return players;}
 			inline Player* getPlayer(int id){return players[id];}
 			inline int getNumPlayers(){return players.size();}
+			inline Technology getTechnology(int id){return technologies[id];}
 		private:
 			Game(){}
 			void resetLuaGameObjects();

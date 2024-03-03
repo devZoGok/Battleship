@@ -14,7 +14,7 @@ namespace battleship{
 			int researchCost, generationRate, generationSpeed, researchStatus = 0;
 			std::vector<int> researchQueue;
 
-			bool canUpdateResearch(){return vb01::getTime() - lastGenTime > generationRate;}
+			bool canUpdateResearch(){return vb01::getTime() - lastUpdateTime > generationRate;}
 			void generateResearch();
 	};
 }

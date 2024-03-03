@@ -11,9 +11,11 @@ AbilityType = {
 	LOAD_SPEED = 8,
 	DRAW_RATE = 9,
 	DRAW_SPEED = 10,
-	HACK_RANGE = 11
+	HACK_RANGE = 11,
+	UNIT_UNLOCK = 12
 }
 
 abilities = {
-	{type = AbilityType.SPEED, gameObjType = 0, ammount = .4, gameObjIds = {UnitId.WAR_MECH}}
+	{type = AbilityType.SPEED, gameObjType = 0, ammount = .4, gameObjIds = {UnitId.WAR_MECH}},
+	{type = AbilityType.UNIT_UNLOCK, gameObjType = 0, gameObjIds = {UnitId.WAR_MECH}},
 }

@@ -9,6 +9,7 @@
 namespace battleship{
 	class ResourceDeposit;
 	class Projectile;
+	class Unit;
 
     class Player {
     public:
