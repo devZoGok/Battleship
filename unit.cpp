@@ -16,6 +16,8 @@
 #include "vehicle.h"
 #include "gameObjectFactory.h"
 #include "activeGameState.h"
+#include "gameManager.h"
+#include "projectile.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
 #include "ability.h"
@@ -169,6 +171,20 @@ namespace battleship{
 			for(int i = 0; i < numArmorTypes; i++){
 				Armor arm = (Armor)unitTable[tblName][i + 1];
 				armorTypes.push_back(arm);
+			}
+		}
+
+		tblName = "buildableUnits";
+		sol::optional<sol::table> bu = unitTable[tblName];
+
+		if(bu != sol::nullopt){
+			SOL_LUA_VIEW.script("numBuildableUnits = #units[" + to_string(id + 1) + "]." + tblName);
+			int numBuildableUnits = SOL_LUA_VIEW["numBuildableUnits"];
+			buildableUnitGuiScreen = unitTable["guiScreen"];
+
+			for(int i = 0; i < numBuildableUnits; i++){
+				sol::table buTable = unitTable[tblName][i + 1];
+				buildableUnits.push_back(BuildableUnit(buTable["id"], buTable["buildable"]));
 			}
 		}
 	}

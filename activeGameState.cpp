@@ -161,6 +161,7 @@ namespace battleship{
 
 		ConcreteGuiManager::getSingleton()->removeAllButtons();
 		buttons.clear();
+		unitGuiScreen = "";
 	}
 
 	bool ActiveGameState::selectedUnitsAmongst(vector<Unit*> units){
@@ -193,6 +194,7 @@ namespace battleship{
 			guiManager->getText("wealth"),
 			guiManager->getText("research")
 		};
+		vector<Unit*> selUnits = mainPlayer->getSelectedUnits();
 		
 
         for (Unit *u : units) {
@@ -200,16 +202,11 @@ namespace battleship{
 			   	Vector3 dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
 				Vector3 dragboxOrigin = dragboxNode->getPosition(), dragboxEnd = dragboxOrigin + dragboxSize;
             	Vector2 pos = u->getScreenPos();
+				string guiScreen = u->getBuildableUnitGuiScreen();
 
-				if(buttons.empty()){
-					if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::ENGINEER)))
-						guiManager->readLuaScreenScript("engineerCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
-					else if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::FORT)))
-						guiManager->readLuaScreenScript("fortCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
-					else if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::LAND_FACTORY)))
-						guiManager->readLuaScreenScript("landFactoryCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
-					else if(selectedUnitsAmongst(mainPlayer->getUnitsByClass(UnitClass::NAVAL_FACTORY)))
-						guiManager->readLuaScreenScript("navalFactoryCommands.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
+				if(!selUnits.empty() && u == selUnits[0] && guiScreen != "" && guiScreen != unitGuiScreen){
+					guiManager->readLuaScreenScript(u->getBuildableUnitGuiScreen(), buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
+					unitGuiScreen = guiScreen;
 				}
 
                 if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){

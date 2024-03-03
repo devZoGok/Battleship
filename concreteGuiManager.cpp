@@ -163,30 +163,34 @@ namespace battleship{
 			}
 			case BUILD:
 			{
-				int strId = guiTable["structureId"];
+				int unitId = SOL_LUA_STATE["UnitId"]["ENGINEER"];
+				int strId = SOL_LUA_STATE["units"][unitId + 1]["buildableUnits"][guiId + 1]["id"];
 				string buttonName = SOL_LUA_STATE["units"][strId + 1]["name"];
-				button = new BuildButton(pos, size, strId, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
+				button = new BuildButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], unitId, guiId);
 				break;
 			}
 			case LAND_FACTORY_TRAIN:
 			{
-				int unitId = guiTable["unitId"];
+				int facId = SOL_LUA_STATE["UnitId"]["LAND_FACTORY"];
+				int unitId = SOL_LUA_STATE["units"][facId + 1]["buildableUnits"][guiId + 1]["id"];
 				string buttonName = SOL_LUA_STATE["units"][unitId + 1]["name"];
-				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["LAND_FACTORY"], unitId);
+				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], facId, guiId);
 				break;
 			}
 			case NAVAL_FACTORY_TRAIN:
 			{
-				int unitId = guiTable["unitId"];
+				int facId = SOL_LUA_STATE["UnitId"]["NAVAL_FACTORY"];
+				int unitId = SOL_LUA_STATE["units"][facId + 1]["buildableUnits"][guiId + 1]["id"];
 				string buttonName = SOL_LUA_STATE["units"][unitId + 1]["name"];
-				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["NAVAL_FACTORY"], unitId);
+				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], facId, guiId);
 				break;
 			}
 			case FORT_TRAIN:
 			{
-				int unitId = guiTable["unitId"];
+				int facId = SOL_LUA_STATE["UnitId"]["FORT"];
+				int unitId = SOL_LUA_STATE["units"][facId + 1]["buildableUnits"][guiId + 1]["id"];
 				string buttonName = SOL_LUA_STATE["units"][unitId + 1]["name"];
-				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["FORT"], unitId);
+				button = new TrainButton(pos, size, buttonName, (int)guiTable["trigger"], (string)guiTable["imagePath"], facId, guiId);
 				break;
 			}
 			case STATISTICS:

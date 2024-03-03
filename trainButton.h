@@ -9,7 +9,7 @@ namespace battleship{
 			TrainButton(vb01::Vector2, vb01::Vector2, std::string, int, std::string, int, int);
 			void onClick();
 		private:
-			int factoryId, trainableUnitId;
+			int slotId;
 	};
 }
 

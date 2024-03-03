@@ -73,6 +73,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 1
 	},
 	{
@@ -96,6 +97,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 2
 	},
 	{
@@ -119,11 +121,20 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 2
 	},
 	{
 		weapons = {
 			{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 20, maxRange = 8},
+		},
+		buildableUnits = {
+			{id = UnitId.LAND_FACTORY, buildable = true},
+			{id = UnitId.NAVAL_FACTORY, buildable = true},
+			{id = UnitId.MARKET, buildable = true},
+			{id = UnitId.LAB, buildable = true},
+			{id = UnitId.POINT_DEFENSE, buildable = true},
+			{id = UnitId.FORT, buildable = true},
 		},
 		unitClass = UnitClass.ENGINEER,
 		unitType = UnitType.HOVER,
@@ -140,6 +151,7 @@ units = {
 		name = 'Engineer',
 		basePath = PATH .. vehiclePrefix .. 'Engineers/',
 		meshPath = 'engineer.xml',
+		guiScreen = 'engineerCommands.lua',
 		selectionSfx = PATH .. 'Sounds/Units/Engineers/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		speed = .1,
@@ -169,6 +181,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -193,6 +206,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -219,6 +233,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -242,6 +257,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -266,6 +282,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -289,6 +306,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -312,6 +330,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -334,6 +353,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -365,6 +385,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -403,6 +424,7 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -434,9 +456,16 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
+		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
+		buildableUnits = {
+			{id = UnitId.WAR_MECH, buildable = true}, 
+			{id = UnitId.TANK, buildable = true}, 
+			{id = UnitId.ARTILLERY, buildable = true}, 
+			{id = UnitId.RESOURCE_ROVER, buildable = true}
+		},
 		unitClass = UnitClass.LAND_FACTORY,
 		unitType = UnitType.LAND,
 		isVehicle = false,
@@ -449,6 +478,7 @@ units = {
 		name = 'Land factory',
 		basePath = PATH .. structurePrefix .. 'LandFactories/',
 		meshPath = 'landFactory.xml',
+		guiScreen = 'landFactoryCommands.lua',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
@@ -465,6 +495,7 @@ units = {
 		name = 'Naval factory',
 		basePath = PATH .. structurePrefix .. 'NavalFactories/',
 		meshPath = 'navalFactory.xml',
+		guiScreen = 'navalFactoryCommands.lua',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
@@ -482,6 +513,7 @@ units = {
 		basePath = PATH .. structurePrefix .. 'Markets/',
 		meshPath = 'market.xml',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
+		guiScreen = '',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
@@ -500,6 +532,7 @@ units = {
 		name = 'Lab',
 		basePath = PATH .. structurePrefix .. 'Labs/',
 		meshPath = 'lab.xml',
+		guiScreen = '',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
@@ -518,6 +551,7 @@ units = {
 		basePath = PATH .. structurePrefix .. 'PointDefenses/',
 		meshPath = 'pointDefense.xml',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
+		guiScreen = '',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
@@ -536,6 +570,7 @@ units = {
 		basePath = PATH .. structurePrefix .. 'Extractors/',
 		meshPath = 'extractor.xml',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
+		guiScreen = '',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
@@ -551,10 +586,12 @@ units = {
 		name = 'Refinery',
 		basePath = PATH .. structurePrefix .. 'Refineries/',
 		meshPath = 'refinery.xml',
+		guiScreen = '',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
+		buildableUnits = {{id = UnitId.ENGINEER, buildable = true}},
 		unitClass = UnitClass.FORT,
 		unitType = UnitType.LAND,
 		isVehicle = false,
@@ -567,6 +604,7 @@ units = {
 		name = 'Fort',
 		basePath = PATH .. structurePrefix .. 'Forts/',
 		meshPath = 'fort.xml',
+		guiScreen = 'fortCommands.lua',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},

@@ -8,9 +8,8 @@
 
 #include <solUtil.h>
 
-#include "gameManager.h"
 #include "gameObject.h"
-#include "projectile.h"
+#include "buildableUnit.h"
 
 namespace sf{
 	class SoundBuffer;
@@ -31,8 +30,9 @@ namespace battleship{
 	class Structure;
 	class Factory;
 	class Cruiser;
-	class PointDefense;
 	class Engineer;
+	class PointDefense;
+	class Projectile;
     
     struct Order {
         enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH, SUPPLY, HACK};
@@ -149,6 +149,8 @@ namespace battleship{
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
 		inline Order getOrder(int i){return orders[i];}
 		inline int getNumOrders(){return orders.size();}
+		inline std::string getBuildableUnitGuiScreen(){return buildableUnitGuiScreen;}
+		inline BuildableUnit getBuildableUnit(int i){return buildableUnits[i];}
     private:
 		void renderOrderLine(bool);
         void updateScreenCoordinates();
@@ -165,12 +167,14 @@ namespace battleship{
         UnitClass unitClass;
         UnitType type;
         std::vector<Order> orders;
+		std::string buildableUnitGuiScreen = "";
         int health, maxHealth, playerId, lenHpBar = 200;
-        s64 orderLineDispTime = 0, lastFireTime = 0;
+		vb01::s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight;
-		std::vector<GarrisonSlot> garrisonSlots;
 		std::vector<Armor> armorTypes;
 		std::vector<Weapon*> weapons;
+		std::vector<GarrisonSlot> garrisonSlots;
+		std::vector<BuildableUnit> buildableUnits;
 		State state = State::STAND_GROUND;
 
 		std::vector<Player*> getSelectingPlayers();

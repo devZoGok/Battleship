@@ -8,7 +8,6 @@ gui = {
 		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.FORT_TRAIN,
-		trigger = 82,
-		unitId = UnitId.ENGINEER
+		trigger = 82
 	},
 }

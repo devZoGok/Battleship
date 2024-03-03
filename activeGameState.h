@@ -47,6 +47,7 @@ namespace battleship{
 
         GuiAppState *guiState;
         Player *mainPlayer;
+		std::string unitGuiScreen = "";
 		GameObject *gameObjHoveredOn = nullptr;
 		vb01::Node *dragboxNode = nullptr;
 		vb01::Vector2 clickPoint;
