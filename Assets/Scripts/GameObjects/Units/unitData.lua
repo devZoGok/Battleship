@@ -532,7 +532,7 @@ units = {
 		name = 'Lab',
 		basePath = PATH .. structurePrefix .. 'Labs/',
 		meshPath = 'lab.xml',
-		guiScreen = '',
+		guiScreen = 'researchStructCommands.lua',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},

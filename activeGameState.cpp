@@ -202,10 +202,10 @@ namespace battleship{
 			   	Vector3 dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
 				Vector3 dragboxOrigin = dragboxNode->getPosition(), dragboxEnd = dragboxOrigin + dragboxSize;
             	Vector2 pos = u->getScreenPos();
-				string guiScreen = u->getBuildableUnitGuiScreen();
+				string guiScreen = u->getGuiScreen();
 
 				if(!selUnits.empty() && u == selUnits[0] && guiScreen != "" && guiScreen != unitGuiScreen){
-					guiManager->readLuaScreenScript(u->getBuildableUnitGuiScreen(), buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
+					guiManager->readLuaScreenScript(u->getGuiScreen(), buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					unitGuiScreen = guiScreen;
 				}
 

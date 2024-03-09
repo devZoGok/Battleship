@@ -24,6 +24,7 @@
 #include "buildButton.h"
 #include "trainButton.h"
 #include "statsButton.h"
+#include "researchButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -195,6 +196,9 @@ namespace battleship{
 			}
 			case STATISTICS:
 				button = new StatsButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
+				break;
+			case RESEARCH:
+				button = new ResearchButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["LAB"], (int)guiTable["techId"]);
 				break;
 		}
 

@@ -141,6 +141,7 @@ namespace battleship{
         lineOfSight = unitTable["lineOfSight"]; lineOfSight += game->calcAbilFromTech(Ability::Type::LINE_OF_SIGHT, currTechs, (int)GameObject::type, id);
         unitClass = (UnitClass)unitTable["unitClass"];
 		type = (UnitType)unitTable["unitType"];
+		guiScreen = unitTable["guiScreen"];
 
 		string tblName = "garrisonCapacity";
 		sol::optional<sol::table> gc = unitTable[tblName];
@@ -180,7 +181,6 @@ namespace battleship{
 		if(bu != sol::nullopt){
 			SOL_LUA_VIEW.script("numBuildableUnits = #units[" + to_string(id + 1) + "]." + tblName);
 			int numBuildableUnits = SOL_LUA_VIEW["numBuildableUnits"];
-			buildableUnitGuiScreen = unitTable["guiScreen"];
 
 			for(int i = 0; i < numBuildableUnits; i++){
 				sol::table buTable = unitTable[tblName][i + 1];

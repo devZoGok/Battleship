@@ -41,7 +41,8 @@ namespace battleship{
 		LAND_FACTORY_TRAIN,
 		NAVAL_FACTORY_TRAIN,
 		FORT_TRAIN,
-		STATISTICS
+		STATISTICS,
+		RESEARCH
 	};
 	enum ListboxType {
 		CONTROLS,

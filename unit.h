@@ -149,7 +149,7 @@ namespace battleship{
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
 		inline Order getOrder(int i){return orders[i];}
 		inline int getNumOrders(){return orders.size();}
-		inline std::string getBuildableUnitGuiScreen(){return buildableUnitGuiScreen;}
+		inline std::string getGuiScreen(){return guiScreen;}
 		inline BuildableUnit getBuildableUnit(int i){return buildableUnits[i];}
     private:
 		void renderOrderLine(bool);
@@ -167,7 +167,7 @@ namespace battleship{
         UnitClass unitClass;
         UnitType type;
         std::vector<Order> orders;
-		std::string buildableUnitGuiScreen = "";
+		std::string guiScreen = "";
         int health, maxHealth, playerId, lenHpBar = 200;
 		vb01::s64 orderLineDispTime = 0, lastFireTime = 0;
         float lineOfSight;
