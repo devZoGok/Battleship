@@ -73,7 +73,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 1
 	},
 	{
@@ -97,7 +96,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 2
 	},
 	{
@@ -121,7 +119,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 2
 	},
 	{
@@ -181,7 +178,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -206,7 +202,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -233,7 +228,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -257,7 +251,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -282,7 +275,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -306,7 +298,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -330,7 +321,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -353,7 +343,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -385,7 +374,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -424,7 +412,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -456,7 +443,6 @@ units = {
 		destinationOffset = .1,
 		anglePrecision = .1,
 		maxTurnAngle = .1,
-		guiScreen = '',
 		garrisonCategory = 3
 	},
 	{
@@ -513,7 +499,6 @@ units = {
 		basePath = PATH .. structurePrefix .. 'Markets/',
 		meshPath = 'market.xml',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
-		guiScreen = '',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
@@ -551,7 +536,6 @@ units = {
 		basePath = PATH .. structurePrefix .. 'PointDefenses/',
 		meshPath = 'pointDefense.xml',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
-		guiScreen = '',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
@@ -570,7 +554,6 @@ units = {
 		basePath = PATH .. structurePrefix .. 'Extractors/',
 		meshPath = 'extractor.xml',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
-		guiScreen = '',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
@@ -586,7 +569,6 @@ units = {
 		name = 'Refinery',
 		basePath = PATH .. structurePrefix .. 'Refineries/',
 		meshPath = 'refinery.xml',
-		guiScreen = '',
 		selectionSfx = PATH .. 'Sounds/Units/Sample/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},

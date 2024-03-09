@@ -141,7 +141,10 @@ namespace battleship{
         lineOfSight = unitTable["lineOfSight"]; lineOfSight += game->calcAbilFromTech(Ability::Type::LINE_OF_SIGHT, currTechs, (int)GameObject::type, id);
         unitClass = (UnitClass)unitTable["unitClass"];
 		type = (UnitType)unitTable["unitType"];
-		guiScreen = unitTable["guiScreen"];
+
+		string gsk = "guiScreen";
+		sol::optional<string> nameOpt = unitTable[gsk];
+		guiScreen = (nameOpt != sol::nullopt ? (string)unitTable[gsk] : "");
 
 		string tblName = "garrisonCapacity";
 		sol::optional<sol::table> gc = unitTable[tblName];
