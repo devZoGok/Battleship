@@ -1,6 +1,9 @@
 #include "researchStruct.h"
+#include "activeGameState.h"
 #include "player.h"
 #include "game.h"
+
+#include <stateManager.h>
 
 namespace battleship{
 	using namespace std;
@@ -12,6 +15,15 @@ namespace battleship{
 		generationRate = unitTable["generationRate"];
 		generationSpeed = unitTable["generationSpeed"];
 		researchCost = unitTable["researchCost"];
+
+		Vector2 size = Vector2(lenHpBar, 10);
+		researchStatusBackground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(0, 0, 0, 1));
+		researchStatusForeground = Unit::createBar(Vector2::VEC_ZERO, size,  Vector4(1, 0, 1, 1));
+	}
+
+	ResearchStruct::~ResearchStruct(){
+		removeBar(researchStatusBackground);
+		removeBar(researchStatusForeground);
 	}
 
 	void ResearchStruct::update(){
@@ -19,17 +31,30 @@ namespace battleship{
 
 		if(!isComplete()) return;
 
-		if(researchQueue.empty() && health > .3 * maxHealth && player->getRefineds() >= researchCost && canUpdateResearch()){
-			player->addResearch(generationSpeed);
-			player->subtractRefineds(researchCost);
-			lastUpdateTime = getTime();
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = (activeState ? activeState->getPlayer() : nullptr);
+
+		vector<Player*> selectingPlayers = Unit::getSelectingPlayers();
+		bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
+
+		if(researchQueue.empty()){
+			if(health > .3 * maxHealth && player->getRefineds() >= researchCost && canUpdateResearch()){
+				player->addResearch(generationSpeed);
+				player->subtractRefineds(researchCost);
+				lastUpdateTime = getTime();
+			}
+
+			researchStatusBackground->setVisible(false);
+			researchStatusForeground->setVisible(false);
 		}
 		else if(!researchQueue.empty()){
+			Unit::displayUnitStats(researchStatusForeground, researchStatusBackground, researchStatus, 100, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
+
 			int techCost = Game::getSingleton()->getTechnology(researchQueue[0]).cost;
 			int playerResearch = player->getResearch();
 
 			if(techCost > playerResearch && canUpdateResearch()){
-				researchStatus += (int)((float)playerResearch / techCost);
+				researchStatus += int(100 * ((float)playerResearch / techCost));
 				lastUpdateTime = getTime();
 			}
 			else if(researchStatus >= 100 || techCost <= playerResearch){
