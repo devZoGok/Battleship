@@ -184,7 +184,7 @@ namespace battleship{
 
 			for(int i = 0; i < numBuildableUnits; i++){
 				sol::table buTable = unitTable[tblName][i + 1];
-				buildableUnits.push_back(BuildableUnit(buTable["id"], buTable["buildable"]));
+				buildableUnits.push_back(BuildableUnit(buTable["id"], game->isUnitUnlocked(currTechs, id) | (bool)buTable["buildable"]));
 			}
 		}
 	}

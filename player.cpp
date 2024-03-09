@@ -183,4 +183,8 @@ namespace battleship{
 
 		return ucUnits;
 	}
+
+	void Player::addTechnology(int techId){
+		technologies.push_back(techId);
+	}
 }

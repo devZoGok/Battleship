@@ -27,12 +27,14 @@ namespace battleship{
 			void changeUnitPlayer(Unit*, Player*);
 			void initTechnologies();
 			float calcAbilFromTech(Ability::Type, std::vector<int>, int, int);
+			bool isUnitUnlocked(std::vector<int>, int);
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline std::vector<Player*>& getPlayers(){return players;}
 			inline Player* getPlayer(int id){return players[id];}
 			inline int getNumPlayers(){return players.size();}
 			inline Technology getTechnology(int id){return technologies[id];}
+			inline Ability getAbility(int id){return abilities[id];}
 		private:
 			Game(){}
 			void resetLuaGameObjects();

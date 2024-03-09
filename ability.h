@@ -18,7 +18,8 @@ namespace battleship{
 			LOAD_SPEED,
 			DRAW_RATE,
 			DRAW_SPEED,
-			HACK_RANGE
+			HACK_RANGE,
+			UNIT_UNLOCK
 		};
 
 		Type type;

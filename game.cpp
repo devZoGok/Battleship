@@ -265,7 +265,7 @@ namespace battleship{
 
 			Ability ability;
 			ability.type = techTable["type"];
-			ability.ammount = techTable["ammount"].get_or(0);
+			ability.ammount = techTable["ammount"].get_or(0.0);
 			ability.gameObjType = techTable["gameObjType"];
 			ability.gameObjIds = parseTechTable(i, techKey, "numGameObjIds", "gameObjIds");
 			abilities.push_back(ability);
@@ -286,5 +286,18 @@ namespace battleship{
 				}
 
 		return ammount;
+	}
+
+	bool Game::isUnitUnlocked(vector<int> techResearch, int unitId){
+		for(int techId : techResearch){
+			for(int abilId : technologies[techId].abilities){
+				vector<int> ids = abilities[abilId].gameObjIds;
+
+				if(find(ids.begin(), ids.end(), unitId) != ids.end())
+					return true;
+			}
+		}
+
+		return false;
 	}
 }

@@ -26,6 +26,7 @@ namespace battleship{
 		void selectUnits(std::vector<Unit*>);
 		std::vector<Unit*> getUnitsById(int, int = -1);
 		std::vector<Unit*> getUnitsByClass(UnitClass, int = -1);
+		void addTechnology(int);
 		inline void deselectUnits(){selectedUnits.clear();}
 		inline Unit* getSelectedUnit(int id){return selectedUnits[id];}
 		inline std::vector<Unit*> getSelectedUnits(){return selectedUnits;}
@@ -74,7 +75,6 @@ namespace battleship{
 		inline vb01::Vector3 getColor(){return color;}
 		inline std::string getName(){return name;}
 		inline std::vector<int> getTechnologies(){return technologies;}
-		inline void addTechnology(int tid){technologies.push_back(tid);}
     private:
 		bool cpuPlayer = false;
 		std::vector<int> technologies;
