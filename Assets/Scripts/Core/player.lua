@@ -38,7 +38,7 @@ function Player:trainEngineers()
 	dirToCenter = Vector3:new(0, 0, 0):subtr(fort:getPos()):norm()
 
 	while #fort:getQueue() + #self:getUnitsByClass(UnitClass.ENGINEER, -1) < self.numStartEngis do
-		fort:appendToQueue(UnitId.ENGINEER)
+		fort:appendToQueue(0)
 	end
 
 	return #self:getUnitsByClass(UnitClass.ENGINEER, -1) == self.numStartEngis
@@ -132,7 +132,7 @@ function Player:buildHarvester()
 	factory = landFactories[1]:toFactory()
 
 	if #factory:getQueue() == 0 then
-		factory:appendToQueue(UnitId.RESOURCE_ROVER)
+		factory:appendToQueue(3)
 	end
 
 	return false
@@ -157,10 +157,10 @@ function Player:startHarvesting()
 	return true
 end
 
-function Player:buildTaskforceUnitGroup(numUnits, currNumUnits, factory, unitId)
+function Player:buildTaskforceUnitGroup(numUnits, currNumUnits, factory, buId)
 	if currNumUnits < numUnits then
 		for i = 1, numUnits - currNumUnits do
-			factory:appendToQueue(unitId)
+			factory:appendToQueue(buId)
 		end
 	end
 end
@@ -175,9 +175,9 @@ function Player:buildTaskforce()
 	currLandFactories = self:getUnitsByClass(UnitClass.LAND_FACTORY, -1)
 
 	for i = 1, #currLandFactories do
-		currNumWarMechs = currNumWarMechs + currLandFactories[i]:toFactory():getNumQueueUnitsById(UnitId.WAR_MECH)
-		currNumTanks = currNumTanks + currLandFactories[i]:toFactory():getNumQueueUnitsById(UnitId.TANK)
-		currNumArtillery = currNumArtillery + currLandFactories[i]:toFactory():getNumQueueUnitsById(UnitId.ARTILLERY)
+		currNumWarMechs = currNumWarMechs + currLandFactories[i]:toFactory():getNumQueueUnitsById(0)
+		currNumTanks = currNumTanks + currLandFactories[i]:toFactory():getNumQueueUnitsById(1)
+		currNumArtillery = currNumArtillery + currLandFactories[i]:toFactory():getNumQueueUnitsById(2)
 	end
 
 	numWarMechs = self.numDefWarMechs + self.numTaskForceWarMechs
@@ -190,9 +190,9 @@ function Player:buildTaskforce()
 
 	landFactory = currLandFactories[1]:toFactory()
 
-	self:buildTaskforceUnitGroup(numWarMechs, currNumWarMechs, landFactory, UnitId.WAR_MECH)
-	self:buildTaskforceUnitGroup(numTanks, currNumTanks, landFactory, UnitId.TANK)
-	self:buildTaskforceUnitGroup(numArtillery, currNumArtillery, landFactory, UnitId.ARTILLERY)
+	self:buildTaskforceUnitGroup(numWarMechs, currNumWarMechs, landFactory, 0)
+	self:buildTaskforceUnitGroup(numTanks, currNumTanks, landFactory, 1)
+	self:buildTaskforceUnitGroup(numArtillery, currNumArtillery, landFactory, 2)
 
 	return false
 end

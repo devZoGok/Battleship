@@ -9,6 +9,7 @@
 namespace battleship{
 	class ResourceDeposit;
 	class Projectile;
+	class Unit;
 
     class Player {
     public:
@@ -25,6 +26,7 @@ namespace battleship{
 		void selectUnits(std::vector<Unit*>);
 		std::vector<Unit*> getUnitsById(int, int = -1);
 		std::vector<Unit*> getUnitsByClass(UnitClass, int = -1);
+		void addTechnology(int);
 		inline void deselectUnits(){selectedUnits.clear();}
 		inline Unit* getSelectedUnit(int id){return selectedUnits[id];}
 		inline std::vector<Unit*> getSelectedUnits(){return selectedUnits;}
@@ -48,12 +50,15 @@ namespace battleship{
 		inline int getRefineds(){return refineds;}
 		inline void setRefineds(int ref){this->refineds = ref;}
 		inline void addRefineds(int ref){this->refineds += ref;}
+		inline void subtractRefineds(int ref){this->refineds -= ref;}
 		inline int getWealth(){return wealth;}
 		inline void setWealth(int w){this->wealth = w;}
 		inline void addWealth(int w){this->wealth += w;}
+		inline void subtractWealth(int w){this->wealth -= w;}
 		inline int getResearch(){return research;}
 		inline void setResearch(int r){this->research = r;}
 		inline void addResearch(int r){this->research += r;}
+		inline void subtractResearch(int r){this->research -= r;}
 		inline bool isCpuPlayer(){return cpuPlayer;}
 		inline int getNumVehiclesBuilt(){return vehiclesBuilt;}
 		inline int getNumVehiclesDestroyed(){return vehiclesDestroyed;}
@@ -69,9 +74,15 @@ namespace battleship{
 		inline void incStructuresLost(){structuresLost++;}
 		inline vb01::Vector3 getColor(){return color;}
 		inline std::string getName(){return name;}
+		inline std::vector<int> getTechnologies(){return technologies;}
     private:
 		bool cpuPlayer = false;
-        int refineds = 0, wealth = 0, research = 0, faction, difficulty, team, luaPlayerId, vehiclesBuilt = 0, vehiclesDestroyed = 0, vehiclesLost = 0, structuresBuilt = 0, structuresDestroyed = 0, structuresLost = 0;
+		std::vector<int> technologies;
+		int luaPlayerId;
+        int refineds = 0, wealth = 0, research = 0;
+		int faction, difficulty, team;
+		int vehiclesBuilt = 0, vehiclesDestroyed = 0, vehiclesLost = 0;
+		int structuresBuilt = 0, structuresDestroyed = 0, structuresLost = 0;
 		std::string name;
         std::vector<Unit*> units, selectedUnits;
 		std::vector<Projectile*> projectiles;

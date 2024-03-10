@@ -8,6 +8,8 @@ namespace battleship{
 	}
 
 	void PointDefense::attack(Order order){
+		if(!isComplete()) return;
+
 		Unit *targUnit = order.targets[0].unit;
 		Vector3 targDir = (targUnit ? targUnit->getPos() : order.targets[0].pos) - pos;
 

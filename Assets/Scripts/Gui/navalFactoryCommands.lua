@@ -1,4 +1,3 @@
-numGui = 1
 res = graphics.resolution
 
 gui = {
@@ -8,7 +7,6 @@ gui = {
 		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.NAVAL_FACTORY_TRAIN,
-		trigger = 66,
-		unitId = UnitId.SCOUT_TRANSPORT 
+		trigger = 66
 	}
 }

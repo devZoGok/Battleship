@@ -1,5 +1,6 @@
 #include "factory.h"
 #include "player.h"
+#include "game.h"
 #include "gameObjectFactory.h"
 #include "activeGameState.h"
 
@@ -18,8 +19,18 @@ namespace battleship{
 	void Factory::update(){
 		Structure::update();
 
+		if(!isComplete()) return;
+
 		if(!unitQueue.empty())
 			train();
+	}
+
+	//TODO replace repetetive string literals
+	void Factory::initProperties(){
+		Structure::initProperties();
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
 	}
 
 	int Factory::getNumQueueUnitsById(int unitId){
@@ -30,6 +41,11 @@ namespace battleship{
 				numUnits++;
 
 		return numUnits;
+	}
+
+	void Factory::appendToQueue(int buId){
+		if(buId < buildableUnits.size() && buildableUnits[buId].buildable)
+			unitQueue.push_back(buildableUnits[buId].id);
 	}
 
 	void Factory::train(){

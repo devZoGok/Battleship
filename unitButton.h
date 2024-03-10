@@ -8,9 +8,9 @@ namespace battleship{
 
 	class UnitButton : public vb01Gui::Button{
 		public:
-			UnitButton(vb01::Vector2, vb01::Vector2, std::string, std::string, int, std::string);
+			UnitButton(vb01::Vector2, vb01::Vector2, std::string, std::string, int, std::string, int);
 		protected:
-			std::vector<Unit*> units;
+			int unitId;
 	};
 }
 

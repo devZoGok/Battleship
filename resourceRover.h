@@ -15,6 +15,7 @@ namespace battleship{
 			~ResourceRover();
 			void update();
 		private:
+			void initProperties();
 			void supply(Order);
 			Unit* getClosestUnit(std::vector<Structure*>);
 			inline bool canLoad(){return vb01::getTime() - lastLoadTime > loadRate && load < capacity;}

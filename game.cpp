@@ -7,6 +7,8 @@
 #include "concreteGuiManager.h"
 #include "defConfigs.h"
 
+#include <algorithm>
+
 #include <assetManager.h>
 #include <particleEmitter.h>
 
@@ -213,5 +215,89 @@ namespace battleship{
 		newPlayer->addUnit(unit);
 		unit->setPlayer(newPlayer);
 		unit->halt();
+	}
+
+	vector<int> Game::parseTechTable(int tid, string key, string numVarKey, string varKey){
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script(numVarKey + " = #" + key + "[" + to_string(tid + 1) + "]." + varKey);
+		int numVar = SOL_LUA_VIEW[numVarKey];
+		sol::table techTable = SOL_LUA_VIEW[key][tid + 1];
+
+		vector<int> varVec;
+
+		for(int i = 0; i < numVar; i++)
+			varVec.push_back(techTable[varKey][i + 1]);
+
+		return varVec;
+	}
+
+	//TODO clean this method up
+	void Game::initTechnologies(){
+		technologies.clear();
+
+		sol::state_view SOL_LUA_VIEW = generateView();
+		string techKey = "technologies";
+		SOL_LUA_VIEW.script("numTechs = #" + techKey);
+		int numTechs = SOL_LUA_VIEW["numTechs"]; 
+
+		for(int i = 0; i < numTechs; i++){
+			sol::table techTable = SOL_LUA_VIEW[techKey][i + 1];
+
+			Technology t;
+			t.id = techTable["id"];
+			t.cost = techTable["cost"];
+			t.name = techTable["name"];
+			t.icon = techTable["icon"];
+			t.description = techTable["description"];
+			t.parents = parseTechTable(i, techKey, "numParents", "parents");
+			t.children = parseTechTable(i, techKey, "numChildren", "children");
+			t.abilities = parseTechTable(i, techKey, "numAbilities", "abilities");
+
+			technologies.push_back(t);
+		}
+
+		techKey = "abilities";
+		SOL_LUA_VIEW.script("numAbilities = #" + techKey);
+		int numAbilities = SOL_LUA_VIEW["numAbilities"]; 
+
+		for(int i = 0; i < numAbilities; i++){
+			sol::table techTable = SOL_LUA_VIEW[techKey][i + 1];
+
+			Ability ability;
+			ability.type = techTable["type"];
+			ability.ammount = techTable["ammount"].get_or(0.0);
+			ability.gameObjType = techTable["gameObjType"];
+			ability.gameObjIds = parseTechTable(i, techKey, "numGameObjIds", "gameObjIds");
+			abilities.push_back(ability);
+		}
+	}
+
+	float Game::calcAbilFromTech(Ability::Type type, vector<int> techResearch, int gameObjType, int unitId){
+		float ammount = 0;
+
+		for(int techId : techResearch)
+			for(int abilId : technologies[techId].abilities)
+				if(
+					abilities[abilId].type == type &&
+					abilities[abilId].gameObjType == gameObjType && 
+					find(abilities[abilId].gameObjIds.begin(), abilities[abilId].gameObjIds.end(), unitId) != abilities[abilId].gameObjIds.end()
+				){
+					ammount += abilities[abilId].ammount;
+				}
+
+		return ammount;
+	}
+
+	bool Game::isUnitUnlocked(vector<int> techResearch, int unitId){
+		for(int techId : techResearch){
+			for(int abilId : technologies[techId].abilities){
+				vector<int> ids = abilities[abilId].gameObjIds;
+
+				if(find(ids.begin(), ids.end(), unitId) != ids.end())
+					return true;
+			}
+		}
+
+		return false;
 	}
 }

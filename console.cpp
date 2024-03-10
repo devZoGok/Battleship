@@ -1,6 +1,7 @@
 #include "console.h"
 #include "addUnitCommand.h"
 #include "addResourceCommand.h"
+#include "addTechnologyCommand.h"
 
 using namespace std;
 
@@ -18,5 +19,7 @@ namespace battleship{
 			AddUnitCommand(argsStr).execute();
 		else if(cmdName == "add-resource")
 			AddResourceCommand(argsStr).execute();
+		else if(cmdName == "add-technology")
+			AddTechnologyCommand(argsStr).execute();
     }
 }

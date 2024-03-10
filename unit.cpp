@@ -16,8 +16,11 @@
 #include "vehicle.h"
 #include "gameObjectFactory.h"
 #include "activeGameState.h"
+#include "gameManager.h"
+#include "projectile.h"
 #include "defConfigs.h"
 #include "pathfinder.h"
+#include "ability.h"
 
 using namespace glm;
 using namespace vb01;
@@ -126,14 +129,22 @@ namespace battleship{
 		sol::state_view SOL_LUA_VIEW = generateView();
 		string objType = GameObject::getGameObjTableName();
 		sol::table unitTable = SOL_LUA_VIEW[objType][id + 1];
+
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
 		string name = unitTable["name"];
-        health = unitTable["health"];
+        health = unitTable["health"]; health += game->calcAbilFromTech(Ability::Type::HEALTH, currTechs, (int)GameObject::type, id);
         vehicle = unitTable["isVehicle"];
 		maxHealth = health;
 
-        lineOfSight = unitTable["lineOfSight"];
+        lineOfSight = unitTable["lineOfSight"]; lineOfSight += game->calcAbilFromTech(Ability::Type::LINE_OF_SIGHT, currTechs, (int)GameObject::type, id);
         unitClass = (UnitClass)unitTable["unitClass"];
 		type = (UnitType)unitTable["unitType"];
+
+		string gsk = "guiScreen";
+		sol::optional<string> nameOpt = unitTable[gsk];
+		guiScreen = (nameOpt != sol::nullopt ? (string)unitTable[gsk] : "");
 
 		string tblName = "garrisonCapacity";
 		sol::optional<sol::table> gc = unitTable[tblName];
@@ -164,6 +175,19 @@ namespace battleship{
 			for(int i = 0; i < numArmorTypes; i++){
 				Armor arm = (Armor)unitTable[tblName][i + 1];
 				armorTypes.push_back(arm);
+			}
+		}
+
+		tblName = "buildableUnits";
+		sol::optional<sol::table> bu = unitTable[tblName];
+
+		if(bu != sol::nullopt){
+			SOL_LUA_VIEW.script("numBuildableUnits = #units[" + to_string(id + 1) + "]." + tblName);
+			int numBuildableUnits = SOL_LUA_VIEW["numBuildableUnits"];
+
+			for(int i = 0; i < numBuildableUnits; i++){
+				sol::table buTable = unitTable[tblName][i + 1];
+				buildableUnits.push_back(BuildableUnit(buTable["id"], game->isUnitUnlocked(currTechs, id) | (bool)buTable["buildable"]));
 			}
 		}
 	}
