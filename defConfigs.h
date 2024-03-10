@@ -53,6 +53,7 @@ namespace battleship{
 			"Scripts/Core/player.lua",
 			"Scripts/Technologies/technologyData.lua",
 			"Scripts/Abilities/abilityData.lua",
+			"Scripts/Trading/traderData.lua"
 		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{

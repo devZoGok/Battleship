@@ -38,9 +38,9 @@ namespace battleship{
 		bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
 
 		if(researchQueue.empty()){
-			if(health > .3 * maxHealth && player->getRefineds() >= researchCost && canUpdateResearch()){
-				player->addResearch(generationSpeed);
-				player->subtractRefineds(researchCost);
+			if(health > .3 * maxHealth && player->getResource(ResourceType::REFINEDS) >= researchCost && canUpdateResearch()){
+				player->updateResource(ResourceType::RESEARCH, generationSpeed, true);
+				player->updateResource(ResourceType::REFINEDS, researchCost, true);
 				lastUpdateTime = getTime();
 			}
 
@@ -51,7 +51,7 @@ namespace battleship{
 			Unit::displayUnitStats(researchStatusForeground, researchStatusBackground, researchStatus, 100, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
 
 			int techCost = Game::getSingleton()->getTechnology(researchQueue[0]).cost;
-			int playerResearch = player->getResearch();
+			int playerResearch = player->getResource(ResourceType::RESEARCH);
 
 			if(techCost > playerResearch && canUpdateResearch()){
 				researchStatus += int(100 * ((float)playerResearch / techCost));

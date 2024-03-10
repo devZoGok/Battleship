@@ -69,7 +69,7 @@ namespace battleship{
 	   	SUBMARINE,
 	   	LAND_FACTORY,
 	   	NAVAL_FACTORY,
-	   	MARKET,
+	   	TRADE_CENTER,
 	   	LAB,
 	   	POINT_DEFENSE,
 	   	EXTRACTOR,

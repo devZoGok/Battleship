@@ -78,7 +78,7 @@ namespace battleship{
 			if(nearestRefinery && nearestRefinery->getPos().getDistanceFrom(pos) <= minDist){
 				if(canUnload()){
 					load -= loadSpeed;
-					player->addRefineds(1);
+					player->updateResource(ResourceType::REFINEDS, 1, true);
 					lastLoadTime = getTime();
 				}
 				else if(load == 0 && nearestExtractor)

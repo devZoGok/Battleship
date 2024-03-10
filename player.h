@@ -4,12 +4,15 @@
 #include <vector>
 
 #include "gameManager.h"
+#include "trader.h"
 #include "unit.h"
 
 namespace battleship{
 	class ResourceDeposit;
 	class Projectile;
 	class Unit;
+
+	enum class ResourceType{REFINEDS, WEALTH, RESEARCH};
 
     class Player {
     public:
@@ -27,6 +30,9 @@ namespace battleship{
 		std::vector<Unit*> getUnitsById(int, int = -1);
 		std::vector<Unit*> getUnitsByClass(UnitClass, int = -1);
 		void addTechnology(int);
+		int getResource(ResourceType);
+		void updateResource(ResourceType, int, bool);
+		inline Trader* getTrader(){return trader;}
 		inline void deselectUnits(){selectedUnits.clear();}
 		inline Unit* getSelectedUnit(int id){return selectedUnits[id];}
 		inline std::vector<Unit*> getSelectedUnits(){return selectedUnits;}
@@ -47,18 +53,6 @@ namespace battleship{
         inline int getNumUnits(){return units.size();}
         inline int getFaction(){return faction;}
         inline vb01::Vector3 getSpawnPoint(){return spawnPoint;}
-		inline int getRefineds(){return refineds;}
-		inline void setRefineds(int ref){this->refineds = ref;}
-		inline void addRefineds(int ref){this->refineds += ref;}
-		inline void subtractRefineds(int ref){this->refineds -= ref;}
-		inline int getWealth(){return wealth;}
-		inline void setWealth(int w){this->wealth = w;}
-		inline void addWealth(int w){this->wealth += w;}
-		inline void subtractWealth(int w){this->wealth -= w;}
-		inline int getResearch(){return research;}
-		inline void setResearch(int r){this->research = r;}
-		inline void addResearch(int r){this->research += r;}
-		inline void subtractResearch(int r){this->research -= r;}
 		inline bool isCpuPlayer(){return cpuPlayer;}
 		inline int getNumVehiclesBuilt(){return vehiclesBuilt;}
 		inline int getNumVehiclesDestroyed(){return vehiclesDestroyed;}
@@ -83,6 +77,7 @@ namespace battleship{
 		int faction, difficulty, team;
 		int vehiclesBuilt = 0, vehiclesDestroyed = 0, vehiclesLost = 0;
 		int structuresBuilt = 0, structuresDestroyed = 0, structuresLost = 0;
+		Trader *trader = nullptr; 
 		std::string name;
         std::vector<Unit*> units, selectedUnits;
 		std::vector<Projectile*> projectiles;

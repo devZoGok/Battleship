@@ -64,9 +64,9 @@ namespace battleship{
 			sol::table targTable = generateView()["units"][unitQueue[0] + 1];
 			int costRate = (int)targTable["cost"] / 100, trainRate = (int)targTable["buildTime"] / 100;
 
-			if(player->getRefineds() >= costRate && getTime() - lastTrainTime > trainRate){
+			if(player->getResource(ResourceType::REFINEDS) >= costRate && getTime() - lastTrainTime > trainRate){
 				trainingStatus++;
-				player->setRefineds(player->getRefineds() - costRate);
+				player->updateResource(ResourceType::REFINEDS, -costRate, true);
 				lastTrainTime = getTime();
 			}
 

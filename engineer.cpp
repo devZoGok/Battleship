@@ -59,9 +59,9 @@ namespace battleship{
 				sol::table targTable = generateView()["units"][order.targets[0].unit->getId()];
 				int costRate = (int)targTable["cost"] / 100, buildRate = (int)targTable["buildTime"] / 100;
 
-				if(structure->getBuildStatus() < 100 && player->getRefineds() >= costRate && getTime() - lastIncrementTime > buildRate){
+				if(structure->getBuildStatus() < 100 && player->getResource(ResourceType::REFINEDS) >= costRate && getTime() - lastIncrementTime > buildRate){
 					structure->incrementBuildStatus();
-					player->setRefineds(player->getRefineds() - costRate);
+					player->updateResource(ResourceType::REFINEDS, -costRate, true);
 					lastIncrementTime = getTime();
 				}
 				else if(structure->getBuildStatus() >= 100){

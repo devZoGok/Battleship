@@ -25,6 +25,7 @@
 #include "trainButton.h"
 #include "statsButton.h"
 #include "researchButton.h"
+#include "tradeButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -199,6 +200,18 @@ namespace battleship{
 				break;
 			case RESEARCH:
 				button = new ResearchButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["LAB"], (int)guiTable["techId"]);
+				break;
+			case BUY_REFINEDS:
+				button = new TradeButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["TRADE_CENTER"], TradeButton::Type::BUY_REFINEDS);
+				break;
+			case SELL_REFINEDS:
+				button = new TradeButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["TRADE_CENTER"], TradeButton::Type::SELL_REFINEDS);
+				break;
+			case BUY_RESEARCH:
+				button = new TradeButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["TRADE_CENTER"], TradeButton::Type::BUY_RESEARCH);
+				break;
+			case SELL_RESEARCH:
+				button = new TradeButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["TRADE_CENTER"], TradeButton::Type::SELL_RESEARCH);
 				break;
 		}
 
