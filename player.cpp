@@ -12,11 +12,13 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace std;
 
-    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n), refineds(30000) {}
+    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n), refineds(30000), trader(new Trader()) {}
 
     Player::~Player() {}
 
     void Player::update() {
+		trader->update();
+
 		vector<Unit*> units = this->units; 
 		for(Unit *u : units){
 			if(!u->isRemove())
@@ -186,5 +188,30 @@ namespace battleship{
 
 	void Player::addTechnology(int techId){
 		technologies.push_back(techId);
+	}
+
+	int Player::getResource(ResourceType type){
+		switch(type){
+			case ResourceType::REFINEDS:
+				return refineds;
+			case ResourceType::WEALTH:
+				return wealth;
+			case ResourceType::RESEARCH:
+				return research;
+		}
+	}
+
+	void Player::updateResource(ResourceType type, int ammount, bool add){
+		switch(type){
+			case ResourceType::REFINEDS:
+				refineds = (add ? refineds + ammount : ammount);
+				break;
+			case ResourceType::WEALTH:
+				wealth = (add ? wealth + ammount : ammount);
+				break;
+			case ResourceType::RESEARCH:
+				research = (add ? research + ammount : ammount);
+				break;
+		}
 	}
 }

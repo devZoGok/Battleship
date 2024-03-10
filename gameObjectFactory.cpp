@@ -35,7 +35,7 @@ namespace battleship{
 				return new Extractor(player, id, pos, rot, buildStatus);
 			case UnitClass::LAB:
 				return new ResearchStruct(player, id, pos, rot, buildStatus);
-			case UnitClass::MARKET:
+			case UnitClass::TRADE_CENTER:
 			case UnitClass::REFINERY:
 				return new Structure(player, id, pos, rot, buildStatus, Unit::State::STAND_GROUND);
 			case UnitClass::ENGINEER:
