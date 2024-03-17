@@ -186,7 +186,7 @@ namespace battleship{
 		vector<Checkbox*> checkboxes{};
 		vector<Slider*> sliders{};
 		vector<Textbox*> textboxes{};
-		vector<Node*> guiRects{};
+		vector<Node*> guiRects = guiManager->getGuiRectangles();
 		vector<Text*> texts{
 			guiManager->getText("depth"),
 			guiManager->getText("refineds"),
