@@ -33,6 +33,7 @@ ButtonType = {
 	SELL_REFINEDS = 29,
 	BUY_RESEARCH = 30,
 	SELL_RESEARCH = 31,
+	ACTIVE_GAME_STATE = 32
 }
 
 ListboxType = {

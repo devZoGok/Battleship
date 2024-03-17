@@ -159,9 +159,8 @@ namespace battleship{
 		ufCtr->removeGameObjectFrames();
 		ufCtr->setPlacingFrames(false);
 
-		ConcreteGuiManager::getSingleton()->removeAllButtons();
-		buttons.clear();
 		unitGuiScreen = "";
+		ConcreteGuiManager::getSingleton()->readLuaScreenScript("activeGameState.lua");
 	}
 
 	bool ActiveGameState::selectedUnitsAmongst(vector<Unit*> units){
@@ -330,6 +329,9 @@ namespace battleship{
 	//TODO only allow appropriate orders for units
     void ActiveGameState::onAction(int bind, bool isPressed) {
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
+
+		if(!ConcreteGuiManager::getSingleton()->findClickedButtons().empty())
+			return;
 
         switch((Bind)bind){
 			case Bind::DRAG_BOX: 

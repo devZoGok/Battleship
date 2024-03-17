@@ -46,7 +46,8 @@ namespace battleship{
 		BUY_REFINEDS,
 		SELL_REFINEDS,
 		BUY_RESEARCH,
-		SELL_RESEARCH
+		SELL_RESEARCH,
+		ACTIVE_GAME_STATE
 	};
 	enum ListboxType {
 		CONTROLS,

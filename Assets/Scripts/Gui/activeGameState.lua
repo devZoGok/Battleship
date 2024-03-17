@@ -1,3 +1,5 @@
+Size = {x = 100, y = 100}
+
 gui = {
 	{
 		guiType = GuiType.TEXT,
@@ -46,5 +48,25 @@ gui = {
 		fontFirstChar = 0,
 		fontLastChar = 256,
 		color = {x = 1, y = 1, z = 1, w = 1}
+	},
+	--[[
+	]]--
+	{
+		guiType = GuiType.BUTTON,
+		buttonType = ButtonType.ACTIVE_GAME_STATE,
+		name = 'Tech',
+		imagePath = '',
+		pos = {x = 600, y = 800},
+		size = Size,
+		trigger = 10
+	},
+	{
+		guiType = GuiType.BUTTON,
+		buttonType = ButtonType.ACTIVE_GAME_STATE,
+		name = 'Trade',
+		imagePath = '',
+		pos = {x = 300, y = 800},
+		size = Size,
+		trigger = 10
 	}
 }

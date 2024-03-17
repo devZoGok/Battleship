@@ -26,6 +26,7 @@
 #include "statsButton.h"
 #include "researchButton.h"
 #include "tradeButton.h"
+#include "activeStateButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -212,6 +213,9 @@ namespace battleship{
 				break;
 			case SELL_RESEARCH:
 				button = new TradeButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["TRADE_CENTER"], TradeButton::Type::SELL_RESEARCH);
+				break;
+			case ACTIVE_GAME_STATE:
+				button = new ActiveStateButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;
 		}
 
