@@ -75,7 +75,7 @@ gui = {
 	},
 	{
 		guiType = GuiType.BUTTON,
-		buttonType = ButtonType.ACTIVE_GAME_STATE,
+		buttonType = ButtonType.PLAYER_TRADE,
 		name = 'Trade',
 		imagePath = '',
 		guiScreen = 'tradingHub.lua',

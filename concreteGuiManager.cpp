@@ -27,6 +27,7 @@
 #include "researchButton.h"
 #include "tradeButton.h"
 #include "activeStateButton.h"
+#include "playerTradeButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -222,6 +223,9 @@ namespace battleship{
 				break;
 			case ACTIVE_GAME_STATE:
 				button = new ActiveStateButton(pos, size, (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
+				break;
+			case PLAYER_TRADE:
+				button = new PlayerTradeButton(pos, size, (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;
 		}
 

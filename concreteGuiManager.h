@@ -47,7 +47,8 @@ namespace battleship{
 		SELL_REFINEDS,
 		BUY_RESEARCH,
 		SELL_RESEARCH,
-		ACTIVE_GAME_STATE
+		ACTIVE_GAME_STATE,
+		PLAYER_TRADE
 	};
 	enum ListboxType {
 		CONTROLS,
@@ -60,7 +61,8 @@ namespace battleship{
 		LAND_TEXTURES,
 		CPU_DIFFICULTIES,
 		FACTIONS,
-		CONSOLE
+		CONSOLE,
+		TRADE_OFFERS
 	};
 
 	class ConcreteGuiManager : public vb01Gui::AbstractGuiManager{

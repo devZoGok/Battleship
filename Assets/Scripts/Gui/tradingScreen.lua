@@ -120,7 +120,7 @@ gui = {
 	createResourceTrayGui(false, 3, ResourceTrayGuiId.DECREMENT, IconPath.TIME),
 	{
 		guiType = GuiType.BUTTON,
-		buttonType = ButtonType.ACTIVE_GAME_STATE,
+		buttonType = ButtonType.PLAYER_TRADE,
 		name = 'Back',
 		imagePath = '',
 		guiScreen = 'tradingHub.lua',
