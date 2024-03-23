@@ -124,8 +124,23 @@ gui = {
 		name = 'Back',
 		imagePath = '',
 		guiScreen = 'tradingHub.lua',
+		pos = {x = Pos.x + Size.x - 2 * buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom},
+		size = buttonSize,
+		trigger = 10
+	},
+	{
+		guiType = GuiType.BUTTON,
+		buttonType = ButtonType.ACTIVE_GAME_STATE,
+		name = 'Offer',
+		imagePath = '',
+		guiScreen = 'tradingHub.lua',
 		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom},
 		size = buttonSize,
 		trigger = 10
 	},
+	{
+		pos = {x = Pos.x + margin.left, y = Pos.y + Size.y - textboxSize.y - margin.bottom},
+		size = textboxSize,
+		guiType = GuiType.TEXTBOX,
+	}
 }
