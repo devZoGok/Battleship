@@ -36,6 +36,12 @@ namespace battleship{
 
 	static ConcreteGuiManager *concreteGuiManager = nullptr;
 
+	ConcreteGuiManager::ConcreteGuiManager(){
+		string assetPath = GameManager::getSingleton()->getPath();
+		texBasePath = assetPath + "Textures/";
+		fontBasePath = assetPath + "Fonts/";
+	}
+
 	ConcreteGuiManager* ConcreteGuiManager::getSingleton(){
 		if(!concreteGuiManager)
 			concreteGuiManager = new ConcreteGuiManager();
@@ -215,7 +221,7 @@ namespace battleship{
 				button = new TradeButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"], (int)SOL_LUA_STATE["UnitId"]["TRADE_CENTER"], TradeButton::Type::SELL_RESEARCH);
 				break;
 			case ACTIVE_GAME_STATE:
-				button = new ActiveStateButton(pos, size, name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
+				button = new ActiveStateButton(pos, size, (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], (string)guiTable["imagePath"]);
 				break;
 		}
 
@@ -246,7 +252,7 @@ namespace battleship{
 		bool closable;
 		Listbox *listbox = nullptr;
 
-		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
+		string fontPath = fontBasePath + "batang.ttf";
 
 		switch(listboxType){
 			case CONTROLS:{
@@ -310,7 +316,7 @@ namespace battleship{
 				break;
 			}
 			case SKYBOX_TEXTURES:
-				lines = readDir(GameManager::getSingleton()->getPath() + "Textures/Skyboxes", true);
+				lines = readDir(texBasePath + "Skyboxes", true);
 				numLines = lines.size();
 				closable = true;
 				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
@@ -318,7 +324,7 @@ namespace battleship{
 				listbox = new SkyboxTextureListbox(pos, size, lines, maxDisplay, fontPath);
 				break;
 			case LAND_TEXTURES:
-				lines = readDir(GameManager::getSingleton()->getPath() + "Textures/Landmass", false);
+				lines = readDir(texBasePath + "Landmass", false);
 				numLines = lines.size();
 				closable = true;
 				maxDisplay = (numLines > numMaxDisplay ? numMaxDisplay : numLines);
@@ -365,9 +371,7 @@ namespace battleship{
 
 		string posTable = "pos";
 		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
-
-		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
-		Checkbox *checkbox = new Checkbox(pos, fontPath);
+		Checkbox *checkbox = new Checkbox(pos, fontBasePath + "batang.ttf");
 
 		int typeArr[2]{(int)GuiElementType::CHECKBOX, -1};
 	 	guiElements.push_back(make_pair(typeArr, (void*)checkbox));
@@ -398,9 +402,7 @@ namespace battleship{
 		string posTable = "pos", sizeTable = "size";
 		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
 		Vector2 size = Vector2(guiTable[sizeTable]["x"], guiTable[sizeTable]["y"]);
-
-		string fontPath = GameManager::getSingleton()->getPath() + "Fonts/batang.ttf";
-		Textbox *textbox = new Textbox(pos, size, fontPath);
+		Textbox *textbox = new Textbox(pos, size, fontBasePath + "batang.ttf");
 
 		int typeArr[2]{(int)GuiElementType::TEXTBOX, -1};
 	 	guiElements.push_back(make_pair(typeArr, (void*)textbox));
@@ -423,7 +425,7 @@ namespace battleship{
 		mat->addBoolUniform("texturingEnabled", texturingEnabled);
 
 		if(texturingEnabled){
-			string p[]{GameManager::getSingleton()->getPath() + "Textures/" + (string)guiTable[ipk]};
+			string p[]{texBasePath + (string)guiTable[ipk]};
 			Texture *tex = new Texture(p, 1, false);
 			mat->addTexUniform("diffuseMap", tex, false);
 		}
@@ -459,7 +461,7 @@ namespace battleship{
 		sol::table colorTable = guiTable["color"];
 		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
 
-		Text *text = new Text(GameManager::getSingleton()->getPath() + "Fonts/" + (string)guiTable["font"], (wstring)guiTable["text"], guiTable["fontFirstChar"], guiTable["fontLastChar"]);
+		Text *text = new Text(fontBasePath + (string)guiTable["font"], (wstring)guiTable["text"], guiTable["fontFirstChar"], guiTable["fontLastChar"]);
 		text->setScale((float)guiTable["scale"]);
 		text->setMaterial(mat);
 

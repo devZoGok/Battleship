@@ -45,21 +45,21 @@ gui = {
 		pos = {x = 0, y = 0},
 		zIndex = .9,
 		size = {x = s, y = s},
-		imagePath = 'defaultTexture.jpg',
+		imagePath = 'Icons/refineds.png',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
 		pos = {x = 0, y = 100},
 		zIndex = .9,
 		size = {x = s, y = s},
-		imagePath = 'defaultTexture.jpg',
+		imagePath = 'Icons/wealth.png',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
 		pos = {x = 0, y = 200},
 		zIndex = .9,
 		size = {x = s, y = s},
-		imagePath = 'defaultTexture.jpg',
+		imagePath = 'Icons/research.png',
 	},
 	{
 		guiType = GuiType.TEXT,
@@ -78,6 +78,7 @@ gui = {
 		buttonType = ButtonType.ACTIVE_GAME_STATE,
 		name = 'Trade',
 		imagePath = '',
+		guiScreen = 'tradingHub.lua',
 		pos = {x = res.x - Size.x, y = 200},
 		size = Size,
 		trigger = 10

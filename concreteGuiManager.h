@@ -77,7 +77,7 @@ namespace battleship{
 					std::vector<vb01::Text*> = std::vector<vb01::Text*>{}
 				);
 		private:
-			ConcreteGuiManager(){}
+			ConcreteGuiManager();
 			vb01Gui::Button* parseButton(int);
 			vb01Gui::Listbox* parseGameObjectListbox();
 			vb01Gui::Listbox* parseListbox(int);
@@ -88,6 +88,7 @@ namespace battleship{
 			vb01::Text* parseText(int);
 
 			std::vector<std::pair<int*, void*>> guiElements;
+			std::string texBasePath, fontBasePath;
 	};
 }
 
