@@ -414,9 +414,23 @@ namespace battleship{
 
 		Root *root = Root::getSingleton();
 		Material *mat = new Material(root->getLibPath() + "gui");
-		mat->addBoolUniform("texturingEnabled", false);
-		sol::table colorTable = guiTable["color"];
-		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
+
+		string ipk = "imagePath";
+		sol::optional<string> pathOpt = guiTable[ipk];
+		string imagePath = (pathOpt != sol::nullopt ? (string)guiTable[ipk] : "");
+		bool texturingEnabled = (imagePath != "");
+
+		mat->addBoolUniform("texturingEnabled", texturingEnabled);
+
+		if(texturingEnabled){
+			string p[]{GameManager::getSingleton()->getPath() + "Textures/" + (string)guiTable[ipk]};
+			Texture *tex = new Texture(p, 1, false);
+			mat->addTexUniform("diffuseMap", tex, false);
+		}
+		else{
+			sol::table colorTable = guiTable["color"];
+			mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
+		}
 
 		sol::table sizeTable = guiTable["size"];
 		Quad *quad = new Quad(Vector3(sizeTable["x"], sizeTable["y"], 1), false);

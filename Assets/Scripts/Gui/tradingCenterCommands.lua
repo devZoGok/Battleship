@@ -1,10 +1,12 @@
 res = graphics.resolution
-Size = {x = 100, y = 100}
+Size = {x = 70, y = 70}
+margin = 10
+sz = {x = Size.x - margin, y = Size.y - margin}
 
 gui = {
 	{
-		pos = {x = res.x - 200, y = res.y - 200},
-		size = Size,
+		pos = {x = res.x - Size.x, y = res.y - Size.y},
+		size = sz,
 		name = 'Buy ref',
 		imagePath = '',
 		guiType = GuiType.BUTTON,
@@ -12,8 +14,8 @@ gui = {
 		trigger = 73,
 	},
 	{
-		pos = {x = res.x - Size.x - 200, y = res.y - 200},
-		size = Size,
+		pos = {x = res.x - 2 * Size.x, y = res.y - Size.y},
+		size = sz,
 		imagePath = '',
 		name = 'Sell ref',
 		guiType = GuiType.BUTTON,
@@ -21,8 +23,8 @@ gui = {
 		trigger = 79,
 	},
 	{
-		pos = {x = res.x - 200, y = res.y - 400},
-		size = Size,
+		pos = {x = res.x - Size.x, y = res.y - 2 * Size.y},
+		size = sz,
 		imagePath = '',
 		name = 'Buy rsch',
 		guiType = GuiType.BUTTON,
@@ -30,8 +32,8 @@ gui = {
 		trigger = 75,
 	},
 	{
-		pos = {x = res.x - Size.x - 200, y = res.y - 400},
-		size = Size,
+		pos = {x = res.x - 2 * Size.x, y = res.y - 2 * Size.y},
+		size = sz,
 		imagePath = '',
 		name = 'Sell rsch',
 		guiType = GuiType.BUTTON,

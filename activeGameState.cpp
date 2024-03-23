@@ -84,9 +84,9 @@ namespace battleship{
     void ActiveGameState::update() {
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
 		guiManager->getText("depth")->setText(L"Depth: " + to_wstring(depth));
-		guiManager->getText("refineds")->setText(L"Refineds: " + to_wstring(mainPlayer->getResource(ResourceType::REFINEDS)));
-		guiManager->getText("wealth")->setText(L"Wealth: " + to_wstring(mainPlayer->getResource(ResourceType::WEALTH)));
-		guiManager->getText("research")->setText(L"Research: " + to_wstring(mainPlayer->getResource(ResourceType::RESEARCH)));
+		guiManager->getText("refineds")->setText(to_wstring(mainPlayer->getResource(ResourceType::REFINEDS)));
+		guiManager->getText("wealth")->setText(to_wstring(mainPlayer->getResource(ResourceType::WEALTH)));
+		guiManager->getText("research")->setText(to_wstring(mainPlayer->getResource(ResourceType::RESEARCH)));
 
 		if(!isSelectionBox && leftMouseClicked && getTime() - lastLeftMouseClicked > 10)
 			isSelectionBox = true;
