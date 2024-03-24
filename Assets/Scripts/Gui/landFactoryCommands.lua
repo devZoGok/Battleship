@@ -7,7 +7,6 @@ gui = {
 	{
 		pos = {x = res.x + .5 * margin - Size.x, y = res.y - 3 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.LAND_FACTORY_TRAIN,
 		trigger = 87
@@ -15,7 +14,6 @@ gui = {
 	{
 		pos = {x = res.x + .5 * margin - 2 * Size.x, y = res.y - 3 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.LAND_FACTORY_TRAIN,
 		trigger = 84
@@ -23,7 +21,6 @@ gui = {
 	{
 		pos = {x = res.x + .5 * margin - 3 * Size.x, y = res.y - 3 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.LAND_FACTORY_TRAIN,
 		trigger = 65

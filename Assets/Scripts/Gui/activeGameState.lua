@@ -2,6 +2,7 @@ res = graphics.resolution
 Size = {x = 70, y = 70}
 sz = 210
 s = 90
+resIconBasePath = 'Icons/Resources/'
 
 gui = {
 	{
@@ -45,21 +46,21 @@ gui = {
 		pos = {x = 0, y = 0},
 		zIndex = .9,
 		size = {x = s, y = s},
-		imagePath = 'Icons/refineds.png',
+		imagePath = resIconBasePath .. 'refineds.png',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
 		pos = {x = 0, y = 100},
 		zIndex = .9,
 		size = {x = s, y = s},
-		imagePath = 'Icons/wealth.png',
+		imagePath = resIconBasePath .. 'wealth.png',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
 		pos = {x = 0, y = 200},
 		zIndex = .9,
 		size = {x = s, y = s},
-		imagePath = 'Icons/research.png',
+		imagePath = resIconBasePath .. 'research.png',
 	},
 	{
 		guiType = GuiType.TEXT,
@@ -77,7 +78,6 @@ gui = {
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.PLAYER_TRADE,
 		name = 'Trade',
-		imagePath = '',
 		guiScreen = 'tradingHub.lua',
 		pos = {x = res.x - Size.x, y = 200},
 		size = Size,

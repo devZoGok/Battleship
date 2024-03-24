@@ -5,7 +5,6 @@ gui = {
 	{
 		pos = {x = res.x - Size.x, y = res.y - Size.y},
 		size = Size,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.NAVAL_FACTORY_TRAIN,
 		trigger = 66

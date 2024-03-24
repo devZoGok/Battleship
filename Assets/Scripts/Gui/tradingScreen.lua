@@ -10,7 +10,7 @@ textboxSize = {x = 200, y = 25}
 buttonSize = {x = 100, y = 20}
 
 ResourceTrayGuiId = {ICON = 0, TEXTBOX = 1, INCREMENT = 2, DECREMENT = 3}
-IconPath = {WEALTH = 'Icons/wealth.png', RESEARCH = 'Icons/research.png', REFINEDS = 'Icons/refineds.png', TIME = 'Icons/time.png'}
+IconPath = {WEALTH = 'Icons/Resources/wealth.png', RESEARCH = 'Icons/Resources/research.png', REFINEDS = 'Icons/Resources/refineds.png', TIME = 'Icons/Resources/time.png'}
 function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 	height = margin.top + lineId * iconSize.y
 
@@ -39,7 +39,6 @@ function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 			guiType = GuiType.BUTTON,
 			buttonType = ButtonType.ACTIVE_GAME_STATE,
 			name = '+',
-			imagePath = '',
 			guiScreen = 'tradingScreen.lua',
 			pos = guiElPos,
 			size = iconSize,
@@ -52,7 +51,6 @@ function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 			guiType = GuiType.BUTTON,
 			buttonType = ButtonType.ACTIVE_GAME_STATE,
 			name = '-',
-			imagePath = '',
 			guiScreen = 'tradingScreen.lua',
 			pos = guiElPos,
 			size = iconSize,
@@ -122,7 +120,6 @@ gui = {
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.PLAYER_TRADE,
 		name = 'Back',
-		imagePath = '',
 		guiScreen = 'tradingHub.lua',
 		pos = {x = Pos.x + Size.x - 2 * buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom},
 		size = buttonSize,
@@ -132,7 +129,6 @@ gui = {
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.ACTIVE_GAME_STATE,
 		name = 'Offer',
-		imagePath = '',
 		guiScreen = 'tradingHub.lua',
 		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom},
 		size = buttonSize,

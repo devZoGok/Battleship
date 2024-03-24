@@ -7,7 +7,6 @@ gui = {
 	{
 		pos = {x = res.x - 3 * Size.x, y = res.y - 3 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
 		trigger = 76,
@@ -15,7 +14,6 @@ gui = {
 	{
 		pos = {x = res.x - 2 * Size.x, y = res.y - 3 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
 		trigger = 78,
@@ -23,7 +21,6 @@ gui = {
 	{
 		pos = {x = res.x - 1 * Size.x, y = res.y - 3 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
 		trigger = 77,
@@ -31,7 +28,6 @@ gui = {
 	{
 		pos = {x = res.x - 3 * Size.x, y = res.y - 2 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
 		trigger = 84,
@@ -39,7 +35,6 @@ gui = {
 	{
 		pos = {x = res.x - 2 * Size.x, y = res.y - 2 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
 		trigger = 68,
@@ -47,7 +42,6 @@ gui = {
 	{
 		pos = {x = res.x - 1 * Size.x, y = res.y - 2 * Size.y},
 		size = sz,
-		imagePath = '',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.BUILD,
 		trigger = 70,

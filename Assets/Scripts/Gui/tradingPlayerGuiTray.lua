@@ -6,8 +6,8 @@ textboxSize = {x = 200, y = 25}
 margin = {top = 10, left = 10, right = 10, bottom = 10}
 
 height = Pos.y + margin.top + lineId * 30
-warIcon = 'Icons/war.png'
-allianceIcon = 'Icons/alliance.png'
+warIcon = 'Icons/PlayerStates/war.png'
+allianceIcon = 'Icons/PlayerStates/alliance.png'
 
 gui = {
 	{
@@ -43,7 +43,6 @@ gui = {
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.ACTIVE_GAME_STATE,
 		name = 'Trade',
-		imagePath = '',
 		guiScreen = 'tradingScreen.lua',
 		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = height},
 		size = buttonSize,
