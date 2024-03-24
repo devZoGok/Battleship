@@ -17,4 +17,19 @@ namespace battleship{
 		if(activeState)
 			activeState->addButton(this);
 	}
+
+	//TODO optimize this code
+	vector<Unit*> UnitButton::getUnits(int unitId){
+		vector<Unit*> units;
+
+		ActiveGameState *activeState = (ActiveGameState*)(GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::ACTIVE_STATE));
+		Player *player = activeState->getPlayer();
+		vector<Unit*> selUnits = player->getSelectedUnits(), researchStructs = player->getUnitsById(unitId);
+
+		for(Unit *rs : researchStructs)
+			if(find(selUnits.begin(), selUnits.end(), rs) != selUnits.end())
+				units.push_back(rs);
+
+		return units;
+	}
 }

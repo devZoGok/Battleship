@@ -11,6 +11,8 @@ namespace battleship{
 			UnitButton(vb01::Vector2, vb01::Vector2, std::string, std::string, int, std::string, int);
 		protected:
 			int unitId;
+
+			std::vector<Unit*> getUnits(int);
 	};
 }
 

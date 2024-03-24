@@ -16,12 +16,9 @@ namespace battleship{
 		slotId(slId) {}
 
 	void TrainButton::onClick(){
-		ActiveGameState *activeState = (ActiveGameState*)(GameManager::getSingleton()->getStateManager()->getAppStateByType((int)AppStateType::ACTIVE_STATE));
-		Player *player = activeState->getPlayer();
-		vector<Unit*> selUnits = player->getSelectedUnits(), factories = player->getUnitsById(unitId);
+		vector<Unit*> labs = getUnits(unitId);
 
-		for(Unit *fac : factories)
-			if(fac->getBuildableUnit(slotId).buildable && find(selUnits.begin(), selUnits.end(), fac) != selUnits.end())
-				((Factory*)fac)->appendToQueue(slotId);
+		for(Unit *lab : labs)
+			((Factory*)lab)->appendToQueue(slotId);
 	}
 }
