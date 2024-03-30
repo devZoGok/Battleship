@@ -60,7 +60,7 @@ namespace battleship{
 			bool hasTechParents = true;
 
 			for(int tp : techParents)
-				if(find(technologies.begin(), technologies.end(), techId) == technologies.end()){
+				if(find(technologies.begin(), technologies.end(), tp) == technologies.end()){
 					hasTechParents = false;
 					break;
 				}
