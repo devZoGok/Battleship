@@ -12,6 +12,7 @@ namespace battleship{
 			void update();
 		private:
 			int techId;
+			bool active = false;
 			vb01::Node *overlay = nullptr;
 	};
 }

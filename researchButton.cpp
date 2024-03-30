@@ -39,6 +39,8 @@ namespace battleship{
 	}
 
 	void ResearchButton::onClick(){
+		if(!active) return;
+
 		vector<Unit*> labs = getUnits(unitId);
 
 		for(Unit *lab : labs)
@@ -54,6 +56,7 @@ namespace battleship{
 
 		float alpha = .6;
 		string uniform = "diffuseColor";
+		active = false;
 
 		if(!hasTech){
 			vector<int> techParents = Game::getSingleton()->getTechnology(techId).parents;
@@ -66,6 +69,7 @@ namespace battleship{
 				}
 
 			if(hasTechParents){
+				active = true;
 				overlay->setVisible(false);
 
 				vector<Unit*> labs = getUnits(unitId);
@@ -74,6 +78,7 @@ namespace battleship{
 					vector<int> researchQueue = ((ResearchStruct*)lab)->getQueue();
 
 					if(find(researchQueue.begin(), researchQueue.end(), techId) != researchQueue.end()){
+						active = false;
 						overlay->setVisible(true);
 						overlay->getMesh(0)->getMaterial()->setVec4Uniform(uniform, Vector4(0, 0, 1, alpha));
 						break;
