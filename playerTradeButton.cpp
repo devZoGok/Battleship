@@ -25,7 +25,7 @@ namespace battleship{
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
 		sol::state_view SOL_LUA_VIEW = generateView();
 
-		for(int i = 0, plId = 0; i < players.size(); i++){
+		for(int i = 0, lineId = 0; i < players.size(); i++){
 			if(players[i] != mainPlayer){
 				vector<Button*> buttons = guiManager->getButtons(); 
 				vector<Listbox*> listboxes = guiManager->getListboxes(); 
@@ -35,7 +35,8 @@ namespace battleship{
 				vector<Node*> guiRects = guiManager->getGuiRectangles(); 
 				vector<Text*> texts = guiManager->getTexts(); 
 
-				SOL_LUA_VIEW.script("lineId = " + to_string(plId));
+				SOL_LUA_VIEW.script("lineId = " + to_string(lineId));
+				SOL_LUA_VIEW.script("playerId = " + to_string(i));
 				guiManager->readLuaScreenScript("tradingPlayerGuiTray.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 
 				int numButtons = guiManager->getButtons().size();
@@ -43,7 +44,7 @@ namespace battleship{
 				int numTexts = guiManager->getTexts().size();
 				guiManager->getTexts()[numTexts - 1]->setText(stringToWstring(players[i]->getName()));
 
-				plId++;
+				lineId++;
 			}
 		}
 	}

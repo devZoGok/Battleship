@@ -10,6 +10,8 @@ namespace battleship{
 			void onClick();
 		private:
 			std::string guiScreen = "";
+		protected:
+			std::vector<vb01Gui::Button*> buttons;
 	};
 }
 

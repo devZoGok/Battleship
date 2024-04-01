@@ -127,9 +127,8 @@ gui = {
 	},
 	{
 		guiType = GuiType.BUTTON,
-		buttonType = ButtonType.ACTIVE_GAME_STATE,
+		buttonType = ButtonType.TRADE_OFFER,
 		name = 'Offer',
-		guiScreen = 'tradingHub.lua',
 		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom},
 		size = buttonSize,
 		trigger = 10

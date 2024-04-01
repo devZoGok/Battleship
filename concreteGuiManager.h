@@ -48,7 +48,9 @@ namespace battleship{
 		BUY_RESEARCH,
 		SELL_RESEARCH,
 		ACTIVE_GAME_STATE,
-		PLAYER_TRADE
+		PLAYER_TRADE,
+		TRADING_SCREEN,
+		TRADE_OFFER
 	};
 	enum ListboxType {
 		CONTROLS,

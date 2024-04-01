@@ -41,7 +41,7 @@ gui = {
 	]]--
 	{
 		guiType = GuiType.BUTTON,
-		buttonType = ButtonType.ACTIVE_GAME_STATE,
+		buttonType = ButtonType.TRADING_SCREEN,
 		name = 'Trade',
 		guiScreen = 'tradingScreen.lua',
 		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = height},

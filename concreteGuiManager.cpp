@@ -28,6 +28,8 @@
 #include "tradeButton.h"
 #include "activeStateButton.h"
 #include "playerTradeButton.h"
+#include "tradingScreenButton.h"
+#include "offerButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -232,6 +234,12 @@ namespace battleship{
 				break;
 			case PLAYER_TRADE:
 				button = new PlayerTradeButton(pos, size, (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
+				break;
+			case TRADING_SCREEN:
+				button = new TradingScreenButton(pos, size, (int)SOL_LUA_STATE["playerId"], (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
+				break;
+			case TRADE_OFFER:
+				button = new OfferButton(pos, size, (int)SOL_LUA_STATE["playerId"], name, (int)guiTable["trigger"], imagePath);
 				break;
 		}
 

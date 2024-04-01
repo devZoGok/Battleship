@@ -29,7 +29,6 @@ namespace battleship{
 	void ActiveStateButton::onClick(){
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
 
-		vector<Button*> buttons{};
 		vector<Listbox*> listboxes{};
 		vector<Checkbox*> checkboxes{};
 		vector<Slider*> sliders{};
