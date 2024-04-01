@@ -10,7 +10,7 @@ cmake_policy(SET CMP0015 NEW)
 
 set(UNIT_BUTTONS unitButton.cpp tradeButton.cpp buildButton.cpp trainButton.cpp researchButton.cpp)
 set(OPTIONS_BUTTONS optionsButton.cpp tabButton.cpp okButton.cpp defaultsButton.cpp)
-set(TRADING_BUTTONS playerTradeButton.cpp tradingScreenButton.cpp offerButton.cpp)
+set(TRADING_BUTTONS playerTradeButton.cpp tradingScreenButton.cpp offerButton.cpp resourceAmmountButton.cpp)
 set(MENU_BUTTONS mainMenuButton.cpp singlePlayerButton.cpp exitButton.cpp backButton.cpp playButton.cpp)
 set(MAP_EDITOR_BUTTONS mapEditorButton.cpp newMapButton.cpp loadMapButton.cpp exportButton.cpp)
 set(BUTTONS statsButton.cpp activeStateButton.cpp ${TRADING_BUTTONS} ${OPTIONS_BUTTONS} ${MENU_BUTTONS} ${MAP_EDITOR_BUTTONS} ${UNIT_BUTTONS})

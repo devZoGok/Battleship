@@ -50,7 +50,8 @@ namespace battleship{
 		ACTIVE_GAME_STATE,
 		PLAYER_TRADE,
 		TRADING_SCREEN,
-		TRADE_OFFER
+		TRADE_OFFER,
+		RESOURCE_AMMOUNT
 	};
 	enum ListboxType {
 		CONTROLS,

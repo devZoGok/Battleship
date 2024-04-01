@@ -30,6 +30,7 @@
 #include "playerTradeButton.h"
 #include "tradingScreenButton.h"
 #include "offerButton.h"
+#include "resourceAmmountButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -240,6 +241,9 @@ namespace battleship{
 				break;
 			case TRADE_OFFER:
 				button = new OfferButton(pos, size, (int)SOL_LUA_STATE["playerId"], name, (int)guiTable["trigger"], imagePath);
+				break;
+			case RESOURCE_AMMOUNT:
+				button = new ResourceAmmountButton(pos, size, name, (int)guiTable["ammount"], (int)guiTable["trigger"], imagePath);
 				break;
 		}
 

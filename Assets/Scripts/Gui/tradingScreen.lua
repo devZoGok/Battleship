@@ -37,9 +37,9 @@ function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 
 		return {
 			guiType = GuiType.BUTTON,
-			buttonType = ButtonType.ACTIVE_GAME_STATE,
+			buttonType = ButtonType.RESOURCE_AMMOUNT,
+			ammount = 10,
 			name = '+',
-			guiScreen = 'tradingScreen.lua',
 			pos = guiElPos,
 			size = iconSize,
 			trigger = 10
@@ -49,9 +49,9 @@ function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 
 		return {
 			guiType = GuiType.BUTTON,
-			buttonType = ButtonType.ACTIVE_GAME_STATE,
+			buttonType = ButtonType.RESOURCE_AMMOUNT,
+			ammount = -10,
 			name = '-',
-			guiScreen = 'tradingScreen.lua',
 			pos = guiElPos,
 			size = iconSize,
 			trigger = 10
