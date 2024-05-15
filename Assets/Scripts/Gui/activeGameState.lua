@@ -3,6 +3,9 @@ Size = {x = 70, y = 70}
 sz = 210
 s = 90
 resIconBasePath = 'Icons/Resources/'
+pointerTex = 'pointer.jpg'
+attackTex = 'attack.jpg'
+garrisonTex = 'garrison.jpg'
 
 gui = {
 	{

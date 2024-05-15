@@ -2,6 +2,7 @@
 #include <quaternion.h>
 #include <model.h>
 #include <material.h>
+#include <texture.h>
 #include <quad.h>
 #include <text.h>
 #include <rayCaster.h>
@@ -34,17 +35,14 @@ namespace battleship{
 	using namespace configData;
 	using namespace gameBase;
 
-    ActiveGameState::ActiveGameState(GuiAppState *guiState, int playerId) : AbstractAppState(
+    ActiveGameState::ActiveGameState(GuiAppState *gs, int plId) : AbstractAppState(
 						AppStateType::ACTIVE_STATE,
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, true),
 					 	configData::calcSumBinds(AppStateType::ACTIVE_STATE, false),
-					 	GameManager::getSingleton()->getPath() + scripts[(int)ScriptFiles::OPTIONS]){
-        this->guiState = guiState;
-        this->playerId = playerId;
-        mainPlayer = Game::getSingleton()->getPlayer(playerId);
-		depth = 1;
-
+					 	GameManager::getSingleton()->getPath() + scripts[(int)ScriptFiles::OPTIONS]), guiState(gs), playerId(plId), depth(1){
 		initDragbox();
+
+		mainPlayer = Game::getSingleton()->getPlayer(playerId);
     }
 
     ActiveGameState::~ActiveGameState() {
@@ -67,6 +65,28 @@ namespace battleship{
 		root->getGuiNode()->attachChild(dragboxNode);
 	}
 
+	void ActiveGameState::initCursor(){
+		string basePath = GameManager::getSingleton()->getPath() + "Textures/Icons/Cursors/";
+		sol::state_view SOL_LUA_VIEW = generateView();
+
+		string p1[]{basePath + (string)SOL_LUA_VIEW["pointerTex"]}, p2[]{basePath + (string)SOL_LUA_VIEW["attackTex"]}, p3[]{basePath + (string)SOL_LUA_VIEW["garrisonTex"]};
+		pointerTex = new Texture(p1, 1, false);
+		attackTex = new Texture(p2, 1, false);
+		garrisonTex = new Texture(p3, 1, false);
+
+		Root *root = Root::getSingleton();
+		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->addBoolUniform("texturingEnabled", true);
+		mat->addTexUniform("diffuseMap", pointerTex, false);
+
+		Quad *quad = new Quad(Vector3(20, 20, 0), false);
+		quad->setMaterial(mat);
+
+		cursorNode = new Node();
+		cursorNode->attachMesh(quad);
+		root->getGuiNode()->attachChild(cursorNode);
+	}
+
 	void ActiveGameState::removeDragbox(){
 		Root::getSingleton()->getRootNode()->dettachChild(dragboxNode);
 		delete dragboxNode;
@@ -75,11 +95,42 @@ namespace battleship{
     void ActiveGameState::onAttached() {
         AbstractAppState::onAttached();
 		ConcreteGuiManager::getSingleton()->readLuaScreenScript("activeGameState.lua");
+
+		if(!cursorNode) initCursor();
     }
 
     void ActiveGameState::onDettached() {
 		AbstractAppState::onDettached();
     }
+
+	void ActiveGameState::updateCursor(){
+		Vector2 cursorPos = getCursorPos();
+		cursorNode->setPosition(Vector3(cursorPos.x, cursorPos.y, .8));
+
+		bool canSelect = canSelectHoveredOnGameObj();
+		bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getTeam() == mainPlayer->getTeam());
+
+		if(controlPressed || (gameObjHoveredOn && !ownGameObj && gameObjHoveredOn->getType() == GameObject::Type::UNIT))
+			cursorState = CursorState::ATTACK;
+		else
+			cursorState = CursorState::NORMAL;
+
+		Texture *tex = nullptr;
+
+		switch(cursorState){
+			case CursorState::ATTACK:
+				tex = attackTex;
+				break;
+			case CursorState::GARRISON:
+				tex = garrisonTex;
+				break;
+			default:
+				tex = pointerTex;
+				break;
+		}
+
+		cursorNode->getMesh(0)->getMaterial()->setTexUniform("diffuseMap", tex, false);
+	}
 
     void ActiveGameState::update() {
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
@@ -87,6 +138,8 @@ namespace battleship{
 		guiManager->getText("refineds")->setText(to_wstring(mainPlayer->getResource(ResourceType::REFINEDS)));
 		guiManager->getText("wealth")->setText(to_wstring(mainPlayer->getResource(ResourceType::WEALTH)));
 		guiManager->getText("research")->setText(to_wstring(mainPlayer->getResource(ResourceType::RESEARCH)));
+
+		updateCursor();
 
 		if(!isSelectionBox && leftMouseClicked && getTime() - lastLeftMouseClicked > 10)
 			isSelectionBox = true;
