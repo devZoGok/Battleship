@@ -237,9 +237,13 @@ namespace battleship{
 			case PLAYER_TRADE:
 				button = new PlayerTradeButton(pos, size, (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
 				break;
-			case TRADING_SCREEN:
-				button = new TradingScreenButton(pos, size, (int)SOL_LUA_STATE["playerId"], (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
+			case TRADING_SCREEN:{
+				int lid = guiTable["dependencies"][1]["id"];
+				Listbox *listbox = (Listbox*)guiElements[lid].second;
+
+				button = new TradingScreenButton(pos, size, listbox, (int)SOL_LUA_STATE["playerId"], (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
 				break;
+			}
 			case TRADE_OFFER:
 				button = new OfferButton(pos, size, (int)SOL_LUA_STATE["playerId"], name, (int)guiTable["trigger"], imagePath);
 				break;
@@ -379,6 +383,10 @@ namespace battleship{
 
 				listbox = new Listbox(pos, size, lines, maxDisplay, fontPath, closable);
 			}
+				break;
+			case TRADE_OFFERS:
+				closable = true;
+				listbox = new Listbox(pos, size, lines, numMaxDisplay, fontPath, closable);
 				break;
 		}
 

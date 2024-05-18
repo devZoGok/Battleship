@@ -1,6 +1,7 @@
 #include "playerTradeButton.h"
-#include "activeGameState.h"
 #include "concreteGuiManager.h"
+#include "activeGameState.h"
+#include "offerButton.h"
 #include "game.h"
 
 #include <stateManager.h>
@@ -20,8 +21,9 @@ namespace battleship{
 		StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 		ActiveGameState *activeState = (ActiveGameState*)stateManager->getAppStateByType((int)AppStateType::ACTIVE_STATE);
 		Player *mainPlayer = activeState->getPlayer();
+		Game *game = Game::getSingleton();
 
-		vector<Player*> players = Game::getSingleton()->getPlayers();
+		vector<Player*> players = game->getPlayers();
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
 		sol::state_view SOL_LUA_VIEW = generateView();
 
@@ -39,8 +41,22 @@ namespace battleship{
 				SOL_LUA_VIEW.script("playerId = " + to_string(i));
 				guiManager->readLuaScreenScript("tradingPlayerGuiTray.lua", buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 
-				int numButtons = guiManager->getButtons().size();
+				vector<Button*> guiButtons = guiManager->getButtons();
+
+				for(int j = guiButtons.size() - 1; j > 0; j--)
+					if(guiButtons[j]->getName() == "Offer")
+						((OfferButton*)guiButtons[j])->setPlayerId(i);
+
 				int numListboxes = guiManager->getListboxes().size();
+				Listbox *listbox = guiManager->getListboxes()[numListboxes - 1];
+				int numOffers = game->findTradeOffers(mainPlayer, players[i]).size();
+
+				for(int j = 0; j < numOffers; j++)
+					listbox->addLine(L"TRADE_OFFER_" + to_wstring(j));
+
+				if(listbox->getNumLines() < listbox->getMaxDisplay())
+					listbox->setMaxDisplay(listbox->getNumLines());
+
 				int numTexts = guiManager->getTexts().size();
 				guiManager->getTexts()[numTexts - 1]->setText(stringToWstring(players[i]->getName()));
 

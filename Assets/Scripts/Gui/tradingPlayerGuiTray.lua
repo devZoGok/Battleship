@@ -1,7 +1,7 @@
 res = graphics.resolution
 
 buttonSize = {x = 100, y = 20}
-textboxSize = {x = 200, y = 25}
+textboxSize = {x = 200, y = 20}
 
 height = HubPos.y + HubMargin.top + lineId * 30
 warIcon = 'Icons/PlayerStates/war.png'
@@ -19,22 +19,19 @@ gui = {
 		fontLastChar = 256,
 		color = {x = 1, y = 1, z = 1, w = 1}
 	},
-	--[[
 	{
 		guiType = GuiType.GUI_RECTANGLE,
-		pos = {x = Pos.x + margin.left + 20, y = height},
-		size = Size,
+		pos = {x = HubPos.x + HubMargin.left + 20, y = height, z = .11},
+		size = {x = 20, y = 20},
 		color = {x = 0, y = 0, z = 0, w = .6}
 	},
 	{
-		pos = {x = Pos.x + margin.left + 40, y = height},
+		pos = {x = HubPos.x + HubMargin.left + 40, y = height, z = .11},
 		size = textboxSize,
 		guiType = GuiType.LISTBOX,
 		listboxType = ListboxType.TRADE_OFFERS,
-		numMaxDisplay = 1,
-		lines = {''}
+		numMaxDisplay = 3
 	},
-	]]--
 	{
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.TRADING_SCREEN,
@@ -42,6 +39,7 @@ gui = {
 		guiScreen = 'tradingScreen.lua',
 		pos = {x = HubPos.x + HubSize.x - buttonSize.x - HubMargin.right, y = height, z = .11},
 		size = buttonSize,
-		trigger = 10
+		trigger = 10,
+		dependencies = {{id = 2}}
 	}
 }
