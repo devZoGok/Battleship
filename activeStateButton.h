@@ -6,7 +6,7 @@
 namespace battleship{
 	class ActiveStateButton : public vb01Gui::Button{
 		public:
-			ActiveStateButton(vb01::Vector2, vb01::Vector2, std::string, std::string, int = -1, std::string = "");
+			ActiveStateButton(vb01::Vector3, vb01::Vector2, std::string, std::string, int = -1, std::string = "");
 			void onClick();
 		private:
 			std::string guiScreen = "";

@@ -8,7 +8,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace vb01Gui;
 
-	TradingScreenButton::TradingScreenButton(Vector2 pos, Vector2 size, int plId, string gs, string name, int trigger, string imagePath) : ActiveStateButton(pos, size, gs, name, trigger, imagePath), playerId(plId){}
+	TradingScreenButton::TradingScreenButton(Vector3 pos, Vector2 size, int plId, string gs, string name, int trigger, string imagePath) : ActiveStateButton(pos, size, gs, name, trigger, imagePath), playerId(plId){}
 
 	//TODO add method to get buttons by name
 	void TradingScreenButton::onClick(){

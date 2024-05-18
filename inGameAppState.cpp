@@ -24,19 +24,19 @@ using namespace std;
 namespace battleship{
 	using namespace configData;
 
-    InGameAppState::ResumeButton::ResumeButton(Vector2 pos, Vector2 size) : Button(pos, size, "Resume", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {}
+    InGameAppState::ResumeButton::ResumeButton(Vector3 pos, Vector2 size) : Button(pos, size, "Resume", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {}
 
     void InGameAppState::ResumeButton::onClick() {
 		Game::getSingleton()->togglePause();
     }
 
-    InGameAppState::ConsoleButton::ConsoleButton(Vector2 pos, Vector2 size) : Button(pos, size, "Console", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) { }
+    InGameAppState::ConsoleButton::ConsoleButton(Vector3 pos, Vector2 size) : Button(pos, size, "Console", GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) { }
 
     void InGameAppState::ConsoleButton::onClick() {
 		ConcreteGuiManager::getSingleton()->readLuaScreenScript("console.lua");
     }
 
-	InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", 257, true) {
+	InGameAppState::ConsoleButton::ConsoleButton::ConsoleCommandEntryButton::ConsoleCommandEntryButton(Textbox *t, Listbox *l, Vector3 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", 257, true) {
 	    textbox = t;
 	    listbox = l;
 	}

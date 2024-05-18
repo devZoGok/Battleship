@@ -12,13 +12,13 @@ namespace battleship{
 		public:
 			class OkButton : public vb01Gui::Button{
 				public:
-					OkButton(vb01::Vector2, vb01::Vector2, vb01Gui::Textbox*, vb01Gui::Textbox*, vb01Gui::Textbox*);
+					OkButton(vb01::Vector3, vb01::Vector2, vb01Gui::Textbox*, vb01Gui::Textbox*, vb01Gui::Textbox*);
 					void onClick();
 				private:
 					vb01Gui::Textbox *name, *sizeX, *sizeY;
 			};
 
-			NewMapButton(vb01::Vector2, vb01::Vector2);
+			NewMapButton(vb01::Vector3, vb01::Vector2);
 			void onClick();
 		private:
 	};

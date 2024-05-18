@@ -20,7 +20,7 @@ gui = {
 		buttonType = ButtonType.ACTIVE_GAME_STATE,
 		name = 'Tech',
 		guiScreen = 'techTree.lua',
-		pos = {x = res.x - 2 * Size.x, y = res.y - Size.y},
+		pos = {x = res.x - 2 * Size.x, y = res.y - Size.y, z = 0},
 		size = sz,
 		trigger = 85
 	},

@@ -54,12 +54,13 @@ namespace battleship{
 	}
 
 	//TODO refactor player difficulty and faction listbox selection
+	//TODO remove hardcoded font path values
 	Button* ConcreteGuiManager::parseButton(int guiId){
 		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		sol::table posTable = guiTable["pos"];
-		Vector2 pos = Vector2(posTable["x"], posTable["y"]);
+		Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 
 		sol::table sizeTable = guiTable["size"];
 		Vector2 size = Vector2(sizeTable["x"], sizeTable["y"]);
@@ -261,7 +262,7 @@ namespace battleship{
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos";
-		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
+		Vector3 pos = Vector3(guiTable[posTable]["x"], guiTable[posTable]["y"], guiTable[posTable]["z"]);
 
 		string sizeTable = "size";
 		Vector2 size = Vector2(guiTable[sizeTable]["x"], guiTable[sizeTable]["y"]);
@@ -392,7 +393,7 @@ namespace battleship{
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos";
-		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
+		Vector3 pos = Vector3(guiTable[posTable]["x"], guiTable[posTable]["y"], guiTable[posTable]["z"]);
 		Checkbox *checkbox = new Checkbox(pos, fontBasePath + "batang.ttf");
 
 		int typeArr[2]{(int)GuiElementType::CHECKBOX, -1};
@@ -406,7 +407,7 @@ namespace battleship{
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos", sizeTable = "size";
-		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
+		Vector3 pos = Vector3(guiTable[posTable]["x"], guiTable[posTable]["y"], guiTable[posTable]["z"]);
 		Vector2 size = Vector2(guiTable[sizeTable]["x"], guiTable[sizeTable]["y"]);
 
 		Slider *slider = new Slider(pos, size, guiTable["minValue"], guiTable["maxValue"]);
@@ -422,7 +423,7 @@ namespace battleship{
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 
 		string posTable = "pos", sizeTable = "size";
-		Vector2 pos = Vector2(guiTable[posTable]["x"], guiTable[posTable]["y"]);
+		Vector3 pos = Vector3(guiTable[posTable]["x"], guiTable[posTable]["y"], guiTable[posTable]["z"]);
 		Vector2 size = Vector2(guiTable[sizeTable]["x"], guiTable[sizeTable]["y"]);
 		Textbox *textbox = new Textbox(pos, size, fontBasePath + "batang.ttf");
 
@@ -438,6 +439,7 @@ namespace battleship{
 
 		Root *root = Root::getSingleton();
 		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->setTransparent(true);
 
 		string ipk = "imagePath";
 		sol::optional<string> pathOpt = guiTable[ipk];
@@ -461,7 +463,7 @@ namespace battleship{
 		quad->setMaterial(mat);
 
 		sol::table posTable = guiTable["pos"];
-		Node *guiRectangle = new Node(Vector3(posTable["x"], posTable["y"], guiTable["zIndex"]));
+		Node *guiRectangle = new Node(Vector3(posTable["x"], posTable["y"], posTable["z"]));
 		guiRectangle->attachMesh(quad);
 		root->getGuiNode()->attachChild(guiRectangle);
 
@@ -475,6 +477,7 @@ namespace battleship{
 		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
 		sol::table posTable = guiTable["pos"];
+		sol::table scaleTable = guiTable["scale"];
 
 		Root *root = Root::getSingleton();
 
@@ -484,11 +487,11 @@ namespace battleship{
 		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
 
 		Text *text = new Text(fontBasePath + (string)guiTable["font"], (wstring)guiTable["text"], guiTable["fontFirstChar"], guiTable["fontLastChar"]);
-		text->setScale((float)guiTable["scale"]);
 		text->setMaterial(mat);
 
-		Vector3 pos = Vector3(posTable["x"], posTable["y"], guiTable["zIndex"]);
-		Node *node = new Node(pos, Quaternion::QUAT_W, Vector3::VEC_IJK, guiTable["name"]);
+		Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+		Vector3 scale = Vector3(scaleTable["x"], scaleTable["y"], 1);
+		Node *node = new Node(pos, Quaternion::QUAT_W, scale, guiTable["name"]);
 		node->addText(text);
 		root->getGuiNode()->attachChild(node);
 

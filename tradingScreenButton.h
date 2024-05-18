@@ -6,7 +6,7 @@
 namespace battleship{
 	class TradingScreenButton : public ActiveStateButton{
 		public:
-			TradingScreenButton(vb01::Vector2, vb01::Vector2, int, std::string, std::string, int, std::string);
+			TradingScreenButton(vb01::Vector3, vb01::Vector2, int, std::string, std::string, int, std::string);
 			void onClick();
 		private:
 			int playerId;

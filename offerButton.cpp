@@ -14,7 +14,7 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace gameBase;
 
-	OfferButton::OfferButton(Vector2 pos, Vector2 size, int plId, string name, int trigger, string imagePath) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", trigger, true, imagePath), playerId(plId){}
+	OfferButton::OfferButton(Vector3 pos, Vector2 size, int plId, string name, int trigger, string imagePath) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", trigger, true, imagePath), playerId(plId){}
 
 	void OfferButton::onClick(){
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();

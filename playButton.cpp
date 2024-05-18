@@ -14,7 +14,7 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace gameBase;
 
-	PlayButton::PlayButton(vector<Listbox*> difficulties, vector<Listbox*> factions, Listbox *mapListbox, Vector2 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
+	PlayButton::PlayButton(vector<Listbox*> difficulties, vector<Listbox*> factions, Listbox *mapListbox, Vector3 pos, Vector2 size, string name, bool separate) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_P, separate) {
 	        difficultiesListboxes = difficulties;
 	        factionsListboxes = factions;
 			this->mapListbox = mapListbox;

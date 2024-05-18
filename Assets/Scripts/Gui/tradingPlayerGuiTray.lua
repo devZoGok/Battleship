@@ -14,9 +14,8 @@ gui = {
 		guiType = GuiType.TEXT,
 		name = 'playerName',
 		text = '',
-		pos = {x = Pos.x + margin.left, y = height},
-		zIndex = 0,
-		scale = 1,
+		pos = {x = Pos.x + margin.left, y = height, z = .11},
+		scale = {x = .2, y = .2},
 		font = 'batang.ttf',
 		fontFirstChar = 0,
 		fontLastChar = 256,
@@ -26,7 +25,6 @@ gui = {
 	{
 		guiType = GuiType.GUI_RECTANGLE,
 		pos = {x = Pos.x + margin.left + 20, y = height},
-		zIndex = .9,
 		size = Size,
 		color = {x = 0, y = 0, z = 0, w = .6}
 	},
@@ -44,7 +42,7 @@ gui = {
 		buttonType = ButtonType.TRADING_SCREEN,
 		name = 'Trade',
 		guiScreen = 'tradingScreen.lua',
-		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = height},
+		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = height, z = .11},
 		size = buttonSize,
 		trigger = 10
 	}

@@ -3,22 +3,22 @@ Size = {x = 140, y = 40}
 numGui = 5
 gui = {
 	{
-		pos = {x = 110, y = 150},
+		pos = {x = 110, y = 150, z = 0},
 		size = Size,
 		guiType = GuiType.TEXTBOX
 	},
 	{
-		pos = {x = 110, y = 190},
+		pos = {x = 110, y = 190, z = 0},
 		size = Size,
 		guiType = GuiType.TEXTBOX
 	},
 	{
-		pos = {x = 110, y = 220},
+		pos = {x = 110, y = 220, z = 0},
 		size = Size,
 		guiType = GuiType.TEXTBOX
 	},
 	{
-		pos = {x = 420, y = 400},
+		pos = {x = 420, y = 400, z = 0},
 		size = {x = 150, y = 50},
 		guiType = GuiType.BUTTON,
 		name = 'Ok',
@@ -31,7 +31,7 @@ gui = {
 		}
 	},
 	{
-		pos = {x = 250, y = 400},
+		pos = {x = 250, y = 400, z = 0},
 		size = {x = 150, y = 50},
 		guiType = GuiType.BUTTON,
 		name = 'Back',

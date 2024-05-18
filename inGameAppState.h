@@ -18,7 +18,7 @@ namespace battleship{
     public:
         class ResumeButton : public vb01Gui::Button {
         public:
-            ResumeButton(vb01::Vector2, vb01::Vector2);
+            ResumeButton(vb01::Vector3, vb01::Vector2);
             void onClick();
         private:
         };
@@ -27,14 +27,14 @@ namespace battleship{
         public:
 			class ConsoleCommandEntryButton : public Button {
 			public:
-			    ConsoleCommandEntryButton(vb01Gui::Textbox*, vb01Gui::Listbox*, vb01::Vector2, vb01::Vector2, std::string);
+			    ConsoleCommandEntryButton(vb01Gui::Textbox*, vb01Gui::Listbox*, vb01::Vector3, vb01::Vector2, std::string);
 			    void onClick();
 			private:
 			    vb01Gui::Textbox *textbox;
 			    vb01Gui::Listbox *listbox;
 			};
 
-            ConsoleButton(vb01::Vector2, vb01::Vector2);
+            ConsoleButton(vb01::Vector3, vb01::Vector2);
             void onClick();
         private:
         };

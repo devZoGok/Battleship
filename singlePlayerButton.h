@@ -8,7 +8,7 @@
 namespace battleship{
     class SinglePlayerButton : public vb01Gui::Button {
     public:
-		SinglePlayerButton(vb01::Vector2, vb01::Vector2, std::string);
+		SinglePlayerButton(vb01::Vector3, vb01::Vector2, std::string);
 		void onClick();
 		void onMouseOver();
 		void onMouseOff();

@@ -19,7 +19,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace std;
 
-	ResearchButton::ResearchButton(Vector2 pos, Vector2 size, string name, int trigger, string imagePath, int uid, int tid) :
+	ResearchButton::ResearchButton(Vector3 pos, Vector2 size, string name, int trigger, string imagePath, int uid, int tid) :
 	   	UnitButton(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", trigger, imagePath, uid), techId(tid){
 			Root *root = Root::getSingleton();
 			Material *mat = new Material(root->getLibPath() + "gui");

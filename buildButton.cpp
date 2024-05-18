@@ -16,7 +16,7 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace gameBase;
 
-	BuildButton::BuildButton(Vector2 pos, Vector2 size, string name, int trigger, string imagePath, int uid, int slId) : 
+	BuildButton::BuildButton(Vector3 pos, Vector2 size, string name, int trigger, string imagePath, int uid, int slId) : 
 		UnitButton(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", trigger, imagePath, uid), slotId(slId){}
 
 	void BuildButton::onClick(){

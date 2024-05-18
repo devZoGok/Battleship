@@ -7,7 +7,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace vb01Gui;
 
-    BackButton::BackButton(Vector2 pos, Vector2 size, string name, string screen) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
+    BackButton::BackButton(Vector3 pos, Vector2 size, string name, string screen) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", -1, true) {
 		this->screen = screen;
 	}
 

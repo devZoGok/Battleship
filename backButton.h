@@ -6,7 +6,7 @@
 namespace battleship{
 	class BackButton : public vb01Gui::Button{
 		public:
-			BackButton(vb01::Vector2, vb01::Vector2, std::string, std::string);
+			BackButton(vb01::Vector3, vb01::Vector2, std::string, std::string);
 			void onClick();
 		private:
 			std::string screen;

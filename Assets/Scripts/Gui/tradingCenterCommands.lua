@@ -5,7 +5,7 @@ sz = {x = Size.x - margin, y = Size.y - margin}
 
 gui = {
 	{
-		pos = {x = res.x - Size.x, y = res.y - Size.y},
+		pos = {x = res.x - Size.x, y = res.y - Size.y, z = 0},
 		size = sz,
 		name = 'Buy ref',
 		guiType = GuiType.BUTTON,
@@ -13,7 +13,7 @@ gui = {
 		trigger = 73,
 	},
 	{
-		pos = {x = res.x - 2 * Size.x, y = res.y - Size.y},
+		pos = {x = res.x - 2 * Size.x, y = res.y - Size.y, z = 0},
 		size = sz,
 		name = 'Sell ref',
 		guiType = GuiType.BUTTON,
@@ -21,7 +21,7 @@ gui = {
 		trigger = 79,
 	},
 	{
-		pos = {x = res.x - Size.x, y = res.y - 2 * Size.y},
+		pos = {x = res.x - Size.x, y = res.y - 2 * Size.y, z = 0},
 		size = sz,
 		name = 'Buy rsch',
 		guiType = GuiType.BUTTON,
@@ -29,7 +29,7 @@ gui = {
 		trigger = 75,
 	},
 	{
-		pos = {x = res.x - 2 * Size.x, y = res.y - 2 * Size.y},
+		pos = {x = res.x - 2 * Size.x, y = res.y - 2 * Size.y, z = 0},
 		size = sz,
 		name = 'Sell rsch',
 		guiType = GuiType.BUTTON,

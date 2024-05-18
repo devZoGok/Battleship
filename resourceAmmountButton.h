@@ -10,7 +10,7 @@ namespace vb01Gui{
 namespace battleship{
 	class ResourceAmmountButton : public vb01Gui::Button{
 		public:
-			ResourceAmmountButton(vb01::Vector2, vb01::Vector2, std::string, int, int, std::string);
+			ResourceAmmountButton(vb01::Vector3, vb01::Vector2, std::string, int, int, std::string);
 			void onClick();
 		private:
 			vb01Gui::Textbox *textbox = nullptr;

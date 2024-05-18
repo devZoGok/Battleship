@@ -6,7 +6,7 @@
 namespace battleship{
 	class MainMenuButton : public vb01Gui::Button{
 		public:
-			MainMenuButton(vb01::Vector2, vb01::Vector2, std::string);
+			MainMenuButton(vb01::Vector3, vb01::Vector2, std::string);
 			void onClick();
 		private:
 	};

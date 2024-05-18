@@ -11,7 +11,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 
-	TrainButton::TrainButton(Vector2 pos, Vector2 size, string name, int trigger, string imagePath, int uid, int slId) :
+	TrainButton::TrainButton(Vector3 pos, Vector2 size, string name, int trigger, string imagePath, int uid, int slId) :
 		UnitButton(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", trigger, imagePath, uid),
 		slotId(slId) {}
 
