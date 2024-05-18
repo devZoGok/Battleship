@@ -1,11 +1,9 @@
 res = graphics.resolution
-Pos = {x = 10, y = 10}
-Size = {x = res.x * .8, y = res.y * .8}
+
 buttonSize = {x = 100, y = 20}
 textboxSize = {x = 200, y = 25}
-margin = {top = 10, left = 10, right = 10, bottom = 10}
 
-height = Pos.y + margin.top + lineId * 30
+height = HubPos.y + HubMargin.top + lineId * 30
 warIcon = 'Icons/PlayerStates/war.png'
 allianceIcon = 'Icons/PlayerStates/alliance.png'
 
@@ -14,7 +12,7 @@ gui = {
 		guiType = GuiType.TEXT,
 		name = 'playerName',
 		text = '',
-		pos = {x = Pos.x + margin.left, y = height, z = .11},
+		pos = {x = HubPos.x + HubMargin.left, y = height + 10, z = .11},
 		scale = {x = .2, y = .2},
 		font = 'batang.ttf',
 		fontFirstChar = 0,
@@ -42,7 +40,7 @@ gui = {
 		buttonType = ButtonType.TRADING_SCREEN,
 		name = 'Trade',
 		guiScreen = 'tradingScreen.lua',
-		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = height, z = .11},
+		pos = {x = HubPos.x + HubSize.x - buttonSize.x - HubMargin.right, y = height, z = .11},
 		size = buttonSize,
 		trigger = 10
 	}

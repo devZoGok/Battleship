@@ -1,15 +1,17 @@
 res = graphics.resolution
-Pos = {x = 10, y = 10, z = .1}
-Size = {x = res.x * .8, y = res.y * .8 + 40}
+
+HubSize = {x = res.x * .5, y = res.y * .8}
+HubPos = {x = .5 * (res.x - HubSize.x), y = 10, z = .1}
+HubMargin = {top = 10, left = 10, right = 10, bottom = 10}
+
 buttonSize = {x = 100, y = 20}
 textboxSize = {x = 200, y = 25}
-margin = {top = 10, left = 10, right = 10, bottom = 10}
 
 gui = {
 	{
 		guiType = GuiType.GUI_RECTANGLE,
-		pos = Pos,
-		size = Size,
+		pos = HubPos,
+		size = HubSize,
 		color = {x = 0, y = 0, z = 0, w = .6}
 	},
 	{
@@ -17,7 +19,7 @@ gui = {
 		buttonType = ButtonType.ACTIVE_GAME_STATE,
 		name = 'Back',
 		guiScreen = 'activeGameState.lua',
-		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom, z = .11},
+		pos = {x = HubPos.x + HubSize.x - buttonSize.x - HubMargin.right, y = HubPos.y + HubSize.y - buttonSize.y - HubMargin.bottom, z = .11},
 		size = buttonSize,
 		trigger = 10
 	},

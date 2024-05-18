@@ -1,7 +1,8 @@
 res = graphics.resolution
 Size = {x = 70, y = 70}
 sz = 210
-s = 90
+s = 40
+resTextScale = {x = .5, y = .5}
 resIconBasePath = 'Icons/Resources/'
 pointerTex = 'pointer.jpg'
 attackTex = 'attack.jpg'
@@ -12,8 +13,8 @@ gui = {
 		guiType = GuiType.TEXT,
 		name = 'refineds',
 		text = '',
-		pos = {x = 100, y = 100, z = 0},
-		scale = {x = 1, y = 1},
+		pos = {x = s, y = s, z = 0},
+		scale = resTextScale,
 		font = 'batang.ttf',
 		fontFirstChar = 0,
 		fontLastChar = 256,
@@ -23,19 +24,19 @@ gui = {
 		guiType = GuiType.TEXT,
 		name = 'wealth',
 		text = '',
-		pos = {x = 100, y = 200, z = 0},
-		scale = {x = 1, y = 1},
+		pos = {x = 200 + s, y = s, z = 0},
+		scale = resTextScale,
 		font = 'batang.ttf',
 		fontFirstChar = 0,
 		fontLastChar = 256,
-		color = {x = 1, y = 0, z = 1, w = 1}
+		color = {x = 1, y = 1, z = 1, w = 1}
 	},
 	{
 		guiType = GuiType.TEXT,
 		name = 'research',
 		text = '',
-		pos = {x = 100, y = 300, z = 0},
-		scale = {x = 1, y = 1},
+		pos = {x = 400 + s, y = s, z = 0},
+		scale = resTextScale,
 		font = 'batang.ttf',
 		fontFirstChar = 0,
 		fontLastChar = 256,
@@ -49,13 +50,13 @@ gui = {
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
-		pos = {x = 0, y = 100, z = 0},
+		pos = {x = 200, y = 0, z = 0},
 		size = {x = s, y = s},
 		imagePath = resIconBasePath .. 'wealth.jpg',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
-		pos = {x = 0, y = 200, z = 0},
+		pos = {x = 400, y = 0, z = 0},
 		size = {x = s, y = s},
 		imagePath = resIconBasePath .. 'research.jpg',
 	},
@@ -64,7 +65,7 @@ gui = {
 		name = 'depth',
 		text = '',
 		pos = {x = 0, y = 400, z = 0},
-		scale = {x = 1, y = 1},
+		scale = {x = 0, y = 1},
 		font = 'batang.ttf',
 		fontFirstChar = 0,
 		fontLastChar = 256,

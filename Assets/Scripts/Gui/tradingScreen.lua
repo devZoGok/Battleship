@@ -1,9 +1,7 @@
 res = graphics.resolution
-Pos = {x = 10, y = 10}
-Size = {x = res.x * .8, y = res.y * .8}
-margin = {top = 100, left = 100, right = 100, bottom = 100}
+HubMargin.top = 100
 
-resTrayPos = {x = Pos.x + margin.left, y = Pos.y + margin.top}
+resTrayPos = {x = HubPos.x + HubMargin.left, y = HubPos.y + HubMargin.top}
 iconSize = {x = 25, y = 25}
 textboxSize = {x = 200, y = 25}
 
@@ -13,10 +11,10 @@ ResourceTrayGuiId = {ICON = 0, TEXTBOX = 1, INCREMENT = 2, DECREMENT = 3}
 IconPath = {WEALTH = 'Icons/Resources/wealth.jpg', RESEARCH = 'Icons/Resources/research.jpg', REFINEDS = 'Icons/Resources/refineds.jpg', TIME = 'Icons/Resources/time.jpg'}
 
 function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
-	height = margin.top + lineId * iconSize.y
+	height = HubMargin.top + lineId * iconSize.y
 
 	if guiId == ResourceTrayGuiId.ICON then
-		guiElPos = {x = Pos.x + (cpuPlayer and margin.left or Size.x -(margin.right + 3 * iconSize.x + textboxSize.x)), y = height, z = .2}
+		guiElPos = {x = HubPos.x + (cpuPlayer and HubMargin.left or HubSize.x -(HubMargin.right + 3 * iconSize.x + textboxSize.x)), y = height, z = .2}
 
 		return {
 			guiType = GuiType.GUI_RECTANGLE,
@@ -25,7 +23,7 @@ function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 			imagePath = imgPath
 		}
 	elseif guiId == ResourceTrayGuiId.TEXTBOX then
-		guiElPos = {x = Pos.x + (cpuPlayer and margin.left + iconSize.x or Size.x -(margin.right + 2 * iconSize.x + textboxSize.x)), y = height, z = .2}
+		guiElPos = {x = HubPos.x + (cpuPlayer and HubMargin.left + iconSize.x or HubSize.x -(HubMargin.right + 2 * iconSize.x + textboxSize.x)), y = height, z = .2}
 
 		return {
 			pos = guiElPos,
@@ -33,7 +31,7 @@ function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 			guiType = GuiType.TEXTBOX,
 		}
 	elseif guiId == ResourceTrayGuiId.INCREMENT then
-		guiElPos = {x = Pos.x + (cpuPlayer and margin.left + iconSize.x + textboxSize.x or Size.x -(margin.right + 2 * iconSize.x)), y = height, z = .2}
+		guiElPos = {x = HubPos.x + (cpuPlayer and HubMargin.left + iconSize.x + textboxSize.x or HubSize.x -(HubMargin.right + 2 * iconSize.x)), y = height, z = .2}
 
 		return {
 			guiType = GuiType.BUTTON,
@@ -45,7 +43,7 @@ function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 			trigger = 10
 		}
 	elseif guiId == ResourceTrayGuiId.DECREMENT then
-		guiElPos = {x = Pos.x + (cpuPlayer and margin.left + 2 * iconSize.x + textboxSize.x or Size.x -(margin.right + iconSize.x)), y = height, z = .2}
+		guiElPos = {x = HubPos.x + (cpuPlayer and HubMargin.left + 2 * iconSize.x + textboxSize.x or HubSize.x -(HubMargin.right + iconSize.x)), y = height, z = .2}
 
 		return {
 			guiType = GuiType.BUTTON,
@@ -64,7 +62,7 @@ gui = {
 		guiType = GuiType.TEXT,
 		name = 'P0',
 		text = 'P0',
-		pos = {x = Pos.x + margin.left, y = Pos.y + margin.top - 20, z = .2},
+		pos = {x = HubPos.x + HubMargin.left, y = HubPos.y + HubMargin.top - 20, z = .2},
 		scale = {x = .5, y = .5},
 		font = 'batang.ttf',
 		fontFirstChar = 0,
@@ -75,7 +73,7 @@ gui = {
 		guiType = GuiType.TEXT,
 		name = 'You',
 		text = 'You',
-		pos = {x = Pos.x + Size.x -(margin.right + textboxSize.x + iconSize.x + 50), y = Pos.y + margin.top - 20, z = .2},
+		pos = {x = HubPos.x + HubSize.x -(HubMargin.right + textboxSize.x + iconSize.x + 50), y = HubPos.y + HubMargin.top - 20, z = .2},
 		scale = {x = .5, y = .5},
 		font = 'batang.ttf',
 		fontFirstChar = 0,
@@ -121,7 +119,7 @@ gui = {
 		buttonType = ButtonType.PLAYER_TRADE,
 		name = 'Back',
 		guiScreen = 'tradingHub.lua',
-		pos = {x = Pos.x + Size.x - 2 * buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom, z = .2},
+		pos = {x = HubPos.x + HubSize.x - 2 * buttonSize.x - HubMargin.right, y = HubPos.y + HubSize.y - buttonSize.y - HubMargin.bottom, z = .2},
 		size = buttonSize,
 		trigger = 10
 	},
@@ -129,12 +127,12 @@ gui = {
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.TRADE_OFFER,
 		name = 'Offer',
-		pos = {x = Pos.x + Size.x - buttonSize.x - margin.right, y = Pos.y + Size.y - buttonSize.y - margin.bottom, z = .2},
+		pos = {x = HubPos.x + HubSize.x - buttonSize.x - HubMargin.right, y = HubPos.y + HubSize.y - buttonSize.y - HubMargin.bottom, z = .2},
 		size = buttonSize,
 		trigger = 10
 	},
 	{
-		pos = {x = Pos.x + margin.left, y = Pos.y + Size.y - textboxSize.y - margin.bottom, z = .2},
+		pos = {x = HubPos.x + HubMargin.left, y = HubPos.y + HubSize.y - textboxSize.y - HubMargin.bottom, z = .2},
 		size = textboxSize,
 		guiType = GuiType.TEXTBOX,
 	}
