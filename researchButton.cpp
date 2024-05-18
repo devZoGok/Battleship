@@ -28,7 +28,7 @@ namespace battleship{
 			Quad *quad = new Quad(Vector3(size.x, size.y, 1), false);
 			quad->setMaterial(mat);
 
-			overlay = new Node(Vector3(pos.x, pos.y, -.8));
+			overlay = new Node(Vector3(pos.x, pos.y, .12));
 			overlay->attachMesh(quad);
 			root->getGuiNode()->attachChild(overlay);
 		}
