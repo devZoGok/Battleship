@@ -16,7 +16,7 @@ gui = {
 	{
 		pos = {x = Pos.x + .5 * (Size.x - techButtonSize.x), y = Pos.y + margin.top, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "APT",
 		imagePath = baseTechPath .. 'apt.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -26,7 +26,7 @@ gui = {
 	{
 		pos = {x = Pos.x + margin.left, y = Pos.y + margin.top + heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "FPT",
 		imagePath = baseTechPath .. 'fpt.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -36,7 +36,7 @@ gui = {
 	{
 		pos = {x = Pos.x + margin.left, y = Pos.y + margin.top + 2 * heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "Cruisers",
 		imagePath = baseTechPath .. 'cruisers.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -46,7 +46,7 @@ gui = {
 	{
 		pos = {x = Pos.x + .5 * (Size.x - techButtonSize.x), y = Pos.y + margin.top + heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "EFT",
 		imagePath = baseTechPath .. 'ept.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -56,7 +56,7 @@ gui = {
 	{
 		pos = {x = Pos.x + .5 * (Size.x - 3 * techButtonSize.x), y = Pos.y + margin.top + 2 * heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "Stealth",
 		imagePath = baseTechPath .. 'stealth.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -66,7 +66,7 @@ gui = {
 	{
 		pos = {x = Pos.x + .5 * (Size.x + 3 * techButtonSize.x), y = Pos.y + margin.top + 2 * heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "Robotics",
 		imagePath = baseTechPath .. 'robo.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -76,7 +76,7 @@ gui = {
 	{
 		pos = {x = Pos.x + Size.x - (margin.right + techButtonSize.x), y = Pos.y + margin.top + heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "PCT",
 		imagePath = baseTechPath .. 'pct.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -86,7 +86,7 @@ gui = {
 	{
 		pos = {x = Pos.x + Size.x - (margin.right + 3 * techButtonSize.x), y = Pos.y + margin.top + 2 * heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "Carriers",
 		imagePath = baseTechPath .. 'carriers.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,
@@ -96,7 +96,7 @@ gui = {
 	{
 		pos = {x = Pos.x + Size.x - (margin.right + techButtonSize.x), y = Pos.y + margin.top + 2 * heightOffset, z = .11},
 		size = techButtonSize,
-		name = "Research",
+		name = "Tanks",
 		imagePath = baseTechPath .. 'tanks.jpg',
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.RESEARCH,

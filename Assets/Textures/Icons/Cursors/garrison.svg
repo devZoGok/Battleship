@@ -43,6 +43,9 @@
        style="fill:#0c1fd5;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.56342;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1;paint-order:stroke fill markers"
        inkscape:transform-center-x="1.1131741e-06"
        inkscape:transform-center-y="-1.2077841e-06"
-       d="M 63.749468,51.966222 96.532477,108.74778 H 63.749985 L 95.127397,163.0964 H 63.749985 l 38.283455,66.30965 38.28396,-66.30965 h -31.37792 l 31.37792,-54.34862 h -32.783 l 32.783,-56.781558 z" />
+       d="M 63.749468,51.966222 96.532477,108.74778 H 63.749985 L 95.127397,163.0964 H 63.749985 l 38.283455,66.30965 38.28396,-66.30965 h -31.37792 l 31.37792,-54.34862 h -32.783 l 32.783,-56.781558 z"
+       inkscape:export-filename="garrison.png"
+       inkscape:export-xdpi="7.0948467"
+       inkscape:export-ydpi="7.0948467" />
   </g>
 </svg>
