@@ -115,6 +115,7 @@ namespace battleship{
 		else
 			cursorState = CursorState::NORMAL;
 
+		cursorNode->setVisible(cursorState != CursorState::NORMAL);
 		Texture *tex = nullptr;
 
 		switch(cursorState){
@@ -123,9 +124,6 @@ namespace battleship{
 				break;
 			case CursorState::GARRISON:
 				tex = garrisonTex;
-				break;
-			default:
-				tex = pointerTex;
 				break;
 		}
 

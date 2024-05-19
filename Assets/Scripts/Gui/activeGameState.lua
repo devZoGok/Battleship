@@ -4,9 +4,9 @@ sz = 210
 s = 40
 resTextScale = {x = .5, y = .5}
 resIconBasePath = 'Icons/Resources/'
-pointerTex = 'pointer.jpg'
-attackTex = 'attack.jpg'
-garrisonTex = 'garrison.jpg'
+pointerTex = 'pointer.png'
+attackTex = 'attack.png'
+garrisonTex = 'garrison.png'
 
 gui = {
 	{
@@ -52,13 +52,13 @@ gui = {
 		guiType = GuiType.GUI_RECTANGLE,
 		pos = {x = 200, y = 0, z = 0},
 		size = {x = s, y = s},
-		imagePath = resIconBasePath .. 'wealth.jpg',
+		imagePath = resIconBasePath .. 'wealth.png',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
 		pos = {x = 400, y = 0, z = 0},
 		size = {x = s, y = s},
-		imagePath = resIconBasePath .. 'research.jpg',
+		imagePath = resIconBasePath .. 'research.png',
 	},
 	{
 		guiType = GuiType.TEXT,

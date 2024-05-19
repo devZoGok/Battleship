@@ -1,6 +1,6 @@
 res = graphics.resolution
 
-HubSize = {x = res.x * .5, y = res.y * .8}
+HubSize = {x = res.x * .3, y = res.y * .8}
 HubPos = {x = .5 * (res.x - HubSize.x), y = 10, z = .1}
 HubMargin = {top = 10, left = 10, right = 10, bottom = 10}
 

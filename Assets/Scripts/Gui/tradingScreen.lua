@@ -8,7 +8,7 @@ textboxSize = {x = 200, y = 25}
 buttonSize = {x = 100, y = 20}
 
 ResourceTrayGuiId = {ICON = 0, TEXTBOX = 1, INCREMENT = 2, DECREMENT = 3}
-IconPath = {WEALTH = 'Icons/Resources/wealth.jpg', RESEARCH = 'Icons/Resources/research.jpg', REFINEDS = 'Icons/Resources/refineds.jpg', TIME = 'Icons/Resources/time.jpg'}
+IconPath = {WEALTH = 'Icons/Resources/wealth.png', RESEARCH = 'Icons/Resources/research.png', REFINEDS = 'Icons/Resources/refineds.png', TIME = 'Icons/Resources/time.png'}
 
 function createResourceTrayGui(cpuPlayer, lineId, guiId, imgPath)
 	height = HubMargin.top + lineId * iconSize.y
