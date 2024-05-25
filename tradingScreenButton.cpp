@@ -24,16 +24,17 @@ namespace battleship{
 	{}
 
 	void TradingScreenButton::onClick(){
+		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
+		Game *game = Game::getSingleton();
+
 		if(listbox->getNumLines() > 0){
 			StateManager *stateManager = GameManager::getSingleton()->getStateManager();
 			ActiveGameState *activeState = (ActiveGameState*)stateManager->getAppStateByType((int)AppStateType::ACTIVE_STATE);
 			Player *mainPlayer = activeState->getPlayer();
 			
-			Game *game = Game::getSingleton();
 			TradeOffer *tradeOffer = game->findTradeOffers(mainPlayer, game->getPlayer(playerId))[listbox->getSelectedOption()];
 
 			ActiveStateButton::onClick();
-			ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
 			vector<Textbox*> textboxes = guiManager->getTextboxes();
 			
 			textboxes[0]->setEntry(to_wstring(tradeOffer->recRefineds));
@@ -46,6 +47,9 @@ namespace battleship{
 		else
 			ActiveStateButton::onClick();
 
-		ConcreteGuiManager::getSingleton()->removeButton(this);
+		vector<Text*> texts = guiManager->getTexts();
+		texts[texts.size() - 2]->setText(stringToWstring(game->getPlayer(playerId)->getName()));
+
+		guiManager->removeButton(this);
 	}
 }
