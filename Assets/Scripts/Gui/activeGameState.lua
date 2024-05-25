@@ -44,18 +44,21 @@ gui = {
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
+		name = 'refineds',
 		pos = {x = 0, y = 0, z = 0},
 		size = {x = s, y = s},
 		imagePath = resIconBasePath .. 'refineds.png',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
+		name = 'wealth',
 		pos = {x = 200, y = 0, z = 0},
 		size = {x = s, y = s},
 		imagePath = resIconBasePath .. 'wealth.png',
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
+		name = 'research',
 		pos = {x = 400, y = 0, z = 0},
 		size = {x = s, y = s},
 		imagePath = resIconBasePath .. 'research.png',

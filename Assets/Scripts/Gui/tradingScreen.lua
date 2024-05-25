@@ -59,6 +59,12 @@ end
 
 gui = {
 	{
+		guiType = GuiType.GUI_RECTANGLE,
+		pos = HubPos,
+		size = HubSize,
+		color = {x = 0, y = 0, z = 0, w = .6}
+	},
+	{
 		guiType = GuiType.TEXT,
 		name = 'P0',
 		text = 'P0',

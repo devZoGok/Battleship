@@ -441,6 +441,7 @@ namespace battleship{
 		return textbox;
 	}
 
+	//TODO factor out checking for optional lua values
 	Node* ConcreteGuiManager::parseGuiRectangle(int guiId){
 		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
@@ -453,6 +454,10 @@ namespace battleship{
 		sol::optional<string> pathOpt = guiTable[ipk];
 		string imagePath = (pathOpt != sol::nullopt ? (string)guiTable[ipk] : "");
 		bool texturingEnabled = (imagePath != "");
+
+		string nk = "name";
+		sol::optional<string> nameOpt = guiTable[nk];
+		string name = (nameOpt != sol::nullopt ? (string)guiTable[nk] : "");
 
 		mat->addBoolUniform("texturingEnabled", texturingEnabled);
 
@@ -471,7 +476,7 @@ namespace battleship{
 		quad->setMaterial(mat);
 
 		sol::table posTable = guiTable["pos"];
-		Node *guiRectangle = new Node(Vector3(posTable["x"], posTable["y"], posTable["z"]));
+		Node *guiRectangle = new Node(Vector3(posTable["x"], posTable["y"], posTable["z"]), Quaternion::QUAT_W, Vector3::VEC_IJK, name);
 		guiRectangle->attachMesh(quad);
 		root->getGuiNode()->attachChild(guiRectangle);
 
