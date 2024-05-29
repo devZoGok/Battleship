@@ -25,6 +25,8 @@ namespace battleship{
 		inline std::string getPath(){return path;}
         inline gameBase::InputManager* getInputManager(){return inputManager;}
         inline bool isServerSide(){return serverSide;}
+		inline bool isRunning(){return running;}
+		inline void setRunning(bool r){this->running = r;}
 		inline gameBase::StateManager* getStateManager(){return stateManager;}
     private:
         GameManager(){}
@@ -36,7 +38,7 @@ namespace battleship{
 		gameBase::InputManager *inputManager = nullptr;
         int width, height;
 		std::string path = "";
-        bool serverSide;
+        bool serverSide, running = false;
     };
     
 }
