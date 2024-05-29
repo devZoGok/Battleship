@@ -68,7 +68,7 @@ namespace battleship{
 			for(ResourceDeposit *dep : deposits){
 				Vector3 depPos = dep->getPos();
 
-				if(s.getPos().getDistanceFrom(depPos) < maxDist){
+				if(!dep->getExtractor() && s.getPos().getDistanceFrom(depPos) < maxDist){
 					s.status = GameObjectFrame::PLACEABLE;
 					s.placeAt(depPos);
 					break;

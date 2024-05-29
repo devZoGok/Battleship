@@ -23,6 +23,7 @@ namespace battleship{
 			for(ResourceDeposit *dep : deposits)
 				if(dep->getPos().getDistanceFrom(pos) < .001){
 					deposit = dep;
+					deposit->setExtractor(this);
 					break;
 				}
 		}
@@ -33,6 +34,9 @@ namespace battleship{
 	}
 
 	Extractor::~Extractor(){
+		if(deposit)
+			deposit->setExtractor(nullptr);
+
 		removeBar(ammountForeground);
 		removeBar(ammountBackground);
 	}
