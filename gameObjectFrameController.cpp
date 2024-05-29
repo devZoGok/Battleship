@@ -1,6 +1,9 @@
 #include <solUtil.h>
 
 #include "gameObjectFrameController.h"
+#include "resourceDeposit.h"
+#include "player.h"
+#include "game.h"
 #include "unit.h"
 #include "util.h"
 #include "map.h"
@@ -49,13 +52,33 @@ namespace battleship{
 		}
 	}
 
+	void GameObjectFrameController::snapToObj(GameObjectFrame &s, GameObject::Type type, int unitId, float maxDist){
+		if(s.getType() == GameObject::Type::UNIT && s.getId() == unitId){
+			s.status = GameObjectFrame::NOT_PLACEABLE;
+			vector<Player*> players = Game::getSingleton()->getPlayers();
+			vector<ResourceDeposit*> deposits;
+		
+			for(Player *pl : players){
+				vector<ResourceDeposit*> deps = pl->getResourceDeposits();
+		
+				for(ResourceDeposit *dep : deps)
+					deposits.push_back(dep);
+			}
+
+			for(ResourceDeposit *dep : deposits){
+				Vector3 depPos = dep->getPos();
+
+				if(s.getPos().getDistanceFrom(depPos) < maxDist){
+					s.status = GameObjectFrame::PLACEABLE;
+					s.placeAt(depPos);
+					break;
+				}
+			}
+		}
+	}
+
 	//TODO implement terrain evenness check
 	void GameObjectFrameController::placeGameObjectFrame(int id, Vector3 newPos, float width, float length){
-		GameObjectFrame &s = gameObjectFrames[id];
-
-		if(!rotatingStructure)
-			s.placeAt(newPos);
-
 		Map *map = Map::getSingleton();
 		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
 		MeshData::Vertex *verts = meshData.vertices;
@@ -64,9 +87,9 @@ namespace battleship{
 		float maxUnevenness = .5, unevenness = 0;
 
 		for(int i = 0; i < numVerts; i++){
-			float diffX = fabs(s.getPos().x - verts[i].pos.x);
-			float diffY = fabs(s.getPos().y - verts[i].pos.y);
-			float diffZ = fabs(s.getPos().z - verts[i].pos.z);
+			float diffX = fabs(newPos.x - verts[i].pos.x);
+			float diffY = fabs(newPos.y - verts[i].pos.y);
+			float diffZ = fabs(newPos.z - verts[i].pos.z);
 
 			if(diffX < 0.5 * width && diffZ < 0.5 * length && diffY > unevenness){
 				unevenness = diffY;
@@ -76,18 +99,16 @@ namespace battleship{
 			}
 		}
 
-		Vector4 color;
+		GameObjectFrame &s = gameObjectFrames[id];
 
-		if(unevenness > maxUnevenness){
-			color = Vector4(1, 0, 0, 1);
-			s.status = GameObjectFrame::NOT_PLACEABLE;
-		}
-		else{
-			color = Vector4(0, 1, 0, 1);
-			s.status = GameObjectFrame::PLACEABLE;
-		}
+		if(!rotatingStructure)
+			s.placeAt(newPos);
+
+		s.status = (unevenness > maxUnevenness ? GameObjectFrame::PLACEABLE : GameObjectFrame::NOT_PLACEABLE);
+		snapToObj(s, GameObject::Type::UNIT, 20, 3);
 
 		Material *mat = s.getModel()->getMaterial();
+		Vector4 color = (s.status == GameObjectFrame::NOT_PLACEABLE ? Vector4(1, 0, 0, 1) : Vector4(0, 1, 0, 1));
 		mat->setVec4Uniform("diffuseColor", color);
 	}
 

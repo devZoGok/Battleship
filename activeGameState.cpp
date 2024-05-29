@@ -435,8 +435,11 @@ namespace battleship{
 							}
 							else if(ufCtr->isPlacingFrames() && !selectingDestOrient){
                     			castRayToTerrain();
-
 								GameObjectFrame gmObjFr = ufCtr->getGameObjectFrame(0);
+
+								if(gmObjFr.status == GameObjectFrame::NOT_PLACEABLE)
+									return;
+
 								Unit *buildStruct = GameObjectFactory::createUnit(mainPlayer, gmObjFr.getId(), gmObjFr.getPos(), gmObjFr.getRot());
 								mainPlayer->addUnit(buildStruct);
 								targets[0].unit = buildStruct;

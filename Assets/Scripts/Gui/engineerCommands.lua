@@ -46,4 +46,11 @@ gui = {
 		buttonType = ButtonType.BUILD,
 		trigger = 70,
 	},
+	{
+		pos = {x = res.x - 3 * Size.x, y = res.y - 1 * Size.y, z = 0},
+		size = sz,
+		guiType = GuiType.BUTTON,
+		buttonType = ButtonType.BUILD,
+		trigger = 76,
+	},
 }
