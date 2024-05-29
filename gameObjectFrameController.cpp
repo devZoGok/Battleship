@@ -78,6 +78,7 @@ namespace battleship{
 	}
 
 	//TODO implement terrain evenness check
+	//TODO factor out literal values
 	void GameObjectFrameController::placeGameObjectFrame(int id, Vector3 newPos, float width, float length){
 		Map *map = Map::getSingleton();
 		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
@@ -104,7 +105,7 @@ namespace battleship{
 		if(!rotatingStructure)
 			s.placeAt(newPos);
 
-		s.status = (unevenness > maxUnevenness ? GameObjectFrame::PLACEABLE : GameObjectFrame::NOT_PLACEABLE);
+		s.status = (unevenness < maxUnevenness ? GameObjectFrame::PLACEABLE : GameObjectFrame::NOT_PLACEABLE);
 		snapToObj(s, GameObject::Type::UNIT, 20, 3);
 
 		Material *mat = s.getModel()->getMaterial();
