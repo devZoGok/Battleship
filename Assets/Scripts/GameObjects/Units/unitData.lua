@@ -53,7 +53,28 @@ structurePrefix = modelPrefix .. "Units/Structures/"
 
 units = {
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN,
+				rateOfFire = 100,
+				maxRange = 10
+				damage = 50,
+				fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+				fireVfx = {
+					--[[
+					{
+						model = '',
+						texture = '',
+						duration = 20,
+						pos = {x = 0, y = 0, z = 0},
+						rot = {w = 0, x = 0, y = 0, z = 0},
+					}
+					]]--
+				}
+				hitVfx = {
+				}
+			}
+		},
 		unitClass = UnitClass.WAR_MECH,
 		unitType = UnitType.LAND,
 		armor = {ArmorType.MECHANIC},

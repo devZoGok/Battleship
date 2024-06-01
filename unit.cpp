@@ -39,6 +39,13 @@ namespace battleship{
 		string sfxPath = weaponTable["fireSfx"];
 		fireSfx = GameObject::prepareSfx(fireSfxBuffer, sfxPath);
 
+		initProjectileData(weaponTable);
+
+		initFx(weaponTable, "fireVfx");
+		initFx(weaponTable, "hitVfx");
+	}
+
+	void Unit::Weapon::initProjectileData(sol::table weaponTable){
 		string projTableKey = "projectile";
 		sol::optional<sol::table> proj = weaponTable[projTableKey];
 
@@ -65,7 +72,41 @@ namespace battleship{
 			projPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 			sol::table rotTable = weaponTable[projTableKey]["rot"];
 			projRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
+
 		}
+	}
+
+	vector<Node*> Unit::Weapon::initFx(sol::table weaponTable, string vfxKey){
+		vector<Node*> vfxNodes;
+
+		sol::table vfxTbl = weaponTable[vfxKey];
+		int numVfx = vfxTbl.size();
+
+		for(int i = 0; i < numVfx; i++){
+			Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+
+			if((std::optional<string>)vfxTbl["texture"] != sol::nullopt){
+				string p[]{vfxTbl["texture"]};
+				Texture *tex = new Texture(p, 1, false);
+				mat->addBoolUniform("texturingEnabled", true);
+				mat->addTexUniform("diffuseMap[0]", tex, false);
+			}
+			else{
+				sol::table colorTable = vfxTbl["color"];
+				mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["a"]));
+				mat->addBoolUniform("texturingEnabled", false);
+			}
+
+			Model *flashModel = new Model((string)vfxTbl["model"]);
+			flashModel->setMaterial(mat);
+			unit->getModel()->attachChild(flashModel);
+
+			sol::table posTable = vfxTbl["pos"][i + 1], rotTable = vfxTbl["rot"][i + 1];
+			flashModel->setPosition(Vector3(posTable["x"], posTable["y"], posTable["z"]));
+			flashModel->setOrientation(Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]));
+		}
+
+		return vfxNodes;
 	}
 
 	Unit::Weapon::~Weapon(){

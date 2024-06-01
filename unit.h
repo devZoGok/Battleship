@@ -103,7 +103,10 @@ namespace battleship{
 				Unit *unit = nullptr;
 				sf::SoundBuffer *fireSfxBuffer;
 				sf::Sound *fireSfx = nullptr;
+				std::vector<vb01::Node*> fireVfxNodes;
 
+				void initProjectileData(sol::table);
+				std::vector<vb01::Node*> initFx(sol::table, std::string);
 				inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
 		};
 
