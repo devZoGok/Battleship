@@ -47,10 +47,18 @@ namespace battleship{
 							if(comp.vfx) ((Node*)comp.comp)->setVisible(false);
 							comp.active = false;
 						}
-						else if(!fx.reuse)
+						else if(!fx.reuse){
 							destroyFxComponent(i, j);
+							fx.components.erase(fx.components.begin() + j);
+							j--;
+						}
 					}
 				}
+			}
+
+			if(fx.components.empty()){
+				fxs.erase(fxs.begin() + i);
+				i--;
 			}
 		}
 	}
