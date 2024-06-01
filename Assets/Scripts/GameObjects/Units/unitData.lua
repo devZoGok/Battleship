@@ -57,7 +57,7 @@ units = {
 			{
 				type = WeaponClass.HITSCAN,
 				rateOfFire = 100,
-				maxRange = 10
+				maxRange = 10,
 				damage = 50,
 				fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg',
 				fireVfx = {
@@ -70,7 +70,7 @@ units = {
 						rot = {w = 0, x = 0, y = 0, z = 0},
 					}
 					]]--
-				}
+				},
 				hitVfx = {
 				}
 			}
