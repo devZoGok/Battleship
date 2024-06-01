@@ -77,6 +77,9 @@ namespace battleship{
 	}
 
 	vector<Node*> Unit::Weapon::initFx(sol::table weaponTable, string vfxKey){
+		if((sol::optional<sol::table>)weaponTable[vfxKey] == sol::nullopt)
+			return vector<Node*>{};
+
 		vector<Node*> vfxNodes;
 
 		sol::table vfxTbl = weaponTable[vfxKey];

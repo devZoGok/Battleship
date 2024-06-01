@@ -5,6 +5,7 @@
 #include "activeGameState.h"
 #include "inGameAppState.h"
 #include "concreteGuiManager.h"
+#include "fxManager.h"
 #include "defConfigs.h"
 
 #include <algorithm>
@@ -82,32 +83,9 @@ namespace battleship{
 				endGame(false);
 		}
 
-		for(int i = 0; i < fx.size(); i++){
-			if(getTime() - fx[i].initTime > fx[i].vfxTime)
-				removeFx(i, true);
-
-			if(getTime() - fx[i].initTime > fx[i].sfxTime)
-				removeFx(i, false);
-		}
+		FxManager::getSingleton()->update();
 	}
 
-	//TODO remove the bool flag
-	void Game::removeFx(int id, bool vfx){
-		const sf::SoundBuffer *buffer = fx[id].sfx->getBuffer();
-
-		if(!vfx){
-			fx[id].sfx->stop();
-			delete fx[id].sfx;
-			delete buffer;
-			fx.erase(fx.begin() + id);
-		}
-
-		if(fx[id].peNode && vfx){
-			Root::getSingleton()->getRootNode()->dettachChild(fx[id].peNode);
-			delete fx[id].peNode;
-			fx[id].peNode = nullptr;
-		}
-	}
 
 	void Game::removeAllElements(){
 		resetLuaGameObjects();
@@ -195,9 +173,9 @@ namespace battleship{
 		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
 		root->getRootNode()->attachChild(node);
 
-		Fx fx(50, 2500, explosionSfx, node);
-		fx.activate();
-		addFx(fx);
+		typedef FxManager::Fx Fx;
+		typedef FxManager::Fx::Component Component;
+		FxManager::getSingleton()->addFx(Fx(vector<Component>{Component((void*)node, true, 50), Component((void*)explosionSfx, false, 2500)}));
 	}
 
 	void Game::changeUnitPlayer(Unit *unit, Player *newPlayer){
