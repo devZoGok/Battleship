@@ -10,6 +10,11 @@ namespace battleship{
 	using namespace vb01;
 	using namespace sf;
 
+	FxManager::Fx::Component::Component(void *c, bool v, vb01::s64 dur, vb01::s64 ot) : comp(c), vfx(v), duration(dur), offsetTime(ot) {
+		if(v)
+			((vb01::Node*)c)->setVisible(false);
+	}
+
 	static FxManager *fxManager = nullptr;
 
 	FxManager* FxManager::getSingleton(){
@@ -27,8 +32,25 @@ namespace battleship{
 			for(int j = 0; j < fx.components.size(); j++){
 				Fx::Component &comp = fx.components[j];
 
-				if(comp.comp && getTime() - fx.initTime > comp.offsetTime + comp.duration)
-					destroyFxComponent(i, j);
+				if(comp.comp && getTime() - fx.initTime > comp.offsetTime){
+					if(!comp.active){
+						if(comp.vfx)
+							((Node*)comp.comp)->setVisible(true);
+						else
+							((sf::Sound*)comp.comp)->play();
+
+						comp.active = true;
+					}
+
+					if(getTime() - fx.initTime > comp.offsetTime + comp.duration){
+						if(fx.reuse){
+							if(comp.vfx) ((Node*)comp.comp)->setVisible(false);
+							comp.active = false;
+						}
+						else if(!fx.reuse)
+							destroyFxComponent(i, j);
+					}
+				}
 			}
 		}
 	}

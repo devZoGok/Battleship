@@ -3,30 +3,23 @@
 
 #include <util.h>
 
-namespace sf{
-	class Sound;
-}
-
-namespace vb01{
-	class Node;
-}
-
 namespace battleship{
 	class FxManager{
 		public:
 			struct Fx {
 				struct Component{
 					vb01::s64 duration, offsetTime = 0;
-					bool vfx;
+					bool vfx, active = false;
 					void *comp = nullptr;
 
-					Component(void *c, bool v, vb01::s64 dur, vb01::s64 ot = 0) : comp(c), vfx(v), duration(dur), offsetTime(ot) {}
+					Component(void*, bool, vb01::s64, vb01::s64 = 0);
 				};
 
+				bool reuse;
 				vb01::s64 initTime;
 				std::vector<Component> components;
 			
-				Fx(std::vector<Component> comp) : initTime(vb01::getTime()), components(comp){}
+				Fx(std::vector<Component> comp, bool re = false) : initTime(vb01::getTime()), components(comp), reuse(re){}
 			};
 
 			static FxManager* getSingleton();
