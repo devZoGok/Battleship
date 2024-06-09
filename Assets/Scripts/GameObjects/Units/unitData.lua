@@ -59,19 +59,23 @@ units = {
 				rateOfFire = 100,
 				maxRange = 10,
 				damage = 50,
-				fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg',
-				fireVfx = {
-					--[[
+				fireFx = {
 					{
-						model = '',
-						texture = '',
-						duration = 20,
-						pos = {x = 0, y = 0, z = 0},
-						rot = {w = 0, x = 0, y = 0, z = 0},
-					}
-					]]--
+						vfx = true,
+						duration = 50,
+						path = PATH .. 'Models/VFX/muzzleFlash.xml',
+						color = {x = 1, y = 1, z = 0, a = 1},
+						pos = {x = 0.214, y = 2.742, z = 1.54},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/fire.ogg'
+					},
 				},
-				hitVfx = {
+				hitFx = {
 				}
 			}
 		},

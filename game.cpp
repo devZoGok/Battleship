@@ -175,7 +175,7 @@ namespace battleship{
 
 		typedef FxManager::Fx Fx;
 		typedef FxManager::Fx::Component Component;
-		FxManager::getSingleton()->addFx(Fx(vector<Component>{Component((void*)node, true, 50), Component((void*)explosionSfx, false, 2500)}));
+		FxManager::getSingleton()->addFx(new Fx(vector<Component>{Component((void*)node, true, 50), Component((void*)explosionSfx, false, 2500)}, true));
 	}
 
 	void Game::changeUnitPlayer(Unit *unit, Player *newPlayer){

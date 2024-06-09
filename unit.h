@@ -10,6 +10,7 @@
 
 #include "gameObject.h"
 #include "buildableUnit.h"
+#include "fxManager.h"
 
 namespace sf{
 	class SoundBuffer;
@@ -85,6 +86,7 @@ namespace battleship{
 
 				Weapon(Unit*, sol::table);
 				~Weapon();
+				virtual void update();
 				virtual void fire(Order);
 				inline Type getType(){return type;}
 				inline int getProjectileId(){return projId;}
@@ -101,12 +103,10 @@ namespace battleship{
 				vb01::Quaternion projRot;
 				vb01::s64 lastFireTime = 0;
 				Unit *unit = nullptr;
-				sf::SoundBuffer *fireSfxBuffer;
-				sf::Sound *fireSfx = nullptr;
-				std::vector<vb01::Node*> fireVfxNodes;
+				FxManager::Fx *fireFx = nullptr, *hitFx = nullptr;
 
 				void initProjectileData(sol::table);
-				std::vector<vb01::Node*> initFx(sol::table, std::string);
+				FxManager::Fx* initFx(sol::table, std::string);
 				inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
 		};
 

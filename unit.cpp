@@ -35,14 +35,14 @@ namespace battleship{
 		damage(weaponTable["damage"].get_or(0))
 	{
 		maxRange = weaponTable["maxRange"];
-		fireSfxBuffer = new sf::SoundBuffer();
-		string sfxPath = weaponTable["fireSfx"];
-		fireSfx = GameObject::prepareSfx(fireSfxBuffer, sfxPath);
 
 		initProjectileData(weaponTable);
 
-		initFx(weaponTable, "fireVfx");
-		initFx(weaponTable, "hitVfx");
+		fireFx = initFx(weaponTable, "fireFx");
+		if(fireFx) FxManager::getSingleton()->addFx(fireFx);
+
+		hitFx = initFx(weaponTable, "hitFx");
+		if(hitFx) FxManager::getSingleton()->addFx(hitFx);
 	}
 
 	void Unit::Weapon::initProjectileData(sol::table weaponTable){
@@ -76,54 +76,72 @@ namespace battleship{
 		}
 	}
 
-	vector<Node*> Unit::Weapon::initFx(sol::table weaponTable, string vfxKey){
+	FxManager::Fx* Unit::Weapon::initFx(sol::table weaponTable, string vfxKey){
 		if((sol::optional<sol::table>)weaponTable[vfxKey] == sol::nullopt)
-			return vector<Node*>{};
+			return nullptr;
 
-		vector<Node*> vfxNodes;
+		int numComponents = ((sol::table)weaponTable[vfxKey]).size();
+		vector<FxManager::Fx::Component> fxComponents;
 
-		sol::table vfxTbl = weaponTable[vfxKey];
-		int numVfx = vfxTbl.size();
+		for(int i = 0; i < numComponents; i++){
+			sol::table vfxTbl = weaponTable[vfxKey][i + 1];
 
-		for(int i = 0; i < numVfx; i++){
-			Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+			bool vfx = vfxTbl["vfx"];
+			s64 duration = vfxTbl["duration"];
 
-			if((std::optional<string>)vfxTbl["texture"] != sol::nullopt){
-				string p[]{vfxTbl["texture"]};
-				Texture *tex = new Texture(p, 1, false);
-				mat->addBoolUniform("texturingEnabled", true);
-				mat->addTexUniform("diffuseMap[0]", tex, false);
+			if(vfx){
+				Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+
+				if((sol::optional<string>)vfxTbl["texture"] != sol::nullopt){
+					string p[]{vfxTbl["texture"]};
+					Texture *tex = new Texture(p, 1, false);
+					mat->addBoolUniform("texturingEnabled", true);
+					mat->addTexUniform("diffuseMap[0]", tex, false);
+				}
+				else{
+					sol::table colorTable = vfxTbl["color"];
+					mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["a"]));
+					mat->addBoolUniform("texturingEnabled", false);
+				}
+
+				Model *flashModel = new Model((string)vfxTbl["path"]);
+				flashModel->setMaterial(mat);
+				flashModel->setVisible(false);
+				unit->getModel()->attachChild(flashModel);
+
+				sol::table posTable = vfxTbl["pos"], rotTable = vfxTbl["rot"];
+				flashModel->setPosition(Vector3(posTable["x"], posTable["y"], posTable["z"]));
+				flashModel->setOrientation(Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]));
+
+				if((sol::optional<float>)vfxTbl["scale"] != sol::nullopt){
+					float sc = vfxTbl["scale"];
+					flashModel->setScale(Vector3(sc, sc, sc));
+				}
+
+				fxComponents.push_back(FxManager::Fx::Component((void*)flashModel, vfx, duration));
 			}
 			else{
-				sol::table colorTable = vfxTbl["color"];
-				mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["a"]));
-				mat->addBoolUniform("texturingEnabled", false);
+				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
+				sf::Sound *sfx = GameObject::prepareSfx(sfxBuffer, vfxTbl["path"]);
+				fxComponents.push_back(FxManager::Fx::Component((void*)sfx, vfx, duration));
 			}
-
-			Model *flashModel = new Model((string)vfxTbl["model"]);
-			flashModel->setMaterial(mat);
-			unit->getModel()->attachChild(flashModel);
-
-			sol::table posTable = vfxTbl["pos"][i + 1], rotTable = vfxTbl["rot"][i + 1];
-			flashModel->setPosition(Vector3(posTable["x"], posTable["y"], posTable["z"]));
-			flashModel->setOrientation(Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]));
 		}
 
-		return vfxNodes;
+		return new FxManager::Fx(fxComponents, false, true);
 	}
 
 	Unit::Weapon::~Weapon(){
-		if(fireSfx){
-			fireSfx->stop();
-			delete fireSfx;
-			delete fireSfxBuffer;
-		}
+		//FxManager::removeFx();
+	}
+
+	void Unit::Weapon::update(){
 	}
 
 	void Unit::Weapon::fire(Order order){
 		if(!canFire()) return;
 
-		fireSfx->play();
+		if(fireFx)fireFx->toggleComponents(true);
+
 		Unit *targetUnit = order.targets[0].unit;
 
 		if(targetUnit && projId == -1){
@@ -405,6 +423,9 @@ namespace battleship{
 			Game::getSingleton()->explode(pos, 0, 0, deathSfx);
 			remove = true;
 		}
+
+		for(Weapon *weapon : weapons)
+			weapon->update();
     }
 
     void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, bool render, Vector2 offset) {

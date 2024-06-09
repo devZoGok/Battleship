@@ -8,7 +8,7 @@ namespace battleship{
 		public:
 			struct Fx {
 				struct Component{
-					vb01::s64 duration, offsetTime = 0;
+					vb01::s64 duration, initTime = 0, offsetTime = 0;
 					bool vfx, active = false;
 					void *comp = nullptr;
 
@@ -19,17 +19,19 @@ namespace battleship{
 				vb01::s64 initTime;
 				std::vector<Component> components;
 			
-				Fx(std::vector<Component> comp, bool re = false) : initTime(vb01::getTime()), components(comp), reuse(re){}
+				Fx(std::vector<Component>, bool = true, bool = false);
+				void toggleComponents(bool);
 			};
 
 			static FxManager* getSingleton();
 			void update();
-			Fx& addFx(Fx);
+			Fx* addFx(Fx*);
 			void removeFx(int);
+			void removeFx(Fx&);
 		private:
 			FxManager(){}
 			void destroyFxComponent(int, int);
-			std::vector<Fx> fxs;
+			std::vector<Fx*> fxs;
 	};
 }
 

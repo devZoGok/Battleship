@@ -151,6 +151,7 @@ namespace battleship{
 
 		sol::state_view SOL_LUA_VIEW = generateView();
 		assetManager->load(path + (string)SOL_LUA_VIEW["modelPrefix"], true);
+		assetManager->load(path + "Models/VFX/", true);
 		assetManager->load(path + "Textures/", true);
 
 		string playerInd = "players";
