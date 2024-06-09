@@ -75,8 +75,7 @@ units = {
 						path = PATH .. 'Sounds/Units/WarMechs/fire.ogg'
 					},
 				},
-				hitFx = {
-				}
+				hitFx = {}
 			}
 		},
 		unitClass = UnitClass.WAR_MECH,

@@ -11,13 +11,11 @@ namespace battleship{
 	using namespace sf;
 
 	FxManager::Fx::Component::Component(void *c, bool v, vb01::s64 dur, vb01::s64 ot) : comp(c), vfx(v), duration(dur), offsetTime(ot) {
-		if(v)
-			((vb01::Node*)c)->setVisible(false);
+		if(v) ((vb01::Node*)c)->setVisible(false);
 	}
 
-	FxManager::Fx::Fx(std::vector<FxManager::Fx::Component> comps, bool act, bool re) : initTime(vb01::getTime()), components(comps), reuse(re){
-		if(act)
-			toggleComponents(true);
+	FxManager::Fx::Fx(std::vector<FxManager::Fx::Component> comps, bool re) : initTime(vb01::getTime()), components(comps), reuse(re){
+		toggleComponents(!re);
 	}
 
 	void FxManager::Fx::toggleComponents(bool active){
@@ -71,6 +69,7 @@ namespace battleship{
 			}
 
 			if(fx->components.empty()){
+				delete fx;
 				fxs.erase(fxs.begin() + i);
 				i--;
 			}
@@ -97,33 +96,19 @@ namespace battleship{
 		fx->components[cid].comp = nullptr;
 	}
 
-	FxManager::Fx* FxManager::addFx(Fx *fx){
-		fxs.push_back(fx);
-		return fxs[fxs.size() - 1];
-	}
+	void FxManager::removeFx(Fx *fx){
+		int id = -1;
 
-	//TODO remove dublicatory code
-	void FxManager::removeFx(int id){
-		Fx *fx = fxs[id];
+		for(int i = 0; i < fxs.size(); i++)
+			if(fxs[i] == fx){
+				id = i;
+				break;
+			}
 
-		for(int j = 0; j < fx->components.size(); j++)
-			destroyFxComponent(id, j);
-
-		while(fx->components.size() > 0)
-			fx->components.pop_back();
+		for(int i = 0; i < fx->components.size(); i++)
+			destroyFxComponent(id, i);
 
 		fxs.erase(fxs.begin() + id);
+		delete fx;
 	}
-
-	/*
-	void FxManager::removeFx(Fx &fx){
-		for(int j = 0; j < fx.components.size(); j++)
-			destroyFxComponent(id, j);
-
-		while(fx.components.size() > 0)
-			fx.components.pop_back();
-
-		fxs.erase(fxs.begin() + id);
-	}
-	*/
 }

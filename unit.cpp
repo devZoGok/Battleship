@@ -80,41 +80,46 @@ namespace battleship{
 		if((sol::optional<sol::table>)weaponTable[vfxKey] == sol::nullopt)
 			return nullptr;
 
-		int numComponents = ((sol::table)weaponTable[vfxKey]).size();
+		sol::table fxTbl = weaponTable[vfxKey];
+		int numComponents = fxTbl.size();
+
+		if(numComponents == 0)
+			return nullptr;
+
 		vector<FxManager::Fx::Component> fxComponents;
 
 		for(int i = 0; i < numComponents; i++){
-			sol::table vfxTbl = weaponTable[vfxKey][i + 1];
+			sol::table compTbl = fxTbl[i + 1];
 
-			bool vfx = vfxTbl["vfx"];
-			s64 duration = vfxTbl["duration"];
+			bool vfx = compTbl["vfx"];
+			s64 duration = compTbl["duration"];
 
 			if(vfx){
 				Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 
-				if((sol::optional<string>)vfxTbl["texture"] != sol::nullopt){
-					string p[]{vfxTbl["texture"]};
+				if((sol::optional<string>)compTbl["texture"] != sol::nullopt){
+					string p[]{compTbl["texture"]};
 					Texture *tex = new Texture(p, 1, false);
 					mat->addBoolUniform("texturingEnabled", true);
 					mat->addTexUniform("diffuseMap[0]", tex, false);
 				}
 				else{
-					sol::table colorTable = vfxTbl["color"];
+					sol::table colorTable = compTbl["color"];
 					mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["a"]));
 					mat->addBoolUniform("texturingEnabled", false);
 				}
 
-				Model *flashModel = new Model((string)vfxTbl["path"]);
+				Model *flashModel = new Model((string)compTbl["path"]);
 				flashModel->setMaterial(mat);
 				flashModel->setVisible(false);
 				unit->getModel()->attachChild(flashModel);
 
-				sol::table posTable = vfxTbl["pos"], rotTable = vfxTbl["rot"];
+				sol::table posTable = compTbl["pos"], rotTable = compTbl["rot"];
 				flashModel->setPosition(Vector3(posTable["x"], posTable["y"], posTable["z"]));
 				flashModel->setOrientation(Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]));
 
-				if((sol::optional<float>)vfxTbl["scale"] != sol::nullopt){
-					float sc = vfxTbl["scale"];
+				if((sol::optional<float>)compTbl["scale"] != sol::nullopt){
+					float sc = compTbl["scale"];
 					flashModel->setScale(Vector3(sc, sc, sc));
 				}
 
@@ -122,20 +127,22 @@ namespace battleship{
 			}
 			else{
 				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
-				sf::Sound *sfx = GameObject::prepareSfx(sfxBuffer, vfxTbl["path"]);
+				sf::Sound *sfx = GameObject::prepareSfx(sfxBuffer, compTbl["path"]);
 				fxComponents.push_back(FxManager::Fx::Component((void*)sfx, vfx, duration));
 			}
 		}
 
-		return new FxManager::Fx(fxComponents, false, true);
+		return new FxManager::Fx(fxComponents, true);
 	}
 
 	Unit::Weapon::~Weapon(){
-		//FxManager::removeFx();
+		FxManager *fm = FxManager::getSingleton();
+
+		if(fireFx) fm->removeFx(fireFx);
+		if(hitFx) fm->removeFx(hitFx);
 	}
 
-	void Unit::Weapon::update(){
-	}
+	void Unit::Weapon::update(){}
 
 	void Unit::Weapon::fire(Order order){
 		if(!canFire()) return;
@@ -179,10 +186,10 @@ namespace battleship{
     Unit::~Unit() {
 		removeBar(hpBackgroundNode);
 		removeBar(hpForegroundNode);
+		destroyWeapons();
 		destroySound();
 		destroyHitbox();
 		destroyModel();
-		destroyWeapons();
     }
 
 	void Unit::initProperties(){

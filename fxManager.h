@@ -19,15 +19,14 @@ namespace battleship{
 				vb01::s64 initTime;
 				std::vector<Component> components;
 			
-				Fx(std::vector<Component>, bool = true, bool = false);
+				Fx(std::vector<Component>, bool = false);
 				void toggleComponents(bool);
 			};
 
 			static FxManager* getSingleton();
 			void update();
-			Fx* addFx(Fx*);
-			void removeFx(int);
-			void removeFx(Fx&);
+			void removeFx(Fx*);
+			inline void addFx(Fx *fx){fxs.push_back(fx);}
 		private:
 			FxManager(){}
 			void destroyFxComponent(int, int);
