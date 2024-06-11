@@ -145,6 +145,7 @@ namespace battleship{
 	}
 
 	void GameManager::start(string gameDir) {
+		running = true;
 		registerMembers();
 		initLua(gameDir);
 
