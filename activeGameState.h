@@ -8,6 +8,7 @@
 
 namespace vb01{
 	class Node;
+	class Texture;
 }
 
 namespace vb01Gui{
@@ -31,8 +32,17 @@ namespace battleship{
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
     private:
+		enum CursorState{
+			NORMAL,
+			ATTACK,
+			GARRISON,
+			SUPPLY
+		};
+
 		bool selectedUnitsAmongst(std::vector<Unit*>);
 		void updateGameObjHoveredOn();
+		void initCursor();
+		void updateCursor();
 		void initDragbox();
 		void removeDragbox();
 		void deselectUnits();
@@ -45,8 +55,9 @@ namespace battleship{
 		void enableUnitState(Unit::State);
 		inline bool canSelectHoveredOnGameObj(){return gameObjHoveredOn && gameObjHoveredOn->isSelectable() && gameObjHoveredOn->getPlayer() == mainPlayer;}
 
-        GuiAppState *guiState;
+		CursorState cursorState = CursorState::NORMAL;
         Player *mainPlayer;
+        GuiAppState *guiState;
 		std::string unitGuiScreen = "";
 		GameObject *gameObjHoveredOn = nullptr;
 		vb01::Node *dragboxNode = nullptr;
@@ -59,6 +70,8 @@ namespace battleship{
 	   	const int NUM_MAX_ZOOMS = 10;
 		float depth = 1;
 		vb01::s64 lastLeftMouseClicked = 0;
+		vb01::Node *cursorNode = nullptr;
+		vb01::Texture *pointerTex = nullptr, *attackTex = nullptr, *garrisonTex = nullptr;
     };
 }
 

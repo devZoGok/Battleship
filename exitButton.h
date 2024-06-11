@@ -8,7 +8,7 @@
 namespace battleship {
     class ExitButton : public vb01Gui::Button {
     public:
-        ExitButton(vb01::Vector2, vb01::Vector2);
+        ExitButton(vb01::Vector3, vb01::Vector2);
         void onClick();
     };
 }

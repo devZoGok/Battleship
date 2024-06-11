@@ -15,7 +15,7 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace gameBase;
 
-	SkyboxTextureListbox::SkyboxTextureListbox(Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
+	SkyboxTextureListbox::SkyboxTextureListbox(Vector3 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
 	
 	void SkyboxTextureListbox::onClose(){
 		Root *root = Root::getSingleton();

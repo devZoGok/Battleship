@@ -10,7 +10,7 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace gameBase;
 	
-	GameObjectListbox::GameObjectListbox(bool ul, Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath), unitListbox(ul) {}
+	GameObjectListbox::GameObjectListbox(bool ul, Vector3 pos, Vector2 size, vector<string> lines, int maxDisplay, string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath), unitListbox(ul) {}
 
 	void GameObjectListbox::onClose(){
 		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();

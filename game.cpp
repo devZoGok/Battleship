@@ -244,13 +244,11 @@ namespace battleship{
 			sol::table techTable = SOL_LUA_VIEW[techKey][i + 1];
 
 			Technology t;
-			t.id = techTable["id"];
 			t.cost = techTable["cost"];
 			t.name = techTable["name"];
 			t.icon = techTable["icon"];
 			t.description = techTable["description"];
 			t.parents = parseTechTable(i, techKey, "numParents", "parents");
-			t.children = parseTechTable(i, techKey, "numChildren", "children");
 			t.abilities = parseTechTable(i, techKey, "numAbilities", "abilities");
 
 			technologies.push_back(t);
@@ -299,5 +297,15 @@ namespace battleship{
 		}
 
 		return false;
+	}
+
+	vector<TradeOffer*> Game::findTradeOffers(Player *pl1, Player *pl2){
+		vector<TradeOffer*> offers;
+
+		for(TradeOffer *to : tradeOffers)
+			if((to->initPlayer == pl1 || to->recPlayer == pl1) && (to->initPlayer == pl2 || to->recPlayer == pl2))
+				offers.push_back(to);
+
+		return offers;
 	}
 }

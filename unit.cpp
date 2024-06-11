@@ -373,12 +373,12 @@ namespace battleship{
 			Quad *bgQuad = (Quad*)background->getMesh(0);
 			Vector3 size = bgQuad->getSize();
 			float shiftedX = screenPos.x - 0.5 * size.x;
-			background->setPosition(Vector3(shiftedX, screenPos.y, .1) + offset3d);
+			background->setPosition(Vector3(shiftedX, screenPos.y, 0) + offset3d);
 
 			Quad *fgQuad = (Quad*)foreground->getMesh(0);
 			fgQuad->setSize(Vector3((float)currVal / maxVal * size.x, size.y, 0));
 			fgQuad->updateVerts(fgQuad->getMeshBase());
-			foreground->setPosition(Vector3(shiftedX, screenPos.y, 0) + offset3d);
+			foreground->setPosition(Vector3(shiftedX, screenPos.y, .01) + offset3d);
 		}
     }
 

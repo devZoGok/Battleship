@@ -47,7 +47,7 @@ namespace battleship{
 				leftMousePressed = isPressed;
 
             	if(isPressed)
-					guiManager->findClickedButton();
+					guiManager->updateGui();
 							
             	break;
 			case Bind::SCROLLING_UP:{

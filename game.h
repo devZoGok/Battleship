@@ -4,6 +4,7 @@
 #include "fx.h"
 #include "technology.h"
 #include "ability.h"
+#include "tradeOffer.h"
 
 #include <vector>
 
@@ -28,6 +29,8 @@ namespace battleship{
 			void initTechnologies();
 			float calcAbilFromTech(Ability::Type, std::vector<int>, int, int);
 			bool isUnitUnlocked(std::vector<int>, int);
+			std::vector<TradeOffer*> findTradeOffers(Player*, Player*);
+			inline void addTradeOffer(TradeOffer *to){tradeOffers.push_back(to);}
 			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline std::vector<Player*>& getPlayers(){return players;}
@@ -46,6 +49,7 @@ namespace battleship{
 			std::vector<Technology> technologies;
 			std::vector<Ability> abilities;
 			std::vector<Player*> players;
+			std::vector<TradeOffer*> tradeOffers;
 	};
 }
 

@@ -46,7 +46,12 @@ namespace battleship{
 		BUY_REFINEDS,
 		SELL_REFINEDS,
 		BUY_RESEARCH,
-		SELL_RESEARCH
+		SELL_RESEARCH,
+		ACTIVE_GAME_STATE,
+		PLAYER_TRADE,
+		TRADING_SCREEN,
+		TRADE_OFFER,
+		RESOURCE_AMMOUNT
 	};
 	enum ListboxType {
 		CONTROLS,
@@ -59,7 +64,8 @@ namespace battleship{
 		LAND_TEXTURES,
 		CPU_DIFFICULTIES,
 		FACTIONS,
-		CONSOLE
+		CONSOLE,
+		TRADE_OFFERS
 	};
 
 	class ConcreteGuiManager : public vb01Gui::AbstractGuiManager{
@@ -76,7 +82,7 @@ namespace battleship{
 					std::vector<vb01::Text*> = std::vector<vb01::Text*>{}
 				);
 		private:
-			ConcreteGuiManager(){}
+			ConcreteGuiManager();
 			vb01Gui::Button* parseButton(int);
 			vb01Gui::Listbox* parseGameObjectListbox();
 			vb01Gui::Listbox* parseListbox(int);
@@ -87,6 +93,7 @@ namespace battleship{
 			vb01::Text* parseText(int);
 
 			std::vector<std::pair<int*, void*>> guiElements;
+			std::string texBasePath, fontBasePath;
 	};
 }
 

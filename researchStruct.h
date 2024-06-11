@@ -14,6 +14,7 @@ namespace battleship{
 			~ResearchStruct();
 			void update();
 			inline void appendToQueue(int tid){researchQueue.push_back(tid);}
+			inline std::vector<int> getQueue(){return researchQueue;}
 		private:
 			vb01::s64 lastUpdateTime = 0;
 			int researchCost, generationRate, generationSpeed, researchStatus = 0;

@@ -1,11 +1,12 @@
 res = graphics.resolution
-Size = {x = 100, y = 100}
+Size = {x = 70, y = 70}
+margin = 10
+sz = {x = Size.x - margin, y = Size.y - margin}
 
 gui = {
 	{
-		pos = {x = res.x - 200, y = res.y - 200},
-		size = Size,
-		imagePath = '',
+		pos = {x = res.x - Size.x + .5 * margin, y = res.y - Size.y + .5 * margin, z = 0},
+		size = sz,
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.FORT_TRAIN,
 		trigger = 82
