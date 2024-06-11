@@ -1,4 +1,3 @@
-#pragma once
 #ifndef EXIT_BUTTON_H
 #define EXIT_BUTTON_H
 

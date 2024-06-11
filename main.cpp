@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
 	ConcreteGuiManager::getSingleton()->readLuaScreenScript("mainMenu.lua");
 
-	while(true){
+	while(gm->isRunning()){
 		gm->update();
 	}
 
