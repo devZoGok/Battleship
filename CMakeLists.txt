@@ -6,6 +6,7 @@ project(${GAME_NAME})
 set(CMAKE_CXX_STANDART 17)
 set(CMAKE_BUILD_TYPE Debug)
 set(BUILD_TESTS ON)
+set(BUILD_SHARED_LIBS ON CACHE BOOL FORCED)
 cmake_policy(SET CMP0015 NEW)
 
 set(UNIT_BUTTONS unitButton.cpp tradeButton.cpp buildButton.cpp trainButton.cpp researchButton.cpp)
