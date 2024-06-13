@@ -36,9 +36,9 @@ namespace battleship{
 		}
 
 		vector<int> Pathfinder::findPath(vector<Map::Cell> &cells, int source, int dest, int unitType){
-			int size = cells.size();
-			u32 distances[size];
-			vector<int> paths[size];
+			const int size = cells.size();
+			u32 *distances = new u32[size];
+			vector<int> *paths = new vector<int>[size];
 			paths[source].push_back(source);
 			vector<pair<int, bool>> cellsByCheck;
 
@@ -71,6 +71,11 @@ namespace battleship{
 				}
 			}
 
-			return paths[dest];
+			vector<int> path = paths[dest];
+
+			delete[] paths;
+			delete[] distances;
+
+			return path;
 		}
 }

@@ -259,6 +259,7 @@ namespace battleship{
 	}
 
 	Listbox* ConcreteGuiManager::parseGameObjectListbox(){
+		return nullptr;
 	}
 
 	Listbox* ConcreteGuiManager::parseListbox(int guiId){
