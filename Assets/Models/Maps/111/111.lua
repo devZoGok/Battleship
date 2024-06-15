@@ -2,17 +2,21 @@ map = {
 numWaterBodies = 1,
 size = {x = 123.000000, y = 100, z = 123.000000},
 impassibleNodeValue = 65535,
-numPlayers = 1,
-numSpawnPoints = 1,
 spawnPoints = {
-{x = 0.000000, y = 0.000000, z = 0.000000},
+	{x = -50.000000, y = 0.000000, z = -50.000000},
+	{x = 0.000000, y = 0.000000, z = 0.000000},
 },
 players = {
 {
-numResourceDeposits = 0,
-resourceDeposits = {
+	resourceDeposits = {},
+	units = {{id = UnitId.ENGINEER, pos = {x = -30.000000, y = 0.000000, z = -30.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}}},
 },
-numUnits = 0,
+{
+	resourceDeposits = {},
+	units = {
+		{id = UnitId.ENGINEER, pos = {x = 30.000000, y = 0.000000, z = 30.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		{id = UnitId.TACTICAL_CRUISER, pos = {x = 0.000000, y = 0.000000, z = 0.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}}
+	},
 }
 },
 numCells = 312,
