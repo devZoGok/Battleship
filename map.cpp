@@ -87,16 +87,20 @@ namespace battleship{
 	}
 
 	void Map::loadTerrainObject(int id){
-		string texPath = "";
+		string texPath = "", albedoPath = "";
 		Quad *quad = nullptr;
 		Node *node = nullptr;
 		sol::state_view SOL_LUA_STATE = generateView();
 
 		if(id == -1){
-			string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/";
-			texPath = basePath + (string)SOL_LUA_STATE[mapTable]["terrain"]["albedo"];
+			string basePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/"; 
 
-			string terrainFile = basePath + (string)SOL_LUA_STATE[mapTable]["terrain"]["model"];
+			albedoPath = SOL_LUA_STATE[mapTable]["terrain"]["albedo"];
+			texPath = basePath + albedoPath;
+
+			string modelPath = SOL_LUA_STATE[mapTable]["terrain"]["model"]; 
+			string terrainFile = basePath + modelPath;
+
 			AssetManager::getSingleton()->load(terrainFile);
 			node = (Model*)((new Model(terrainFile))->getChild(0));
 
@@ -106,7 +110,8 @@ namespace battleship{
 		}
 		else{
 			sol::table waterBodyTable = SOL_LUA_STATE[mapTable]["waterbodies"][id + 1], posTable = waterBodyTable["pos"];
-			texPath = GameManager::getSingleton()->getPath() + "Textures/Water/" + (string)waterBodyTable["albedo"];
+			albedoPath = waterBodyTable["albedo"];
+			texPath = GameManager::getSingleton()->getPath() + "Textures/Water/" + albedoPath;
 
 			quad = new Quad(Vector3(waterBodyTable["size"]["x"], waterBodyTable["size"]["y"], 1), true);
 			Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
@@ -150,7 +155,8 @@ namespace battleship{
 		assetManager->load(path + DEFAULT_TEXTURE);
 
 		sol::state_view SOL_LUA_VIEW = generateView();
-		assetManager->load(path + (string)SOL_LUA_VIEW["modelPrefix"], true);
+		string modelPrefix = SOL_LUA_VIEW["modelPrefix"];
+		assetManager->load(path + modelPrefix, true);
 		assetManager->load(path + "Textures/", true);
 
 		string playerInd = "players";

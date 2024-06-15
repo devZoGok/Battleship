@@ -66,17 +66,25 @@ namespace battleship{
 		Vector2 size = Vector2(sizeTable["x"], sizeTable["y"]);
 
 		//TODO factor out repetetive optional lua key checks
-		string nk = "name";
+		string name = "", nk = "name";
 		sol::optional<string> nameOpt = guiTable[nk];
-		string name = (nameOpt != sol::nullopt ? (string)guiTable[nk] : "");
+
+		if(nameOpt != sol::nullopt) name = guiTable[nk];
+
 		ButtonType type = (ButtonType)guiTable["buttonType"];
 
-		string ipk = "imagePath";
+		string imagePath = "", ipk = "imagePath";
 		sol::optional<string> pathOpt = guiTable[ipk];
-		string imagePath = (pathOpt != sol::nullopt ? texBasePath + (string)guiTable[ipk] : "");
-		bool texturingEnabled = (imagePath != "");
+		bool texturingEnabled = false;
+
+		if(pathOpt != sol::nullopt){
+			imagePath = texBasePath;
+			imagePath += guiTable[ipk];
+			bool texturingEnabled = true;
+		}
 
 		Button *button = nullptr;
+		string guiScreen = "";
 
 		switch(type){
 			case SINGLE_PLAYER:
@@ -232,16 +240,19 @@ namespace battleship{
 				button = new TradeButton(pos, size, name, (int)guiTable["trigger"], imagePath, (int)SOL_LUA_STATE["UnitId"]["TRADE_CENTER"], TradeButton::Type::SELL_RESEARCH);
 				break;
 			case ACTIVE_GAME_STATE:
-				button = new ActiveStateButton(pos, size, (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
+				guiScreen = guiTable["guiScreen"];
+				button = new ActiveStateButton(pos, size, guiScreen, name, (int)guiTable["trigger"], imagePath);
 				break;
 			case PLAYER_TRADE:
-				button = new PlayerTradeButton(pos, size, (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
+				guiScreen = guiTable["guiScreen"];
+				button = new PlayerTradeButton(pos, size, guiScreen, name, (int)guiTable["trigger"], imagePath);
 				break;
 			case TRADING_SCREEN:{
 				int lid = guiTable["dependencies"][1]["id"];
 				Listbox *listbox = (Listbox*)guiElements[lid].second;
+				guiScreen = guiTable["guiScreen"];
 
-				button = new TradingScreenButton(pos, size, listbox, (int)SOL_LUA_STATE["playerId"], (string)guiTable["guiScreen"], name, (int)guiTable["trigger"], imagePath);
+				button = new TradingScreenButton(pos, size, listbox, (int)SOL_LUA_STATE["playerId"], guiScreen, name, (int)guiTable["trigger"], imagePath);
 				break;
 			}
 			case TRADE_OFFER:
@@ -259,6 +270,7 @@ namespace battleship{
 	}
 
 	Listbox* ConcreteGuiManager::parseGameObjectListbox(){
+		return nullptr;
 	}
 
 	Listbox* ConcreteGuiManager::parseListbox(int guiId){
@@ -450,19 +462,24 @@ namespace battleship{
 		Material *mat = new Material(root->getLibPath() + "gui");
 		mat->setTransparent(true);
 
-		string ipk = "imagePath";
+		bool texturingEnabled = false;
+		string imagePath = "", ipk = "imagePath";
 		sol::optional<string> pathOpt = guiTable[ipk];
-		string imagePath = (pathOpt != sol::nullopt ? (string)guiTable[ipk] : "");
-		bool texturingEnabled = (imagePath != "");
 
-		string nk = "name";
+		if(pathOpt != sol::nullopt){
+			imagePath = guiTable[ipk];
+			texturingEnabled = true;
+		}
+
+		string name = "", nk = "name";
 		sol::optional<string> nameOpt = guiTable[nk];
-		string name = (nameOpt != sol::nullopt ? (string)guiTable[nk] : "");
+
+		if(nameOpt != sol::nullopt) name = guiTable[nk];
 
 		mat->addBoolUniform("texturingEnabled", texturingEnabled);
 
 		if(texturingEnabled){
-			string p[]{texBasePath + (string)guiTable[ipk]};
+			string p[]{texBasePath + imagePath};
 			Texture *tex = new Texture(p, 1, false);
 			mat->addTexUniform("diffuseMap", tex, false);
 		}
@@ -499,7 +516,9 @@ namespace battleship{
 		sol::table colorTable = guiTable["color"];
 		mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["w"]));
 
-		Text *text = new Text(fontBasePath + (string)guiTable["font"], (wstring)guiTable["text"], guiTable["fontFirstChar"], guiTable["fontLastChar"]);
+		string font = guiTable["font"];
+		wstring entry = guiTable["text"];
+		Text *text = new Text(fontBasePath + font, entry, guiTable["fontFirstChar"], guiTable["fontLastChar"]);
 		text->setMaterial(mat);
 
 		Vector3 pos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
