@@ -69,7 +69,12 @@ namespace battleship{
 		string basePath = GameManager::getSingleton()->getPath() + "Textures/Icons/Cursors/";
 		sol::state_view SOL_LUA_VIEW = generateView();
 
-		string p1[]{basePath + (string)SOL_LUA_VIEW["pointerTex"]}, p2[]{basePath + (string)SOL_LUA_VIEW["attackTex"]}, p3[]{basePath + (string)SOL_LUA_VIEW["garrisonTex"]};
+		string pt = SOL_LUA_VIEW["pointerTex"], 
+			   at = SOL_LUA_VIEW["attackTex"], 
+			   gt = SOL_LUA_VIEW["garrisonTex"],
+			   p1[]{basePath + pt}, 
+			   p2[]{basePath + at}, 
+			   p3[]{basePath + gt};
 		pointerTex = new Texture(p1, 1, false);
 		attackTex = new Texture(p2, 1, false);
 		garrisonTex = new Texture(p3, 1, false);
