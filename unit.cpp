@@ -78,6 +78,7 @@ namespace battleship{
 		}
 	}
 
+	//TODO implement node child search by name
 	FxManager::Fx* Unit::Weapon::initFx(sol::table weaponTable, string vfxKey){
 		if((sol::optional<sol::table>)weaponTable[vfxKey] == sol::nullopt)
 			return nullptr;
@@ -140,7 +141,22 @@ namespace battleship{
 				}
 
 				flashNode->setVisible(false);
-				unit->getModel()->attachChild(flashNode);
+				Node *parNode = unit->getModel();
+
+				if((sol::optional<string>)compTbl["parent"] != sol::nullopt){
+					vector<Node*> descendants;
+					unit->getModel()->getDescendants(descendants);
+					string parName = compTbl["parent"];
+					parNode = nullptr;
+
+					for(Node *desc : descendants)
+						if(desc->getName() == parName){
+							parNode = desc;
+							break;
+						}
+				}
+
+				parNode->attachChild(flashNode);
 
 				fxComponents.push_back(FxManager::Fx::Component((void*)flashNode, vfx, duration, compPos));
 			}

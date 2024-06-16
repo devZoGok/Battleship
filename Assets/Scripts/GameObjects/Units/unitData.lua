@@ -577,7 +577,34 @@ units = {
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 50}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 100, 
+				damage = 50, 
+				maxRange = 50,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
+						pos = {x = 0, y = .43, z = 3.66},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						parent = 'turret'
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+					},
+				},
+				hitFx = {}
+			}
+		},
 		unitClass = UnitClass.POINT_DEFENSE,
 		unitType = UnitType.LAND,
 		isVehicle = false,
