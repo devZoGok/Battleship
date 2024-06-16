@@ -3,9 +3,16 @@ cmake_minimum_required(VERSION 2.9)
 set(GAME_NAME battleship)
 project(${GAME_NAME})
 
+if(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std:c++17")
+else()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pedantic")
+endif()
+
 set(CMAKE_CXX_STANDART 17)
 set(CMAKE_BUILD_TYPE Debug)
-set(BUILD_TESTS ON)
+set(BUILD_TESTS OFF)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL FORCED)
 cmake_policy(SET CMP0015 NEW)
 
 set(UNIT_BUTTONS unitButton.cpp tradeButton.cpp buildButton.cpp trainButton.cpp researchButton.cpp)

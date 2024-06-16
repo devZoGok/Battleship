@@ -113,7 +113,8 @@ namespace battleship{
 				generateView().script_file(gm->getPath() + f);
 
 			guiManager->readLuaScreenScript("inGame.lua", activeState->getButtons());
-			AssetManager::getSingleton()->load(gm->getPath() + (string)generateView()["modelPrefix"], true);
+			string mp = generateView()["modelPrefix"];
+			AssetManager::getSingleton()->load(gm->getPath() + mp, true);
 
 			vector<GameObject*> gameObjs;
 
