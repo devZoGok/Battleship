@@ -47,9 +47,10 @@ UnitClass = {
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
 ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
 
-modelPrefix = "Models/GameObjects/"
-vehiclePrefix = modelPrefix .. "Units/Vehicles/"
-structurePrefix = modelPrefix .. "Units/Structures/"
+vfxPrefix = "Models/VFX/"
+gameObjPrefix = "Models/GameObjects/"
+vehiclePrefix = gameObjPrefix .. "Units/Vehicles/"
+structurePrefix = gameObjPrefix .. "Units/Structures/"
 
 units = {
 	{
@@ -63,7 +64,7 @@ units = {
 					{
 						vfx = true,
 						duration = 50,
-						path = PATH .. 'Models/VFX/muzzleFlash.xml',
+						path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
 						color = {x = 1, y = 1, z = 0, a = 1},
 						pos = {x = 0.214, y = 2.742, z = 1.54},
 						rot = {w = 1, x = 0, y = 0, z = 0},
