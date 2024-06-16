@@ -1,5 +1,6 @@
 #include <model.h>
 #include <quad.h>
+#include <box.h>
 #include <material.h>
 #include <particleEmitter.h>
 #include <texture.h>
@@ -28,6 +29,8 @@ using namespace gameBase;
 using namespace std;
 
 namespace battleship{
+	string Unit::Weapon::LASER_FLAG = "laser";
+
 	Unit::Weapon::Weapon(Unit *u, sol::table weaponTable) : 
 		unit(u), 
 		type((Weapon::Type)weaponTable["type"]), 
@@ -72,7 +75,6 @@ namespace battleship{
 			projPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 			sol::table rotTable = weaponTable[projTableKey]["rot"];
 			projRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
-
 		}
 	}
 
@@ -96,34 +98,51 @@ namespace battleship{
 
 			if(vfx){
 				Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+				sol::table meshTbl = compTbl["mesh"];
 
-				if((sol::optional<string>)compTbl["texture"] != sol::nullopt){
-					string p[]{compTbl["texture"]};
+				if((sol::optional<string>)meshTbl["texture"] != sol::nullopt){
+					string p[]{meshTbl["texture"]};
 					Texture *tex = new Texture(p, 1, false);
 					mat->addBoolUniform("texturingEnabled", true);
 					mat->addTexUniform("diffuseMap[0]", tex, false);
 				}
 				else{
-					sol::table colorTable = compTbl["color"];
+					sol::table colorTable = meshTbl["color"];
 					mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["a"]));
 					mat->addBoolUniform("texturingEnabled", false);
 				}
 
-				Model *flashModel = new Model((string)compTbl["path"]);
-				flashModel->setMaterial(mat);
-				flashModel->setVisible(false);
-				unit->getModel()->attachChild(flashModel);
+				string meshPath = "";
+				Node *flashNode = nullptr;
 
 				sol::table posTable = compTbl["pos"], rotTable = compTbl["rot"];
-				flashModel->setPosition(Vector3(posTable["x"], posTable["y"], posTable["z"]));
-				flashModel->setOrientation(Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]));
+				Vector3 compPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+				Quaternion compRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
+				float sc = 1;
 
-				if((sol::optional<float>)compTbl["scale"] != sol::nullopt){
-					float sc = compTbl["scale"];
-					flashModel->setScale(Vector3(sc, sc, sc));
+				if((sol::optional<float>)compTbl["scale"] != sol::nullopt) float sc = compTbl["scale"];
+
+				if((sol::optional<string>)meshTbl["path"] != sol::nullopt){
+					meshPath = meshTbl["path"];
+					flashNode = new Model(meshPath);
+					((Model*)flashNode)->setMaterial(mat);
+					flashNode->setPosition(compPos);
+					flashNode->setOrientation(compRot);
+					flashNode->setScale(Vector3(sc, sc, sc));
+				}
+				else{
+					sol::table sizeTbl = meshTbl["size"];
+					Box *box = new Box(Vector3(sizeTbl["x"], sizeTbl["y"], 0));
+					box->setMaterial(mat);
+
+					flashNode = new Node(compPos, compRot, Vector3(sc, sc, sc), LASER_FLAG);
+					flashNode->attachMesh(box);
 				}
 
-				fxComponents.push_back(FxManager::Fx::Component((void*)flashModel, vfx, duration));
+				flashNode->setVisible(false);
+				unit->getModel()->attachChild(flashNode);
+
+				fxComponents.push_back(FxManager::Fx::Component((void*)flashNode, vfx, duration, compPos));
 			}
 			else{
 				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
@@ -147,9 +166,33 @@ namespace battleship{
 	void Unit::Weapon::fire(Order order){
 		if(!canFire()) return;
 
-		if(fireFx)fireFx->toggleComponents(true);
-
 		Unit *targetUnit = order.targets[0].unit;
+		Vector3 targPos = (targetUnit ? targetUnit->getPos() : order.targets[0].pos);
+
+		if(fireFx){
+			fireFx->toggleComponents(true);
+
+			for(int i = 0; i < fireFx->components.size(); i++){
+				FxManager::Fx::Component &comp = fireFx->components[i];
+
+				if(comp.vfx && ((Node*)comp.comp)->getName() == LASER_FLAG){
+					Vector3 initPos = unit->getPos(), laserDir = targPos - initPos;
+					float targDist = laserDir.getLength();
+					float angle = unit->getDirVec().getAngleBetween(laserDir);
+					Vector3 crossProd = unit->getDirVec().cross(laserDir);
+
+					Node *compNode = (Node*)comp.comp;
+					compNode->setOrientation(Quaternion(angle, crossProd) * compNode->getOrientation());
+
+					Box *box = (Box*)compNode->getMesh(0);
+					Vector3 size = box->getSize();
+					box->setSize(Vector3(size.x, size.y, targDist));
+					box->updateVerts(box->getMeshBase());
+
+					compNode->setPosition(comp.pos + .5 * targDist * Vector3::VEC_K);
+				}
+			}
+		}
 
 		if(targetUnit && projId == -1){
 			targetUnit->takeDamage(damage);

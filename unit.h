@@ -104,6 +104,7 @@ namespace battleship{
 				vb01::s64 lastFireTime = 0;
 				Unit *unit = nullptr;
 				FxManager::Fx *fireFx = nullptr, *hitFx = nullptr;
+				static std::string LASER_FLAG;
 
 				void initProjectileData(sol::table);
 				FxManager::Fx* initFx(sol::table, std::string);

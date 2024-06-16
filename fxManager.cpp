@@ -10,7 +10,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace sf;
 
-	FxManager::Fx::Component::Component(void *c, bool v, vb01::s64 dur, vb01::s64 ot) : comp(c), vfx(v), duration(dur), offsetTime(ot) {
+	FxManager::Fx::Component::Component(void *c, bool v, s64 dur, vb01::Vector3 p, s64 ot) : comp(c), vfx(v), duration(dur), pos(p), offsetTime(ot) {
 		if(v) ((vb01::Node*)c)->setVisible(false);
 	}
 

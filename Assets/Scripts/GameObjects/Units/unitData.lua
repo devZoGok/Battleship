@@ -64,8 +64,10 @@ units = {
 					{
 						vfx = true,
 						duration = 50,
-						path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
-						color = {x = 1, y = 1, z = 0, a = 1},
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
 						pos = {x = 0.214, y = 2.742, z = 1.54},
 						rot = {w = 1, x = 0, y = 0, z = 0},
 						--scale = .5
@@ -257,7 +259,33 @@ units = {
 		garrisonCategory = 3
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 200, 
+				damage = 300, 
+				maxRange = 15,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							size = {x = .16, y = .16},
+							color = {x = 1, y = 0, z = 0, a = 1},
+						},
+						pos = {x = 0., y = 2.8, z = -.1},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 50,
+						path = PATH .. 'Sounds/Units/Cruisers/fire.ogg',
+					}
+				},
+				hitFx = {}
+			}
+		},
 		unitClass = UnitClass.CRUISER,
 		unitType = UnitType.SEA_LEVEL,
 		armor = {ArmorType.STEEL},

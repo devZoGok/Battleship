@@ -9,10 +9,11 @@ namespace battleship{
 			struct Fx {
 				struct Component{
 					vb01::s64 duration, initTime = 0, offsetTime = 0;
+					vb01::Vector3 pos = vb01::Vector3::VEC_ZERO;
 					bool vfx, active = false;
 					void *comp = nullptr;
 
-					Component(void*, bool, vb01::s64, vb01::s64 = 0);
+					Component(void*, bool, vb01::s64, vb01::Vector3 = vb01::Vector3::VEC_ZERO, vb01::s64 = 0);
 				};
 
 				bool reuse;
