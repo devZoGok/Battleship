@@ -78,7 +78,27 @@ units = {
 						path = PATH .. 'Sounds/Units/WarMechs/fire.ogg'
 					},
 				},
-				hitFx = {}
+				unitHitFx = {
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/unitHit.ogg'
+					},
+				},
+				landHitFx = {
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/landHit.ogg'
+					},
+				},
+				waterHitFx = {
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/waterHit.ogg'
+					},
+				},
 			}
 		},
 		unitClass = UnitClass.WAR_MECH,
@@ -103,7 +123,53 @@ units = {
 		garrisonCategory = 1
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 25}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 500, 
+				damage = 200, 
+				maxRange = 25,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
+						parent = 'Turret',
+						pos = {x = 0, y = .43, z = 5.7},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 300,
+						path = PATH .. 'Sounds/Units/Tanks/attack.ogg', 
+					}
+				},
+				landHitFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							numParticles = 1,
+							texture = PATH .. 'Textures/Explosion/explosion07.png',
+							lowLife = 3,
+							highLife = 3,
+							size = {x = 10, y = 10},
+						}
+					},
+					{
+						vfx = false,
+						path = PATH .. 'Sounds/SFX/Explosions/explosion00.ogg',
+						duration = 2500
+					}
+					--[[
+					]]--
+				}
+			}
+		},
 		unitClass = UnitClass.TANK,
 		unitType = UnitType.LAND,
 		armor = {ArmorType.STEEL},

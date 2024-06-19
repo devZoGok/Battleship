@@ -103,11 +103,12 @@ namespace battleship{
 				vb01::Quaternion projRot;
 				vb01::s64 lastFireTime = 0;
 				Unit *unit = nullptr;
-				FxManager::Fx *fireFx = nullptr, *hitFx = nullptr;
+				FxManager::Fx *fireFx = nullptr, *unitHitFx = nullptr, *landHitFx = nullptr, *waterHitFx = nullptr;
 				static std::string LASER_FLAG;
 
 				void initProjectileData(sol::table);
-				FxManager::Fx* initFx(sol::table, std::string);
+				FxManager::Fx* initFx(sol::table, std::string, vb01::Node*);
+				void useFx(FxManager::Fx*, vb01::Vector3, bool);
 				inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
 		};
 
