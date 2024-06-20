@@ -84,7 +84,7 @@ namespace battleship{
 			public:
 				enum class Type{HITSCAN, SHELL, TORPEDO, CRUISE_MISSILE, HACK};
 
-				Weapon(Unit*, sol::table);
+				Weapon(Unit*, sol::table, int);
 				~Weapon();
 				virtual void update();
 				virtual void fire(Order);
@@ -97,17 +97,17 @@ namespace battleship{
 				inline Unit* getUnit(){return unit;}
 			private:
 				Type type;
-				int projId = -1, rateOfFire, damage = 0;
+				int id, projId = -1, rateOfFire, damage = 0;
 				float minRange = 0, maxRange;
 				vb01::Vector3 projPos;
 				vb01::Quaternion projRot;
 				vb01::s64 lastFireTime = 0;
 				Unit *unit = nullptr;
-				FxManager::Fx *fireFx = nullptr, *unitHitFx = nullptr, *landHitFx = nullptr, *waterHitFx = nullptr;
+				FxManager::Fx *fireFx = nullptr;
 				static std::string LASER_FLAG;
 
 				void initProjectileData(sol::table);
-				FxManager::Fx* initFx(sol::table, std::string, vb01::Node*);
+				FxManager::Fx* initFx(sol::table, std::string, bool);
 				void useFx(FxManager::Fx*, vb01::Vector3, bool);
 				inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
 		};

@@ -31,27 +31,19 @@ using namespace std;
 namespace battleship{
 	string Unit::Weapon::LASER_FLAG = "laser";
 
-	Unit::Weapon::Weapon(Unit *u, sol::table weaponTable) : 
+	Unit::Weapon::Weapon(Unit *u, sol::table unitTable, int wid) : 
 		unit(u), 
-		type((Weapon::Type)weaponTable["type"]), 
-		rateOfFire(weaponTable["rateOfFire"]),
-		damage(weaponTable["damage"].get_or(0))
+		id(wid),
+		type((Weapon::Type)unitTable["weapons"][wid + 1]["type"]), 
+		rateOfFire(unitTable["weapons"][wid + 1]["rateOfFire"]),
+		damage(unitTable["weapons"][wid + 1]["damage"].get_or(0))
 	{
+		sol::table weaponTable = unitTable["weapons"][wid + 1];
 		maxRange = weaponTable["maxRange"];
-
 		initProjectileData(weaponTable);
 
-		fireFx = initFx(weaponTable, "fireFx", unit->getModel());
-
-		Node *rootNode = Root::getSingleton()->getRootNode();
-		unitHitFx = initFx(weaponTable, "unitHitFx", rootNode);
-		landHitFx = initFx(weaponTable, "landHitFx", rootNode);
-		waterHitFx = initFx(weaponTable, "waterHitFx", rootNode);
-
+		fireFx = initFx(weaponTable, "fireFx", true);
 		if(fireFx) FxManager::getSingleton()->addFx(fireFx);
-		if(unitHitFx) FxManager::getSingleton()->addFx(unitHitFx);
-		if(landHitFx) FxManager::getSingleton()->addFx(landHitFx);
-		if(waterHitFx) FxManager::getSingleton()->addFx(waterHitFx);
 	}
 
 	void Unit::Weapon::initProjectileData(sol::table weaponTable){
@@ -85,7 +77,7 @@ namespace battleship{
 	}
 
 	//TODO implement node child search by name
-	FxManager::Fx* Unit::Weapon::initFx(sol::table weaponTable, string vfxKey, Node *parentNode){
+	FxManager::Fx* Unit::Weapon::initFx(sol::table weaponTable, string vfxKey, bool attached){
 		if((sol::optional<sol::table>)weaponTable[vfxKey] == sol::nullopt)
 			return nullptr;
 
@@ -178,7 +170,7 @@ namespace battleship{
 				}
 
 				flashNode->setVisible(false);
-				Node *parNode = parentNode;
+				Node *parNode = (attached ? unit->getModel() : Root::getSingleton()->getRootNode());
 
 				if((sol::optional<string>)compTbl["parent"] != sol::nullopt){
 					vector<Node*> descendants;
@@ -204,21 +196,23 @@ namespace battleship{
 			}
 		}
 
-		return new FxManager::Fx(fxComponents, true);
+		return new FxManager::Fx(fxComponents, attached);
 	}
 
 	Unit::Weapon::~Weapon(){
 		FxManager *fm = FxManager::getSingleton();
 
 		if(fireFx) fm->removeFx(fireFx);
-		if(unitHitFx) fm->removeFx(unitHitFx);
-		if(landHitFx) fm->removeFx(landHitFx);
-		if(waterHitFx) fm->removeFx(waterHitFx);
 	}
 
 	void Unit::Weapon::update(){}
 
 	void Unit::Weapon::useFx(FxManager::Fx *fx, Vector3 targPos, bool fire){
+		if(fx && !fire)
+			FxManager::getSingleton()->addFx(fx);
+		else if(!fx)
+			return;
+
 		fx->toggleComponents(true);
 
 		for(int i = 0; i < fx->components.size(); i++){
@@ -256,18 +250,18 @@ namespace battleship{
 		if(fireFx) useFx(fireFx, targPos, true);
 
 		if(projId == -1){
+			sol::table weaponTbl = generateView()["units"][unit->getId() + 1]["weapons"][id + 1];
+
 			if(targetUnit){
 				targetUnit->takeDamage(damage);
 				unit->updateGameStats(targetUnit);
-
-				if(unitHitFx) useFx(unitHitFx, targPos, false);
+				useFx(initFx(weaponTbl, "unitHitFx", false), targPos, false);
 			}
 			else{
 				Map *map = Map::getSingleton();
 				Map::Cell::Type cellType = map->getCells()[map->getCellId(targPos)].type;
-
-				if(cellType == Map::Cell::Type::LAND && landHitFx) useFx(landHitFx, targPos, false);
-				else if(cellType == Map::Cell::Type::WATER && waterHitFx) useFx(waterHitFx, targPos, false);
+				string fxKey = (cellType == Map::Cell::Type::LAND ? "landHitFx" : "waterHitFx");
+				useFx(initFx(weaponTbl, fxKey, false), targPos, false);
 			}
 		}
 		else{
@@ -392,7 +386,7 @@ namespace battleship{
 			int numWeapons = SOL_STATE_VIEW[varName];
 
 			for(int i = 0; i < numWeapons; i++)
-				weapons.push_back(new Weapon(this, unitTable[tblName][i + 1]));
+				weapons.push_back(new Weapon(this, unitTable, i));
 		}
 	}
 
