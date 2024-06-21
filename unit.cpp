@@ -412,10 +412,10 @@ namespace battleship{
 	}
 
 	void Unit::reinit(){
-		destroySound();
+		destroyWeapons();
 		destroyHitbox();
 		destroyModel();
-		destroyWeapons();
+		destroySound();
 
 		initProperties();
 
