@@ -17,7 +17,6 @@ namespace battleship{
 				};
 
 				bool reuse;
-				vb01::s64 initTime;
 				std::vector<Component> components;
 			
 				Fx(std::vector<Component>, bool = false);

@@ -126,7 +126,7 @@ units = {
 		weapons = {
 			{
 				type = WeaponClass.HITSCAN, 
-				rateOfFire = 500, 
+				rateOfFire = 1000, 
 				damage = 200, 
 				maxRange = 25,
 				fireFx = {
@@ -151,7 +151,8 @@ units = {
 				landHitFx = {
 					{
 						vfx = true,
-						duration = 50,
+						duration = 1,
+						offset = 100,
 						mesh = {
 							numParticles = 1,
 							texture = PATH .. 'Textures/Explosion/explosion07.png',
@@ -162,11 +163,10 @@ units = {
 					},
 					{
 						vfx = false,
+						offset = 100,
 						path = PATH .. 'Sounds/SFX/Explosions/explosion00.ogg',
 						duration = 2500
 					}
-					--[[
-					]]--
 				}
 			}
 		},

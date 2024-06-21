@@ -93,7 +93,7 @@ namespace battleship{
 			sol::table compTbl = fxTbl[i + 1];
 
 			bool vfx = compTbl["vfx"];
-			s64 duration = compTbl["duration"];
+			s64 duration = compTbl["duration"], offset = compTbl["offset"].get_or(0);
 
 			if(vfx){
 				sol::table meshTbl = compTbl["mesh"];
@@ -104,7 +104,7 @@ namespace battleship{
 
 				Vector3 compPos = Vector3::VEC_ZERO;
 				Quaternion compRot = Quaternion::QUAT_W;
-				float sc = 1;
+				float sc = compTbl["scale"].get_or(1);
 
 				if((sol::optional<sol::table>)compTbl["pos"] != sol::nullopt){
 					sol::table posTable = compTbl["pos"];
@@ -115,9 +115,6 @@ namespace battleship{
 					sol::table rotTable = compTbl["rot"];
 					compRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
 				}
-
-				if((sol::optional<float>)compTbl["scale"] != sol::nullopt) float sc = compTbl["scale"];
-
 
 				if((sol::optional<string>)meshTbl["path"] != sol::nullopt){
 					mat = new Material(Root::getSingleton()->getLibPath() + "texture");
@@ -187,12 +184,12 @@ namespace battleship{
 
 				parNode->attachChild(flashNode);
 
-				fxComponents.push_back(FxManager::Fx::Component((void*)flashNode, vfx, duration, compPos));
+				fxComponents.push_back(FxManager::Fx::Component((void*)flashNode, vfx, duration, compPos, offset));
 			}
 			else{
 				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
 				sf::Sound *sfx = GameObject::prepareSfx(sfxBuffer, compTbl["path"]);
-				fxComponents.push_back(FxManager::Fx::Component((void*)sfx, vfx, duration));
+				fxComponents.push_back(FxManager::Fx::Component((void*)sfx, vfx, duration, Vector3::VEC_ZERO, offset));
 			}
 		}
 

@@ -14,13 +14,15 @@ namespace battleship{
 		if(v) ((vb01::Node*)c)->setVisible(false);
 	}
 
-	FxManager::Fx::Fx(std::vector<FxManager::Fx::Component> comps, bool re) : initTime(vb01::getTime()), components(comps), reuse(re){
+	FxManager::Fx::Fx(std::vector<FxManager::Fx::Component> comps, bool re) : components(comps), reuse(re){
 		toggleComponents(!re);
 	}
 
 	void FxManager::Fx::toggleComponents(bool active){
-		for(Component &component : components)
+		for(Component &component : components){
 			component.active = active;
+			component.initTime = getTime();
+		}
 	}
 
 	static FxManager *fxManager = nullptr;
@@ -39,8 +41,9 @@ namespace battleship{
 
 			for(int j = 0; j < fx->components.size(); j++){
 				Fx::Component &comp = fx->components[j];
+				s64 currTime = getTime();
 
-				if(comp.comp && getTime() - comp.initTime > comp.offsetTime){
+				if(comp.comp && currTime - comp.initTime > comp.offsetTime){
 					if(comp.active){
 						if(comp.vfx)
 							((Node*)comp.comp)->setVisible(true);
@@ -50,8 +53,7 @@ namespace battleship{
 						comp.active = false;
 						comp.initTime = getTime();
 					}
-
-					if(!comp.active && getTime() - comp.initTime > comp.offsetTime + comp.duration){
+					else if(!comp.active && currTime - comp.initTime > comp.duration){
 						if(fx->reuse){
 							if(comp.vfx)
 								((Node*)comp.comp)->setVisible(false);
