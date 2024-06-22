@@ -68,6 +68,7 @@ namespace battleship{
 		inline void incStructuresLost(){structuresLost++;}
 		inline vb01::Vector3 getColor(){return color;}
 		inline std::string getName(){return name;}
+		inline vb01::Material* getColorMaterial(){return colorMaterial;}
 		inline std::vector<int> getTechnologies(){return technologies;}
     private:
 		bool cpuPlayer = false;
@@ -83,6 +84,7 @@ namespace battleship{
 		std::vector<Projectile*> projectiles;
 		std::vector<ResourceDeposit*> resourceDeposits;
         vb01::Vector3 spawnPoint, color;
+		vb01::Material *colorMaterial = nullptr;
 
 		int getOrderLineId(Order::TYPE, vb01::Vector3, vb01::Vector3);
     };

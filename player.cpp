@@ -12,9 +12,26 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace std;
 
-    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name("pl"), refineds(30000), trader(new Trader()) {}
+    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : 
+		difficulty(diff), 
+		faction(fac), 
+		team(t), 
+		color(col), 
+		cpuPlayer(cpuPl), 
+		spawnPoint(sp), 
+		name("pl"), 
+		refineds(30000), 
+		trader(new Trader())
+	{
+		colorMaterial = new Material(Root::getSingleton()->getLibPath() + "texture");
+		colorMaterial->addBoolUniform("lightingEnabled", false);
+		colorMaterial->addBoolUniform("texturingEnabled", false);
+		colorMaterial->addVec4Uniform("diffuseColor", Vector4(color.x, color.y, color.z, 1));
+	}
 
-    Player::~Player() {}
+    Player::~Player() {
+		delete colorMaterial;
+	}
 
     void Player::update() {
 		trader->update();
