@@ -77,11 +77,13 @@ namespace battleship{
 	}
 
 	//TODO implement node child search by name
-	FxManager::Fx* Unit::Weapon::initFx(sol::table weaponTable, string vfxKey, bool attached){
-		if((sol::optional<sol::table>)weaponTable[vfxKey] == sol::nullopt)
+	FxManager::Fx* Unit::Weapon::initFx(sol::table weaponTable, string fxKey, bool attached){
+		sol::optional<sol::table> fxOpt = weaponTable[fxKey];
+
+		if(fxOpt == sol::nullopt)
 			return nullptr;
 
-		sol::table fxTbl = weaponTable[vfxKey];
+		sol::table fxTbl = weaponTable[fxKey];
 		int numComponents = fxTbl.size();
 
 		if(numComponents == 0)
