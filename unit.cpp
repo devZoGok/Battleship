@@ -102,21 +102,25 @@ namespace battleship{
 				Material *mat = nullptr;
 				Node *flashNode = nullptr;
 
+				sol::optional<sol::table> posOpt = compTbl["pos"], rotOpt = compTbl["rot"];
 				Vector3 compPos = Vector3::VEC_ZERO;
 				Quaternion compRot = Quaternion::QUAT_W;
 				float sc = compTbl["scale"].get_or(1);
 
-				if((sol::optional<sol::table>)compTbl["pos"] != sol::nullopt){
+				if(posOpt != sol::nullopt){
 					sol::table posTable = compTbl["pos"];
 					compPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 				}
 
-				if((sol::optional<sol::table>)compTbl["rot"] != sol::nullopt){
+				if(rotOpt != sol::nullopt){
 					sol::table rotTable = compTbl["rot"];
 					compRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
 				}
 
-				if((sol::optional<string>)meshTbl["path"] != sol::nullopt){
+				sol::optional<string> pathOpt = meshTbl["path"]; 
+				sol::optional<int> numPartOpt = meshTbl["numParticles"]; 
+
+				if(pathOpt != sol::nullopt){
 					mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 
 					meshPath = meshTbl["path"];
@@ -126,7 +130,7 @@ namespace battleship{
 					flashNode->setOrientation(compRot);
 					flashNode->setScale(Vector3(sc, sc, sc));
 				}
-				else if((sol::optional<int>)meshTbl["numParticles"] != sol::nullopt){
+				else if(numPartOpt != sol::nullopt){
 					mat = new Material(Root::getSingleton()->getLibPath() + "particle");
 
 					int numParticles = meshTbl["numParticles"];
@@ -154,7 +158,9 @@ namespace battleship{
 					flashNode->attachMesh(box);
 				}
 
-				if((sol::optional<string>)meshTbl["texture"] != sol::nullopt){
+				sol::optional<string> texOpt = meshTbl["texture"];
+
+				if(texOpt != sol::nullopt){
 					string p[]{meshTbl["texture"]};
 					Texture *tex = new Texture(p, 1, false);
 					mat->addBoolUniform("texturingEnabled", true);
@@ -168,8 +174,9 @@ namespace battleship{
 
 				flashNode->setVisible(false);
 				Node *parNode = (attached ? unit->getModel() : Root::getSingleton()->getRootNode());
+				sol::optional<string> parOpt = compTbl["parent"];
 
-				if((sol::optional<string>)compTbl["parent"] != sol::nullopt){
+				if(parOpt != sol::nullopt){
 					vector<Node*> descendants;
 					unit->getModel()->getDescendants(descendants);
 					string parName = compTbl["parent"];
