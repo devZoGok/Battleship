@@ -7,7 +7,6 @@
 
 #include <stateManager.h>
 
-#include "fx.h"
 #include "game.h"
 #include "unit.h"
 #include "util.h"
