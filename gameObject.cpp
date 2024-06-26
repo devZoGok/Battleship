@@ -75,6 +75,7 @@ namespace battleship{
 		delete model;
 	}
 
+	//TODO improve DEFAULT_TEXTURE handling
 	void GameObject::initModel(bool textured){
 		sol::table gameObjTable = generateView()[GameObject::getGameObjTableName()][id + 1];
 		string basePath = gameObjTable["basePath"];
@@ -87,7 +88,8 @@ namespace battleship{
 		Material *mat = new Material(libPath + "texture");
 
 		if(textured){
-			string f[]{GameManager::getSingleton()->getPath() + configData::DEFAULT_TEXTURE};
+			string albedoPath = gameObjTable["albedoPath"].get_or(configData::DEFAULT_TEXTURE);
+			string f[]{albedoPath == configData::DEFAULT_TEXTURE ? GameManager::getSingleton()->getPath() + albedoPath : basePath + albedoPath};
     		Texture *diffuseTexture = new Texture(f, 1, false);
 			mat->addBoolUniform("texturingEnabled", true);
 			mat->addBoolUniform("lightingEnabled", false);
@@ -102,7 +104,7 @@ namespace battleship{
 
 		model->setMaterial(mat);
 
-		if((sol::optional<sol::table>)gameObjTable["colorNodes"] != sol::nullopt){
+		if(player && (sol::optional<sol::table>)gameObjTable["colorNodes"] != sol::nullopt){
 			int numColorNodes = ((sol::table)gameObjTable["colorNodes"]).size();
 
 			for(int i = 0; i < numColorNodes; i++){
