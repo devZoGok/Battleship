@@ -14,10 +14,10 @@
 - `git clone <battleship_url>`
 - `cd Battteship`
 - `git submodule update --init --recursive`
-- `cmake -S . -B build -G <present_visual_studio_version>`
+- `cmake -S . -B <build_dir> -G <present_visual_studio_version>`
 - open `build\ALL_BUILD.vcxproj`
-- build the solution
-- copy the DLLs, built from dependencies of `Battleship`, to the `build` subdirectory with `battleship.exe`
+- build the solution (in case of the fatal error C1128, use, for example, the `RelWithDebInfo` build configuration)
+- copy and paste `battleship.exe` into `<build_dir>`
 
 ## Contrib guide
 The Gitflow shall be used.
