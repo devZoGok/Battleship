@@ -710,4 +710,8 @@ namespace battleship{
 				break;
 		}
 	}
+
+	void MapEditorAppState::onRawMouseWheelScroll(bool up){
+		CameraController::getSingleton()->zoomCamera(up);
+	}
 }
