@@ -30,6 +30,7 @@ namespace battleship{
         virtual void onRawKeyPress(int);
 		virtual void onRawCharPress(vb01::u32);
         virtual void onRawMousePress(int);
+        virtual void onRawMouseWheelScroll(bool);
         vb01Gui::Textbox* getOpenTextbox();
         vb01Gui::Listbox* getOpenListbox();
         
