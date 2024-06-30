@@ -88,7 +88,7 @@ units = {
 							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
 							color = {x = 1, y = 1, z = 0, a = 1},
 						},
-						pos = {x = 0.214, y = 2.742, z = 1.54},
+						pos = {x = 0.428, y = 5.484, z = 3.08},
 						rot = {w = 1, x = 0, y = 0, z = 0},
 						--scale = .5
 					},
@@ -159,7 +159,7 @@ units = {
 							color = {x = 1, y = 1, z = 0, a = 1},
 						},
 						parent = 'Turret',
-						pos = {x = 0, y = .43, z = 5.7},
+						pos = {x = 0.06, y = 5.82, z = 11.4},
 						rot = {w = 1, x = 0, y = 0, z = 0},
 						--scale = .5
 					},
@@ -211,7 +211,7 @@ units = {
 							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
 							color = {x = 1, y = 1, z = 0, a = 1},
 						},
-						pos = {x = 0.5, y = 2.95, z = 1.95},
+						pos = {x = 1, y = 5.8, z = 3.9},
 						rot = {w = 1, x = 0, y = 0, z = 0},
 						--scale = .5
 					},
