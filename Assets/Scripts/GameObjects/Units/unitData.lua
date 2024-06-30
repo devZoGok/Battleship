@@ -649,7 +649,7 @@ units = {
 			},
 			{
 				type = WeaponClass.CRUISE_MISSILE, 
-				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 1, z = 0}, rot = {w = .707, x = -.707, y = 0, z = 0}},
+				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 15, z = 0}, rot = {w = .707, x = -.707, y = 0, z = 0}},
 				rateOfFire = 500, 
 				maxRange = 30, 
 				fireFx = {
@@ -710,7 +710,7 @@ units = {
 						path = PATH .. 'Sounds/Units/Submarines/missile.ogg', 
 					}
 				},
-				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}
+				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 15, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}
 			},
 		},
 		unitClass = UnitClass.SUBMARINE,
