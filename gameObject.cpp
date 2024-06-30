@@ -103,12 +103,14 @@ namespace battleship{
 		}
 
 		model->setMaterial(mat);
+		sol::optional<sol::table> colNodeOpt = gameObjTable["colorNodes"];
 
-		if(player && (sol::optional<sol::table>)gameObjTable["colorNodes"] != sol::nullopt){
-			int numColorNodes = ((sol::table)gameObjTable["colorNodes"]).size();
+		if(player && colNodeOpt != sol::nullopt){
+			sol::table colNodeTbl = gameObjTable["colorNodes"];
+			int numColorNodes = colNodeTbl.size();
 
 			for(int i = 0; i < numColorNodes; i++){
-				string name = gameObjTable["colorNodes"][i + 1];
+				string name = colNodeTbl[i + 1];
 				Node *node = model->findDescendant(name, true);
 
 				if(!node) continue;
