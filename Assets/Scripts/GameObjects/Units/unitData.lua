@@ -135,6 +135,7 @@ units = {
 		basePath = PATH .. vehiclePrefix .. 'WarMechs/',
 		meshPath = 'warMech.xml',
 		albedoPath = 'mech.jpg',
+		colorNodes = {'WarRobotTemplate.001'},
 		selectionSfx = PATH .. 'Sounds/Units/WarMechs/selection.ogg',
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 		speed = .1,
@@ -277,7 +278,7 @@ units = {
 		name = 'Engineer',
 		basePath = PATH .. vehiclePrefix .. 'Engineers/',
 		albedoPath = 'engineer.jpg',
-		colorNodes = {'Plane'},
+		colorNodes = {'Cube.008'},
 		meshPath = 'engineer2.xml',
 		guiScreen = 'engineerCommands.lua',
 		selectionSfx = PATH .. 'Sounds/Units/Engineers/selection.ogg',
@@ -873,7 +874,7 @@ units = {
 							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
 							color = {x = 1, y = 1, z = 0, a = 1},
 						},
-						pos = {x = 0, y = 0, z = 2.7},
+						pos = {x = 1.4, y = -.18, z = 5.4},
 						rot = {w = 1, x = 0, y = 0, z = 0},
 						parent = 'LeftBarrel'
 						--scale = .5
@@ -885,9 +886,9 @@ units = {
 							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
 							color = {x = 1, y = 1, z = 0, a = 1},
 						},
-						pos = {x = 0, y = 0, z = 2.7},
+						pos = {x = -1.4, y = -.18, z = 5.4},
 						rot = {w = 1, x = 0, y = 0, z = 0},
-						parent = 'LeftBarrel.001'
+						parent = 'RightBarrel'
 						--scale = .5
 					},
 					{
@@ -910,6 +911,7 @@ units = {
 		lineOfSight = 55,
 		name = 'Point defense',
 		colorNodes = {'Hoses', 'Hoses.001'},
+		turretNode = 'TurretBody',
 		basePath = PATH .. structurePrefix .. 'PointDefenses/',
 		meshPath = 'pointDefense2.xml',
 		albedoPath = 'pointDefense.jpg',
