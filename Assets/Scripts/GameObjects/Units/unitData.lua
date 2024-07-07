@@ -45,15 +45,82 @@ UnitClass = {
 	FORT = 16
 }
 UnitType = {UNDERWATER = 0, SEA_LEVEL = 1, HOVER = 2, LAND = 3, AIR = 4}
-ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
 
-modelPrefix = "Models/GameObjects/"
-vehiclePrefix = modelPrefix .. "Units/Vehicles/"
-structurePrefix = modelPrefix .. "Units/Structures/"
+ArmorType = {CAST = 0, COMBINED = 1, MECHANIC = 2, SHELL = 3, STEEL = 4}
+vfxPrefix = "Models/VFX/"
+gameObjPrefix = "Models/GameObjects/"
+vehiclePrefix = gameObjPrefix .. "Units/Vehicles/"
+structurePrefix = gameObjPrefix .. "Units/Structures/"
+
+explosionVfx = {
+	vfx = true,
+	duration = 1,
+	offset = 100,
+	mesh = {
+		numParticles = 1,
+		texture = PATH .. 'Textures/Explosion/explosion07.png',
+		lowLife = 3,
+		highLife = 3,
+		size = {x = 10, y = 10},
+	}
+}
+explosionSfx = {
+	vfx = false,
+	offset = 100,
+	path = PATH .. 'Sounds/SFX/Explosions/explosion00.ogg',
+	duration = 2500
+}
+
 
 units = {
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 10}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN,
+				rateOfFire = 100,
+				maxRange = 10,
+				damage = 50,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
+						pos = {x = 0.214, y = 2.742, z = 1.54},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/fire.ogg'
+					},
+				},
+				unitHitFx = {
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/unitHit.ogg'
+					},
+				},
+				landHitFx = {
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/landHit.ogg'
+					},
+				},
+				waterHitFx = {
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/waterHit.ogg'
+					},
+				},
+			}
+		},
 		unitClass = UnitClass.WAR_MECH,
 		unitType = UnitType.LAND,
 		armor = {ArmorType.MECHANIC},
@@ -76,7 +143,35 @@ units = {
 		garrisonCategory = 1
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 500, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 200, maxRange = 25}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 1000, 
+				damage = 200, 
+				maxRange = 25,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
+						parent = 'Turret',
+						pos = {x = 0, y = .43, z = 5.7},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 300,
+						path = PATH .. 'Sounds/Units/Tanks/attack.ogg', 
+					}
+				},
+				landHitFx = {explosionVfx, explosionSfx},
+				unitHitFx = {explosionVfx, explosionSfx}
+			}
+		},
 		unitClass = UnitClass.TANK,
 		unitType = UnitType.LAND,
 		armor = {ArmorType.STEEL},
@@ -99,7 +194,34 @@ units = {
 		garrisonCategory = 2
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 2000, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 5000, maxRange = 30}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 2000, 
+				damage = 5000, 
+				maxRange = 30,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
+						pos = {x = 0.5, y = 2.95, z = 1.95},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 300,
+						path = PATH .. 'Sounds/Units/Tanks/attack.ogg', 
+					}
+				},
+				landHitFx = {explosionVfx, explosionSfx},
+				unitHitFx = {explosionVfx, explosionSfx}
+			}
+		},
 		unitClass = UnitClass.ARTILLERY,
 		unitType = UnitType.LAND,
 		armor = {ArmorType.MECHANIC},
@@ -232,7 +354,33 @@ units = {
 		garrisonCategory = 3
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 200, 
+				damage = 300, 
+				maxRange = 15,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							size = {x = .16, y = .16},
+							color = {x = 1, y = 0, z = 0, a = 1},
+						},
+						pos = {x = 0., y = 2.8, z = -.1},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 50,
+						path = PATH .. 'Sounds/Units/Cruisers/fire.ogg',
+					}
+				},
+				hitFx = {}
+			}
+		},
 		unitClass = UnitClass.CRUISER,
 		unitType = UnitType.SEA_LEVEL,
 		armor = {ArmorType.STEEL},
@@ -255,7 +403,32 @@ units = {
 		garrisonCategory = 3
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 200, 
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							size = {x = .16, y = .16},
+							color = {x = 1, y = 0, z = 0, a = 1},
+						},
+						pos = {x = 0., y = 2.8, z = -.1},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 50,
+						path = PATH .. 'Sounds/Units/Cruisers/fire.ogg',
+					}
+				},
+				damage = 300, 
+				maxRange = 15
+			}
+		},
 		unitClass = UnitClass.CRUISER,
 		unitType = UnitType.SEA_LEVEL,
 		armor = {ArmorType.CAST},
@@ -279,7 +452,32 @@ units = {
 		garrisonCategory = 3
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN,
+				rateOfFire = 200, 
+				damage = 300,
+				maxRange = 15,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							size = {x = .16, y = .16},
+							color = {x = 1, y = 0, z = 0, a = 1},
+						},
+						pos = {x = 0., y = 2.8, z = -.1},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 50,
+						path = PATH .. 'Sounds/Units/Cruisers/fire.ogg',
+					}
+				},
+			}
+		},
 		unitClass = UnitClass.CRUISER,
 		unitType = UnitType.SEA_LEVEL,
 		armor = {ArmorType.CAST},
@@ -302,7 +500,33 @@ units = {
 		garrisonCategory = 3
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 200, fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', damage = 300, maxRange = 15}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 200, 
+				fireSfx = PATH .. 'Sounds/Units/Cruisers/fire.ogg', 
+				damage = 300,
+				maxRange = 15,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							size = {x = .16, y = .16},
+							color = {x = 1, y = 0, z = 0, a = 1},
+						},
+						pos = {x = 0., y = 2.8, z = -.1},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 50,
+						path = PATH .. 'Sounds/Units/Cruisers/fire.ogg',
+					}
+				}
+			}
+		},
 		unitClass = UnitClass.CRUISER,
 		unitType = UnitType.SEA_LEVEL,
 		armor = {ArmorType.STEEL, ArmorType.COMBINED},
@@ -325,7 +549,32 @@ units = {
 		garrisonCategory = 3
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 80, maxRange = 100}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 100, 
+				damage = 80, 
+				maxRange = 100,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							size = {x = .16, y = .16},
+							color = {x = 1, y = 0, z = 0, a = 1},
+						},
+						pos = {x = 0., y = 2.8, z = -.1},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 50,
+						path = PATH .. 'Sounds/Units/Cruisers/fire.ogg',
+					}
+				}
+			}
+		},
 		unitClass = UnitClass.CARRIER,
 		unitType = UnitType.SEA_LEVEL,
 		isVehicle = true,
@@ -348,13 +597,44 @@ units = {
 	},
 	{
 		weapons = {
-			{type = WeaponClass.HITSCAN, rateOfFire = 300, fireSfx = PATH .. 'Sounds/Units/Tanks/attack.ogg', damage = 500, maxRange = 100},
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 450, 
+				damage = 500, 
+				maxRange = 100,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
+						pos = {x = 0, y = 3.17, z = -1.5},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 300,
+						path = PATH .. 'Sounds/Units/Tanks/attack.ogg', 
+					}
+				},
+				unitHitFx = {explosionVfx, explosionSfx},
+				waterHitFx = {explosionVfx, explosionSfx}
+			},
 			{
 				type = WeaponClass.CRUISE_MISSILE, 
+				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 1, z = 0}, rot = {w = .707, x = -.707, y = 0, z = 0}},
 				rateOfFire = 500, 
-				fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', 
 				maxRange = 30, 
-				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 1, z = 0}, rot = {w = .707, x = -.707, y = 0, z = 0}}
+				fireFx = {
+					{
+						vfx = false,
+						duration = 2500,
+						path = PATH .. 'Sounds/Units/Submarines/missile.ogg', 
+					}
+				},
 			}
 		},
 		unitClass = UnitClass.CARRIER,
@@ -381,8 +661,14 @@ units = {
 		weapons = {
 			{
 				type = WeaponClass.TORPEDO, 
-				rateOfFire = 500, 
-				fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', 
+				rateOfFire = 1000, 
+				fireFx = {
+					{
+						vfx = false,
+						duration = 2500,
+						path = PATH .. 'Sounds/Units/Submarines/fire.ogg', 
+					}
+				},
 				damage = 200, 
 				maxRange = 20, 
 				projectile = {id = ProjectileId.TORPEDO, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}
@@ -390,8 +676,14 @@ units = {
 			{
 				type = WeaponClass.CRUISE_MISSILE, 
 				rateOfFire = 500, 
-				fireSfx = PATH .. 'Sounds/Units/Submarines/missile.ogg', 
 				maxRange = 30, 
+				fireFx = {
+					{
+						vfx = false,
+						duration = 2500,
+						path = PATH .. 'Sounds/Units/Submarines/missile.ogg', 
+					}
+				},
 				projectile = {id = ProjectileId.CRUISE_MISSILE, pos = {x = 0, y = 2.44, z = -3.5}, rot = {w = .707, x = -.707, y = 0, z = 0}}
 			},
 		},
@@ -419,11 +711,17 @@ units = {
 		weapons = {
 			{
 				type = WeaponClass.TORPEDO, 
-				rateOfFire = 500, 
-				fireSfx = PATH .. 'Sounds/Units/Submarines/fire.ogg', 
+				projectile = {id = ProjectileId.TORPEDO, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}},
 				damage = 200, 
 				maxRange = 20, 
-				projectile = {id = ProjectileId.TORPEDO, pos = {x = 0, y = -.27, z = 4.6}, rot = {w = 1, x = 0, y = 0, z = 0}}
+				rateOfFire = 500, 
+				fireFx = {
+					{
+						vfx = false,
+						duration = 2500,
+						path = PATH .. 'Sounds/Units/Submarines/fire.ogg', 
+					}
+				},
 			}
 		},
 		unitClass = UnitClass.SUBMARINE,
@@ -524,7 +822,34 @@ units = {
 		deathSfx = PATH .. 'Sounds/SFX/Explosions/explosion01.ogg',
 	},
 	{
-		weapons = {{type = WeaponClass.HITSCAN, rateOfFire = 100, fireSfx = PATH .. 'Sounds/Units/WarMechs/fire.ogg', damage = 50, maxRange = 50}},
+		weapons = {
+			{
+				type = WeaponClass.HITSCAN, 
+				rateOfFire = 100, 
+				damage = 50, 
+				maxRange = 50,
+				fireFx = {
+					{
+						vfx = true,
+						duration = 50,
+						mesh = {
+							path = PATH .. vfxPrefix .. 'muzzleFlash.xml',
+							color = {x = 1, y = 1, z = 0, a = 1},
+						},
+						pos = {x = 0, y = .43, z = 3.66},
+						rot = {w = 1, x = 0, y = 0, z = 0},
+						parent = 'turret'
+						--scale = .5
+					},
+					{
+						vfx = false,
+						duration = 500,
+						path = PATH .. 'Sounds/Units/WarMechs/fire.ogg',
+					},
+				},
+				hitFx = {}
+			}
+		},
 		unitClass = UnitClass.POINT_DEFENSE,
 		unitType = UnitType.LAND,
 		isVehicle = false,

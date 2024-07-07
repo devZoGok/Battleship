@@ -1,5 +1,6 @@
 #include <model.h>
 #include <quad.h>
+#include <box.h>
 #include <material.h>
 #include <particleEmitter.h>
 #include <texture.h>
@@ -28,17 +29,24 @@ using namespace gameBase;
 using namespace std;
 
 namespace battleship{
-	Unit::Weapon::Weapon(Unit *u, sol::table weaponTable) : 
-		unit(u), 
-		type((Weapon::Type)weaponTable["type"]), 
-		rateOfFire(weaponTable["rateOfFire"]),
-		damage(weaponTable["damage"].get_or(0))
-	{
-		maxRange = weaponTable["maxRange"];
-		fireSfxBuffer = new sf::SoundBuffer();
-		string sfxPath = weaponTable["fireSfx"];
-		fireSfx = GameObject::prepareSfx(fireSfxBuffer, sfxPath);
+	string Unit::Weapon::LASER_FLAG = "laser";
 
+	Unit::Weapon::Weapon(Unit *u, sol::table unitTable, int wid) : 
+		unit(u), 
+		id(wid),
+		type((Weapon::Type)unitTable["weapons"][wid + 1]["type"]), 
+		rateOfFire(unitTable["weapons"][wid + 1]["rateOfFire"]),
+		damage(unitTable["weapons"][wid + 1]["damage"].get_or(0))
+	{
+		sol::table weaponTable = unitTable["weapons"][wid + 1];
+		maxRange = weaponTable["maxRange"];
+		initProjectileData(weaponTable);
+
+		fireFx = initFx(weaponTable, "fireFx", true);
+		if(fireFx) FxManager::getSingleton()->addFx(fireFx);
+	}
+
+	void Unit::Weapon::initProjectileData(sol::table weaponTable){
 		string projTableKey = "projectile";
 		sol::optional<sol::table> proj = weaponTable[projTableKey];
 
@@ -68,25 +76,201 @@ namespace battleship{
 		}
 	}
 
+	//TODO implement node child search by name
+	FxManager::Fx* Unit::Weapon::initFx(sol::table weaponTable, string fxKey, bool attached){
+		sol::optional<sol::table> fxOpt = weaponTable[fxKey];
+
+		if(fxOpt == sol::nullopt)
+			return nullptr;
+
+		sol::table fxTbl = weaponTable[fxKey];
+		int numComponents = fxTbl.size();
+
+		if(numComponents == 0)
+			return nullptr;
+
+		vector<FxManager::Fx::Component> fxComponents;
+
+		for(int i = 0; i < numComponents; i++){
+			sol::table compTbl = fxTbl[i + 1];
+
+			bool vfx = compTbl["vfx"];
+			s64 duration = compTbl["duration"], offset = compTbl["offset"].get_or(0);
+
+			if(vfx){
+				sol::table meshTbl = compTbl["mesh"];
+
+				string meshPath = "";
+				Material *mat = nullptr;
+				Node *flashNode = nullptr;
+
+				sol::optional<sol::table> posOpt = compTbl["pos"], rotOpt = compTbl["rot"];
+				Vector3 compPos = Vector3::VEC_ZERO;
+				Quaternion compRot = Quaternion::QUAT_W;
+				float sc = compTbl["scale"].get_or(1);
+
+				if(posOpt != sol::nullopt){
+					sol::table posTable = compTbl["pos"];
+					compPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
+				}
+
+				if(rotOpt != sol::nullopt){
+					sol::table rotTable = compTbl["rot"];
+					compRot = Quaternion(rotTable["w"], rotTable["x"], rotTable["y"], rotTable["z"]);
+				}
+
+				sol::optional<string> pathOpt = meshTbl["path"]; 
+				sol::optional<int> numPartOpt = meshTbl["numParticles"]; 
+
+				if(pathOpt != sol::nullopt){
+					mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+
+					meshPath = meshTbl["path"];
+					flashNode = new Model(meshPath);
+					((Model*)flashNode)->setMaterial(mat);
+					flashNode->setPosition(compPos);
+					flashNode->setOrientation(compRot);
+					flashNode->setScale(Vector3(sc, sc, sc));
+				}
+				else if(numPartOpt != sol::nullopt){
+					mat = new Material(Root::getSingleton()->getLibPath() + "particle");
+
+					int numParticles = meshTbl["numParticles"];
+					ParticleEmitter *pe = new ParticleEmitter(numParticles);
+					pe->setMaterial(mat);
+					pe->setLowLife(meshTbl["lowLife"]);
+					pe->setHighLife(meshTbl["highLife"]);
+					pe->setSpeed(0);
+
+					sol::table sizeTbl = meshTbl["size"];
+					pe->setSize(Vector2(sizeTbl["x"], sizeTbl["y"]));
+
+					flashNode = new Node(compPos, compRot, Vector3(sc, sc, sc));
+					flashNode->attachParticleEmitter(pe);
+					flashNode->lookAt(Vector3::VEC_J, Vector3::VEC_K);
+				}
+				else{
+					mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+
+					sol::table sizeTbl = meshTbl["size"];
+					Box *box = new Box(Vector3(sizeTbl["x"], sizeTbl["y"], 0));
+					box->setMaterial(mat);
+
+					flashNode = new Node(compPos, compRot, Vector3(sc, sc, sc), LASER_FLAG);
+					flashNode->attachMesh(box);
+				}
+
+				sol::optional<string> texOpt = meshTbl["texture"];
+
+				if(texOpt != sol::nullopt){
+					string p[]{meshTbl["texture"]};
+					Texture *tex = new Texture(p, 1, false);
+					mat->addBoolUniform("texturingEnabled", true);
+					mat->addTexUniform("diffuseMap[0]", tex, false);
+				}
+				else{
+					sol::table colorTable = meshTbl["color"];
+					mat->addVec4Uniform("diffuseColor", Vector4(colorTable["x"], colorTable["y"], colorTable["z"], colorTable["a"]));
+					mat->addBoolUniform("texturingEnabled", false);
+				}
+
+				flashNode->setVisible(false);
+				Node *parNode = (attached ? unit->getModel() : Root::getSingleton()->getRootNode());
+				sol::optional<string> parOpt = compTbl["parent"];
+
+				if(parOpt != sol::nullopt){
+					vector<Node*> descendants;
+					unit->getModel()->getDescendants(descendants);
+					string parName = compTbl["parent"];
+					parNode = nullptr;
+
+					for(Node *desc : descendants)
+						if(desc->getName() == parName){
+							parNode = desc;
+							break;
+						}
+				}
+
+				parNode->attachChild(flashNode);
+
+				fxComponents.push_back(FxManager::Fx::Component((void*)flashNode, vfx, duration, compPos, offset));
+			}
+			else{
+				sf::SoundBuffer *sfxBuffer = new sf::SoundBuffer();
+				sf::Sound *sfx = GameObject::prepareSfx(sfxBuffer, compTbl["path"]);
+				fxComponents.push_back(FxManager::Fx::Component((void*)sfx, vfx, duration, Vector3::VEC_ZERO, offset));
+			}
+		}
+
+		return new FxManager::Fx(fxComponents, attached);
+	}
+
 	Unit::Weapon::~Weapon(){
-		if(fireSfx){
-			fireSfx->stop();
-			delete fireSfx;
-			delete fireSfxBuffer;
+		FxManager *fm = FxManager::getSingleton();
+
+		if(fireFx) fm->removeFx(fireFx);
+	}
+
+	void Unit::Weapon::update(){}
+
+	void Unit::Weapon::useFx(FxManager::Fx *fx, Vector3 targPos, bool fire){
+		if(fx && !fire)
+			FxManager::getSingleton()->addFx(fx);
+		else if(!fx)
+			return;
+
+		fx->toggleComponents(true);
+
+		for(int i = 0; i < fx->components.size(); i++){
+			FxManager::Fx::Component &comp = fx->components[i];
+
+			if(comp.vfx){
+				if(fire && ((Node*)comp.comp)->getName() == LASER_FLAG){
+					Vector3 initPos = unit->getPos(), laserDir = targPos - initPos;
+					float targDist = laserDir.getLength();
+					float angle = unit->getDirVec().getAngleBetween(laserDir);
+					Vector3 crossProd = unit->getDirVec().cross(laserDir);
+
+					Node *compNode = (Node*)comp.comp;
+					compNode->setOrientation(Quaternion(angle, crossProd) * compNode->getOrientation());
+
+					Box *box = (Box*)compNode->getMesh(0);
+					Vector3 size = box->getSize();
+					box->setSize(Vector3(size.x, size.y, targDist));
+					box->updateVerts(box->getMeshBase());
+
+					compNode->setPosition(comp.pos + .5 * targDist * Vector3::VEC_K);
+				}
+				else if(!fire)
+					((Node*)comp.comp)->setPosition(targPos);
+			}
 		}
 	}
 
 	void Unit::Weapon::fire(Order order){
 		if(!canFire()) return;
 
-		fireSfx->play();
 		Unit *targetUnit = order.targets[0].unit;
+		Vector3 targPos = (targetUnit ? targetUnit->getPos() : order.targets[0].pos);
 
-		if(targetUnit && projId == -1){
-			targetUnit->takeDamage(damage);
-			unit->updateGameStats(targetUnit);
+		if(fireFx) useFx(fireFx, targPos, true);
+
+		if(projId == -1){
+			sol::table weaponTbl = generateView()["units"][unit->getId() + 1]["weapons"][id + 1];
+
+			if(targetUnit){
+				targetUnit->takeDamage(damage);
+				unit->updateGameStats(targetUnit);
+				useFx(initFx(weaponTbl, "unitHitFx", false), targPos, false);
+			}
+			else{
+				Map *map = Map::getSingleton();
+				Map::Cell::Type cellType = map->getCells()[map->getCellId(targPos)].type;
+				string fxKey = (cellType == Map::Cell::Type::LAND ? "landHitFx" : "waterHitFx");
+				useFx(initFx(weaponTbl, fxKey, false), targPos, false);
+			}
 		}
-		else if(projId != -1){
+		else{
 			Vector3 leftVec = unit->getLeftVec();
 			Vector3 upVec = unit->getUpVec();
 			Vector3 dirVec = unit->getDirVec();
@@ -117,10 +301,10 @@ namespace battleship{
     Unit::~Unit() {
 		removeBar(hpBackgroundNode);
 		removeBar(hpForegroundNode);
+		destroyWeapons();
 		destroySound();
 		destroyHitbox();
 		destroyModel();
-		destroyWeapons();
     }
 
 	void Unit::initProperties(){
@@ -208,7 +392,7 @@ namespace battleship{
 			int numWeapons = SOL_STATE_VIEW[varName];
 
 			for(int i = 0; i < numWeapons; i++)
-				weapons.push_back(new Weapon(this, unitTable[tblName][i + 1]));
+				weapons.push_back(new Weapon(this, unitTable, i));
 		}
 	}
 
@@ -234,10 +418,10 @@ namespace battleship{
 	}
 
 	void Unit::reinit(){
-		destroySound();
+		destroyWeapons();
 		destroyHitbox();
 		destroyModel();
-		destroyWeapons();
+		destroySound();
 
 		initProperties();
 
@@ -363,6 +547,9 @@ namespace battleship{
 			Game::getSingleton()->explode(pos, 0, 0, deathSfx);
 			remove = true;
 		}
+
+		for(Weapon *weapon : weapons)
+			weapon->update();
     }
 
     void Unit::displayUnitStats(Node *foreground, Node *background, int currVal, int maxVal, bool render, Vector2 offset) {

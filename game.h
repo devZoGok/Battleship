@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "fx.h"
 #include "technology.h"
 #include "ability.h"
 #include "tradeOffer.h"
@@ -22,7 +21,6 @@ namespace battleship{
 			static Game* getSingleton();
 			void update();
 			void togglePause();
-			void removeFx(int, bool);
 			void removeAllElements();
 			void explode(vb01::Vector3, int, float, sf::Sound*);
 			void changeUnitPlayer(Unit*, Player*);
@@ -31,7 +29,6 @@ namespace battleship{
 			bool isUnitUnlocked(std::vector<int>, int);
 			std::vector<TradeOffer*> findTradeOffers(Player*, Player*);
 			inline void addTradeOffer(TradeOffer *to){tradeOffers.push_back(to);}
-			inline void addFx(Fx f){fx.push_back(f);}
 			inline void addPlayer(Player *pl){players.push_back(pl);}
 			inline std::vector<Player*>& getPlayers(){return players;}
 			inline Player* getPlayer(int id){return players[id];}
@@ -45,7 +42,6 @@ namespace battleship{
 			std::vector<int> parseTechTable(int, std::string, std::string, std::string);
 
 			bool paused = false, ended = false;
-			std::vector<Fx> fx;
 			std::vector<Technology> technologies;
 			std::vector<Ability> abilities;
 			std::vector<Player*> players;
