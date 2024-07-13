@@ -24,6 +24,12 @@ namespace battleship{
 	void GameObject::reinit(){
 		placeAt(pos);
 		orientAt(rot);
+
+		if(hitbox){
+			Box *hbMesh = (Box*)hitbox->getMesh(0);
+			hbMesh->setSize(Vector3(width, height, length));
+			hbMesh->updateVerts(hbMesh->getMeshBase());
+		}
 	}
 
 	void GameObject::update(){
@@ -46,14 +52,18 @@ namespace battleship{
 	//TODO remove neccessity to create a material for an invisible mesh
 	void GameObject::initHitbox(){
 		Box *box = new Box(Vector3(width, height, length));
-		box->setMaterial(new Material(Root::getSingleton()->getLibPath() + "texture"));
-		box->setWireframe(false);
+		box->setWireframe(true);
+
+		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
+		box->setMaterial(mat);
 
 		sol::table gameObjTable = generateView()[GameObject::getGameObjTableName()][id + 1];
 		sol::table offsetPosTable = gameObjTable["hitboxOffset"];
 		hitbox = new Node(Vector3(offsetPosTable["x"], offsetPosTable["y"], offsetPosTable["z"]));
 		hitbox->attachMesh(box);
-		hitbox->setVisible(false);
+		hitbox->setVisible(true);
 		model->attachChild(hitbox);
 	}
 

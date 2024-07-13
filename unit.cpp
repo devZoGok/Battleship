@@ -288,7 +288,7 @@ namespace battleship{
     Unit::Unit(Player *player, int id, Vector3 pos, Quaternion rot, State st) : GameObject(GameObject::Type::UNIT, id, player, pos, rot), state(st){
 		selectable = true;
 
-		initProperties();
+		Unit::initProperties();
 		initModel();
 		initHitbox();
 		initSound();
@@ -426,7 +426,7 @@ namespace battleship{
 		destroyModel();
 		destroySound();
 
-		initProperties();
+		Unit::initProperties();
 
 		initModel();
 		initHitbox();
