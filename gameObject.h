@@ -26,7 +26,6 @@ namespace battleship{
 			void placeAt(vb01::Vector3);
 			void orientAt(vb01::Quaternion);
 			std::string getGameObjTableName();
-			vb01::Vector2 calculateSelectionRect();
 			void updateGameStats(Unit*);
 			static sf::Sound* prepareSfx(sf::SoundBuffer*, std::string);
         	inline vb01::Vector2 getScreenPos(){return screenPos;}
@@ -49,8 +48,6 @@ namespace battleship{
 			inline Type getType(){return type;}
 			inline vb01::Node* getHitbox(){return hitbox;}
 			inline bool isRemove(){return remove;}
-		private:
-			int sortCorners(std::vector<vb01::Vector2>&, bool, bool);
 		protected:
 			virtual void initProperties();
 			virtual void destroyModel();

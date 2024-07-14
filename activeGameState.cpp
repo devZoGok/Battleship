@@ -4,6 +4,7 @@
 #include <material.h>
 #include <texture.h>
 #include <quad.h>
+#include <box.h>
 #include <text.h>
 #include <rayCaster.h>
 
@@ -147,18 +148,18 @@ namespace battleship{
 		if(!isSelectionBox && leftMouseClicked && getTime() - lastLeftMouseClicked > 10)
 			isSelectionBox = true;
 		else if (isSelectionBox)
-			updateSelectionBox();
+			updateDragBox();
 
 		dragboxNode->setVisible(isSelectionBox);
 
 		updateGameObjHoveredOn();
 
 		vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
+		GameObjectFrameController *fc = GameObjectFrameController::getSingleton();
 
 		if(!selectingDestOrient && leftMouseClicked && !selectedUnits.empty() && getTime() - lastLeftMouseClicked > 100){
 			selectingDestOrient = true;
 
-			GameObjectFrameController *fc = GameObjectFrameController::getSingleton();
 			fc->setPlacingFrames(true);
 			fc->setRotatingFrames(true);
 
@@ -168,15 +169,13 @@ namespace battleship{
 
         renderUnits();
 
+		if(fc->isPlacingFrames())
+			fc->update();
+
 		CameraController *camCtr = CameraController::getSingleton();
 
 		if(!camCtr->isLookingAround())
 			camCtr->updateCameraPosition();
-
-		GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
-
-		if(ufCtr->isPlacingFrames())
-			ufCtr->update();
     }
 
 	void ActiveGameState::updateGameObjHoveredOn(){
@@ -194,17 +193,11 @@ namespace battleship{
 				gameObjs.push_back((GameObject*)u);
 		}
 
-		Vector2 cursorPos = getCursorPos();
-
-		for(GameObject *gameObj : gameObjs){
-			Vector2 rectSize = gameObj->calculateSelectionRect();
-			Vector2 screenPos = gameObj->getScreenPos();
-
-			if(fabs(cursorPos.x - screenPos.x) < .5 * rectSize.x && fabs(cursorPos.y - screenPos.y) < .5 * rectSize.y){
+		for(GameObject *gameObj : gameObjs)
+			if(isGameObjSelectable(gameObj, false)){
 				gameObjHoveredOn = gameObj;
 				return;
 			}
-		}
 
 		gameObjHoveredOn = nullptr;
 	}
@@ -227,6 +220,74 @@ namespace battleship{
 				return true;
 
 		return false;
+	}
+
+	bool ActiveGameState::isGameObjSelectable(GameObject *obj, bool useDragBox){
+		Node *hitboxNode = obj->getHitbox();
+		Box *hitbox = (Box*)hitboxNode->getMesh(0);
+
+		Vector3 hitboxSize = hitbox->getSize();
+		float width = hitboxSize.x, height = hitboxSize.y, length = hitboxSize.z;
+
+		Vector3 corners[8]{
+			Vector3(-.5 * width, -.5 * height, -.5 * length),
+			Vector3(-.5 * width, -.5 * height, .5 * length),
+			Vector3(.5 * width, -.5 * height, .5 * length),
+			Vector3(.5 * width, -.5 * height, -.5 * length),
+			Vector3(-.5 * width, .5 * height, -.5 * length),
+			Vector3(-.5 * width, .5 * height, .5 * length),
+			Vector3(.5 * width, .5 * height, .5 * length),
+			Vector3(.5 * width, .5 * height, -.5 * length),
+		};
+
+		vector<Vector2> cornersOnScreen;
+		Vector3 hitboxOffset = hitboxNode->getPosition();
+
+		for(int i = 0; i < 8; i++){
+			Vector3 cornerInWorld = 
+				obj->getPos() + 
+				obj->getLeftVec() * (corners[i].x + hitboxOffset.x) +
+			   	obj->getUpVec() * (corners[i].y + hitboxOffset.y) + 
+				obj->getDirVec() * (corners[i].z + hitboxOffset.z);
+
+			cornersOnScreen.push_back(spaceToScreen(cornerInWorld));
+		}
+
+		vector<Vector2> selectionPoints;
+
+		if(useDragBox){
+			Vector3 dragboxOrigin = dragboxNode->getPosition(); 
+			Vector3 dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
+			selectionPoints = vector<Vector2>{
+				Vector2(dragboxOrigin.x, dragboxOrigin.y),
+				Vector2(dragboxOrigin.x + dragboxSize.x, dragboxOrigin.y),
+				Vector2(dragboxOrigin.x, dragboxOrigin.y + dragboxSize.y),
+				Vector2(dragboxOrigin.x + dragboxSize.x, dragboxOrigin.y + dragboxSize.y),
+			};
+		}
+		else
+			selectionPoints = vector<Vector2>{getCursorPos()};
+
+		int edges[12][2]{{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+		int numAboveEdges = 0, numBelowEdges = 0;
+
+		for(int i = 0; i < selectionPoints.size() && numAboveEdges == 0 && numBelowEdges == 0; i++){
+			for(int j = 0; j < 12; j++){
+				Vector2 vertA = cornersOnScreen[edges[j][0]], vertB = cornersOnScreen[edges[j][1]];
+				float edgeHorLen = fabs(vertA.x - vertB.x), edgeVertLen = fabs(vertA.y - vertB.y);
+
+				if(fabs(selectionPoints[i].x - vertA.x) < edgeHorLen && fabs(selectionPoints[i].x - vertB.x) < edgeHorLen){
+					if(vertA.x > selectionPoints[i].x) swap(vertA, vertB); 
+
+					float horOffset = (selectionPoints[i].x - vertA.x) / edgeHorLen;
+					float height = vertA.y + horOffset * edgeVertLen;
+
+					(selectionPoints[i].y > height ? numAboveEdges : numBelowEdges)++;
+				}
+			}
+		}
+
+		return (numAboveEdges > 0 && numBelowEdges > 0);
 	}
 
 	//TODO fix fog of war for hostile units
@@ -264,7 +325,7 @@ namespace battleship{
 					unitGuiScreen = guiScreen;
 				}
 
-                if(isSelectionBox && fabs(pos.x - dragboxOrigin.x) < .5 * dragboxSize.x && fabs(pos.y - dragboxOrigin.y) < .5 * dragboxSize.y){
+                if(isSelectionBox && isGameObjSelectable(u, true)){
 					vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
 
                     if(find(selectedUnits.begin(), selectedUnits.end(), u) == selectedUnits.end()){
@@ -302,31 +363,31 @@ namespace battleship{
         return inside;
     }
 
-    void ActiveGameState::updateSelectionBox() {
-        Vector2 mousePos = getCursorPos(), selectionBoxOrigin, selectionBoxEnd;
+    void ActiveGameState::updateDragBox() {
+        Vector2 mousePos = getCursorPos(), dragBoxOrigin, dragBoxEnd;
 
         if (mousePos.x >= clickPoint.x && mousePos.y >= clickPoint.y) {
-            selectionBoxOrigin = Vector2(clickPoint.x, clickPoint.y);
-            selectionBoxEnd = Vector2(mousePos.x, mousePos.y);
+            dragBoxOrigin = Vector2(clickPoint.x, clickPoint.y);
+            dragBoxEnd = Vector2(mousePos.x, mousePos.y);
         }
 		else if (mousePos.x < clickPoint.x && mousePos.y > clickPoint.y) {
-            selectionBoxOrigin = Vector2(mousePos.x, clickPoint.y);
-            selectionBoxEnd = Vector2(clickPoint.x, mousePos.y);
+            dragBoxOrigin = Vector2(mousePos.x, clickPoint.y);
+            dragBoxEnd = Vector2(clickPoint.x, mousePos.y);
         }
 		else if (mousePos.x >= clickPoint.x && mousePos.y < clickPoint.y) {
-            selectionBoxOrigin = Vector2(clickPoint.x, mousePos.y);
-            selectionBoxEnd = Vector2(mousePos.x, clickPoint.y);
+            dragBoxOrigin = Vector2(clickPoint.x, mousePos.y);
+            dragBoxEnd = Vector2(mousePos.x, clickPoint.y);
         }
 		else {
-            selectionBoxOrigin = Vector2(mousePos.x, mousePos.y);
-            selectionBoxEnd = Vector2(clickPoint.x, clickPoint.y);
+            dragBoxOrigin = Vector2(mousePos.x, mousePos.y);
+            dragBoxEnd = Vector2(clickPoint.x, clickPoint.y);
         }
 
-		Vector3 size = Vector3(selectionBoxEnd.x - selectionBoxOrigin.x, selectionBoxEnd.y - selectionBoxOrigin.y, 0);
+		Vector3 size = Vector3(dragBoxEnd.x - dragBoxOrigin.x, dragBoxEnd.y - dragBoxOrigin.y, 0);
 		Quad *dragbox = (Quad*)dragboxNode->getMesh(0);
 		dragbox->setSize(size);
 		dragbox->updateVerts(dragbox->getMeshBase());
-		dragboxNode->setPosition(Vector3(selectionBoxOrigin.x, selectionBoxOrigin.y, 0));
+		dragboxNode->setPosition(Vector3(dragBoxEnd.x, dragBoxOrigin.y, 0));
     }
 
 	//TODO fix ejectable unit selection with multiple transports selected

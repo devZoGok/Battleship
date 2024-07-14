@@ -167,50 +167,6 @@ namespace battleship{
 		}
 	}
 
-	int GameObject::sortCorners(vector<Vector2> &cornersOnScreen, bool vertical, bool max){
-		const int NUM_CORNERS = cornersOnScreen.size();
-		int ans = 0;
-
-		for(int i = 0; i < NUM_CORNERS; i++){
-			if(vertical && ((max && cornersOnScreen[ans].y < cornersOnScreen[i].y) || (!max && cornersOnScreen[ans].y > cornersOnScreen[i].y)))
-				ans = i;
-			else if(!vertical && ((max && cornersOnScreen[ans].x < cornersOnScreen[i].x) || (!max && cornersOnScreen[ans].x > cornersOnScreen[i].x)))
-				ans = i;
-		}
-
-		return ans;
-	}
-
-	Vector2 GameObject::calculateSelectionRect(){
-		const int NUM_CORNERS = 8;
-		Vector3 corners[NUM_CORNERS]{
-			Vector3(-.5 * width, -.5 * height, -.5 * length),
-			Vector3(-.5 * width, -.5 * height, .5 * length),
-			Vector3(.5 * width, -.5 * height, .5 * length),
-			Vector3(.5 * width, -.5 * height, -.5 * length),
-			Vector3(-.5 * width, .5 * height, -.5 * length),
-			Vector3(-.5 * width, .5 * height, .5 * length),
-			Vector3(.5 * width, .5 * height, .5 * length),
-			Vector3(.5 * width, .5 * height, -.5 * length)
-		};
-
-		vector<Vector2> cornersOnScreen;
-
-		for(int i = 0; i < NUM_CORNERS; i++){
-			Vector3 cornerInWorld = leftVec * corners[i].x + upVec * corners[i].y + dirVec * corners[i].z;
-			cornersOnScreen.push_back(spaceToScreen(cornerInWorld));
-		}
-
-		int leftMostPointId = sortCorners(cornersOnScreen, false, false);
-		int rightMostPointId = sortCorners(cornersOnScreen, false, true);
-		int topMostPointId = sortCorners(cornersOnScreen, true, false);
-		int bottomMostPointId = sortCorners(cornersOnScreen, true, true);
-
-		float sizeX = cornersOnScreen[rightMostPointId].x - cornersOnScreen[leftMostPointId].x;
-		float sizeY = cornersOnScreen[bottomMostPointId].y - cornersOnScreen[topMostPointId].y;
-		return Vector2(sizeX, sizeY);
-	}
-
 	void GameObject::updateGameStats(Unit *targetUnit){
 		if(targetUnit->getHealth() <= targetUnit->getDeathHp()){
 			Player *targUnitPlayer = targetUnit->getPlayer();
