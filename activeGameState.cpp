@@ -271,8 +271,8 @@ namespace battleship{
 		int edges[12][2]{{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
 		int numAboveEdges = 0, numBelowEdges = 0;
 
-		for(int i = 0; i < selectionPoints.size() && numAboveEdges == 0 && numBelowEdges == 0; i++){
-			for(int j = 0; j < 12; j++){
+		for(int i = 0; i < selectionPoints.size(); i++){
+			for(int j = 0; j < 12 && (numAboveEdges == 0 || numBelowEdges == 0); j++){
 				Vector2 vertA = cornersOnScreen[edges[j][0]], vertB = cornersOnScreen[edges[j][1]];
 				float edgeHorLen = fabs(vertA.x - vertB.x), edgeVertLen = fabs(vertA.y - vertB.y);
 
@@ -280,7 +280,7 @@ namespace battleship{
 					if(vertA.x > selectionPoints[i].x) swap(vertA, vertB); 
 
 					float horOffset = (selectionPoints[i].x - vertA.x) / edgeHorLen;
-					float height = vertA.y + horOffset * edgeVertLen;
+					float height = vertA.y + (vertA.y < vertB.y ? 1 : -1) * horOffset * edgeVertLen;
 
 					(selectionPoints[i].y > height ? numAboveEdges : numBelowEdges)++;
 				}
@@ -311,7 +311,6 @@ namespace battleship{
 			guiManager->getText("research")
 		};
 		vector<Unit*> selUnits = mainPlayer->getSelectedUnits();
-		
 
         for (Unit *u : units) {
             if (u->getPlayer() == mainPlayer){
@@ -326,12 +325,11 @@ namespace battleship{
 				}
 
                 if(isSelectionBox && isGameObjSelectable(u, true)){
+                    if(!shiftPressed) deselectUnits();
+
 					vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
 
                     if(find(selectedUnits.begin(), selectedUnits.end(), u) == selectedUnits.end()){
-                        if(!shiftPressed)
-							deselectUnits();
-
                         mainPlayer->selectUnit(u);
                 		u->select();
                     }
