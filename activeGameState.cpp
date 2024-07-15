@@ -228,8 +228,9 @@ namespace battleship{
 
 		Vector3 hitboxSize = hitbox->getSize();
 		float width = hitboxSize.x, height = hitboxSize.y, length = hitboxSize.z;
+		const int NUM_CORNERS = 8;
 
-		Vector3 corners[8]{
+		Vector3 corners[NUM_CORNERS]{
 			Vector3(-.5 * width, -.5 * height, -.5 * length),
 			Vector3(-.5 * width, -.5 * height, .5 * length),
 			Vector3(.5 * width, -.5 * height, .5 * length),
@@ -240,39 +241,50 @@ namespace battleship{
 			Vector3(.5 * width, .5 * height, -.5 * length),
 		};
 
-		vector<Vector2> cornersOnScreen;
+		Vector2 cornersOnScreen[NUM_CORNERS];
 		Vector3 hitboxOffset = hitboxNode->getPosition();
 
-		for(int i = 0; i < 8; i++){
+		for(int i = 0; i < NUM_CORNERS; i++){
 			Vector3 cornerInWorld = 
 				obj->getPos() + 
 				obj->getLeftVec() * (corners[i].x + hitboxOffset.x) +
 			   	obj->getUpVec() * (corners[i].y + hitboxOffset.y) + 
 				obj->getDirVec() * (corners[i].z + hitboxOffset.z);
 
-			cornersOnScreen.push_back(spaceToScreen(cornerInWorld));
+			cornersOnScreen[i] = spaceToScreen(cornerInWorld);
 		}
 
 		vector<Vector2> selectionPoints;
+		Vector3 dragboxOrigin = Vector3::VEC_ZERO, dragboxSize = Vector3::VEC_ZERO;
 
 		if(useDragBox){
-			Vector3 dragboxOrigin = dragboxNode->getPosition(); 
-			Vector3 dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
+			dragboxOrigin = dragboxNode->getPosition(); 
+			dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
+			Vector2 objScreenPos = spaceToScreen(obj->getPos()); 
+
+			if(
+					(dragboxOrigin.x < objScreenPos.x && objScreenPos.x < dragboxOrigin.x + dragboxSize.x) &&
+					(dragboxOrigin.y < objScreenPos.y && objScreenPos.y < dragboxOrigin.y + dragboxSize.y)
+			)
+				return true;
+
 			selectionPoints = vector<Vector2>{
 				Vector2(dragboxOrigin.x, dragboxOrigin.y),
 				Vector2(dragboxOrigin.x + dragboxSize.x, dragboxOrigin.y),
-				Vector2(dragboxOrigin.x, dragboxOrigin.y + dragboxSize.y),
 				Vector2(dragboxOrigin.x + dragboxSize.x, dragboxOrigin.y + dragboxSize.y),
+				Vector2(dragboxOrigin.x, dragboxOrigin.y + dragboxSize.y)
 			};
 		}
 		else
 			selectionPoints = vector<Vector2>{getCursorPos()};
 
-		int edges[12][2]{{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
 		int numAboveEdges = 0, numBelowEdges = 0;
 
 		for(int i = 0; i < selectionPoints.size(); i++){
-			for(int j = 0; j < 12 && (numAboveEdges == 0 || numBelowEdges == 0); j++){
+			const int NUM_EDGES = 12;
+			int edges[NUM_EDGES][2]{{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+
+			for(int j = 0; j < NUM_EDGES && (numAboveEdges == 0 || numBelowEdges == 0); j++){
 				Vector2 vertA = cornersOnScreen[edges[j][0]], vertB = cornersOnScreen[edges[j][1]];
 				float edgeHorLen = fabs(vertA.x - vertB.x), edgeVertLen = fabs(vertA.y - vertB.y);
 
@@ -314,8 +326,6 @@ namespace battleship{
 
         for (Unit *u : units) {
             if (u->getPlayer() == mainPlayer){
-			   	Vector3 dragboxSize = ((Quad*)dragboxNode->getMesh(0))->getSize();
-				Vector3 dragboxOrigin = dragboxNode->getPosition(), dragboxEnd = dragboxOrigin + dragboxSize;
             	Vector2 pos = u->getScreenPos();
 				string guiScreen = u->getGuiScreen();
 
@@ -385,7 +395,7 @@ namespace battleship{
 		Quad *dragbox = (Quad*)dragboxNode->getMesh(0);
 		dragbox->setSize(size);
 		dragbox->updateVerts(dragbox->getMeshBase());
-		dragboxNode->setPosition(Vector3(dragBoxEnd.x, dragBoxOrigin.y, 0));
+		dragboxNode->setPosition(Vector3(dragBoxOrigin.x, dragBoxOrigin.y, 0));
     }
 
 	//TODO fix ejectable unit selection with multiple transports selected
@@ -532,7 +542,11 @@ namespace battleship{
 					}
 
 					selectingDestOrient = false;
+
 					isSelectionBox = false;
+					Quad *quad = (Quad*)dragboxNode->getMesh(0);
+					quad->setSize(Vector3::VEC_ZERO);
+					quad->updateVerts(quad->getMeshBase());
 
 					ufCtr->setPlacingFrames(false);
 					ufCtr->setRotatingFrames(false);
