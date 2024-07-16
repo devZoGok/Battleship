@@ -144,8 +144,11 @@ namespace battleship{
 		guiManager->getText("research")->setText(to_wstring(mainPlayer->getResource(ResourceType::RESEARCH)));
 
 		updateCursor();
+		Vector2 cursorPos = getCursorPos();
 
-		if(!isSelectionBox && leftMouseClicked && getTime() - lastLeftMouseClicked > 10)
+		float eps = .01;
+
+		if(!isSelectionBox && leftMouseClicked && (fabs(clickPoint.x - cursorPos.x) > eps || fabs(clickPoint.y - cursorPos.y) > eps) && getTime() - lastLeftMouseClicked > 10)
 			isSelectionBox = true;
 		else if (isSelectionBox)
 			updateDragBox();
@@ -333,17 +336,6 @@ namespace battleship{
 					guiManager->readLuaScreenScript(u->getGuiScreen(), buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					unitGuiScreen = guiScreen;
 				}
-
-                if(isSelectionBox && isGameObjSelectable(u, true)){
-                    if(!shiftPressed) deselectUnits();
-
-					vector<Unit*> selectedUnits = mainPlayer->getSelectedUnits();
-
-                    if(find(selectedUnits.begin(), selectedUnits.end(), u) == selectedUnits.end()){
-                        mainPlayer->selectUnit(u);
-                		u->select();
-                    }
-                }
             }
 			else{
             	Vector3 rendUnPos = u->getPos();
@@ -467,7 +459,9 @@ namespace battleship{
 					lastLeftMouseClicked = getTime();
 				}
 				else{
-                    if (mainPlayer->getNumSelectedUnits() > 0){
+					int numSelectedUnits = mainPlayer->getNumSelectedUnits();
+
+                    if(numSelectedUnits > 0){
 						if(selectingPatrolPoints){
                     		castRayToTerrain();
 
@@ -482,7 +476,7 @@ namespace battleship{
 								issueOrder(type, targets, shiftPressed);
 							}
 						}
-						else{
+						else if(!(selectingDestOrient || isSelectionBox)){
 							bool canSelect = canSelectHoveredOnGameObj();
 							bool ownGameObj = (gameObjHoveredOn && gameObjHoveredOn->getPlayer()->getTeam() == mainPlayer->getTeam());
 
@@ -532,16 +526,23 @@ namespace battleship{
 							}
 						}
 					}
-					else{
-						if(canSelectHoveredOnGameObj()){
-							if(!shiftPressed)
-								deselectUnits();
+					else if(numSelectedUnits == 0 && canSelectHoveredOnGameObj()){
+						if(!shiftPressed) deselectUnits();
 
-							mainPlayer->selectUnit((Unit*)gameObjHoveredOn);
-						}
+						mainPlayer->selectUnit((Unit*)gameObjHoveredOn);
 					}
 
 					selectingDestOrient = false;
+
+					if(isSelectionBox){
+						if(!shiftPressed) deselectUnits();
+
+						vector<Unit*> units = mainPlayer->getUnits();
+
+						for(Unit *un : units)
+							if(isGameObjSelectable(un, true))
+								mainPlayer->selectUnit(un);
+					}
 
 					isSelectionBox = false;
 					Quad *quad = (Quad*)dragboxNode->getMesh(0);
