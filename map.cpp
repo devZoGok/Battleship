@@ -225,7 +225,8 @@ namespace battleship{
 		waterCellMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 1));
 
 		Camera *cam = root->getCamera();
-		cam->setPosition(Vector3(1, 1, 1) * 40);
+		cam->setFarPlane(300);
+		cam->setPosition(Vector3(1, 1, 1) * configData::CAMERA_DISTANCE);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
 	}
 

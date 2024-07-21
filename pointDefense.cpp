@@ -1,7 +1,11 @@
 #include "pointDefense.h"
 
+#include <string>
+
 namespace battleship{
 	using namespace vb01;
+	using namespace std;
+	using namespace gameBase;
 
 	PointDefense::PointDefense(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, Unit::State state) : Structure(player, id, pos, rot, buildStatus, state){
 		turretDir = dirVec;
@@ -29,7 +33,8 @@ namespace battleship{
 	}
 
 	void PointDefense::rotateTurret(float angle){
-		Node *turretNode = model->getChild(0)->getChild(0);
+		string nodeName = generateView()[GameObject::getGameObjTableName()][id + 1]["turretNode"];
+		Node *turretNode = model->findDescendant(nodeName, true);
 		Quaternion rotQuat = Quaternion(angle, Vector3::VEC_J);
 		turretNode->setOrientation(rotQuat * turretNode->getOrientation());
 		turretDir = rotQuat * turretDir;

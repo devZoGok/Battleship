@@ -107,4 +107,13 @@ namespace battleship{
     }
 
     void GuiAppState::onAnalog(int bind, float strength) {}
+
+	void GuiAppState::onRawMouseWheelScroll(bool up){
+		Listbox *openListbox = getOpenListbox();
+
+		if(!openListbox) return;
+
+		if(up) openListbox->scrollUp();
+		else openListbox->scrollDown();
+	}
 }

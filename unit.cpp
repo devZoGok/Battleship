@@ -221,6 +221,8 @@ namespace battleship{
 
 		fx->toggleComponents(true);
 
+		Vector3 plCol = unit->getPlayer()->getColor();
+
 		for(int i = 0; i < fx->components.size(); i++){
 			FxManager::Fx::Component &comp = fx->components[i];
 
@@ -238,6 +240,7 @@ namespace battleship{
 					Vector3 size = box->getSize();
 					box->setSize(Vector3(size.x, size.y, targDist));
 					box->updateVerts(box->getMeshBase());
+					box->getMaterial()->setVec4Uniform("diffuseColor", Vector4(plCol.x, plCol.y, plCol.z, 1));
 
 					compNode->setPosition(comp.pos + .5 * targDist * Vector3::VEC_K);
 				}

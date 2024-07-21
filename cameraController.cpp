@@ -51,4 +51,23 @@ namespace battleship{
 		Vector3 dir = rotQuat * cam->getDirection(), up = rotQuat * cam->getUp();
 		cam->lookAt(dir, up);
 	}
+
+	void CameraController::zoomCamera(bool zoomIn){
+		if((zoomIn && numZooms > configData::NUM_MAX_ZOOMS) || (!zoomIn && numZooms < -configData::NUM_MAX_ZOOMS)) return;
+
+		Vector3 newPos;
+		float offset;
+
+		if(zoomIn){
+			numZooms++;
+			offset = configData::CAMERA_ZOOM_INCREMENT;
+		}
+		else{
+			numZooms--;
+			offset = -configData::CAMERA_ZOOM_INCREMENT;
+		}
+
+		Camera *cam = Root::getSingleton()->getCamera();
+		cam->setPosition(cam->getPosition() + cam->getDirection() * offset);
+	}
 }

@@ -42,7 +42,7 @@ namespace battleship{
 			for(int i = 0; i < numPlayers; i++){
 				bool cpuPlayer = (i < numPlayers - 1);
 				string name = (cpuPlayer ? "CPU player #" + to_string(i) : "Player");
-				game->addPlayer(new Player(0, 0, i, Vector3(1, 1, 1), cpuPlayer, map->getSpawnPoint(i), name));
+				game->addPlayer(new Player(0, 0, i, Vector3(i, i, i), cpuPlayer, map->getSpawnPoint(i), name));
 			}
 
 			map->loadPlayerGameObjects();

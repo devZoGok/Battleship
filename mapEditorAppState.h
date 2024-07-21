@@ -86,6 +86,7 @@ namespace battleship{
 			void onDettached();
 			void onAction(int, bool);
 			void onAnalog(int, float);
+			void onRawMouseWheelScroll(bool);
 			inline MapEditor* getMapEditor(){return mapEditor;}
 		private:
 			MapEditor *mapEditor = nullptr;

@@ -622,4 +622,8 @@ namespace battleship{
 				break;
 		}
 	}
+
+	void ActiveGameState::onRawMouseWheelScroll(bool up){
+		CameraController::getSingleton()->zoomCamera(up);
+	}
 }

@@ -27,6 +27,7 @@ namespace battleship{
         void update();
         void onAction(int, bool);
         void onAnalog(int, float);
+		void onRawMouseWheelScroll(bool);
 		inline void addButton(vb01Gui::Button *b){buttons.push_back(b);}
 		inline std::vector<vb01Gui::Button*> getButtons(){return buttons;}
         inline Player* getPlayer(){return mainPlayer;}

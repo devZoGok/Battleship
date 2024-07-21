@@ -75,6 +75,7 @@ namespace battleship{
 		delete model;
 	}
 
+	//TODO improve DEFAULT_TEXTURE handling
 	void GameObject::initModel(bool textured){
 		sol::table gameObjTable = generateView()[GameObject::getGameObjTableName()][id + 1];
 		string basePath = gameObjTable["basePath"];
@@ -87,7 +88,8 @@ namespace battleship{
 		Material *mat = new Material(libPath + "texture");
 
 		if(textured){
-			string f[]{GameManager::getSingleton()->getPath() + configData::DEFAULT_TEXTURE};
+			string albedoPath = gameObjTable["albedoPath"].get_or(configData::DEFAULT_TEXTURE);
+			string f[]{albedoPath == configData::DEFAULT_TEXTURE ? GameManager::getSingleton()->getPath() + albedoPath : basePath + albedoPath};
     		Texture *diffuseTexture = new Texture(f, 1, false);
 			mat->addBoolUniform("texturingEnabled", true);
 			mat->addBoolUniform("lightingEnabled", false);
@@ -101,6 +103,25 @@ namespace battleship{
 		}
 
 		model->setMaterial(mat);
+		sol::optional<sol::table> colNodeOpt = gameObjTable["colorNodes"];
+
+		if(player && colNodeOpt != sol::nullopt){
+			sol::table colNodeTbl = gameObjTable["colorNodes"];
+			int numColorNodes = colNodeTbl.size();
+
+			for(int i = 0; i < numColorNodes; i++){
+				string name = colNodeTbl[i + 1];
+				Node *node = model->findDescendant(name, true);
+
+				if(!node) continue;
+
+				vector<Mesh*> meshes = node->getMeshes();
+
+				for(Mesh *mesh : meshes)
+					mesh->setMaterial(player->getColorMaterial());
+			}
+		}
+
 		root->getRootNode()->attachChild(model);
 	}
 
