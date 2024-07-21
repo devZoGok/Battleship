@@ -46,9 +46,10 @@ namespace battleship{
 		void updateCursor();
 		void initDragbox();
 		void removeDragbox();
+		bool isGameObjSelectable(GameObject*, bool);
 		void deselectUnits();
         void renderUnits();
-        void updateSelectionBox();
+        void updateDragBox();
 		void updateStructureFrames();
         void castRayToTerrain();
         void issueOrder(Order::TYPE, std::vector<Order::Target>, bool);
