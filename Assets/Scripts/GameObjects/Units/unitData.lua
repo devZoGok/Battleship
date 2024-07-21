@@ -845,7 +845,7 @@ units = {
 		buildTime = 1000,
 		cost = 500,
 		size = {x = 40, y = 26.2, z = 40},
-		hitboxOffset = {x = 0, y = 1.08, z = 0},
+		hitboxOffset = {x = 0, y = 14, z = 0},
 		lineOfSight = 5,
 		generationRate = 100,
 		generationSpeed = 10,
