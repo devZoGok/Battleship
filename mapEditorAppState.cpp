@@ -317,7 +317,7 @@ namespace battleship{
 		for(int i = 0; i < numVertCells; i++)
 			for(int j = 0; j < numHorCells; j++){
 				Vector3 rayPos = startPos + Vector3(cellSize.x * j, 100, cellSize.z * i);
-				vector<RayCaster::CollisionResult> res = RayCaster::cast(rayPos, -Vector3::VEC_J, terrainNode->getChild(0), 0, 4);
+				vector<RayCaster::CollisionResult> res = RayCaster::cast(rayPos, -Vector3::VEC_J, terrainNode->getChild(0), 0, configData::DIST_FROM_RAY);
 
 				if(res.empty()){
 					RayCaster::CollisionResult r;
@@ -627,7 +627,13 @@ namespace battleship{
 					Vector2 cursorPos = getCursorPos();
 					Vector3 endPos = screenToSpace(cursorPos);
 
-					vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (endPos - startPos).norm(), Root::getSingleton()->getRootNode());
+					vector<RayCaster::CollisionResult> results = RayCaster::cast(
+							startPos, 
+							(endPos - startPos).norm(), 
+							Root::getSingleton()->getRootNode(),
+						   	0, 
+							configData::DIST_FROM_RAY
+					);
 
 					if(cursorPos.y < GameManager::getSingleton()->getHeight() - mapEditor->getGuiThreshold()){
 						bool push = !results.empty();

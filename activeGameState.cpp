@@ -403,7 +403,7 @@ namespace battleship{
 		Vector3 endPos = screenToSpace(getCursorPos());
 
 		Vector3 rayDir = (endPos - camPos).norm();
-		vector<RayCaster::CollisionResult> results = RayCaster::cast(camPos, rayDir, Map::getSingleton()->getNodeParent());
+		vector<RayCaster::CollisionResult> results = RayCaster::cast(camPos, rayDir, Map::getSingleton()->getNodeParent(), 0, configData::DIST_FROM_RAY);
 
 		if(!results.empty()){
 			GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
@@ -414,7 +414,7 @@ namespace battleship{
 				Node *nodeParent = map->getNodeParent();
 
 				if(u->getType() == UnitType::UNDERWATER && nodeParent->getNumChildren() > 0){
-					vector<RayCaster::CollisionResult> res = RayCaster::cast(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), nodeParent->getChild(0));
+					vector<RayCaster::CollisionResult> res = RayCaster::cast(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), nodeParent->getChild(0), 0, configData::DIST_FROM_RAY);
 
 					Vector3 waterBodyPos = Vector3::VEC_ZERO;
 					Vector3 cellSize = map->getCellSize();
@@ -626,7 +626,13 @@ namespace battleship{
 					depth += 0.05;
 
 					Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
-					vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0));
+					vector<RayCaster::CollisionResult> results = RayCaster::cast(
+							startPos, 
+							(screenToSpace(getCursorPos()) - startPos).norm(), 
+							Map::getSingleton()->getNodeParent()->getChild(0), 
+							0, 
+							configData::DIST_FROM_RAY
+					);
 
 					if(!results.empty())
 						ufCtr->setPaintSelectRowStart(results[0].pos);

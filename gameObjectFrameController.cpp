@@ -2,6 +2,7 @@
 
 #include "gameObjectFrameController.h"
 #include "resourceDeposit.h"
+#include "defConfigs.h"
 #include "player.h"
 #include "game.h"
 #include "unit.h"
@@ -118,7 +119,13 @@ namespace battleship{
 			frame.update();
 
 		Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
-		vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), Map::getSingleton()->getNodeParent()->getChild(0));
+		vector<RayCaster::CollisionResult> results = RayCaster::cast(
+				startPos, 
+				(screenToSpace(getCursorPos()) - startPos).norm(), 
+				Map::getSingleton()->getNodeParent()->getChild(0), 
+				0, 
+				configData::DIST_FROM_RAY
+		);
 
 		if(results.empty()) return;
 
