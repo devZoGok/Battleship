@@ -340,13 +340,13 @@ namespace battleship{
 					}
 				}
 
-				vector<Map::Edge> edges = Map::generateAdjacentNodeEdges(numVertCells, i, numHorCells, j, 1);
+				vector<Map::Edge> edges = Map::generateAdjacentNodeEdges(numVertCells, i, numHorCells, j, 10);
 				cells.push_back(Map::Cell(pos, type, edges));
 			}
 
 		vector<Map::Cell> waterCells;
 		int currUnderWaterCellId = cells.size();
-		int weight = 2;
+		int weight = 20;
 
 		for(pair<int, float> p : waterBodyBedPoints){
 			int numUnderWaterCells = (int)((cells[p.first].pos.y - p.second) / cellSize.y);
@@ -503,7 +503,7 @@ namespace battleship{
 			Vector3 size = ((Quad*)waterNode->getMesh(0))->getSize();
 			mapScript += 
 				"{pos = {x = " + to_string(pos.x) + ", y = " + to_string(pos.y) + ", z = " + to_string(pos.z) + "},\
-				size = {x = " + to_string(size.x) + ", y = " + to_string(size.y) + "}, albedo = \"water.jpg\"},";
+				size = {x = " + to_string(size.x) + ", y = " + to_string(size.y) + "}, albedo = \"water.png\"},";
 		}
 
 		mapScript += "}\n}";
