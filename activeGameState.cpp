@@ -625,13 +625,7 @@ namespace battleship{
 					depth += 0.05;
 
 					Vector3 startPos = Root::getSingleton()->getCamera()->getPosition();
-					vector<RayCaster::CollisionResult> results = RayCaster::cast(
-							startPos, 
-							(screenToSpace(getCursorPos()) - startPos).norm(), 
-							Map::getSingleton()->getNodeParent()->getChild(0), 
-							0, 
-							configData::DIST_FROM_RAY
-					);
+					vector<RayCaster::CollisionResult> results = Map::getSingleton()->raycastTerrain(startPos, (screenToSpace(getCursorPos()) - startPos).norm(), true);
 
 					if(!results.empty())
 						ufCtr->setPaintSelectRowStart(results[0].pos);
