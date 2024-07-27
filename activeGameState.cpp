@@ -6,7 +6,6 @@
 #include <quad.h>
 #include <box.h>
 #include <text.h>
-#include <rayCaster.h>
 
 #include <stateManager.h>
 #include <solUtil.h>
@@ -403,18 +402,18 @@ namespace battleship{
 		Vector3 endPos = screenToSpace(getCursorPos());
 
 		Vector3 rayDir = (endPos - camPos).norm();
-		vector<RayCaster::CollisionResult> results = RayCaster::cast(camPos, rayDir, Map::getSingleton()->getNodeParent(), 0, configData::DIST_FROM_RAY);
+		Map *map = Map::getSingleton();
+		vector<RayCaster::CollisionResult> results = map->raycastTerrain(camPos, rayDir, true);
 
 		if(!results.empty()){
 			GameObjectFrameController *ufCtr = GameObjectFrameController::getSingleton();
-			Map *map = Map::getSingleton();
 
 			for(Unit *u : mainPlayer->getSelectedUnits()){
 				Vector3 pos = u->getPos();
 				Node *nodeParent = map->getNodeParent();
 
 				if(u->getType() == UnitType::UNDERWATER && nodeParent->getNumChildren() > 0){
-					vector<RayCaster::CollisionResult> res = RayCaster::cast(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), nodeParent->getChild(0), 0, configData::DIST_FROM_RAY);
+					vector<RayCaster::CollisionResult> res = map->raycastTerrain(Vector3(pos.x, 100, pos.z), Vector3(0, -1, 0), false);
 
 					Vector3 waterBodyPos = Vector3::VEC_ZERO;
 					Vector3 cellSize = map->getCellSize();

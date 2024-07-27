@@ -3,7 +3,6 @@
 #include <solUtil.h>
 
 #include <util.h>
-#include <rayCaster.h>
 #include <box.h>
 #include <model.h>
 #include <quaternion.h>

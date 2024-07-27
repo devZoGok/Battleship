@@ -352,6 +352,22 @@ namespace battleship{
 		destroyScene();
 	}
 
+	vector<RayCaster::CollisionResult> Map::raycastTerrain(Vector3 rayPos, Vector3 rayDir, bool bothTerrTypes){
+		vector<RayCaster::CollisionResult> allResults = RayCaster::cast(rayPos, rayDir, terrainNode->getChild(0), 0, configData::DIST_FROM_RAY);
+
+		if(bothTerrTypes){
+			vector<Node*> waterNodes = terrainNode->getChildren();
+			waterNodes.erase(waterNodes.begin());
+
+			vector<RayCaster::CollisionResult> waterResults = RayCaster::cast(rayPos, rayDir, waterNodes);
+			allResults.insert(allResults.end(), waterResults.begin(), waterResults.end());
+
+			RayCaster::sortResults(allResults);
+		}
+
+		return allResults;
+	}
+
 	template<typename T> int Map::bsearch(vector<T> haystack, T needle, float eps){
 		T haystackMidVal;
 		bool sizeHaystackEven = (haystack.size() % 2 == 0);
