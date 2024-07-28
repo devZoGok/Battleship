@@ -253,7 +253,11 @@ namespace battleship{
 			   	obj->getUpVec() * (corners[i].y + hitboxOffset.y) + 
 				obj->getDirVec() * (corners[i].z + hitboxOffset.z);
 
-			cornersOnScreen[i] = spaceToScreen(cornerInWorld);
+			Vector3 screenSpace3d = spaceToScreen3d(cornerInWorld);
+
+			if(fabs(screenSpace3d.z) > 1) return false;
+
+			cornersOnScreen[i] = Vector2(screenSpace3d.x, screenSpace3d.y);
 		}
 
 		vector<Vector2> selectionPoints;
