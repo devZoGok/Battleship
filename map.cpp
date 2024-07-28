@@ -142,8 +142,7 @@ namespace battleship{
 	void Map::loadSpawnPoints(){
 		sol::state_view SOL_LUA_VIEW = generateView();
 		string spawnPointInd = "spawnPoints";
-		SOL_LUA_VIEW.script("numSpawnPoints = #" + mapTable + "." + spawnPointInd);
-		int numSpawnPoints = SOL_LUA_VIEW["numSpawnPoints"];
+		int numSpawnPoints = ((sol::table)SOL_LUA_VIEW[mapTable][spawnPointInd]).size();
 
 		for(int i = 0; i < numSpawnPoints; i++){
 			sol::table posTable = SOL_LUA_VIEW[mapTable][spawnPointInd][i + 1];
