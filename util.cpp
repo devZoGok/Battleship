@@ -288,10 +288,10 @@ namespace battleship{
 		}
 
 		Camera *cam = Root::getSingleton()->getCamera();
-		float near = cam->getNearPlane(); 
+		float camNorm = cam->getNearPlane(); 
 		float tg = tan(radians(cam->getFov()) / 2), ar = midWidth / midHeight;
-		float camHeight = near * tg, camWidth = camHeight * ar;
-		Vector3 posOffset = (cam->getLeft() * camWidth * horOffset + cam->getUp() * camHeight * vertOffset + cam->getDirection() * near);
+		float camHeight = camNorm * tg, camWidth = camHeight * ar;
+		Vector3 posOffset = (cam->getLeft() * camWidth * horOffset + cam->getUp() * camHeight * vertOffset + cam->getDirection() * camNorm);
 
 		return cam->getPosition() + posOffset;
 	}
