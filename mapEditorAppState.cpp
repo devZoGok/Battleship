@@ -6,8 +6,8 @@
 #include "gameObjectFactory.h"
 #include "gameObjectFrameController.h"
 #include "player.h"
+#include "game.h"
 #include "map.h"
-#include "mesh.h"
 #include "util.h"
 
 #include <box.h>
@@ -39,7 +39,6 @@ namespace battleship{
 
 	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size, bool newMap){
 		this->newMap = newMap;
-		this->mapSize = size;
 
 		string basePath = GameManager::getSingleton()->getPath();
 		prepareTextures(basePath + "Textures/Skyboxes/", true, skyTextures);
@@ -53,9 +52,10 @@ namespace battleship{
 
 		map = Map::getSingleton();
 		map->load(name, newMap);
+		Game *game = Game::getSingleton();
 
 		if(newMap){
-			addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
+			game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
 			map->addSpawnPoint(Vector3::VEC_ZERO);
 			generatePlane(size);
 		}
@@ -63,7 +63,7 @@ namespace battleship{
 			int numPlayers = map->getNumSpawnPoints();
 
 			for(int i = 0; i < numPlayers; i++)
-				addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
+				game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
 
 			map->loadPlayerGameObjects();
 		}
@@ -305,10 +305,12 @@ namespace battleship{
 		doc->SaveFile(name.c_str());
 	}
 
+	//TODO add diagnally adjacent edges to underwater cells 
 	vector<Map::Cell> MapEditorAppState::MapEditor::generateMapCells(){
-		Vector3 startPos = -.49 * Vector3(mapSize.x, 0, mapSize.y), cellSize = map->getCellSize();
+		Vector3 mapSize = map->getMapSize();
+		Vector3 startPos = -.49 * Vector3(mapSize.x, 0, mapSize.z), cellSize = map->getCellSize();
 		int numHorCells = int(mapSize.x / cellSize.x);
-		int numVertCells = int(mapSize.y / cellSize.z);
+		int numVertCells = int(mapSize.z / cellSize.z);
 		vector<Map::Cell> cells;
 		vector<pair<int, float>> waterBodyBedPoints;
 		Node *terrainNode = map->getNodeParent();
@@ -343,7 +345,7 @@ namespace battleship{
 				cells.push_back(Map::Cell(pos, type, edges));
 			}
 
-		vector<Map::Cell> waterCells;
+		vector<Map::Cell> surfaceWaterCells;
 		int currUnderWaterCellId = cells.size();
 		int weight = 20;
 
@@ -356,27 +358,27 @@ namespace battleship{
 				for(int i = 0; i < numUnderWaterCells; i++, currUnderWaterCellId++)
 					cells[p.first].underWaterCellIds.push_back(currUnderWaterCellId);
 
-				waterCells.push_back(cells[p.first]);
+				surfaceWaterCells.push_back(cells[p.first]);
 			}
 		}
 
-		for(int i = 0; i < waterCells.size(); i++){
-			for(int j = 0; j < waterCells[i].underWaterCellIds.size(); j++){
-				int aboveCellId = (j == 0 ? waterCells[i].edges[0].srcCellId : j - 1);
-				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCells[i].underWaterCellIds[j], aboveCellId)};
+		for(int i = 0; i < surfaceWaterCells.size(); i++){
+			for(int j = 0; j < surfaceWaterCells[i].underWaterCellIds.size(); j++){
+				int aboveCellId = (j == 0 ? surfaceWaterCells[i].edges[0].srcCellId : j - 1);
+				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, surfaceWaterCells[i].underWaterCellIds[j], aboveCellId)};
 
-				if(waterCells[i].underWaterCellIds.size() > j + 1)
-					edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], waterCells[i].underWaterCellIds[j + 1]));
+				if(surfaceWaterCells[i].underWaterCellIds.size() > j + 1)
+					edges.push_back(Map::Edge(weight, surfaceWaterCells[i].underWaterCellIds[j], surfaceWaterCells[i].underWaterCellIds[j + 1]));
 
-				for(int k = 0; k < waterCells[i].edges.size(); k++){
-					Map::Cell adjacentUnderwaterCell = cells[waterCells[i].edges[k].destCellId]; 
+				for(int k = 0; k < surfaceWaterCells[i].edges.size() - 1; k++){
+					Map::Cell adjacentUnderwaterCell = cells[surfaceWaterCells[i].edges[k].destCellId]; 
 
 					if(adjacentUnderwaterCell.underWaterCellIds.size() >= j + 1){
-						edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], adjacentUnderwaterCell.underWaterCellIds[j]));
+						edges.push_back(Map::Edge(weight, surfaceWaterCells[i].underWaterCellIds[j], adjacentUnderwaterCell.underWaterCellIds[j]));
 					}
 				}
 
-				Vector3 cellPos = waterCells[i].pos - Vector3::VEC_J * cellSize.y * (j + 1);
+				Vector3 cellPos = surfaceWaterCells[i].pos - Vector3::VEC_J * cellSize.y * (j + 1);
 				cells.push_back(Map::Cell(cellPos, Map::Cell::Type::WATER, edges));
 			}
 		}
@@ -386,8 +388,11 @@ namespace battleship{
 
 	void MapEditorAppState::MapEditor::generateMapScript(){
 		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
+		vector<Player*> players = Game::getSingleton()->getPlayers();
+
+		Vector3 mapSize = map->getMapSize();
 		string mapScript = "map = {\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
-		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.y) + "},\n";
+		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.z) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(players.size()) + ",\n";
 
@@ -432,7 +437,7 @@ namespace battleship{
 				mapScript += "units = {\n";
 
 				for(int j = 0; j < numUnits; j++){
-					Unit *unit = getPlayer(i)->getUnit(j);
+					Unit *unit = Game::getSingleton()->getPlayer(i)->getUnit(j);
 
 					string idStr = "id = " + to_string(unit->getId());
 
@@ -593,7 +598,7 @@ namespace battleship{
 		switch((Bind)bind){
 			case Bind::LOOK_AROUND:
 				if(ufCtr->isPlacingFrames()){
-					Player *player = mapEditor->getPlayer(0);
+					Player *player = Game::getSingleton()->getPlayer(0);
 					GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
 					Model *model = frame.getModel();
 					Vector3 pos = model->getPosition();

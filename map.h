@@ -56,6 +56,7 @@ namespace battleship{
 		inline vb01::Vector3 getCellSize(){return CELL_SIZE;}
 		inline int getNumSpawnPoints(){return spawnPoints.size();}
 		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
+		inline vb01::Vector3 getMapSize(){return mapSize;}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
 		inline std::vector<Map::Cell>& getCells(){return cells;}
     private:
