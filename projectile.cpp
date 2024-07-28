@@ -1,7 +1,6 @@
 #include <node.h>
 #include <model.h>
 #include <material.h>
-#include <rayCaster.h>
 #include <quaternion.h>
 #include <particleEmitter.h>
 

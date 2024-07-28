@@ -332,19 +332,19 @@ namespace battleship{
 			case RESOURCE_DEPOSITS:{
 				bool resources = (listboxType == RESOURCE_DEPOSITS);
 				sol::table gameObjTable = SOL_LUA_STATE[resources ? "resources" : "units"];
-				int numGameObjs = gameObjTable["num"];
+				int numGameObjs = gameObjTable.size();
 				
 				for(int i = 0; i < numGameObjs; i++){
 					bool canAdd = true;
 
 					if(!resources){
 						bool vehicles = (listboxType == VEHICLES);
-						bool v = gameObjTable["isVehicle"][i + 1];
+						bool v = gameObjTable[i + 1]["isVehicle"];
 						canAdd = (v == vehicles);
 					}
 
 					if(canAdd)
-						lines.push_back(gameObjTable["name"][i + 1]);
+						lines.push_back(gameObjTable[i + 1]["name"]);
 				}
 				
 				numLines = lines.size();

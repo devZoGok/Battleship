@@ -48,16 +48,16 @@ namespace battleship{
 			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
 
 		if(up && left)
-			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j - 1));
+			edges.push_back(Map::Edge(int(sqrt(2 * weight * weight)), numVertCells * i + j, numVertCells * (i - 1) + j - 1));
 
 		if(up && right)
-			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j + 1));
+			edges.push_back(Map::Edge((sqrt(2 * weight * weight)), numVertCells * i + j, numVertCells * (i - 1) + j + 1));
 
 		if(down && left)
-			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j - 1));
+			edges.push_back(Map::Edge((sqrt(2 * weight * weight)), numVertCells * i + j, numVertCells * (i + 1) + j - 1));
 
 		if(down && right)
-			edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j + 1));
+			edges.push_back(Map::Edge((sqrt(2 * weight * weight)), numVertCells * i + j, numVertCells * (i + 1) + j + 1));
 
 		return edges;
 	}
@@ -133,8 +133,10 @@ namespace battleship{
 
 		if(id == -1)
 			((Model*)node)->setMaterial(mat);
-		else
+		else{
+			mat->setTransparent(true);
 			quad->setMaterial(mat);
+		}
 	}
 
 	void Map::loadSpawnPoints(){
@@ -225,7 +227,7 @@ namespace battleship{
 		waterCellMat->addVec4Uniform("diffuseColor", Vector4(0, 0, 1, 1));
 
 		Camera *cam = root->getCamera();
-		cam->setFarPlane(300);
+		cam->setFarPlane(600);
 		cam->setPosition(Vector3(1, 1, 1) * configData::CAMERA_DISTANCE);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
 	}
@@ -348,6 +350,22 @@ namespace battleship{
 		unloadPlayerObjects();
 		spawnPoints.clear();
 		destroyScene();
+	}
+
+	vector<RayCaster::CollisionResult> Map::raycastTerrain(Vector3 rayPos, Vector3 rayDir, bool bothTerrTypes){
+		vector<RayCaster::CollisionResult> allResults = RayCaster::cast(rayPos, rayDir, terrainNode->getChild(0), 0, configData::DIST_FROM_RAY);
+
+		if(bothTerrTypes){
+			vector<Node*> waterNodes = terrainNode->getChildren();
+			waterNodes.erase(waterNodes.begin());
+
+			vector<RayCaster::CollisionResult> waterResults = RayCaster::cast(rayPos, rayDir, waterNodes);
+			allResults.insert(allResults.end(), waterResults.begin(), waterResults.end());
+
+			RayCaster::sortResults(allResults);
+		}
+
+		return allResults;
 	}
 
 	template<typename T> int Map::bsearch(vector<T> haystack, T needle, float eps){
