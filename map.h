@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include <rayCaster.h>
 #include <vector.h>
 #include <util.h>
 
@@ -46,6 +47,7 @@ namespace battleship{
         void update();
         void load(std::string, bool = false);
         void unload();
+		std::vector<vb01::RayCaster::CollisionResult> raycastTerrain(vb01::Vector3, vb01::Vector3, bool);
 		int getCellId(vb01::Vector3, bool = true);
 		bool isPointWithinTerrainObject(vb01::Vector3, int);
 		void loadPlayerGameObjects();
