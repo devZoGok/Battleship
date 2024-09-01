@@ -1,6 +1,6 @@
 <model>
   <node name="guidedMissile" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="guidedMissileCylinder" num_faces="2860" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="guidedMissileCylinder" num_vertex_pos="1432" num_faces="2860" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="0.2048451006412506" py="1.0316048860549927" pz="4.6296491622924805" nx="0.19505932927131653" ny="-0.9806343913078308" nz="-0.01755058392882347" />
       <vertdata px="0.02264977991580963" py="0.11564679443836212" pz="6.479883193969727" nx="0.0893203541636467" ny="-0.4491933286190033" nz="-0.8889585137367249" />
       <vertdata px="0.4018179774284363" py="0.9718542098999023" pz="4.6296491622924805" nx="0.382623553276062" ny="-0.923737645149231" nz="-0.01754959300160408" />

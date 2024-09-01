@@ -1,6 +1,6 @@
 <model>
   <node name="Cube" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="CubeCube" num_faces="160" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="CubeCube" num_faces="160" num_vertex_pos="106" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="0.5" py="0.5443006753921509" pz="-0.5" nx="0.301501989364624" ny="0.9045403003692627" nz="0.301501989364624" />
       <vertdata px="0.5" py="0.5443006753921509" pz="0.5" nx="0.3015066683292389" ny="0.9045371413230896" nz="-0.3015066683292389" />
       <vertdata px="0.0" py="0.5443006753921509" pz="-0.0" nx="0.0" ny="1.0" nz="0.0" />
@@ -590,7 +590,7 @@
     </mesh>
   </node>
   <node name="Cube.001" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="Cube.001Cube.001" num_faces="48" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="Cube.001Cube.001" num_vertex_pos="48" num_faces="48" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="1.600000023841858" py="0.3767241835594177" pz="-0.5" nx="0.5643031001091003" ny="-0.5264981985092163" nz="0.6358943581581116" />
       <vertdata px="1.2999999523162842" py="0.22275936603546143" pz="-0.5" nx="-0.4736305773258209" ny="0.4419001638889313" nz="0.7618387341499329" />
       <vertdata px="1.600000023841858" py="0.3767241835594177" pz="0.5" nx="0.5642990469932556" ny="-0.5264945030212402" nz="-0.6359009742736816" />

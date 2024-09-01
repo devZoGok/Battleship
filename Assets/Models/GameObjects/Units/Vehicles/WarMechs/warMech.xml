@@ -1,6 +1,6 @@
 <model>
   <node name="WarRobotTemplate" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="WarRobotTemplateWarRobotTemplate" num_faces="446" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="WarRobotTemplateWarRobotTemplate" num_vertex_pos="248" num_faces="446" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="0.7378405928611755" py="5.257974624633789" pz="-1.1475341320037842" nx="0.9317941665649414" ny="-0.11999237537384033" nz="0.34258049726486206" />
       <vertdata px="0.7375646233558655" py="5.260922908782959" pz="-0.7963569760322571" nx="0.1795152723789215" ny="-0.8529414534568787" nz="0.4901684820652008" />
       <vertdata px="0.74919593334198" py="5.137388229370117" pz="-1.0070692300796509" nx="0.8084868788719177" ny="-0.37506526708602905" nz="0.4535141587257385" />
@@ -1590,7 +1590,7 @@
     </mesh>
   </node>
   <node name="WarRobotTemplate.001" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="WarRobotTemplate.001WarRobotTemplate.001" num_faces="156" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="WarRobotTemplate.001WarRobotTemplate.001" num_vertex_pos="109" num_faces="156" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="0.7378405928611755" py="5.257974624633789" pz="-1.1475341320037842" nx="0.8659783005714417" ny="0.5000578761100769" nz="-0.004873123485594988" />
       <vertdata px="0.7375646233558655" py="5.260922908782959" pz="-0.7963569760322571" nx="0.8660220503807068" ny="0.49998199939727783" nz="-0.004888871684670448" />
       <vertdata px="0.6857677102088928" py="5.2089338302612305" pz="3.0655102729797363" nx="0.39274707436561584" ny="0.6862519979476929" nz="-0.6122155785560608" />

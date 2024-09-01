@@ -1,6 +1,6 @@
 <model>
   <node name="Cube" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="CubeCube" num_faces="512" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="CubeCube" num_vertex_pos="258" num_faces="512" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="0.0" py="0.19509032368659973" pz="-0.9807852506637573" nx="-2.0578174826368922e-06" ny="-0.21357877552509308" nz="0.976925790309906" />
       <vertdata px="0.0" py="0.5056928992271423" pz="-0.7071067690849304" nx="3.26121551097458e-07" ny="-0.9729316234588623" nz="0.23109298944473267" />
       <vertdata px="0.0" py="0.5186859369277954" pz="-0.5555702447891235" nx="-1.2896222187919193e-06" ny="-0.9986141324043274" nz="0.05262790247797966" />
