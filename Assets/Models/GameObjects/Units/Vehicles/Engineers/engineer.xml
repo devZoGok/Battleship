@@ -1,6 +1,6 @@
 <model>
   <node name="BuilderTemplateOBJ_Colored" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="BuilderTemplateOBJ_ColoredBuilderTemplateOBJ_Colored" num_faces="224" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="BuilderTemplateOBJ_ColoredBuilderTemplateOBJ_Colored" num_vertex_pos="112" num_faces="224" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="0.00941833108663559" py="2.076976776123047" pz="1.0083370208740234" nx="0.2723134160041809" ny="-0.7907345294952393" nz="0.5482556223869324" />
       <vertdata px="-0.05247911810874939" py="2.076976776123047" pz="1.0083370208740234" nx="-0.2723124325275421" ny="-0.7907350659370422" nz="0.548255443572998" />
       <vertdata px="-0.05247911810874939" py="2.1386051177978516" pz="1.0025339126586914" nx="-0.3962014317512512" ny="-0.5429701805114746" nz="0.7404105067253113" />

@@ -88,9 +88,9 @@ namespace battleship{
 		float maxUnevenness = .5, unevenness = 0;
 
 		for(int i = 0; i < numVerts; i++){
-			float diffX = fabs(newPos.x - verts[i].pos.x);
-			float diffY = fabs(newPos.y - verts[i].pos.y);
-			float diffZ = fabs(newPos.z - verts[i].pos.z);
+			float diffX = fabs(newPos.x - verts[i].pos->x);
+			float diffY = fabs(newPos.y - verts[i].pos->y);
+			float diffZ = fabs(newPos.z - verts[i].pos->z);
 
 			if(diffX < 0.5 * width && diffZ < 0.5 * length && diffY > unevenness){
 				unevenness = diffY;

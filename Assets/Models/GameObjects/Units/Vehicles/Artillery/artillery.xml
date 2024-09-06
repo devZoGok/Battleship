@@ -1,6 +1,6 @@
 <model>
   <node name="chassis" px="0.0" py="0.0" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <mesh name="chassisCube" num_faces="296" num_vertex_groups="0" num_shape_keys="0">
+    <mesh name="chassisCube" num_vertex_pos="150" num_faces="296" num_vertex_groups="0" num_shape_keys="0">
       <vertdata px="3.427332878112793" py="3.2231991291046143" pz="-7.181060314178467" nx="0.9045358300209045" ny="0.30151671171188354" nz="-0.30150046944618225" />
       <vertdata px="3.427332878112793" py="1.643891453742981" pz="-7.181060314178467" nx="0.8069260120391846" ny="-0.23169627785682678" nz="-0.5433112978935242" />
       <vertdata px="3.427332878112793" py="3.2231991291046143" pz="7.159409999847412" nx="0.9045343399047852" ny="0.301506370306015" nz="0.3015153110027313" />
@@ -1041,7 +1041,7 @@
       <vert id="21" uvx="0.07778925448656082" uvy="0.6042953729629517" tx="-6.098598532844335e-07" ty="-1.0" tz="-0.0" bx="-1.0" by="6.098598532844335e-07" bz="-0.0" />
     </mesh>
     <node name="turret" px="0.0" py="3.5500924587249756" pz="-0.0" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-      <mesh name="turretCube.001" num_faces="312" num_vertex_groups="0" num_shape_keys="0">
+      <mesh name="turretCube.001" num_vertex_pos="158" num_faces="312" num_vertex_groups="0" num_shape_keys="0">
         <vertdata px="0.6337335705757141" py="-2.2446474758908153e-06" pz="-1.3373264074325562" nx="0.0" ny="1.0" nz="0.0" />
         <vertdata px="0.6337335705757141" py="-2.2446474758908153e-06" pz="2.813472270965576" nx="0.0" ny="1.0" nz="0.0" />
         <vertdata px="0.0" py="-2.2446474758908153e-06" pz="2.813472270965576" nx="0.0" ny="1.0" nz="0.0" />
@@ -2139,8 +2139,4 @@
       </mesh>
     </node>
   </node>
-  <node name="Light" px="4.076245307922363" py="5.903861999511719" pz="-1.0054539442062378" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0">
-    <light cr="1.0" cg="1.0" cb="1.0" type="POINT" innerangle="0" outerangle="0" />
-  </node>
-  <node name="Camera" px="7.358891487121582" py="4.958309173583984" pz="6.925790786743164" rw="1.0" rx="0.0" ry="0.0" rz="0.0" sx="1.0" sy="1.0" sz="1.0" />
 </model>

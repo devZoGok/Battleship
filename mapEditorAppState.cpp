@@ -174,12 +174,12 @@ namespace battleship{
 		pushPos.y += 10 * strength;
 
 		for(int i = 0; i < numVerts; i++){
-			Vector3 distVec = verts[i].pos - pushPos;
+			Vector3 distVec = *verts[i].pos - pushPos;
 			distVec.y = 0;
 			float dist = distVec.getLength();
 
 			if(dist < circleRadius)
-				verts[i].pos.y = oldLandmassVertHeights[i] + pushPos.y - (pushPos.y / circleRadius) * dist;
+				verts[i].pos->y = oldLandmassVertHeights[i] + pushPos.y - (pushPos.y / circleRadius) * dist;
 		}
 
 		mesh->updateVerts(meshData);
@@ -264,6 +264,7 @@ namespace battleship{
 		XMLElement *meshEl = doc->NewElement("mesh");
 		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
 		meshEl->SetAttribute("name", "mesh");
+		meshEl->SetAttribute("num_vertex_pos", meshData.numPos);
 		meshEl->SetAttribute("num_faces", meshData.numTris);
 		meshEl->SetAttribute("num_vertex_groups", 0);
 		meshEl->SetAttribute("num_shape_keys", 0);
@@ -278,12 +279,14 @@ namespace battleship{
 
 		for(int i = 0; i < numVerts; i++){
 			XMLElement *vertEl = doc->NewElement("vertdata");
-			vertEl->SetAttribute("px", meshData.vertices[i].pos.x);
-			vertEl->SetAttribute("py", meshData.vertices[i].pos.y);
-			vertEl->SetAttribute("pz", meshData.vertices[i].pos.z);
+			vertEl->SetAttribute("px", meshData.vertices[i].pos->x);
+			vertEl->SetAttribute("py", meshData.vertices[i].pos->y);
+			vertEl->SetAttribute("pz", meshData.vertices[i].pos->z);
+			/*
 			vertEl->SetAttribute("nx", meshData.vertices[i].norm.x);
 			vertEl->SetAttribute("ny", meshData.vertices[i].norm.y);
 			vertEl->SetAttribute("nz", meshData.vertices[i].norm.z);
+			 */
 			XMLNode *vertNode = meshTag->InsertEndChild(vertEl);
 		}
 
@@ -537,7 +540,7 @@ namespace battleship{
 			int numVerts = 3 * meshData.numTris;
 
 			for(int i = 0; i < numVerts; i++)
-				oldLandmassVertHeights[i] = meshData.vertices[i].pos.y;
+				oldLandmassVertHeights[i] = meshData.vertices[i].pos->y;
 		}
 	}
 

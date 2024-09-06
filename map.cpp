@@ -257,12 +257,14 @@ namespace battleship{
 			Vector3 cellPos = Vector3(posTable["x"], posTable["y"], posTable["z"]);
 			Cell::Type cellType = (Cell::Type)cellTable["type"];
 
+			/*
 			Quad *quad = new Quad(Vector3(CELL_SIZE.x, CELL_SIZE.z, 0));
 			quad->setWireframe(true);
 			quad->setMaterial(cellType == Cell::Type::LAND ? landCellMat : waterCellMat);
 
 			Node *node = new Node(cellPos + Vector3::VEC_J * .1);
 			node->attachMesh(quad);
+			 */
 
 			cells.push_back(Cell(cellPos, cellType, edges, underWaterCellIds));
 		}
