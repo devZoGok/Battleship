@@ -310,12 +310,6 @@ namespace battleship{
 
 	//TODO fix fog of war for hostile units
     void ActiveGameState::renderUnits() {
-		vector<Unit*> units;
-
-        for (Player *p : Game::getSingleton()->getPlayers())
-            for (Unit *u : p->getUnits())
-                units.push_back(u);
-
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
 		vector<Listbox*> listboxes{};
 		vector<Checkbox*> checkboxes{};
@@ -328,6 +322,13 @@ namespace battleship{
 			guiManager->getText("wealth"),
 			guiManager->getText("research")
 		};
+
+		vector<Unit*> units;
+
+        for (Player *p : Game::getSingleton()->getPlayers())
+            for (Unit *u : p->getUnits())
+                units.push_back(u);
+
 		vector<Unit*> selUnits = mainPlayer->getSelectedUnits();
 
         for (Unit *u : units) {
@@ -339,21 +340,22 @@ namespace battleship{
 					guiManager->readLuaScreenScript(u->getGuiScreen(), buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					unitGuiScreen = guiScreen;
 				}
-            }
-			else{
-            	Vector3 rendUnPos = u->getPos();
-            	rendUnPos.y = 0;
 
-                for (int i = 0; i < units.size() && units[i] != u && units[i]->getPlayer() == mainPlayer; i++) {
-                    Vector3 compUnPos = units[i]->getPos();
-                    compUnPos.y = 0;
-                    float dist = compUnPos.getDistanceFrom(rendUnPos);
-                    u->getNode()->setVisible(dist <= units[i]->getLineOfSight() || isInLineOfSight(compUnPos, units[i]->getLineOfSight(), u));
-                }
-			}
+            	Vector3 obsUnitPos = u->getPos();
+            	obsUnitPos.y = 0;
+
+                for (int i = 0; i < units.size(); i++)
+					if(units[i]->getPlayer() != mainPlayer){
+						Vector3 compUnitPos = units[i]->getPos();
+						compUnitPos.y = 0;
+						float dist = compUnitPos.getDistanceFrom(obsUnitPos);
+						units[i]->getNode()->setVisible(dist <= u->getLineOfSight());
+					}
+            }
         }
     }
 
+	//TODO improve this for greater accuracy
     bool ActiveGameState::isInLineOfSight(Vector3 center, float radius, Unit *u) {
         bool inside = false;
 
