@@ -6,6 +6,7 @@
 #include <stateManager.h>
 
 #include <assetManager.h>
+#include <root.h>
 
 #include <string>
 

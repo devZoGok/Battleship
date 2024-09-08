@@ -1,6 +1,7 @@
 #include <root.h>
 #include <quad.h>
 #include <model.h>
+#include <light.h>
 #include <material.h>
 #include <assetManager.h>
 
@@ -123,7 +124,7 @@ namespace battleship{
 
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", true);
-		mat->addBoolUniform("lightingEnabled", false);
+		mat->addBoolUniform("lightingEnabled", true);
 
 		string fr[]{texPath};
 		AssetManager::getSingleton()->load(fr[0]);
@@ -230,6 +231,7 @@ namespace battleship{
 		cam->setFarPlane(600);
 		cam->setPosition(Vector3(1, 1, 1) * configData::CAMERA_DISTANCE);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
+
 	}
 
 	//TODO implement toggleable cell rendering
@@ -294,6 +296,10 @@ namespace battleship{
 			for(int i = 0; i < numWaterbodies; i++)
 				loadTerrainObject(i);
 		}
+
+		Node *lightNode = new Node(Vector3::VEC_ZERO, Quaternion(1.57, Vector3::VEC_I));
+		lightNode->addLight(new Light(Light::Type::DIRECTIONAL));
+		Root::getSingleton()->getRootNode()->attachChild(lightNode);
     }
 
 	//TODO unload skybox assets

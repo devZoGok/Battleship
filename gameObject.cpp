@@ -102,7 +102,7 @@ namespace battleship{
 			string f[]{albedoPath == configData::DEFAULT_TEXTURE ? GameManager::getSingleton()->getPath() + albedoPath : basePath + albedoPath};
     		Texture *diffuseTexture = new Texture(f, 1, false);
 			mat->addBoolUniform("texturingEnabled", true);
-			mat->addBoolUniform("lightingEnabled", false);
+			mat->addBoolUniform("lightingEnabled", true);
 			mat->addTexUniform("textures[0]", diffuseTexture, true);
 		}
 		else{

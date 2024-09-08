@@ -1,9 +1,10 @@
-#include <model.h>
-#include <quad.h>
 #include <box.h>
+#include <quad.h>
+#include <model.h>
+#include <light.h>
+#include <texture.h>
 #include <material.h>
 #include <particleEmitter.h>
-#include <texture.h>
 
 #include <stateManager.h>
 #include <solUtil.h>
@@ -291,6 +292,7 @@ namespace battleship{
 		Unit::initProperties();
 		initModel();
 		initHitbox();
+		initLosLight();
 		initSound();
 		initWeapons();
         placeAt(pos);
@@ -306,6 +308,7 @@ namespace battleship{
 		removeBar(hpForegroundNode);
 		destroyWeapons();
 		destroySound();
+		destroyLosLight();
 		destroyHitbox();
 		destroyModel();
     }
@@ -404,6 +407,19 @@ namespace battleship{
 			delete weapon;
 
 		weapons.clear();
+	}
+
+	void Unit::initLosLight(){
+		lightNode = new Node();
+		Light *light = new Light(Light::Type::POINT);
+		//light->setAttenuationValues(1, 1, 1);
+		model->attachChild(lightNode);
+	}
+
+	void Unit::destroyLosLight(){
+		model->dettachChild(lightNode);
+		delete lightNode;
+		lightNode = nullptr;
 	}
 	
 	void Unit::destroySound(){

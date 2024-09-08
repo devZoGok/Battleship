@@ -161,12 +161,14 @@ namespace battleship{
         void updateScreenCoordinates();
 		void initWeapons();
 		void destroyWeapons();
+		void initLosLight();
+		void destroyLosLight();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         const int orderVecDispLength = 2000, DEATH_HP = 0;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
-		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
+		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr, *lightNode = nullptr;
 		bool vehicle;
     protected:
         UnitClass unitClass;

@@ -24,7 +24,7 @@ namespace battleship{
 		trader(new Trader())
 	{
 		colorMaterial = new Material(Root::getSingleton()->getLibPath() + "texture");
-		colorMaterial->addBoolUniform("lightingEnabled", false);
+		colorMaterial->addBoolUniform("lightingEnabled", true);
 		colorMaterial->addBoolUniform("texturingEnabled", false);
 		colorMaterial->addVec4Uniform("diffuseColor", Vector4(color.x, color.y, color.z, 1));
 	}
