@@ -12,6 +12,7 @@ namespace vb01{
 	class Model;
 	class Material;
 	class Node;
+	class Light;
 }
 
 namespace battleship{
@@ -67,15 +68,18 @@ namespace battleship{
 		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7), mapSize;
 		std::vector<vb01::Vector3> spawnPoints;
 		std::vector<Cell> cells;
+		std::vector<vb01::Light*> lights;
 
         Map(){}
 		void preprareScene();
 		void loadSpawnPoints();
+		void loadLights();
 		void loadSkybox();
 		void loadCells();
 		void loadTerrainObject(int);
 		void unloadTerrainObjects();
 		void unloadCells();
+		void unloadLights();
 		void unloadSkybox();
 		void unloadPlayerObjects();
 		void destroyScene();
