@@ -125,6 +125,10 @@ namespace battleship{
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", true);
 		mat->addBoolUniform("lightingEnabled", true);
+		mat->addBoolUniform("constLightingEnabled", true);
+		mat->addBoolUniform("normalMapEnabled", false);
+		mat->addBoolUniform("specularMapEnabled", false);
+		mat->addBoolUniform("castShadow", false);
 
 		string fr[]{texPath};
 		AssetManager::getSingleton()->load(fr[0]);
@@ -297,8 +301,11 @@ namespace battleship{
 				loadTerrainObject(i);
 		}
 
-		Node *lightNode = new Node(Vector3::VEC_ZERO, Quaternion(1.57, Vector3::VEC_I));
-		lightNode->addLight(new Light(Light::Type::DIRECTIONAL));
+		Light *light = new Light(Light::Type::AMBIENT);
+		light->setColor(Vector3::VEC_IJK * .3);
+
+		Node *lightNode = new Node();
+		lightNode->addLight(light);
 		Root::getSingleton()->getRootNode()->attachChild(lightNode);
     }
 

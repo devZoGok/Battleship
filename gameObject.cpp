@@ -103,6 +103,7 @@ namespace battleship{
     		Texture *diffuseTexture = new Texture(f, 1, false);
 			mat->addBoolUniform("texturingEnabled", true);
 			mat->addBoolUniform("lightingEnabled", true);
+			mat->addBoolUniform("constLightingEnabled", false);
 			mat->addTexUniform("textures[0]", diffuseTexture, true);
 		}
 		else{

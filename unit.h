@@ -21,6 +21,7 @@ namespace vb01{
 	class Mesh;
 	class Quad;
 	class Node;
+	class Light;
 	class Camera;
 }
 
@@ -156,6 +157,7 @@ namespace battleship{
 		inline int getNumOrders(){return orders.size();}
 		inline std::string getGuiScreen(){return guiScreen;}
 		inline BuildableUnit getBuildableUnit(int i){return buildableUnits[i];}
+		inline vb01::Node* getLosLightNode(){return losLightNode;}
     private:
 		void renderOrderLine(bool);
         void updateScreenCoordinates();
@@ -168,7 +170,7 @@ namespace battleship{
         const int orderVecDispLength = 2000, DEATH_HP = 0;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
-		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr, *lightNode = nullptr;
+		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr, *losLightNode = nullptr;
 		bool vehicle;
     protected:
         UnitClass unitClass;

@@ -410,16 +410,23 @@ namespace battleship{
 	}
 
 	void Unit::initLosLight(){
-		lightNode = new Node();
 		Light *light = new Light(Light::Type::POINT);
-		//light->setAttenuationValues(1, 1, 1);
-		model->attachChild(lightNode);
+		light->setAttenuation(Light::Attenuation::NONE);
+		light->setRadius(lineOfSight);
+		light->setColor(Vector3::VEC_IJK * .3);
+		light->setAdditiveLighting(false);
+		light->setUseAngle(false);
+
+		losLightNode = new Node(Vector3::VEC_J * 5);
+		losLightNode->addLight(light);
+		losLightNode->setVisible(true);
+		model->attachChild(losLightNode);
 	}
 
 	void Unit::destroyLosLight(){
-		model->dettachChild(lightNode);
-		delete lightNode;
-		lightNode = nullptr;
+		model->dettachChild(losLightNode);
+		delete losLightNode;
+		losLightNode = nullptr;
 	}
 	
 	void Unit::destroySound(){

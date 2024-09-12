@@ -333,6 +333,7 @@ namespace battleship{
 
         for (Unit *u : units) {
             if (u->getPlayer() == mainPlayer){
+				u->getLosLightNode()->setVisible(true);
             	Vector2 pos = u->getScreenPos();
 				string guiScreen = u->getGuiScreen();
 
@@ -349,7 +350,8 @@ namespace battleship{
 						Vector3 compUnitPos = units[i]->getPos();
 						compUnitPos.y = 0;
 						float dist = compUnitPos.getDistanceFrom(obsUnitPos);
-						units[i]->getNode()->setVisible(dist <= u->getLineOfSight());
+						units[i]->getNode()->setVisible(true);
+						//units[i]->getNode()->setVisible(dist <= u->getLineOfSight());
 					}
             }
         }
