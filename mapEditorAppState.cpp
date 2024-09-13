@@ -398,7 +398,7 @@ namespace battleship{
 		string mapScript = "map = {\nlights = {\n";
 
 		for(Node *light : map->getLights()){
-			mapScript += "{type = " + to_string((int)light->getLight(0)->getType());
+			mapScript += "{type = " + to_string((int)light->getLight(0)->getLightType());
 
 			if(light->getLight(0)->getLightType() == Light::Type::DIRECTIONAL){
 				Vector3 dir = light->getGlobalAxis(2);

@@ -1,4 +1,7 @@
 map = {
+	lights = {
+		{type = 3, color = {x = .9, y = .9, z = .9}},
+	},
 numWaterBodies = 0,
 size = {x = 123.000000, y = 100, z = 123.000000},
 impassibleNodeValue = 65535,
