@@ -135,6 +135,8 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		bool canGarrison(Vehicle*);
+		void initLosLight();
+		void destroyLosLight();
 		inline void setState(State s){state = s;}
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Structure* toStructure(){return (Structure*)this;}
@@ -163,8 +165,6 @@ namespace battleship{
         void updateScreenCoordinates();
 		void initWeapons();
 		void destroyWeapons();
-		void initLosLight();
-		void destroyLosLight();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         const int orderVecDispLength = 2000, DEATH_HP = 0;

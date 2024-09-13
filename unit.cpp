@@ -292,7 +292,6 @@ namespace battleship{
 		Unit::initProperties();
 		initModel();
 		initHitbox();
-		initLosLight();
 		initSound();
 		initWeapons();
         placeAt(pos);
@@ -308,7 +307,6 @@ namespace battleship{
 		removeBar(hpForegroundNode);
 		destroyWeapons();
 		destroySound();
-		destroyLosLight();
 		destroyHitbox();
 		destroyModel();
     }
@@ -419,7 +417,6 @@ namespace battleship{
 
 		losLightNode = new Node(Vector3::VEC_J * 5);
 		losLightNode->addLight(light);
-		losLightNode->setVisible(true);
 		model->attachChild(losLightNode);
 	}
 

@@ -332,8 +332,13 @@ namespace battleship{
 		vector<Unit*> selUnits = mainPlayer->getSelectedUnits();
 
         for (Unit *u : units) {
+			Node *model = u->getNode();
+
             if (u->getPlayer() == mainPlayer){
-				u->getLosLightNode()->setVisible(true);
+				if(!u->getLosLightNode()) u->initLosLight();
+
+				model->setVisible(true);
+
             	Vector2 pos = u->getScreenPos();
 				string guiScreen = u->getGuiScreen();
 
@@ -341,19 +346,27 @@ namespace battleship{
 					guiManager->readLuaScreenScript(u->getGuiScreen(), buttons, listboxes, checkboxes, sliders, textboxes, guiRects, texts);
 					unitGuiScreen = guiScreen;
 				}
+            }
+			else{
+				if(u->getLosLightNode()) u->destroyLosLight();
 
-            	Vector3 obsUnitPos = u->getPos();
-            	obsUnitPos.y = 0;
+				model->setVisible(false);
 
-                for (int i = 0; i < units.size(); i++)
-					if(units[i]->getPlayer() != mainPlayer){
-						Vector3 compUnitPos = units[i]->getPos();
+            	for (int i = 0; i < units.size(); i++)
+					if(units[i]->getPlayer() == mainPlayer){
+            			Vector3 obsUnitPos = units[i]->getPos();
+            			obsUnitPos.y = 0;
+
+						Vector3 compUnitPos = u->getPos();
 						compUnitPos.y = 0;
 						float dist = compUnitPos.getDistanceFrom(obsUnitPos);
-						units[i]->getNode()->setVisible(true);
-						//units[i]->getNode()->setVisible(dist <= u->getLineOfSight());
+
+						if(dist <= units[i]->getLineOfSight()){
+							model->setVisible(true);
+							break;
+						}
 					}
-            }
+			}
         }
     }
 
