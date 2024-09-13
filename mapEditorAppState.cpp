@@ -14,6 +14,7 @@
 #include <text.h>
 #include <node.h>
 #include <quad.h>
+#include <light.h>
 #include <model.h>
 #include <texture.h>
 #include <assetManager.h>
@@ -394,7 +395,21 @@ namespace battleship{
 		vector<Player*> players = Game::getSingleton()->getPlayers();
 
 		Vector3 mapSize = map->getMapSize();
-		string mapScript = "map = {\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
+		string mapScript = "map = {\nlights = {\n";
+
+		for(Node *light : map->getLights()){
+			mapScript += "{type = " + to_string((int)light->getLight(0)->getType());
+
+			if(light->getLight(0)->getLightType() == Light::Type::DIRECTIONAL){
+				Vector3 dir = light->getGlobalAxis(2);
+				mapScript += ", dir = {x = " + to_string(dir.x) + ", y = " + to_string(dir.y) + "z = " + to_string(dir.z) + "}";
+			}
+
+			Vector3 color = light->getLight(0)->getColor();
+			mapScript += ", color = {x = " + to_string(color.x) + ", y = " + to_string(color.y) + ", z = " + to_string(color.z) + "}},";
+		}
+
+		mapScript += "}\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
 		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.z) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(players.size()) + ",\n";

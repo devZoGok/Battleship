@@ -101,8 +101,8 @@ namespace battleship{
 			light->setColor(Vector3(colTbl["x"], colTbl["y"], colTbl["z"]));
 
 			Node *lightNode = new Node();
+			lights.push_back(lightNode);
 			lightNode->addLight(light);
-			lights.push_back(light);
 
 			if(type == Light::Type::DIRECTIONAL){
 				sol::table dirTbl = lightsTbl[id]["dir"];
@@ -332,7 +332,15 @@ namespace battleship{
 			for(int i = 0; i < numWaterbodies; i++)
 				loadTerrainObject(i);
 		}
+		else{
+			Light *light = new Light(Light::Type::AMBIENT);
+			light->setColor(Vector3::VEC_IJK * .9);
 
+			Node *node = new Node();
+			node->addLight(light);
+			Root::getSingleton()->getRootNode()->attachChild(node);
+			lights.push_back(node);
+		}
     }
 
 	//TODO unload skybox assets
@@ -342,7 +350,7 @@ namespace battleship{
 
 	void Map::unloadLights(){
 		while(!lights.empty()){
-			Root::getSingleton()->getRootNode()->removeLight(lights[0]);
+			Root::getSingleton()->getRootNode()->dettachChild(lights[0]);
 			delete lights[0];
 			lights.erase(lights.begin());
 		}

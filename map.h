@@ -12,7 +12,6 @@ namespace vb01{
 	class Model;
 	class Material;
 	class Node;
-	class Light;
 }
 
 namespace battleship{
@@ -60,6 +59,8 @@ namespace battleship{
 		inline vb01::Vector3 getMapSize(){return mapSize;}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
 		inline std::vector<Map::Cell>& getCells(){return cells;}
+		inline vb01::Node* getLight(int i){return lights[i];}
+		inline std::vector<vb01::Node*> getLights(){return lights;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
@@ -68,7 +69,7 @@ namespace battleship{
 		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7), mapSize;
 		std::vector<vb01::Vector3> spawnPoints;
 		std::vector<Cell> cells;
-		std::vector<vb01::Light*> lights;
+		std::vector<vb01::Node*> lights;
 
         Map(){}
 		void preprareScene();
