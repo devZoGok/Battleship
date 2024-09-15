@@ -314,7 +314,10 @@ namespace battleship{
 		preprareScene();
 
 		if(!empty){
-			SOL_LUA_STATE.script_file(path + "Models/Maps/" + mapName + "/" + mapName + ".lua");
+			string mapDir = path + "Models/Maps/" + mapName + "/";
+			AssetManager::getSingleton()->load(mapDir + "minimap.jpg");
+
+			SOL_LUA_STATE.script_file(mapDir + mapName + ".lua");
 			sol::optional<sol::table> lightsOpt = SOL_LUA_STATE[mapTable]["lights"];
 			
 			if(lightsOpt != sol::nullopt)

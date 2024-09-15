@@ -19,6 +19,9 @@
 #include <texture.h>
 #include <assetManager.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "external/vb01/external/stb/stb_image_write.h"
+
 #include <util.h>
 
 #include <listbox.h>
@@ -62,6 +65,8 @@ namespace battleship{
 		}
 		else{
 			int numPlayers = map->getNumSpawnPoints();
+			int numVerts = 3 * map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase().numTris;
+			oldLandmassVertHeights = new float[numVerts];
 
 			for(int i = 0; i < numPlayers; i++)
 				game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
@@ -390,6 +395,26 @@ namespace battleship{
 		return cells;
 	}
 
+	void MapEditorAppState::MapEditor::generateMinimap(string mapFolder){
+		Vector3 mapSize = map->getMapSize(), cellSize = map->getCellSize();
+		int width = int(mapSize.x / cellSize.x);
+		int height = int(mapSize.z / cellSize.z);
+		int numChannels = 3;
+		int size = width * height * numChannels;
+		int cellId = 0;
+
+		u8 *imgData = new u8[size];
+
+		for(u8 *p = imgData; p != imgData + size; p+= numChannels, cellId++){
+			Vector3 color = (map->getCells()[cellId].type == Map::Cell::Type::WATER ? Vector3::VEC_K : Vector3::VEC_J);
+			*p = color.x * 255.f;
+			*(p + 1) = color.y * 255.f;
+			*(p + 2) = color.z * 255.f;
+		}
+
+		stbi_write_jpg(string(mapFolder + "minimap.jpg").c_str(), width, height, numChannels, imgData, 100);
+	}
+
 	void MapEditorAppState::MapEditor::generateMapScript(){
 		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
 		vector<Player*> players = Game::getSingleton()->getPlayers();
@@ -544,6 +569,7 @@ namespace battleship{
 		copy_file(assetsPath + DEFAULT_TEXTURE, mapFolder + map->getMapName() + ".jpg");
 
 		generateLandmassXml();
+		generateMinimap(mapFolder);
 		generateMapScript();
 	}
 

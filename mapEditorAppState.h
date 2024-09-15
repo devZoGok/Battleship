@@ -60,6 +60,7 @@ namespace battleship{
 					void toggleSelection(vb01::Node*, bool);
 					std::vector<Map::Cell> generateMapCells();
 					void generateLandmassXml();
+					void generateMinimap(std::string);
 					void generateMapScript();
 					void prepareTerrainObject(vb01::u32**, Map::Cell*, int[3], float, bool);
 
