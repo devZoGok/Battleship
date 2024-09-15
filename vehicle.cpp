@@ -35,7 +35,7 @@ namespace battleship{
 	void Vehicle::update(){
 		Unit::update();
 
-		model->setVisible(!garrisonable);
+		if(garrisonable) model->setVisible(false);
 	}
 
 	void Vehicle::halt(){

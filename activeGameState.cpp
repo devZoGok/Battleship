@@ -225,6 +225,8 @@ namespace battleship{
 	}
 
 	bool ActiveGameState::isGameObjSelectable(GameObject *obj, bool useDragBox){
+		if(!obj->getModel()->isVisible()) return false;
+
 		Node *hitboxNode = obj->getHitbox();
 		Box *hitbox = (Box*)hitboxNode->getMesh(0);
 
@@ -332,7 +334,7 @@ namespace battleship{
 		vector<Unit*> selUnits = mainPlayer->getSelectedUnits();
 
         for (Unit *u : units) {
-			Node *model = u->getNode();
+			Node *model = u->getModel();
 
             if (u->getPlayer() == mainPlayer){
 				if(!u->getLosLightNode()) u->initLosLight();

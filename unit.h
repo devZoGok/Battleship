@@ -146,7 +146,6 @@ namespace battleship{
 		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
         inline float getLineOfSight() {return lineOfSight;}
-        inline vb01::Model* getNode() {return model;}
         inline UnitType getType() {return type;}
         inline UnitClass getUnitClass() {return unitClass;}
         inline void takeDamage(int damage) {health -= damage;}
