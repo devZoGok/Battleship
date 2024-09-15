@@ -51,7 +51,8 @@ namespace battleship{
 		PLAYER_TRADE,
 		TRADING_SCREEN,
 		TRADE_OFFER,
-		RESOURCE_AMMOUNT
+		RESOURCE_AMMOUNT,
+		MINIMAP
 	};
 	enum ListboxType {
 		CONTROLS,

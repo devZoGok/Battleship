@@ -31,6 +31,7 @@
 #include "tradingScreenButton.h"
 #include "offerButton.h"
 #include "resourceAmmountButton.h"
+#include "minimapButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -260,6 +261,9 @@ namespace battleship{
 				break;
 			case RESOURCE_AMMOUNT:
 				button = new ResourceAmmountButton(pos, size, name, (int)guiTable["ammount"], (int)guiTable["trigger"], imagePath);
+				break;
+			case MINIMAP:
+				button = new MinimapButton(pos, size, "");
 				break;
 		}
 

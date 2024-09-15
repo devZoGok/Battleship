@@ -2,6 +2,7 @@ res = graphics.resolution
 Size = {x = 70, y = 70}
 sz = 210
 s = 40
+minimapSize = {x = 200, y = 200}
 resTextScale = {x = .5, y = .5}
 resIconBasePath = 'Icons/Resources/'
 pointerTex = 'pointer.png'
@@ -9,6 +10,14 @@ attackTex = 'attack.png'
 garrisonTex = 'garrison.png'
 
 gui = {
+	{
+		guiType = GuiType.BUTTON,
+		buttonType = ButtonType.MINIMAP,
+		name = 'minimap',
+		pos = {x = res.x - minimapSize.x, y = 0, z = 0},
+		size = minimapSize,
+		color = {x = .5, y = .5, z = .5, w = 1}
+	},
 	{
 		guiType = GuiType.TEXT,
 		name = 'refineds',
