@@ -6,6 +6,8 @@
 #include "map.h"
 #include "unit.h"
 
+#include <util.h>
+
 namespace vb01{
 	class Node;
 	class Texture;
@@ -32,6 +34,7 @@ namespace battleship{
 		inline std::vector<vb01Gui::Button*> getButtons(){return buttons;}
         inline Player* getPlayer(){return mainPlayer;}
         inline std::vector<Unit*>& getUnitGroup(int i){return unitGroups[i];}
+		inline u8 *getOldMinimapImage(){return oldImageData;}
     private:
 		enum CursorState{
 			NORMAL,
@@ -74,6 +77,7 @@ namespace battleship{
 		vb01::s64 lastLeftMouseClicked = 0;
 		vb01::Node *cursorNode = nullptr;
 		vb01::Texture *pointerTex = nullptr, *attackTex = nullptr, *garrisonTex = nullptr;
+		vb01::u8 *oldImageData = nullptr;
     };
 }
 
