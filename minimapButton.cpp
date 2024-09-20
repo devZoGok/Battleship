@@ -40,8 +40,8 @@ namespace battleship{
 		for(Player *pl : Game::getSingleton()->getPlayers())
 			for(Unit *un : pl->getUnits()){
 				Vector2 coords = Vector2(
-					int(un->getPos().x / mapSize.x * width) - .5 * width,
-					int(un->getPos().z / mapSize.z * height) - .5 * height
+					int(un->getPos().x / mapSize.x * width),
+					int(un->getPos().z / mapSize.z * height)
 				);
 
 				unitMinimapPos.push_back(make_pair(un, coords));
@@ -58,7 +58,7 @@ namespace battleship{
 
 		for(u8 *p = asset->image; p != asset->image + size; p += numChannels, pxId += numChannels, numIter++){
 			Vector2 coords = Vector2(
-				numIter % asset->width - .5 * asset->width,
+				-(numIter % asset->width - .5 * asset->width),
 				numIter / asset->width - .5 * asset->height
 			);
 			float losFactor = .6, pxCol[3]{
@@ -115,8 +115,8 @@ namespace battleship{
 
 	void MinimapButton::onClick(){
 		Vector2 clickPos = getCursorPos();
-		float posXRatio = (clickPos.x - pos.x) / size.x;
-		float posYRatio = (clickPos.y - pos.y) / size.y;
+		float posXRatio = 1. - (clickPos.x - pos.x) / size.x;
+		float posYRatio = 1. - (clickPos.y - pos.y) / size.y;
 
 		Camera *cam = Root::getSingleton()->getCamera();
 		Vector3 mapSize = Map::getSingleton()->getMapSize();
