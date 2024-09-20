@@ -15,7 +15,6 @@ namespace battleship{
 			void onClick();
 			void update();
 		private:
-			vb01::Node *content = nullptr;
 	};
 }
 

@@ -18,13 +18,9 @@ namespace battleship{
 	using namespace vb01;
 	using namespace std;
 
-	MinimapButton::MinimapButton(Vector3 pos, Vector2 size, string ip) : Button(pos, size, "minimap", "", -1, true, ip){
-		content = new Node();
-		rectNode->attachChild(content);
-	}
+	MinimapButton::MinimapButton(Vector3 pos, Vector2 size, string ip) : Button(pos, size, "minimap", "", -1, true, ip){}
 
-	MinimapButton::~MinimapButton(){
-	}
+	MinimapButton::~MinimapButton(){}
 
 	void MinimapButton::update(){
 		Button::update();
@@ -55,6 +51,7 @@ namespace battleship{
 		int pxId = 0, numIter = 0;
 
 		u8 *oldImageData = activeState->getOldMinimapImage();
+		int unitPxRadius = 1;
 
 		for(u8 *p = asset->image; p != asset->image + size; p += numChannels, pxId += numChannels, numIter++){
 			Vector2 coords = Vector2(
@@ -68,7 +65,9 @@ namespace battleship{
 			};
 
 			for(pair<Unit*, Vector2> unitPair : unitMinimapPos){
-				if(unitPair.first->getPlayer() == mainPlayer && unitPair.second == coords){
+				Vector2 coordDiff = unitPair.second - coords;
+
+				if(unitPair.first->getPlayer() == mainPlayer && fabs(coordDiff.x) <= unitPxRadius && fabs(coordDiff.y) <= unitPxRadius){
 					Vector3 plCol = mainPlayer->getColor();
 					pxCol[0] = plCol.x * 255;
 					pxCol[1] = plCol.y * 255;
@@ -82,12 +81,15 @@ namespace battleship{
 					bool foreignUnit = false;
 					Player *pl = nullptr;
 
-					for(pair<Unit*, Vector2> up : unitMinimapPos)
-						if(up.first->getPlayer() != mainPlayer && up.second == coords){
+					for(pair<Unit*, Vector2> up : unitMinimapPos){
+						Vector2 coordDiff = up.second - coords;
+
+						if(up.first->getPlayer() != mainPlayer && fabs(coordDiff.x) <= unitPxRadius && fabs(coordDiff.y) <= unitPxRadius){
 							foreignUnit = true;
 							pl = up.first->getPlayer();
 							break;
 						}
+					}
 
 					if(foreignUnit){
 						Vector3 plCol = pl->getColor();
