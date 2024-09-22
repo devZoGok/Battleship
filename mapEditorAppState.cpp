@@ -191,6 +191,20 @@ namespace battleship{
 		}
 
 		mesh->updateVerts(meshData);
+
+		int minId = 0, maxId = 0;
+
+		for(int i = 0; i < numVerts; i++){
+			if(verts[i].pos->y < verts[minId].pos->y)
+				minId = i;
+
+			if(verts[i].pos->y > verts[maxId].pos->y)
+				maxId = i;
+		}
+
+		Vector3 mapSize = map->getMapSize();
+		map->setBaseHeight(verts[minId].pos->y);
+		map->setMapSize(Vector3(mapSize.x, verts[maxId].pos->y - verts[minId].pos->y, mapSize.z));
 	}
 
 	void MapEditorAppState::MapEditor::generatePlane(Vector2 size){
@@ -404,14 +418,18 @@ namespace battleship{
 		int numChannels = 3;
 		int size = width * height * numChannels;
 		int cellId = 0;
+		float baseHeight = map->getBaseHeight();
 
 		u8 *imgData = new u8[size];
 
 		for(u8 *p = imgData; p != imgData + size; p+= numChannels, cellId++){
+			float min = .6, max = 1.;
+			float heightFactor = min + (max - min) * (cells[cellId].pos.y - baseHeight) / mapSize.y;
 			Vector3 color = (cells[cellId].type == Map::Cell::Type::WATER ? Vector3::VEC_K : Vector3::VEC_J);
-			*p = color.x * 255.f;
-			*(p + 1) = color.y * 255.f;
-			*(p + 2) = color.z * 255.f;
+
+			*p = color.x * heightFactor * 255.f;
+			*(p + 1) = color.y * heightFactor * 255.f;
+			*(p + 2) = color.z * heightFactor * 255.f;
 		}
 
 		stbi_write_jpg(string(mapFolder + "minimap.jpg").c_str(), width, height, numChannels, imgData, 100);

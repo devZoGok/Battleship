@@ -64,6 +64,8 @@ namespace battleship{
 		inline vb01::Node* getLight(int i){return lights[i];}
 		inline std::vector<vb01::Node*> getLights(){return lights;}
 		inline vb01::u8* getOldMinimapImage(){return oldImageData;}
+		inline float getBaseHeight(){return baseHeight;}
+		inline void setBaseHeight(float bh){this->baseHeight = bh;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
@@ -72,6 +74,7 @@ namespace battleship{
 		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7), mapSize;
 		std::vector<vb01::Vector3> spawnPoints;
 		std::vector<Cell> cells;
+		float baseHeight;
 		std::vector<vb01::Node*> lights;
 		vb01::u8 *oldImageData = nullptr;
 
