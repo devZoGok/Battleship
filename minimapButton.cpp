@@ -30,7 +30,8 @@ namespace battleship{
 		ImageAsset *asset = (ImageAsset*)AssetManager::getSingleton()->getAsset(imagePath);
 		int width = asset->width, height = asset->height, numChannels = asset->numChannels;
 
-		Vector3 mapSize = Map::getSingleton()->getMapSize();
+		Map *map = Map::getSingleton();
+		Vector3 mapSize = map->getMapSize();
 		vector<pair<Unit*, Vector2>> unitMinimapPos;
 
 		for(Player *pl : Game::getSingleton()->getPlayers())
@@ -50,7 +51,7 @@ namespace battleship{
 		int size = width * height * numChannels;
 		int pxId = 0, numIter = 0;
 
-		u8 *oldImageData = activeState->getOldMinimapImage();
+		u8 *oldImageData = map->getOldMinimapImage();
 		int unitPxRadius = 1;
 
 		for(u8 *p = asset->image; p != asset->image + size; p += numChannels, pxId += numChannels, numIter++){

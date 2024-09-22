@@ -55,15 +55,17 @@ namespace battleship{
 		assetManager->load(basePath + DEFAULT_TEXTURE);
 
 		map = Map::getSingleton();
-		map->load(name, newMap);
 		Game *game = Game::getSingleton();
 
 		if(newMap){
 			game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
-			map->addSpawnPoint(Vector3::VEC_ZERO);
+			map->setMapSize(Vector3(size.x, 0, size.y));
+			map->create(name);
 			generatePlane(size);
 		}
 		else{
+			map->load(name);
+
 			int numPlayers = map->getNumSpawnPoints();
 			int numVerts = 3 * map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase().numTris;
 			oldLandmassVertHeights = new float[numVerts];
@@ -395,7 +397,7 @@ namespace battleship{
 		return cells;
 	}
 
-	void MapEditorAppState::MapEditor::generateMinimap(string mapFolder){
+	void MapEditorAppState::MapEditor::generateMinimap(string mapFolder, vector<Map::Cell> &cells){
 		Vector3 mapSize = map->getMapSize(), cellSize = map->getCellSize();
 		int width = int(mapSize.x / cellSize.x);
 		int height = int(mapSize.z / cellSize.z);
@@ -406,7 +408,7 @@ namespace battleship{
 		u8 *imgData = new u8[size];
 
 		for(u8 *p = imgData; p != imgData + size; p+= numChannels, cellId++){
-			Vector3 color = (map->getCells()[cellId].type == Map::Cell::Type::WATER ? Vector3::VEC_K : Vector3::VEC_J);
+			Vector3 color = (cells[cellId].type == Map::Cell::Type::WATER ? Vector3::VEC_K : Vector3::VEC_J);
 			*p = color.x * 255.f;
 			*(p + 1) = color.y * 255.f;
 			*(p + 2) = color.z * 255.f;
@@ -415,11 +417,10 @@ namespace battleship{
 		stbi_write_jpg(string(mapFolder + "minimap.jpg").c_str(), width, height, numChannels, imgData, 100);
 	}
 
-	void MapEditorAppState::MapEditor::generateMapScript(){
+	void MapEditorAppState::MapEditor::generateMapScript(vector<Map::Cell> &cells){
 		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
 		vector<Player*> players = Game::getSingleton()->getPlayers();
 
-		Vector3 mapSize = map->getMapSize();
 		string mapScript = "map = {\nlights = {\n";
 
 		for(Node *light : map->getLights()){
@@ -434,8 +435,9 @@ namespace battleship{
 			mapScript += ", color = {x = " + to_string(color.x) + ", y = " + to_string(color.y) + ", z = " + to_string(color.z) + "}},";
 		}
 
+		Vector3 mapSize = map->getMapSize();
 		mapScript += "}\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
-		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.z) + "},\n";
+		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = " + to_string(mapSize.y) + ", z = " + to_string(mapSize.z) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(players.size()) + ",\n";
 
@@ -499,7 +501,6 @@ namespace battleship{
 			mapScript += "}\n";
 		}
 
-		vector<Map::Cell> cells = generateMapCells();
 		mapScript += "},\nnumCells = " + to_string(cells.size()) + ",\n";
 		mapScript += "cells = {\n";
 
@@ -568,9 +569,10 @@ namespace battleship{
 		create_directory(mapFolder);
 		copy_file(assetsPath + DEFAULT_TEXTURE, mapFolder + map->getMapName() + ".jpg");
 
+		vector<Map::Cell> cells = generateMapCells();
 		generateLandmassXml();
-		generateMinimap(mapFolder);
-		generateMapScript();
+		generateMapScript(cells);
+		generateMinimap(mapFolder, cells);
 	}
 
 	void MapEditorAppState::MapEditor::togglePush(bool push){

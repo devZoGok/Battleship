@@ -3,6 +3,7 @@
 #include <model.h>
 #include <light.h>
 #include <material.h>
+#include <imageAsset.h>
 #include <assetManager.h>
 
 #include <solUtil.h>
@@ -239,7 +240,7 @@ namespace battleship{
 		}
 	}
 
-	void Map::preprareScene(){
+	void Map::preprareScene(bool empty){
 		Root *root = Root::getSingleton();
 		Node *rootNode = root->getRootNode();
 		string libPath = root->getLibPath();
@@ -263,6 +264,15 @@ namespace battleship{
 		cam->setPosition(Vector3(1, 1, 1) * configData::CAMERA_DISTANCE);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
 
+		if(empty){
+			Light *light = new Light(Light::Type::AMBIENT);
+			light->setColor(Vector3::VEC_IJK * .9);
+
+			Node *node = new Node();
+			node->addLight(light);
+			Root::getSingleton()->getRootNode()->attachChild(node);
+			lights.push_back(node);
+		}
 	}
 
 	//TODO implement toggleable cell rendering
@@ -303,48 +313,53 @@ namespace battleship{
 		}
 	}
 
-	//TODO implement map size calculation when exporting maps
-    void Map::load(string mapName, bool empty) {
+	void Map::loadMinimap(){
+		AssetManager *am = AssetManager::getSingleton();
+		string minimapPath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/minimap.jpg";
+
+		am->load(minimapPath);
+		ImageAsset *asset = (ImageAsset*)am->getAsset(minimapPath);
+		int imgSize = asset->width * asset->height * asset->numChannels;
+		oldImageData = new u8[imgSize];
+
+		for(int i = 0; i < imgSize; i++)
+			oldImageData[i] = asset->image[i];
+	}
+
+    void Map::load(string mapName){
 		this->mapName = mapName;
 
 		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
 		string path = GameManager::getSingleton()->getPath();
+
 		sol::state_view SOL_LUA_STATE = generateView();
+		SOL_LUA_STATE.script_file(path + "Models/Maps/" + mapName + "/" + mapName + ".lua");
+
+		preprareScene(false);
+		loadMinimap();
+		loadSpawnPoints();
+		loadSkybox();
+		loadCells();
+		loadTerrainObject(-1);
+
+		sol::optional<sol::table> lightsOpt = SOL_LUA_STATE[mapTable]["lights"];
 		
-		preprareScene();
+		if(lightsOpt != sol::nullopt)
+			loadLights();
 
-		if(!empty){
-			string mapDir = path + "Models/Maps/" + mapName + "/";
-			AssetManager::getSingleton()->load(mapDir + "minimap.jpg");
-
-			SOL_LUA_STATE.script_file(mapDir + mapName + ".lua");
-			sol::optional<sol::table> lightsOpt = SOL_LUA_STATE[mapTable]["lights"];
-			
-			if(lightsOpt != sol::nullopt)
-				loadLights();
-
-			loadSpawnPoints();
-			loadSkybox();
-			loadCells();
-			loadTerrainObject(-1);
-
-			sol::table sizeTable = SOL_LUA_STATE[mapTable]["size"];
-			mapSize = Vector3(sizeTable["x"], sizeTable["y"], sizeTable["z"]);
-			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
-			
-			for(int i = 0; i < numWaterbodies; i++)
-				loadTerrainObject(i);
-		}
-		else{
-			Light *light = new Light(Light::Type::AMBIENT);
-			light->setColor(Vector3::VEC_IJK * .9);
-
-			Node *node = new Node();
-			node->addLight(light);
-			Root::getSingleton()->getRootNode()->attachChild(node);
-			lights.push_back(node);
-		}
+		sol::table sizeTable = SOL_LUA_STATE[mapTable]["size"];
+		mapSize = Vector3(sizeTable["x"], sizeTable["y"], sizeTable["z"]);
+		int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
+		
+		for(int i = 0; i < numWaterbodies; i++)
+			loadTerrainObject(i);
     }
+
+	void Map::create(string mapName){
+		this->mapName = mapName;
+		addSpawnPoint(Vector3::VEC_ZERO);
+		preprareScene(true);
+	}
 
 	//TODO unload skybox assets
 	void Map::unloadSkybox(){
@@ -404,6 +419,8 @@ namespace battleship{
 	}
 
     void Map::unload(){
+		delete[] oldImageData;
+
 		unloadSkybox();
 		unloadLights();
 		unloadCells();

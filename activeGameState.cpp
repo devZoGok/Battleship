@@ -45,15 +45,6 @@ namespace battleship{
 		initDragbox();
 
 		mainPlayer = Game::getSingleton()->getPlayer(playerId);
-
-		string minimapPath = GameManager::getSingleton()->getPath() + "Models/Maps/" + Map::getSingleton()->getMapName() + "/minimap.jpg";
-		ImageAsset *asset = (ImageAsset*)AssetManager::getSingleton()->getAsset(minimapPath);
-		int imgSize = asset->width * asset->height * asset->numChannels;
-
-		oldImageData = new u8[imgSize];
-
-		for(int i = 0; i < imgSize; i++)
-			oldImageData[i] = asset->image[i];
     }
 
     ActiveGameState::~ActiveGameState() {

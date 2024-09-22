@@ -45,7 +45,8 @@ namespace battleship{
         ~Map(){}
 		static std::vector<Edge> generateAdjacentNodeEdges(int, int, int, int, int);
         void update();
-        void load(std::string, bool = false);
+        void load(std::string);
+        void create(std::string);
         void unload();
 		std::vector<vb01::RayCaster::CollisionResult> raycastTerrain(vb01::Vector3, vb01::Vector3, bool);
 		int getCellId(vb01::Vector3, bool = true);
@@ -56,11 +57,13 @@ namespace battleship{
 		inline vb01::Vector3 getCellSize(){return CELL_SIZE;}
 		inline int getNumSpawnPoints(){return spawnPoints.size();}
 		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
+		inline void setMapSize(vb01::Vector3 s){this->mapSize = s;}
 		inline vb01::Vector3 getMapSize(){return mapSize;}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
 		inline std::vector<Map::Cell>& getCells(){return cells;}
 		inline vb01::Node* getLight(int i){return lights[i];}
 		inline std::vector<vb01::Node*> getLights(){return lights;}
+		inline vb01::u8* getOldMinimapImage(){return oldImageData;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
@@ -70,9 +73,11 @@ namespace battleship{
 		std::vector<vb01::Vector3> spawnPoints;
 		std::vector<Cell> cells;
 		std::vector<vb01::Node*> lights;
+		vb01::u8 *oldImageData = nullptr;
 
         Map(){}
-		void preprareScene();
+		void loadMinimap();
+		void preprareScene(bool);
 		void loadSpawnPoints();
 		void loadLights();
 		void loadSkybox();
