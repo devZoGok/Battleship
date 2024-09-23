@@ -6,25 +6,171 @@
 #include <imageAsset.h>
 #include <assetManager.h>
 
+#include <button.h>
+
 #include <solUtil.h>
+#include <stateManager.h>
 
 #include "map.h"
 #include "game.h"
 #include "player.h"
 #include "gameObject.h"
-#include "gameObjectFactory.h"
 #include "pathfinder.h"
 #include "gameManager.h"
 #include "defConfigs.h"
+#include "activeGameState.h"
+#include "concreteGuiManager.h"
+#include "gameObjectFactory.h"
 
-using namespace std;
-using namespace vb01;
-using namespace gameBase;
 
 namespace battleship{
+	using namespace std;
+	using namespace vb01;
+	using namespace vb01Gui;
+	using namespace gameBase;
 	using namespace configData;
 
-	Map *map = nullptr;
+	static Map *map = nullptr;
+	static Map::Minimap *minimap = nullptr;
+
+	Map::Minimap* Map::Minimap::getSingleton(){
+		if(!minimap) minimap = new Map::Minimap();
+
+		return minimap;
+	}
+
+	Map::Minimap::Minimap(){
+		Root *root = Root::getSingleton();
+
+		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->addBoolUniform("lightingEnabled", false);
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
+
+		Quad *mesh = new Quad(Vector3(50, 50, 0), false);
+		mesh->setMaterial(mat);
+		mesh->setWireframe(true);
+
+		camFrame = new Node();
+		camFrame->attachMesh(mesh);
+		root->getGuiNode()->attachChild(camFrame);
+	}
+
+	void Map::Minimap::updateImage(Button *minimapButton){
+		string imagePath = GameManager::getSingleton()->getPath() + "Models/Maps/" + Map::getSingleton()->getMapName() + "/minimap.jpg";
+		ImageAsset *asset = (ImageAsset*)AssetManager::getSingleton()->getAsset(imagePath);
+		int width = asset->width, height = asset->height, numChannels = asset->numChannels;
+
+		Vector3 mapSize = Map::getSingleton()->getMapSize();
+		vector<pair<Unit*, Vector2>> unitMinimapPos;
+
+		for(Player *pl : Game::getSingleton()->getPlayers())
+			for(Unit *un : pl->getUnits()){
+				Vector2 coords = Vector2(
+					int(un->getPos().x / mapSize.x * width),
+					int(un->getPos().z / mapSize.z * height)
+				);
+
+				unitMinimapPos.push_back(make_pair(un, coords));
+			}
+
+		ActiveGameState *activeState = (ActiveGameState*)GameManager::getSingleton()->getStateManager()->getAppStateByType(AppStateType::ACTIVE_STATE);
+		Player *mainPlayer = activeState->getPlayer();
+		vector<Unit*> units = mainPlayer->getUnits();
+
+		int size = width * height * numChannels, unitPxRadius = 1;
+		int pxId = 0, numIter = 0;
+
+		for(u8 *p = asset->image; p != asset->image + size; p += numChannels, pxId += numChannels, numIter++){
+			Vector2 coords = Vector2(
+				-(numIter % asset->width - .5 * asset->width),
+				numIter / asset->width - .5 * asset->height
+			);
+			float losFactor = .6, pxCol[3]{
+				losFactor * oldImageData[pxId + 0],
+				losFactor * oldImageData[pxId + 1],
+				losFactor * oldImageData[pxId + 2]
+			};
+
+			for(pair<Unit*, Vector2> unitPair : unitMinimapPos){
+				Vector2 coordDiff = unitPair.second - coords;
+
+				if(unitPair.first->getPlayer() == mainPlayer && fabs(coordDiff.x) <= unitPxRadius && fabs(coordDiff.y) <= unitPxRadius){
+					Vector3 plCol = mainPlayer->getColor();
+					pxCol[0] = plCol.x * 255;
+					pxCol[1] = plCol.y * 255;
+					pxCol[2] = plCol.z * 255;
+					break;
+				}
+
+				float minimapLos = unitPair.first->getLineOfSight() / mapSize.x * width;
+
+				if(unitPair.first->getPlayer() == mainPlayer && coords.getDistanceFrom(unitPair.second) < minimapLos){
+					bool foreignUnit = false;
+					Player *pl = nullptr;
+
+					for(pair<Unit*, Vector2> up : unitMinimapPos){
+						Vector2 coordDiff = up.second - coords;
+
+						if(up.first->getPlayer() != mainPlayer && fabs(coordDiff.x) <= unitPxRadius && fabs(coordDiff.y) <= unitPxRadius){
+							foreignUnit = true;
+							pl = up.first->getPlayer();
+							break;
+						}
+					}
+
+					if(foreignUnit){
+						Vector3 plCol = pl->getColor();
+						pxCol[0] = plCol.x * 255;
+						pxCol[1] = plCol.y * 255;
+						pxCol[2] = plCol.z * 255;
+					}
+					else{
+						pxCol[0] = oldImageData[pxId + 0];
+						pxCol[1] = oldImageData[pxId + 1];
+						pxCol[2] = oldImageData[pxId + 2];
+					}
+
+					break;
+				}
+			}
+
+			*p = pxCol[0];
+			*(p + 1) = pxCol[1];
+			*(p + 2) = pxCol[2];
+		}
+
+		Node *rectNode = minimapButton->getRectNode();
+		Material *mat = rectNode->getMesh(0)->getMaterial();
+		Texture *tex = ((Material::TextureUniform*)mat->getUniform("diffuseMap"))->value;
+		tex->loadImageData(asset);
+	}
+
+	void Map::Minimap::updateCamFrame(Button *minimapButton){
+	}
+
+	void Map::Minimap::update(){
+		Button *mb = ConcreteGuiManager::getSingleton()->getButton("minimap");
+		updateImage(mb);
+		updateCamFrame(mb);
+	}
+
+	void Map::Minimap::load(){
+		AssetManager *am = AssetManager::getSingleton();
+		string minimapPath = GameManager::getSingleton()->getPath() + "Models/Maps/" + Map::getSingleton()->getMapName() + "/minimap.jpg";
+
+		am->load(minimapPath);
+		ImageAsset *asset = (ImageAsset*)am->getAsset(minimapPath);
+		int imgSize = asset->width * asset->height * asset->numChannels;
+		oldImageData = new u8[imgSize];
+
+		for(int i = 0; i < imgSize; i++)
+			oldImageData[i] = asset->image[i];
+	}
+
+	void Map::Minimap::unload(){
+		delete[] oldImageData;
+	}
 
 	Map* Map::getSingleton(){
 		if(!map)
@@ -65,6 +211,7 @@ namespace battleship{
 	}
 
 	void Map::update(){
+		Minimap::getSingleton()->update();
 	}
 
 	void Map::loadSkybox(){
@@ -313,19 +460,6 @@ namespace battleship{
 		}
 	}
 
-	void Map::loadMinimap(){
-		AssetManager *am = AssetManager::getSingleton();
-		string minimapPath = GameManager::getSingleton()->getPath() + "Models/Maps/" + mapName + "/minimap.jpg";
-
-		am->load(minimapPath);
-		ImageAsset *asset = (ImageAsset*)am->getAsset(minimapPath);
-		int imgSize = asset->width * asset->height * asset->numChannels;
-		oldImageData = new u8[imgSize];
-
-		for(int i = 0; i < imgSize; i++)
-			oldImageData[i] = asset->image[i];
-	}
-
     void Map::load(string mapName){
 		this->mapName = mapName;
 
@@ -336,7 +470,7 @@ namespace battleship{
 		SOL_LUA_STATE.script_file(path + "Models/Maps/" + mapName + "/" + mapName + ".lua");
 
 		preprareScene(false);
-		loadMinimap();
+		Minimap::getSingleton()->load();
 		loadSpawnPoints();
 		loadSkybox();
 		loadCells();
@@ -419,7 +553,7 @@ namespace battleship{
 	}
 
     void Map::unload(){
-		delete[] oldImageData;
+		Minimap::getSingleton()->unload();
 
 		unloadSkybox();
 		unloadLights();

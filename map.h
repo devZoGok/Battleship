@@ -14,6 +14,10 @@ namespace vb01{
 	class Node;
 }
 
+namespace vb01Gui{
+	class Button;
+}
+
 namespace battleship{
 	class Player;
 	class Unit;
@@ -41,6 +45,23 @@ namespace battleship{
 			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}, std::vector<int> uc = std::vector<int>{}): pos(p), type(t), edges(e), underWaterCellIds(uc){}
 		};
 
+		class Minimap{
+			public:
+				static Minimap* getSingleton();
+				~Minimap(){}
+				void update();
+				void load();
+				void unload();
+				inline vb01::u8* getOldMinimapImage(){return oldImageData;}
+			private:
+				Minimap();
+				void updateCamFrame(vb01Gui::Button*);
+				void updateImage(vb01Gui::Button*);
+
+				vb01::u8 *oldImageData = nullptr;
+				vb01::Node *camFrame = nullptr;
+		};
+
 		static Map* getSingleton();
         ~Map(){}
 		static std::vector<Edge> generateAdjacentNodeEdges(int, int, int, int, int);
@@ -63,7 +84,6 @@ namespace battleship{
 		inline std::vector<Map::Cell>& getCells(){return cells;}
 		inline vb01::Node* getLight(int i){return lights[i];}
 		inline std::vector<vb01::Node*> getLights(){return lights;}
-		inline vb01::u8* getOldMinimapImage(){return oldImageData;}
 		inline float getBaseHeight(){return baseHeight;}
 		inline void setBaseHeight(float bh){this->baseHeight = bh;}
     private:
@@ -76,10 +96,8 @@ namespace battleship{
 		std::vector<Cell> cells;
 		float baseHeight;
 		std::vector<vb01::Node*> lights;
-		vb01::u8 *oldImageData = nullptr;
 
         Map(){}
-		void loadMinimap();
 		void preprareScene(bool);
 		void loadSpawnPoints();
 		void loadLights();

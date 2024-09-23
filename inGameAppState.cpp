@@ -100,6 +100,7 @@ namespace battleship{
 
     void InGameAppState::update() {
 		Game::getSingleton()->update();
+		Map::getSingleton()->update();
     }
 
     void InGameAppState::onAction(int bind, bool isPressed) {

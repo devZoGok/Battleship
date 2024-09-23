@@ -14,7 +14,7 @@ gui = {
 		guiType = GuiType.BUTTON,
 		buttonType = ButtonType.MINIMAP,
 		name = 'minimap',
-		pos = {x = res.x - minimapSize.x, y = 0, z = 0},
+		pos = {x = res.x - minimapSize.x, y = 0, z = .9},
 		size = minimapSize,
 		color = {x = .5, y = .5, z = .5, w = 1}
 	},

@@ -10,10 +10,9 @@ namespace vb01{
 namespace battleship{
 	class MinimapButton : public vb01Gui::Button{
 		public:
-			MinimapButton(vb01::Vector3, vb01::Vector2, std::string);
-			~MinimapButton();
+			MinimapButton(vb01::Vector3 pos, vb01::Vector2 size, std::string ip) : vb01Gui::Button(pos, size, "minimap", "", -1, true, ip){}
+			~MinimapButton(){}
 			void onClick();
-			void update();
 		private:
 	};
 }
