@@ -55,12 +55,14 @@ namespace battleship{
 				inline vb01::u8* getOldMinimapImage(){return oldImageData;}
 			private:
 				Minimap();
+				vb01::Node* initIcon(vb01::Vector3, std::string);
 				void updateCamFrame(vb01Gui::Button*);
 				void updateImage(vb01Gui::Button*);
 
 				vb01::u8 *oldImageData = nullptr;
 				vb01::Node *camFrame = nullptr;
 				std::vector<vb01::Node*> depositIcons;
+				vb01::Node* camIcon = nullptr;
 		};
 
 		static Map* getSingleton();

@@ -42,39 +42,14 @@ namespace battleship{
 
 	//TODO remove icon path literal
 	Map::Minimap::Minimap(){
-		Root *root = Root::getSingleton();
-
-		string path = GameManager::getSingleton()->getPath(), iconPath = path + "Textures/Icons/Resources/refinedsMinimap.png", p[]{iconPath};
-		ImageAsset *asset = (ImageAsset*)AssetManager::getSingleton()->getAsset(iconPath);
-		Vector3 iconSize = Vector3(asset->width, asset->height, 0);
-		Texture *tex = new Texture(p, 1, false);
-
-		Material *mat = new Material(root->getLibPath() + "gui");
-		mat->addBoolUniform("texturingEnabled", true);
-		mat->addTexUniform("diffuseMap", tex, false);
-
-		sol::state_view SOL_LUA_VIEW = generateView();
-		SOL_LUA_VIEW.script_file(path + "Scripts/Gui/activeGameState.lua");
-		sol::table posTbl = SOL_LUA_VIEW["minimapPos"], sizeTbl = SOL_LUA_VIEW["minimapSize"];
-		Vector2 minimapSize = Vector2(sizeTbl["x"], sizeTbl["y"]);
-		Vector3 minimapPos = Vector3(posTbl["x"], posTbl["y"], posTbl["z"]);
+		string basePath = GameManager::getSingleton()->getPath() + "Textures/Icons/";
+		string iconPath = basePath + "Resources/refinedsMinimap.png";
 
 		for(Player *pl : Game::getSingleton()->getPlayers())
-			for(ResourceDeposit *rd : pl->getResourceDeposits()){
-				Vector3 pos = rd->getPos(), mapSize = Map::getSingleton()->getMapSize();
-				Vector2 iconPos = Vector2(
-					minimapSize.x * (pos.x + .5 * mapSize.x) / mapSize.x,
-					minimapSize.y * (pos.z + .5 * mapSize.z) / mapSize.z 
-				);
+			for(ResourceDeposit *rd : pl->getResourceDeposits())
+				depositIcons.push_back(initIcon(rd->getPos(), basePath + "Resources/refinedsMinimap.png"));
 
-				Quad *quad = new Quad(iconSize, false);
-				quad->setMaterial(mat);
-
-				Node *node = new Node(minimapPos + Vector3(iconPos.x, iconPos.y, .1) - .5 * iconSize);
-				node->attachMesh(quad);
-				depositIcons.push_back(node);
-				root->getGuiNode()->attachChild(node);
-			}
+		camIcon = initIcon(Root::getSingleton()->getCamera()->getPosition(), basePath + "Resources/refinedsMinimap.png");
 	}
 
 	Map::Minimap::~Minimap(){
@@ -84,6 +59,41 @@ namespace battleship{
 		}
 
 		depositIcons.clear();
+
+		delete camIcon;
+	}
+
+	Node* Map::Minimap::initIcon(Vector3 posOnMap, string iconPath){
+		string p[]{iconPath};
+		ImageAsset *asset = (ImageAsset*)AssetManager::getSingleton()->getAsset(iconPath);
+		Vector3 iconSize = Vector3(asset->width, asset->height, 0);
+		Texture *tex = new Texture(p, 1, false);
+
+		Root *root = Root::getSingleton();
+		Material *mat = new Material(root->getLibPath() + "gui");
+		mat->addBoolUniform("texturingEnabled", true);
+		mat->addTexUniform("diffuseMap", tex, false);
+
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script_file(GameManager::getSingleton()->getPath() + "Scripts/Gui/activeGameState.lua");
+		sol::table posTbl = SOL_LUA_VIEW["minimapPos"], sizeTbl = SOL_LUA_VIEW["minimapSize"];
+		Vector2 minimapSize = Vector2(sizeTbl["x"], sizeTbl["y"]);
+		Vector3 minimapPos = Vector3(posTbl["x"], posTbl["y"], posTbl["z"]);
+
+		Vector3 mapSize = Map::getSingleton()->getMapSize();
+		Vector2 iconPos = Vector2(
+			minimapSize.x * (posOnMap.x + .5 * mapSize.x) / mapSize.x,
+			minimapSize.y * (posOnMap.z + .5 * mapSize.z) / mapSize.z 
+		);
+
+		Quad *quad = new Quad(iconSize, false);
+		quad->setMaterial(mat);
+
+		Node *node = new Node(minimapPos + Vector3(iconPos.x, iconPos.y, .1) - .5 * iconSize);
+		node->attachMesh(quad);
+		root->getGuiNode()->attachChild(node);
+
+		return node;
 	}
 
 	void Map::Minimap::updateImage(Button *minimapButton){
@@ -177,11 +187,21 @@ namespace battleship{
 	}
 
 	void Map::Minimap::updateCamFrame(Button *minimapButton){
+		Vector3 camPos = Root::getSingleton()->getCamera()->getPosition();
+		Vector3 mapSize = Map::getSingleton()->getMapSize();
+		Vector2 minimapSize = minimapButton->getSize();
+		Vector2 iconPos = Vector2(
+			minimapSize.x * (camPos.x + .5 * mapSize.x) / mapSize.x,
+			minimapSize.y * (camPos.z + .5 * mapSize.z) / mapSize.z 
+		);
+
+		camIcon->setPosition(minimapButton->getPos() + Vector3(iconPos.x, iconPos.y, .1));
 	}
 
 	void Map::Minimap::update(){
 		Button *mb = ConcreteGuiManager::getSingleton()->getButton("minimap");
 		updateImage(mb);
+		updateCamFrame(mb);
 	}
 
 	void Map::Minimap::load(){
