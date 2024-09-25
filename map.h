@@ -48,7 +48,7 @@ namespace battleship{
 		class Minimap{
 			public:
 				static Minimap* getSingleton();
-				~Minimap(){}
+				~Minimap();
 				void update();
 				void load();
 				void unload();
@@ -60,6 +60,7 @@ namespace battleship{
 
 				vb01::u8 *oldImageData = nullptr;
 				vb01::Node *camFrame = nullptr;
+				std::vector<vb01::Node*> depositIcons;
 		};
 
 		static Map* getSingleton();

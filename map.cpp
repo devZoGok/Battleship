@@ -18,6 +18,7 @@
 #include "pathfinder.h"
 #include "gameManager.h"
 #include "defConfigs.h"
+#include "resourceDeposit.h"
 #include "activeGameState.h"
 #include "concreteGuiManager.h"
 #include "gameObjectFactory.h"
@@ -39,21 +40,50 @@ namespace battleship{
 		return minimap;
 	}
 
+	//TODO remove icon path literal
 	Map::Minimap::Minimap(){
 		Root *root = Root::getSingleton();
 
+		string path = GameManager::getSingleton()->getPath(), iconPath = path + "Textures/Icons/Resources/refinedsMinimap.png", p[]{iconPath};
+		ImageAsset *asset = (ImageAsset*)AssetManager::getSingleton()->getAsset(iconPath);
+		Vector3 iconSize = Vector3(asset->width, asset->height, 0);
+		Texture *tex = new Texture(p, 1, false);
+
 		Material *mat = new Material(root->getLibPath() + "gui");
-		mat->addBoolUniform("lightingEnabled", false);
-		mat->addBoolUniform("texturingEnabled", false);
-		mat->addVec4Uniform("diffuseColor", Vector4(0, 0, 0, 1));
+		mat->addBoolUniform("texturingEnabled", true);
+		mat->addTexUniform("diffuseMap", tex, false);
 
-		Quad *mesh = new Quad(Vector3(50, 50, 0), false);
-		mesh->setMaterial(mat);
-		mesh->setWireframe(true);
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script_file(path + "Scripts/Gui/activeGameState.lua");
+		sol::table posTbl = SOL_LUA_VIEW["minimapPos"], sizeTbl = SOL_LUA_VIEW["minimapSize"];
+		Vector2 minimapSize = Vector2(sizeTbl["x"], sizeTbl["y"]);
+		Vector3 minimapPos = Vector3(posTbl["x"], posTbl["y"], posTbl["z"]);
 
-		camFrame = new Node();
-		camFrame->attachMesh(mesh);
-		root->getGuiNode()->attachChild(camFrame);
+		for(Player *pl : Game::getSingleton()->getPlayers())
+			for(ResourceDeposit *rd : pl->getResourceDeposits()){
+				Vector3 pos = rd->getPos(), mapSize = Map::getSingleton()->getMapSize();
+				Vector2 iconPos = Vector2(
+					minimapSize.x * (pos.x + .5 * mapSize.x) / mapSize.x,
+					minimapSize.y * (pos.z + .5 * mapSize.z) / mapSize.z 
+				);
+
+				Quad *quad = new Quad(iconSize, false);
+				quad->setMaterial(mat);
+
+				Node *node = new Node(minimapPos + Vector3(iconPos.x, iconPos.y, .1) - .5 * iconSize);
+				node->attachMesh(quad);
+				depositIcons.push_back(node);
+				root->getGuiNode()->attachChild(node);
+			}
+	}
+
+	Map::Minimap::~Minimap(){
+		for(Node *node : depositIcons){
+			Root::getSingleton()->getGuiNode()->dettachChild(node);
+			delete node;
+		}
+
+		depositIcons.clear();
 	}
 
 	void Map::Minimap::updateImage(Button *minimapButton){
@@ -152,7 +182,6 @@ namespace battleship{
 	void Map::Minimap::update(){
 		Button *mb = ConcreteGuiManager::getSingleton()->getButton("minimap");
 		updateImage(mb);
-		updateCamFrame(mb);
 	}
 
 	void Map::Minimap::load(){
@@ -331,6 +360,7 @@ namespace battleship{
 		}
 	}
 
+	//TODO move minimap loading elsewhere
 	void Map::loadPlayerGameObjects(){
 		AssetManager *assetManager = AssetManager::getSingleton();
 		string path = GameManager::getSingleton()->getPath();
@@ -340,7 +370,6 @@ namespace battleship{
 		string vfxPrefix = SOL_LUA_VIEW["vfxPrefix"], gameObjPrefix = SOL_LUA_VIEW["gameObjPrefix"];
 		assetManager->load(path + vfxPrefix, true);
 		assetManager->load(path + gameObjPrefix, true);
-		assetManager->load(path + "Textures/", true);
 
 		string playerInd = "players";
 		SOL_LUA_VIEW.script("numPlayers = #" + mapTable + "." + playerInd);
@@ -385,6 +414,8 @@ namespace battleship{
 				player->addUnit(GameObjectFactory::createUnit(player, id, pos, rot, buildStatus));
 			}
 		}
+
+		Minimap::getSingleton()->load();
 	}
 
 	void Map::preprareScene(bool empty){
@@ -465,12 +496,12 @@ namespace battleship{
 
 		Pathfinder::getSingleton()->setImpassibleNodeVal(u16(0 - 1));
 		string path = GameManager::getSingleton()->getPath();
+		AssetManager::getSingleton()->load(path + "Textures/", true);
 
 		sol::state_view SOL_LUA_STATE = generateView();
 		SOL_LUA_STATE.script_file(path + "Models/Maps/" + mapName + "/" + mapName + ".lua");
 
 		preprareScene(false);
-		Minimap::getSingleton()->load();
 		loadSpawnPoints();
 		loadSkybox();
 		loadCells();
