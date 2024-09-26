@@ -1,4 +1,7 @@
 map = {
+	lights = {
+		{type = 3, color = {x = .9, y = .9, z = .9}},
+	},
 numWaterBodies = 1,
 size = {x = 123.000000, y = 100, z = 123.000000},
 impassibleNodeValue = 65535,
@@ -352,5 +355,5 @@ cells = {
 skybox = "Skybox1",
 terrain = {model = "111.xml", albedo = "111.jpg"},
 waterbodies = {
-{pos = {x = 7.296803, y = -0.948949, z = 6.370515},				size = {x = 42.873222, y = 42.948956}, albedo = "water.jpg"},}
+{pos = {x = 7.296803, y = -0.948949, z = 6.370515},				size = {x = 42.873222, y = 42.948956}, albedo = "water.png"},}
 }

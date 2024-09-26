@@ -225,6 +225,8 @@ namespace battleship{
 	}
 
 	bool ActiveGameState::isGameObjSelectable(GameObject *obj, bool useDragBox){
+		if(!obj->getModel()->isVisible()) return false;
+
 		Node *hitboxNode = obj->getHitbox();
 		Box *hitbox = (Box*)hitboxNode->getMesh(0);
 
@@ -310,12 +312,6 @@ namespace battleship{
 
 	//TODO fix fog of war for hostile units
     void ActiveGameState::renderUnits() {
-		vector<Unit*> units;
-
-        for (Player *p : Game::getSingleton()->getPlayers())
-            for (Unit *u : p->getUnits())
-                units.push_back(u);
-
 		ConcreteGuiManager *guiManager = ConcreteGuiManager::getSingleton();
 		vector<Listbox*> listboxes{};
 		vector<Checkbox*> checkboxes{};
@@ -328,10 +324,23 @@ namespace battleship{
 			guiManager->getText("wealth"),
 			guiManager->getText("research")
 		};
+
+		vector<Unit*> units;
+
+        for (Player *p : Game::getSingleton()->getPlayers())
+            for (Unit *u : p->getUnits())
+                units.push_back(u);
+
 		vector<Unit*> selUnits = mainPlayer->getSelectedUnits();
 
         for (Unit *u : units) {
+			Node *model = u->getModel();
+
             if (u->getPlayer() == mainPlayer){
+				if(!u->getLosLightNode()) u->initLosLight();
+
+				model->setVisible(true);
+
             	Vector2 pos = u->getScreenPos();
 				string guiScreen = u->getGuiScreen();
 
@@ -341,19 +350,29 @@ namespace battleship{
 				}
             }
 			else{
-            	Vector3 rendUnPos = u->getPos();
-            	rendUnPos.y = 0;
+				if(u->getLosLightNode()) u->destroyLosLight();
 
-                for (int i = 0; i < units.size() && units[i] != u && units[i]->getPlayer() == mainPlayer; i++) {
-                    Vector3 compUnPos = units[i]->getPos();
-                    compUnPos.y = 0;
-                    float dist = compUnPos.getDistanceFrom(rendUnPos);
-                    u->getNode()->setVisible(dist <= units[i]->getLineOfSight() || isInLineOfSight(compUnPos, units[i]->getLineOfSight(), u));
-                }
+				model->setVisible(false);
+
+            	for (int i = 0; i < units.size(); i++)
+					if(units[i]->getPlayer() == mainPlayer){
+            			Vector3 obsUnitPos = units[i]->getPos();
+            			obsUnitPos.y = 0;
+
+						Vector3 compUnitPos = u->getPos();
+						compUnitPos.y = 0;
+						float dist = compUnitPos.getDistanceFrom(obsUnitPos);
+
+						if(dist <= units[i]->getLineOfSight()){
+							model->setVisible(true);
+							break;
+						}
+					}
 			}
         }
     }
 
+	//TODO improve this for greater accuracy
     bool ActiveGameState::isInLineOfSight(Vector3 center, float radius, Unit *u) {
         bool inside = false;
 

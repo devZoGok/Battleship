@@ -21,6 +21,7 @@ namespace vb01{
 	class Mesh;
 	class Quad;
 	class Node;
+	class Light;
 	class Camera;
 }
 
@@ -134,6 +135,8 @@ namespace battleship{
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
 		bool canGarrison(Vehicle*);
+		void initLosLight();
+		void destroyLosLight();
 		inline void setState(State s){state = s;}
 		inline Engineer* toEngineer(){return (Engineer*)this;}
 		inline Structure* toStructure(){return (Structure*)this;}
@@ -143,7 +146,6 @@ namespace battleship{
 		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
         inline float getLineOfSight() {return lineOfSight;}
-        inline vb01::Model* getNode() {return model;}
         inline UnitType getType() {return type;}
         inline UnitClass getUnitClass() {return unitClass;}
         inline void takeDamage(int damage) {health -= damage;}
@@ -156,6 +158,7 @@ namespace battleship{
 		inline int getNumOrders(){return orders.size();}
 		inline std::string getGuiScreen(){return guiScreen;}
 		inline BuildableUnit getBuildableUnit(int i){return buildableUnits[i];}
+		inline vb01::Node* getLosLightNode(){return losLightNode;}
     private:
 		void renderOrderLine(bool);
         void updateScreenCoordinates();
@@ -166,7 +169,7 @@ namespace battleship{
         const int orderVecDispLength = 2000, DEATH_HP = 0;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
-		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
+		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr, *losLightNode = nullptr;
 		bool vehicle;
     protected:
         UnitClass unitClass;

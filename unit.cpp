@@ -1,9 +1,10 @@
-#include <model.h>
-#include <quad.h>
 #include <box.h>
+#include <quad.h>
+#include <model.h>
+#include <light.h>
+#include <texture.h>
 #include <material.h>
 #include <particleEmitter.h>
-#include <texture.h>
 
 #include <stateManager.h>
 #include <solUtil.h>
@@ -404,6 +405,25 @@ namespace battleship{
 			delete weapon;
 
 		weapons.clear();
+	}
+
+	void Unit::initLosLight(){
+		Light *light = new Light(Light::Type::POINT);
+		light->setAttenuation(Light::Attenuation::NONE);
+		light->setRadius(lineOfSight);
+		light->setColor(Vector3::VEC_IJK * .3);
+		light->setAdditiveLighting(false);
+		light->setUseAngle(false);
+
+		losLightNode = new Node(Vector3::VEC_J * 5);
+		losLightNode->addLight(light);
+		model->attachChild(losLightNode);
+	}
+
+	void Unit::destroyLosLight(){
+		model->dettachChild(losLightNode);
+		delete losLightNode;
+		losLightNode = nullptr;
 	}
 	
 	void Unit::destroySound(){

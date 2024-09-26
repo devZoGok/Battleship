@@ -1,6 +1,7 @@
 #include <root.h>
 #include <quad.h>
 #include <model.h>
+#include <light.h>
 #include <material.h>
 #include <assetManager.h>
 
@@ -86,6 +87,33 @@ namespace battleship{
 		Root::getSingleton()->createSkybox(path);
 	}
 
+	void Map::loadLights(){
+		sol::state_view SOL_LUA_VIEW = generateView();
+		sol::table lightsTbl = SOL_LUA_VIEW[mapTable]["lights"];
+		int numLights = lightsTbl.size();
+
+		for(int i = 0; i < numLights; i++){
+			int id = i + 1;
+			Light::Type type = (Light::Type)lightsTbl[id]["type"];
+			sol::table colTbl = lightsTbl[id]["color"];
+
+			Light *light = new Light(type);
+			light->setColor(Vector3(colTbl["x"], colTbl["y"], colTbl["z"]));
+
+			Node *lightNode = new Node();
+			lights.push_back(lightNode);
+			lightNode->addLight(light);
+
+			if(type == Light::Type::DIRECTIONAL){
+				sol::table dirTbl = lightsTbl[id]["dir"];
+				Vector3 dir = Vector3(dirTbl["x"], dirTbl["y"], dirTbl["z"]).norm();
+				lightNode->lookAt(dir);
+			}
+
+			Root::getSingleton()->getRootNode()->attachChild(lightNode);
+		}
+	}
+
 	void Map::loadTerrainObject(int id){
 		string texPath = "", albedoPath = "";
 		Quad *quad = nullptr;
@@ -123,7 +151,11 @@ namespace battleship{
 
 		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
 		mat->addBoolUniform("texturingEnabled", true);
-		mat->addBoolUniform("lightingEnabled", false);
+		mat->addBoolUniform("lightingEnabled", true);
+		mat->addBoolUniform("constLightingEnabled", true);
+		mat->addBoolUniform("normalMapEnabled", false);
+		mat->addBoolUniform("specularMapEnabled", false);
+		mat->addBoolUniform("castShadow", false);
 
 		string fr[]{texPath};
 		AssetManager::getSingleton()->load(fr[0]);
@@ -230,6 +262,7 @@ namespace battleship{
 		cam->setFarPlane(600);
 		cam->setPosition(Vector3(1, 1, 1) * configData::CAMERA_DISTANCE);
 		cam->lookAt(Vector3(-1, -1, -1).norm(), Vector3(-1, 1, -1).norm());
+
 	}
 
 	//TODO implement toggleable cell rendering
@@ -282,23 +315,45 @@ namespace battleship{
 
 		if(!empty){
 			SOL_LUA_STATE.script_file(path + "Models/Maps/" + mapName + "/" + mapName + ".lua");
-			sol::table sizeTable = SOL_LUA_STATE[mapTable]["size"];
-			mapSize = Vector3(sizeTable["x"], sizeTable["y"], sizeTable["z"]);
-			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
+			sol::optional<sol::table> lightsOpt = SOL_LUA_STATE[mapTable]["lights"];
 			
+			if(lightsOpt != sol::nullopt)
+				loadLights();
+
 			loadSpawnPoints();
 			loadSkybox();
 			loadCells();
 			loadTerrainObject(-1);
+
+			sol::table sizeTable = SOL_LUA_STATE[mapTable]["size"];
+			mapSize = Vector3(sizeTable["x"], sizeTable["y"], sizeTable["z"]);
+			int numWaterbodies = SOL_LUA_STATE[mapTable]["numWaterBodies"];
 			
 			for(int i = 0; i < numWaterbodies; i++)
 				loadTerrainObject(i);
+		}
+		else{
+			Light *light = new Light(Light::Type::AMBIENT);
+			light->setColor(Vector3::VEC_IJK * .9);
+
+			Node *node = new Node();
+			node->addLight(light);
+			Root::getSingleton()->getRootNode()->attachChild(node);
+			lights.push_back(node);
 		}
     }
 
 	//TODO unload skybox assets
 	void Map::unloadSkybox(){
 		Root::getSingleton()->removeSkybox();
+	}
+
+	void Map::unloadLights(){
+		while(!lights.empty()){
+			Root::getSingleton()->getRootNode()->dettachChild(lights[0]);
+			delete lights[0];
+			lights.erase(lights.begin());
+		}
 	}
 
 	void Map::unloadCells(){
@@ -347,6 +402,7 @@ namespace battleship{
 
     void Map::unload(){
 		unloadSkybox();
+		unloadLights();
 		unloadCells();
 		unloadTerrainObjects();
 		unloadPlayerObjects();
