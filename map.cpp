@@ -123,8 +123,8 @@ namespace battleship{
 
 		for(u8 *p = asset->image; p != asset->image + size; p += numChannels, pxId += numChannels, numIter++){
 			Vector2 coords = Vector2(
-				-(numIter % asset->width - .5 * asset->width),
-				numIter / asset->width - .5 * asset->height
+				numIter % asset->width - .5 * asset->width,
+				-(numIter / asset->width - .5 * asset->height)
 			);
 			float losFactor = .6, pxCol[3]{
 				losFactor * oldImageData[pxId + 0],

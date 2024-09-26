@@ -80,7 +80,7 @@ namespace battleship{
 
 		Camera *cam = Root::getSingleton()->getCamera();
 		cam->setPosition(Map::getSingleton()->getSpawnPoint(playerId - 1) + Vector3(1, 1, 1) * configData::CAMERA_DISTANCE);
-		cam->lookAt(Vector3(0, -1, 1).norm(), Vector3(0, 1, 1).norm());
+		cam->lookAt(Vector3(0, -1, -1).norm(), Vector3(0, 1, -1).norm());
 
         mainPlayer = Game::getSingleton()->getPlayer(playerId);
 

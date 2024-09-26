@@ -20,8 +20,8 @@ namespace battleship{
 
 	void MinimapButton::onClick(){
 		Vector2 clickPos = getCursorPos();
-		float posXRatio = 1. - (clickPos.x - pos.x) / size.x;
-		float posYRatio = 1. - (clickPos.y - pos.y) / size.y;
+		float posXRatio = (clickPos.x - pos.x) / size.x;
+		float posYRatio = (clickPos.y - pos.y) / size.y;
 
 		Camera *cam = Root::getSingleton()->getCamera();
 		Vector3 mapSize = Map::getSingleton()->getMapSize();
