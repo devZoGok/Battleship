@@ -40,16 +40,19 @@ namespace battleship{
 		return minimap;
 	}
 
-	//TODO remove icon path literal
 	Map::Minimap::Minimap(){
-		string basePath = GameManager::getSingleton()->getPath() + "Textures/Icons/";
-		string iconPath = basePath + "Resources/refinedsMinimap.png";
+		sol::state_view SOL_STATE_VIEW = generateView();
+		SOL_STATE_VIEW.script_file(GameManager::getSingleton()->getPath() + "Scripts/Gui/activeGameState.lua");
+
+		string refIconFile = SOL_STATE_VIEW["refIcon"];
+		string basePath = GameManager::getSingleton()->getPath() + "Textures/Icons/Minimap/";
 
 		for(Player *pl : Game::getSingleton()->getPlayers())
 			for(ResourceDeposit *rd : pl->getResourceDeposits())
-				depositIcons.push_back(initIcon(rd->getPos(), basePath + "Resources/refinedsMinimap.png"));
+				depositIcons.push_back(initIcon(rd->getPos(), basePath + refIconFile));
 
-		camIcon = initIcon(Root::getSingleton()->getCamera()->getPosition(), basePath + "Resources/refinedsMinimap.png");
+		string camIconFile = SOL_STATE_VIEW["eyeIcon"];
+		camIcon = initIcon(Root::getSingleton()->getCamera()->getPosition(), basePath + camIconFile);
 	}
 
 	Map::Minimap::~Minimap(){
@@ -75,7 +78,6 @@ namespace battleship{
 		mat->addTexUniform("diffuseMap", tex, false);
 
 		sol::state_view SOL_LUA_VIEW = generateView();
-		SOL_LUA_VIEW.script_file(GameManager::getSingleton()->getPath() + "Scripts/Gui/activeGameState.lua");
 		sol::table posTbl = SOL_LUA_VIEW["minimapPos"], sizeTbl = SOL_LUA_VIEW["minimapSize"];
 		Vector2 minimapSize = Vector2(sizeTbl["x"], sizeTbl["y"]);
 		Vector3 minimapPos = Vector3(posTbl["x"], posTbl["y"], posTbl["z"]);
