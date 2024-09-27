@@ -18,7 +18,7 @@ namespace battleship{
 	using namespace gameBase;
 
 	TradingScreenButton::TradingScreenButton(Vector3 pos, Vector2 size, Listbox *lb, int plId, string gs, string name, int trigger, string imagePath) : 
-		ActiveStateButton(pos, size, gs, name, trigger, imagePath), 
+		ActiveStateButton(pos, size, gs, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", trigger, imagePath), 
 		listbox(lb),
 		playerId(plId)
 	{}

@@ -243,7 +243,7 @@ namespace battleship{
 				break;
 			case ACTIVE_GAME_STATE:
 				guiScreen = guiTable["guiScreen"];
-				button = new ActiveStateButton(pos, size, guiScreen, name, (int)guiTable["trigger"], imagePath);
+				button = new ActiveStateButton(pos, size, guiScreen, name, fontBasePath + "batang.ttf", (int)guiTable["trigger"], imagePath);
 				break;
 			case PLAYER_TRADE:
 				guiScreen = guiTable["guiScreen"];
