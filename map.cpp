@@ -135,16 +135,6 @@ namespace battleship{
 			};
 
 			for(pair<Unit*, Vector2> unitPair : unitMinimapPos){
-				Vector2 coordDiff = unitPair.second - coords;
-
-				if(unitPair.first->getPlayer() == mainPlayer && fabs(coordDiff.x) <= unitPxRadius && fabs(coordDiff.y) <= unitPxRadius){
-					Vector3 plCol = mainPlayer->getColor();
-					pxCol[0] = plCol.x * 255;
-					pxCol[1] = plCol.y * 255;
-					pxCol[2] = plCol.z * 255;
-					break;
-				}
-
 				float minimapLos = unitPair.first->getLineOfSight() / mapSize.x * width;
 
 				if(unitPair.first->getPlayer() == mainPlayer && coords.getDistanceFrom(unitPair.second) < minimapLos){
@@ -173,6 +163,18 @@ namespace battleship{
 						pxCol[2] = oldImageData[pxId + 2];
 					}
 
+					break;
+				}
+			}
+
+			for(pair<Unit*, Vector2> unitPair : unitMinimapPos){
+				Vector2 coordDiff = unitPair.second - coords;
+
+				if(unitPair.first->getPlayer() == mainPlayer && fabs(coordDiff.x) <= unitPxRadius && fabs(coordDiff.y) <= unitPxRadius){
+					Vector3 plCol = mainPlayer->getColor();
+					pxCol[0] = plCol.x * 255;
+					pxCol[1] = plCol.y * 255;
+					pxCol[2] = plCol.z * 255;
 					break;
 				}
 			}
