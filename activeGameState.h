@@ -6,6 +6,8 @@
 #include "map.h"
 #include "unit.h"
 
+#include <util.h>
+
 namespace vb01{
 	class Node;
 	class Texture;

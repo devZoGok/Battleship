@@ -31,6 +31,7 @@
 #include "tradingScreenButton.h"
 #include "offerButton.h"
 #include "resourceAmmountButton.h"
+#include "minimapButton.h"
 
 namespace battleship{
 	using namespace std;
@@ -55,6 +56,7 @@ namespace battleship{
 
 	//TODO refactor player difficulty and faction listbox selection
 	//TODO remove hardcoded font path values
+	//TODO use configurable map path values 
 	Button* ConcreteGuiManager::parseButton(int guiId){
 		sol::state_view SOL_LUA_STATE = generateView();
 		sol::table guiTable = SOL_LUA_STATE["gui"][guiId + 1];
@@ -241,7 +243,7 @@ namespace battleship{
 				break;
 			case ACTIVE_GAME_STATE:
 				guiScreen = guiTable["guiScreen"];
-				button = new ActiveStateButton(pos, size, guiScreen, name, (int)guiTable["trigger"], imagePath);
+				button = new ActiveStateButton(pos, size, guiScreen, name, fontBasePath + "batang.ttf", (int)guiTable["trigger"], imagePath);
 				break;
 			case PLAYER_TRADE:
 				guiScreen = guiTable["guiScreen"];
@@ -261,6 +263,11 @@ namespace battleship{
 			case RESOURCE_AMMOUNT:
 				button = new ResourceAmmountButton(pos, size, name, (int)guiTable["ammount"], (int)guiTable["trigger"], imagePath);
 				break;
+			case MINIMAP:{
+				string minimapPath = GameManager::getSingleton()->getPath() + "Models/Maps/" + Map::getSingleton()->getMapName() + "/minimap.jpg";
+				button = new MinimapButton(pos, size, minimapPath);
+				break;
+			}
 		}
 
 		int typeArr[2]{(int)GuiElementType::BUTTON, (int)type};

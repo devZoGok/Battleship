@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   sodipodi:docname="eye.svg"
+   inkscape:export-filename="/home/dominykas/dzg/logo.png"
+   inkscape:export-xdpi="20"
+   inkscape:export-ydpi="20"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.088388348"
+     inkscape:cx="33.941125"
+     inkscape:cy="1040.8612"
+     inkscape:window-width="1918"
+     inkscape:window-height="1058"
+     inkscape:window-x="0"
+     inkscape:window-y="20"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer6"
+     inkscape:lockguides="true"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:none">
+    <image
+       width="486.83334"
+       height="863.59998"
+       preserveAspectRatio="none"
+       xlink:href="../../../../../WinnersGames/PlanetFleet/IMG_20211009_101516.jpg"
+       id="image892"
+       x="-287.70917"
+       y="-426.30634" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer10"
+     inkscape:label="Hintergrund 1"
+     style="display:inline">
+    <rect
+       style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.40508;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect58860"
+       width="710.37988"
+       height="1161.3051"
+       x="-253.01686"
+       y="-504.89389"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Hintergrund"
+     style="display:inline;opacity:1">
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5.66929;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="path52691"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="-909.48932"
+       sodipodi:cy="-739.01361"
+       sodipodi:r1="1004.5639"
+       sodipodi:r2="502.28195"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:rounded="0"
+       inkscape:randomized="2.86229e-17"
+       d="m -39.511461,-236.73166 -1739.955739,0 869.97789,-1506.84584 z"
+       transform="matrix(0.408122,0,0,0.76366907,473.48854,837.19586)"
+       inkscape:transform-center-x="-1.5498045e-05"
+       inkscape:transform-center-y="-191.78858"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Weg(W)"
+     style="display:inline">
+    <path
+       id="rect919"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:1.32884;stroke-linecap:square;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="m 89.336172,129.02235 30.427608,0.005 161.88747,534.14874 H -37.456847 Z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Weg(S)">
+    <path
+       id="rect1587"
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-linecap:square;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="M 81.459433,396.82322 H 145.3509 L 184.56496,598.0149 H 52.803253 Z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       id="rect1587-3"
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:0.398792;stroke-linecap:square;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="m 93.643919,266.49597 h 33.070651 l 14.22247,100.93974 H 82.768168 Z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       id="rect1587-3-6"
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:0.119577;stroke-linecap:square;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="M 99.098012,216.02528 H 118.6442 l 5.43329,33.07433 H 94.583032 Z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       id="rect1587-3-6-7"
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:0.090904;stroke-linecap:square;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="m 102.40325,179.19352 h 10.60029 l 3.48798,22.56269 H 99.445976 Z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       id="rect1587-3-6-7-0"
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:0.0550486;stroke-linecap:square;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="m 104.79058,155.68355 h 6.05328 l 1.9918,14.48921 h -9.73382 z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       id="rect1587-3-6-7-0-9"
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:0.0356672;stroke-linecap:square;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="m 105.94868,140.69053 h 3.84752 l 1.26601,9.5697 h -6.18692 z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Sonne"
+     style="display:inline;opacity:1">
+    <path
+       id="path6765"
+       style="fill:#fffd00;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.81837;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1;paint-order:stroke fill markers"
+       inkscape:transform-center-x="-4.743572e-06"
+       d="m 196.38219,79.951228 c 0,0 -28.14495,1.66354 -48.89543,-7.66454 -20.75048,-9.32807 -34.10648,-29.64772 -37.38299,-29.22521 -3.27651,0.42246 -11.177623,22.23677 -4.11703,39.85119 7.06059,17.614392 29.08289,31.028852 29.08289,31.028852 0,0 -26.68679,-14.041188 -39.993203,-32.494762 -13.306404,-18.4536 -13.232434,-41.31957 -16.281224,-42.59191 -3.04881,-1.27234 -20.88888,14.57049 -23.58142,33.3553 -2.69253,18.784794 9.76246,40.511562 9.76246,40.511562 0,0 -16.1812,-24.601782 -18.47809,-47.236272 -2.2969,-22.63445 9.29049,-43.30159 7.28634,-45.92788 -2.00415,-2.62632 -23.83456,2.49306 -35.55876,17.4149 -11.7242098,14.92184 -13.3422398,39.64616 -13.3422398,39.64616 0,0 -0.17145,-29.07724 9.1565998,-49.82773 9.32806,-20.7504302 28.15566,-33.17416 27.73316,-36.45071 -0.42249,-3.27649 -21.33333,-10.17728 -38.9477197,-3.11671 -17.6143803,7.06061 -31.9323403,28.08258 -31.9323403,28.08258 0,0 14.94467,-25.68647 33.3982502,-38.99289 18.4535898,-13.30643 40.4160698,-14.23275 41.6884298,-17.28154 1.27237,-3.04878 -11.8272,-20.06672 -30.61201,-22.75925 -18.7847998,-2.69253 -43.25484,8.94031 -43.25484,8.94031 0,0 27.34503024,-15.35908 49.97951,-17.65595 22.63448,-2.29691 40.55837,8.46835 43.18466,6.46419 2.6263,-2.00415 -2.60949,-25.79447 -17.53134,-37.518718 -14.92184,-11.7242 -39.5297598,-11.38228 -39.5297598,-11.38228 0,0 28.9608398,-2.1314 49.7113298,7.19667 20.75047,9.328048 33.290591,30.115558 36.567108,29.693058 3.276508,-0.42252 11.257039,-24.687158 4.196441,-42.301528 -7.060595,-17.61437 -29.162309,-28.57851 -29.162309,-28.57851 0,0 26.766207,11.59088 40.072617,30.04446 13.30641,18.45356 13.15302,43.769858 16.20181,45.042248 3.04879,1.27235 16.18179,-13.24249 18.87433,-32.027288 2.69254,-18.78481 -5.05537,-41.83956 -5.05537,-41.83956 0,0 11.47412,25.92976 13.77102,48.564268 2.2969,22.63444 -4.58342,41.97359 -2.57927,44.59987 2.00415,2.62633 22.22597,-5.12636 33.95018,-20.04825 11.72421,-14.92185 14.95081,-37.012838 14.95081,-37.012838 0,0 -1.43711,26.443928 -10.76517,47.194398 -9.32807,20.75049 -26.54708,35.80751 -26.12458,39.08406 0.42249,3.2765 21.98954,7.40784 39.60393,0.34722 17.6144,-7.06061 31.27612,-25.31312 31.27612,-25.31312 0,0 -14.28845,22.917 -32.74202,36.22342 -18.45358,13.30642998 -41.07228,17.0022198 -42.34464,20.0510098 -1.27237,3.04883 14.15899,16.5053502 32.94379,19.1979302 18.78481,2.69253 40.92306,-5.37894 40.92306,-5.37894 0,0 -25.01325,11.79765 -47.64772,14.09457 -22.63447,2.29691 -42.89017,-4.90697 -45.51647,-2.90282 -2.62628,2.00415 3.42539,25.3266 18.34724,37.05079 14.92184,11.72425 38.71386,11.85019 38.71386,11.85019 z"
+       sodipodi:nodetypes="cssscssscssscssscssscssscssscssscssscssscssscsssc"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       style="opacity:0.0175895;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="path39519"
+       d="m 82.768168,367.43571 c 1.941092,7.8979 3.802742,15.82003 6.155642,23.60769 2.080575,7.4807 5.325327,14.43098 9.966542,20.63832 5.176558,5.96015 11.417688,10.87758 17.774608,15.50916 6.06444,4.04824 12.83246,7.29745 19.95236,9.01258 1.80867,0.4357 3.65325,0.70588 5.47988,1.05882 10.06717,1.34153 20.42769,1.13738 30.23382,-1.73172 2.21639,-0.64848 4.36264,-1.51626 6.54396,-2.27439 16.97588,-6.93051 33.16239,-15.54191 48.40874,-25.71124 5.56788,-3.82312 10.82427,-8.10937 14.79379,-13.62376 2.23829,-3.10941 2.63185,-4.08975 4.4501,-7.44471 4.22189,-8.50828 5.8443,-17.81908 7.08317,-27.14009 1.20838,-10.26562 1.12507,-20.61178 1.48307,-30.92473 0.58073,-10.4879 1.39766,-20.92668 3.03915,-31.30379 1.64383,-9.0212 4.20381,-17.85147 5.68354,-26.90594 1.17776,-7.20667 1.08032,-8.18832 1.64007,-15.66204 0.46366,-11.15981 0.28881,-5.62341 0.52984,-16.60904 0,0 -3.20916,1.62648 -3.20916,1.62648 v 0 c -0.23065,10.97117 -0.0541,5.44125 -0.5357,16.58956 -0.60924,7.63537 -0.49264,8.30055 -1.71257,15.65237 -1.50339,9.0601 -4.03925,17.90226 -5.70484,26.92905 -1.67601,10.39604 -2.51551,20.85736 -3.07105,31.3712 -0.34528,10.30064 -0.26217,20.63507 -1.48909,30.8864 -1.25349,9.29391 -2.9381,18.56523 -7.17912,27.03331 -1.82181,3.31631 -2.23291,4.31623 -4.47347,7.38452 -3.97154,5.43875 -9.20532,9.66945 -14.71697,13.4673 -1.33009,0.88597 -7.89142,5.31901 -9.99449,6.53503 -10.31403,5.9637 -21.2111,10.89922 -32.142,15.60351 -2.1656,0.76226 -4.29575,1.63391 -6.4968,2.28678 -9.75889,2.89468 -20.08217,3.1731 -30.11613,1.83929 -1.80906,-0.3502 -3.63551,-0.62021 -5.4272,-1.0506 -7.07884,-1.70046 -13.82537,-4.89608 -19.85537,-8.92317 -6.33347,-4.59678 -12.54989,-9.48427 -17.68321,-15.43153 -4.620793,-6.16643 -7.905283,-13.04003 -9.96867,-20.48502 -2.356117,-7.79388 -4.233667,-15.72542 -5.990873,-23.67337 0,0 -3.451569,1.86377 -3.451569,1.86377 z"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       style="opacity:0.0175895;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="path39523"
+       d="m 132.08965,376.40834 c -9.96119,-4.08773 -20.07137,-7.78546 -30.06454,-11.79605 -4.694106,-1.9803 -9.441618,-3.82786 -14.194368,-5.66116 0,0 -3.118164,2.09548 -3.118164,2.09548 v 0 c 4.770286,1.81852 9.534842,3.65268 14.246635,5.61951 9.958977,3.97845 20.046857,7.63958 29.877387,11.92576 0,0 3.25305,-2.18354 3.25305,-2.18354 z"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer7"
+     inkscape:label="Auge"
+     style="display:inline;opacity:1">
+    <path
+       id="path44822"
+       style="opacity:1;fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       d="m 103.30148,2.3415478 c -16.10289,0 -46.057627,-14.7260698 -46.057627,-23.6597398 0,-10.00957 30.338664,-23.69444 45.990127,-23.69444 16.33807,0 44.06321,14.52904 44.06321,25.14117 0,7.94224 -26.21048,22.2130098 -43.99571,22.2130098 z"
+       sodipodi:nodetypes="ssscs"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer8"
+     inkscape:label="Augenkreis"
+     style="display:inline;opacity:1">
+    <path
+       style="display:inline;opacity:1;fill:#1c1ff8;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.77953;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="path24948"
+       sodipodi:type="arc"
+       sodipodi:cx="103.2846"
+       sodipodi:cy="-21.335562"
+       sodipodi:rx="18.078232"
+       sodipodi:ry="18.078232"
+       sodipodi:start="0"
+       sodipodi:end="6.2817192"
+       sodipodi:arc-type="slice"
+       d="m 121.36283,-21.335562 a 18.078232,18.078232 0 0 1 -18.0716,18.0782308 18.078232,18.078232 0 0 1 -18.084858,-18.0649778 18.078232,18.078232 0 0 1 18.058348,-18.091474 18.078232,18.078232 0 0 1 18.09809,18.051717 l -18.07821,0.0265 z"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+    <path
+       style="display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.77953;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="path24948-2"
+       sodipodi:type="arc"
+       sodipodi:cx="103.2846"
+       sodipodi:cy="-21.335562"
+       sodipodi:rx="12.291591"
+       sodipodi:ry="12.291591"
+       sodipodi:start="0"
+       sodipodi:end="6.2817192"
+       sodipodi:arc-type="slice"
+       d="M 115.57619,-21.335562 A 12.291591,12.291591 0 0 1 103.2891,-9.0439719 12.291591,12.291591 0 0 1 90.993012,-21.326551 a 12.291591,12.291591 0 0 1 12.278068,-12.300594 12.291591,12.291591 0 0 1 12.3051,12.273562 l -12.29158,0.01802 z"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer9"
+     inkscape:label="Auge oben"
+     style="display:inline;opacity:1">
+    <path
+       id="path44822-1"
+       style="display:inline;opacity:1;fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       d="m 102.30593,-34.088052 c -16.102883,0 -45.062077,13.69842 -45.062077,12.76986 0,-10.00957 30.338661,-23.69444 45.990127,-23.69444 16.33807,0 44.06321,14.52904 44.06321,25.14117 -8.27101,-7.86783 -27.20603,-14.21659 -44.99126,-14.21659 z"
+       sodipodi:nodetypes="ssscs"
+       inkscape:export-filename="/home/dominykas/dzg/logo.png"
+       inkscape:export-xdpi="19.252476"
+       inkscape:export-ydpi="19.252476" />
+  </g>
+</svg>

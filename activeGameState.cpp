@@ -6,6 +6,8 @@
 #include <quad.h>
 #include <box.h>
 #include <text.h>
+#include <assetManager.h>
+#include <imageAsset.h>
 
 #include <stateManager.h>
 #include <solUtil.h>

@@ -19,6 +19,9 @@
 #include <texture.h>
 #include <assetManager.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "external/vb01/external/stb/stb_image_write.h"
+
 #include <util.h>
 
 #include <listbox.h>
@@ -52,16 +55,20 @@ namespace battleship{
 		assetManager->load(basePath + DEFAULT_TEXTURE);
 
 		map = Map::getSingleton();
-		map->load(name, newMap);
 		Game *game = Game::getSingleton();
 
 		if(newMap){
 			game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
-			map->addSpawnPoint(Vector3::VEC_ZERO);
+			map->setMapSize(Vector3(size.x, 0, size.y));
+			map->create(name);
 			generatePlane(size);
 		}
 		else{
+			map->load(name);
+
 			int numPlayers = map->getNumSpawnPoints();
+			int numVerts = 3 * map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase().numTris;
+			oldLandmassVertHeights = new float[numVerts];
 
 			for(int i = 0; i < numPlayers; i++)
 				game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
@@ -184,6 +191,20 @@ namespace battleship{
 		}
 
 		mesh->updateVerts(meshData);
+
+		int minId = 0, maxId = 0;
+
+		for(int i = 0; i < numVerts; i++){
+			if(verts[i].pos->y < verts[minId].pos->y)
+				minId = i;
+
+			if(verts[i].pos->y > verts[maxId].pos->y)
+				maxId = i;
+		}
+
+		Vector3 mapSize = map->getMapSize();
+		map->setBaseHeight(verts[minId].pos->y);
+		map->setMapSize(Vector3(mapSize.x, verts[maxId].pos->y - verts[minId].pos->y, mapSize.z));
 	}
 
 	void MapEditorAppState::MapEditor::generatePlane(Vector2 size){
@@ -390,11 +411,34 @@ namespace battleship{
 		return cells;
 	}
 
-	void MapEditorAppState::MapEditor::generateMapScript(){
+	void MapEditorAppState::MapEditor::generateMinimap(string mapFolder, vector<Map::Cell> &cells){
+		Vector3 mapSize = map->getMapSize(), cellSize = map->getCellSize();
+		int width = int(mapSize.x / cellSize.x);
+		int height = int(mapSize.z / cellSize.z);
+		int numChannels = 3;
+		int size = width * height * numChannels;
+		int cellId = 0;
+		float baseHeight = map->getBaseHeight();
+
+		u8 *imgData = new u8[size];
+
+		for(u8 *p = imgData; p != imgData + size; p+= numChannels, cellId++){
+			float min = .6, max = 1.;
+			float heightFactor = min + (max - min) * (cells[cellId].pos.y - baseHeight) / mapSize.y;
+			Vector3 color = (cells[cellId].type == Map::Cell::Type::WATER ? Vector3::VEC_K : Vector3::VEC_J);
+
+			*p = color.x * heightFactor * 255.f;
+			*(p + 1) = color.y * heightFactor * 255.f;
+			*(p + 2) = color.z * heightFactor * 255.f;
+		}
+
+		stbi_write_jpg(string(mapFolder + "minimap.jpg").c_str(), width, height, numChannels, imgData, 100);
+	}
+
+	void MapEditorAppState::MapEditor::generateMapScript(vector<Map::Cell> &cells){
 		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
 		vector<Player*> players = Game::getSingleton()->getPlayers();
 
-		Vector3 mapSize = map->getMapSize();
 		string mapScript = "map = {\nlights = {\n";
 
 		for(Node *light : map->getLights()){
@@ -409,8 +453,9 @@ namespace battleship{
 			mapScript += ", color = {x = " + to_string(color.x) + ", y = " + to_string(color.y) + ", z = " + to_string(color.z) + "}},";
 		}
 
+		Vector3 mapSize = map->getMapSize();
 		mapScript += "}\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
-		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.z) + "},\n";
+		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = " + to_string(mapSize.y) + ", z = " + to_string(mapSize.z) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(players.size()) + ",\n";
 
@@ -474,7 +519,6 @@ namespace battleship{
 			mapScript += "}\n";
 		}
 
-		vector<Map::Cell> cells = generateMapCells();
 		mapScript += "},\nnumCells = " + to_string(cells.size()) + ",\n";
 		mapScript += "cells = {\n";
 
@@ -543,8 +587,10 @@ namespace battleship{
 		create_directory(mapFolder);
 		copy_file(assetsPath + DEFAULT_TEXTURE, mapFolder + map->getMapName() + ".jpg");
 
+		vector<Map::Cell> cells = generateMapCells();
 		generateLandmassXml();
-		generateMapScript();
+		generateMapScript(cells);
+		generateMinimap(mapFolder, cells);
 	}
 
 	void MapEditorAppState::MapEditor::togglePush(bool push){

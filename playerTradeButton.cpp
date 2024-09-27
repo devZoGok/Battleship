@@ -13,7 +13,7 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace gameBase;
 
-	PlayerTradeButton::PlayerTradeButton(Vector3 pos, Vector2 size, string gs, string name, int trigger, string imagePath) : ActiveStateButton(pos, size, gs, name, trigger, imagePath){}
+	PlayerTradeButton::PlayerTradeButton(Vector3 pos, Vector2 size, string gs, string name, int trigger, string imagePath) : ActiveStateButton(pos, size, gs, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", trigger, imagePath){}
 
 	void PlayerTradeButton::onClick(){
 		ActiveStateButton::onClick();
