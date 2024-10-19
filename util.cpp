@@ -265,20 +265,34 @@ namespace battleship{
 	}
 
 	Vector3 screenToSpace(Vector2 pos){
-		Root *root = Root::getSingleton();
-		Camera *cam = root->getCamera();
-		Vector3 dir = cam->getDirection(), up = cam->getUp();
-		Vector3 camPos = cam->getPosition();
-		mat4 view = lookAt(vec3(camPos.x, camPos.y, camPos.z), vec3(camPos.x + dir.x, camPos.y + dir.y, camPos.z + dir.z), vec3(up.x, up.y, up.z));
-		
-		float fov = cam->getFov(), width = root->getWidth(), height = root->getHeight(), nearPlane = cam->getNearPlane(), farPlane = cam->getFarPlane();
-		mat4 proj = perspective(radians(fov), width / height, nearPlane, farPlane);
+		GameManager *gm = GameManager::getSingleton();
+		float midWidth = .5 * gm->getWidth(), midHeight = .5 * gm->getHeight(), horOffset, vertOffset;
+		bool left, up;
 
-		mat4 mat = proj * view;
-		float w = (mat * vec4(0, 0, 0, 1)).w;
-		vec4 ndcPos = vec4(pos.x * 2.0 / width - 1.0, pos.y * -(2.0 / height) + 1.0, -1, 1);
-		vec4 spacePos = inverse(mat) * ndcPos;
-		spacePos = vec4(spacePos.x / spacePos.w, spacePos.y / spacePos.w, spacePos.z / spacePos.w, spacePos.w);
-		return Vector3(spacePos.x, spacePos.y, spacePos.z);
+		if(pos.x < midWidth){
+			left = true;
+			horOffset = pos.x / midWidth - 1; 
+		}
+		else{
+			left = false;
+			horOffset = (pos.x - midWidth) / midWidth; 
+		}
+
+		if(pos.y < midHeight){
+			up = true;
+			vertOffset = 1 - pos.y / midHeight;
+		}
+		else{
+			up = false;
+			vertOffset = -(pos.y - midHeight) / midHeight;
+		}
+
+		Camera *cam = Root::getSingleton()->getCamera();
+		float camNorm = cam->getNearPlane(); 
+		float tg = tan(radians(cam->getFov()) / 2), ar = midWidth / midHeight;
+		float camHeight = camNorm * tg, camWidth = camHeight * ar;
+		Vector3 posOffset = (cam->getLeft() * camWidth * horOffset + cam->getUp() * camHeight * vertOffset + cam->getDirection() * camNorm);
+
+		return cam->getPosition() + posOffset;
 	}
 }

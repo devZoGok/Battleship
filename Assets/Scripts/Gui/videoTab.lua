@@ -1,7 +1,7 @@
 numGui = 9
 gui = {
 	{
-		pos = {x = 210, y = 190},
+		pos = {x = 210, y = 190, z = 0},
 		size = {x = 360, y = 20},
 		guiType = GuiType.LISTBOX,
 		listboxType = ListboxType.RESOLUTION,
@@ -14,41 +14,41 @@ gui = {
 		}
 	},
 	{
-		pos = {x = 110, y = 40},
+		pos = {x = 110, y = 40, z = 0},
 		guiType = GuiType.CHECKBOX
 	},
 	{
-		pos = {x = 110, y = 70},
+		pos = {x = 110, y = 70, z = 0},
 		guiType = GuiType.CHECKBOX
 	},
 	{
-		pos = {x = 110, y = 100},
+		pos = {x = 110, y = 100, z = 0},
 		guiType = GuiType.CHECKBOX
 	},
 	{
-		pos = {x = 110, y = 130},
+		pos = {x = 110, y = 130, z = 0},
 		guiType = GuiType.CHECKBOX
 	},
 	{
-		pos = {x = 110, y = 160},
+		pos = {x = 110, y = 160, z = 0},
 		guiType = GuiType.CHECKBOX
 	},
 	{
-		pos = {x = 100, y = 400},
+		pos = {x = 100, y = 400, z = 0},
 		size = {x = 150, y = 20},
 		guiType = GuiType.BUTTON,
 		name = 'Ok',
 		buttonType = ButtonType.OK
 	},
 	{
-		pos = {x = 260, y = 400},
+		pos = {x = 260, y = 400, z = 0},
 		size = {x = 150, y = 20},
 		guiType = GuiType.BUTTON,
 		name = 'Restore defaults',
 		buttonType = ButtonType.DEFAULTS
 	},
 	{
-		pos = {x = 420, y = 400},
+		pos = {x = 420, y = 400, z = 0},
 		size = {x = 150, y = 20},
 		guiType = GuiType.BUTTON,
 		name = 'Back',

@@ -6,18 +6,21 @@
 #include "gameObjectFactory.h"
 #include "gameObjectFrameController.h"
 #include "player.h"
+#include "game.h"
 #include "map.h"
-#include "mesh.h"
 #include "util.h"
 
-#include <rayCaster.h>
 #include <box.h>
 #include <text.h>
 #include <node.h>
 #include <quad.h>
+#include <light.h>
 #include <model.h>
 #include <texture.h>
 #include <assetManager.h>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "external/vb01/external/stb/stb_image_write.h"
 
 #include <util.h>
 
@@ -40,7 +43,6 @@ namespace battleship{
 
 	MapEditorAppState::MapEditor::MapEditor(string name, Vector2 size, bool newMap){
 		this->newMap = newMap;
-		this->mapSize = size;
 
 		string basePath = GameManager::getSingleton()->getPath();
 		prepareTextures(basePath + "Textures/Skyboxes/", true, skyTextures);
@@ -53,18 +55,23 @@ namespace battleship{
 		assetManager->load(basePath + DEFAULT_TEXTURE);
 
 		map = Map::getSingleton();
-		map->load(name, newMap);
+		Game *game = Game::getSingleton();
 
 		if(newMap){
-			addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
-			map->addSpawnPoint(Vector3::VEC_ZERO);
+			game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
+			map->setMapSize(Vector3(size.x, 0, size.y));
+			map->create(name);
 			generatePlane(size);
 		}
 		else{
+			map->load(name);
+
 			int numPlayers = map->getNumSpawnPoints();
+			int numVerts = 3 * map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase().numTris;
+			oldLandmassVertHeights = new float[numVerts];
 
 			for(int i = 0; i < numPlayers; i++)
-				addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
+				game->addPlayer(new Player(0, 0, 0, Vector3(1, 1, 1)));
 
 			map->loadPlayerGameObjects();
 		}
@@ -175,15 +182,29 @@ namespace battleship{
 		pushPos.y += 10 * strength;
 
 		for(int i = 0; i < numVerts; i++){
-			Vector3 distVec = verts[i].pos - pushPos;
+			Vector3 distVec = *verts[i].pos - pushPos;
 			distVec.y = 0;
 			float dist = distVec.getLength();
 
 			if(dist < circleRadius)
-				verts[i].pos.y = oldLandmassVertHeights[i] + pushPos.y - (pushPos.y / circleRadius) * dist;
+				verts[i].pos->y = oldLandmassVertHeights[i] + pushPos.y - (pushPos.y / circleRadius) * dist;
 		}
 
 		mesh->updateVerts(meshData);
+
+		int minId = 0, maxId = 0;
+
+		for(int i = 0; i < numVerts; i++){
+			if(verts[i].pos->y < verts[minId].pos->y)
+				minId = i;
+
+			if(verts[i].pos->y > verts[maxId].pos->y)
+				maxId = i;
+		}
+
+		Vector3 mapSize = map->getMapSize();
+		map->setBaseHeight(verts[minId].pos->y);
+		map->setMapSize(Vector3(mapSize.x, verts[maxId].pos->y - verts[minId].pos->y, mapSize.z));
 	}
 
 	void MapEditorAppState::MapEditor::generatePlane(Vector2 size){
@@ -249,11 +270,23 @@ namespace battleship{
 
 		XMLElement *nodeEl = doc->NewElement(nodeTagName);
 		nodeEl->SetAttribute("name", "plane");
+		Node *landmassNode = map->getNodeParent()->getChild(0);
+		nodeEl->SetAttribute("px", landmassNode->getPosition().x);
+		nodeEl->SetAttribute("py", landmassNode->getPosition().y);
+		nodeEl->SetAttribute("pz", landmassNode->getPosition().z);
+		nodeEl->SetAttribute("rw", landmassNode->getOrientation().w);
+		nodeEl->SetAttribute("rx", landmassNode->getOrientation().x);
+		nodeEl->SetAttribute("ry", landmassNode->getOrientation().y);
+		nodeEl->SetAttribute("rz", landmassNode->getOrientation().z);
+		nodeEl->SetAttribute("sx", landmassNode->getScale().x);
+		nodeEl->SetAttribute("sy", landmassNode->getScale().y);
+		nodeEl->SetAttribute("sz", landmassNode->getScale().z);
 		XMLNode *nodeTag = rootTag->InsertEndChild(nodeEl);
 
 		XMLElement *meshEl = doc->NewElement("mesh");
 		MeshData meshData = map->getNodeParent()->getChild(0)->getMesh(0)->getMeshBase();
 		meshEl->SetAttribute("name", "mesh");
+		meshEl->SetAttribute("num_vertex_pos", meshData.numPos);
 		meshEl->SetAttribute("num_faces", meshData.numTris);
 		meshEl->SetAttribute("num_vertex_groups", 0);
 		meshEl->SetAttribute("num_shape_keys", 0);
@@ -268,12 +301,14 @@ namespace battleship{
 
 		for(int i = 0; i < numVerts; i++){
 			XMLElement *vertEl = doc->NewElement("vertdata");
-			vertEl->SetAttribute("px", meshData.vertices[i].pos.x);
-			vertEl->SetAttribute("py", meshData.vertices[i].pos.y);
-			vertEl->SetAttribute("pz", meshData.vertices[i].pos.z);
+			vertEl->SetAttribute("px", meshData.vertices[i].pos->x);
+			vertEl->SetAttribute("py", meshData.vertices[i].pos->y);
+			vertEl->SetAttribute("pz", meshData.vertices[i].pos->z);
+			/*
 			vertEl->SetAttribute("nx", meshData.vertices[i].norm.x);
 			vertEl->SetAttribute("ny", meshData.vertices[i].norm.y);
 			vertEl->SetAttribute("nz", meshData.vertices[i].norm.z);
+			 */
 			XMLNode *vertNode = meshTag->InsertEndChild(vertEl);
 		}
 
@@ -295,10 +330,12 @@ namespace battleship{
 		doc->SaveFile(name.c_str());
 	}
 
+	//TODO add diagnally adjacent edges to underwater cells 
 	vector<Map::Cell> MapEditorAppState::MapEditor::generateMapCells(){
-		Vector3 startPos = -.49 * Vector3(mapSize.x, 0, mapSize.y), cellSize = map->getCellSize();
+		Vector3 mapSize = map->getMapSize();
+		Vector3 startPos = -.49 * Vector3(mapSize.x, 0, mapSize.z), cellSize = map->getCellSize();
 		int numHorCells = int(mapSize.x / cellSize.x);
-		int numVertCells = int(mapSize.y / cellSize.z);
+		int numVertCells = int(mapSize.z / cellSize.z);
 		vector<Map::Cell> cells;
 		vector<pair<int, float>> waterBodyBedPoints;
 		Node *terrainNode = map->getNodeParent();
@@ -306,7 +343,7 @@ namespace battleship{
 		for(int i = 0; i < numVertCells; i++)
 			for(int j = 0; j < numHorCells; j++){
 				Vector3 rayPos = startPos + Vector3(cellSize.x * j, 100, cellSize.z * i);
-				vector<RayCaster::CollisionResult> res = RayCaster::cast(rayPos, -Vector3::VEC_J, terrainNode->getChild(0));
+				vector<RayCaster::CollisionResult> res = RayCaster::cast(rayPos, -Vector3::VEC_J, terrainNode->getChild(0), 0, configData::DIST_FROM_RAY);
 
 				if(res.empty()){
 					RayCaster::CollisionResult r;
@@ -329,40 +366,13 @@ namespace battleship{
 					}
 				}
 
-				vector<Map::Edge> edges;
-				int weight = 1;
-				bool up = (i > 0), right = (j < numHorCells - 1), down = (i < numVertCells - 1), left = (j > 0);
-
-				if(left)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j - 1));
-
-				if(right)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * i + j + 1));
-
-				if(up)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j));
-
-				if(down)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j));
-
-				if(up && left)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j - 1));
-
-				if(up && right)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i - 1) + j + 1));
-
-				if(down && left)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j - 1));
-
-				if(down && right)
-					edges.push_back(Map::Edge(weight, numVertCells * i + j, numVertCells * (i + 1) + j + 1));
-
+				vector<Map::Edge> edges = Map::generateAdjacentNodeEdges(numVertCells, i, numHorCells, j, 10);
 				cells.push_back(Map::Cell(pos, type, edges));
 			}
 
-		vector<Map::Cell> waterCells;
+		vector<Map::Cell> surfaceWaterCells;
 		int currUnderWaterCellId = cells.size();
-		int weight = 2;
+		int weight = 20;
 
 		for(pair<int, float> p : waterBodyBedPoints){
 			int numUnderWaterCells = (int)((cells[p.first].pos.y - p.second) / cellSize.y);
@@ -373,27 +383,27 @@ namespace battleship{
 				for(int i = 0; i < numUnderWaterCells; i++, currUnderWaterCellId++)
 					cells[p.first].underWaterCellIds.push_back(currUnderWaterCellId);
 
-				waterCells.push_back(cells[p.first]);
+				surfaceWaterCells.push_back(cells[p.first]);
 			}
 		}
 
-		for(int i = 0; i < waterCells.size(); i++){
-			for(int j = 0; j < waterCells[i].underWaterCellIds.size(); j++){
-				int aboveCellId = (j == 0 ? waterCells[i].edges[0].srcCellId : j - 1);
-				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, waterCells[i].underWaterCellIds[j], aboveCellId)};
+		for(int i = 0; i < surfaceWaterCells.size(); i++){
+			for(int j = 0; j < surfaceWaterCells[i].underWaterCellIds.size(); j++){
+				int aboveCellId = (j == 0 ? surfaceWaterCells[i].edges[0].srcCellId : j - 1);
+				vector<Map::Edge> edges = vector<Map::Edge>{Map::Edge(weight, surfaceWaterCells[i].underWaterCellIds[j], aboveCellId)};
 
-				if(waterCells[i].underWaterCellIds.size() > j + 1)
-					edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], waterCells[i].underWaterCellIds[j + 1]));
+				if(surfaceWaterCells[i].underWaterCellIds.size() > j + 1)
+					edges.push_back(Map::Edge(weight, surfaceWaterCells[i].underWaterCellIds[j], surfaceWaterCells[i].underWaterCellIds[j + 1]));
 
-				for(int k = 0; k < waterCells[i].edges.size(); k++){
-					Map::Cell adjacentUnderwaterCell = cells[waterCells[i].edges[k].destCellId]; 
+				for(int k = 0; k < surfaceWaterCells[i].edges.size() - 1; k++){
+					Map::Cell adjacentUnderwaterCell = cells[surfaceWaterCells[i].edges[k].destCellId]; 
 
 					if(adjacentUnderwaterCell.underWaterCellIds.size() >= j + 1){
-						edges.push_back(Map::Edge(weight, waterCells[i].underWaterCellIds[j], adjacentUnderwaterCell.underWaterCellIds[j]));
+						edges.push_back(Map::Edge(weight, surfaceWaterCells[i].underWaterCellIds[j], adjacentUnderwaterCell.underWaterCellIds[j]));
 					}
 				}
 
-				Vector3 cellPos = waterCells[i].pos - Vector3::VEC_J * cellSize.y * (j + 1);
+				Vector3 cellPos = surfaceWaterCells[i].pos - Vector3::VEC_J * cellSize.y * (j + 1);
 				cells.push_back(Map::Cell(cellPos, Map::Cell::Type::WATER, edges));
 			}
 		}
@@ -401,10 +411,51 @@ namespace battleship{
 		return cells;
 	}
 
-	void MapEditorAppState::MapEditor::generateMapScript(){
+	void MapEditorAppState::MapEditor::generateMinimap(string mapFolder, vector<Map::Cell> &cells){
+		Vector3 mapSize = map->getMapSize(), cellSize = map->getCellSize();
+		int width = int(mapSize.x / cellSize.x);
+		int height = int(mapSize.z / cellSize.z);
+		int numChannels = 3;
+		int size = width * height * numChannels;
+		int cellId = 0;
+		float baseHeight = map->getBaseHeight();
+
+		u8 *imgData = new u8[size];
+
+		for(u8 *p = imgData; p != imgData + size; p+= numChannels, cellId++){
+			float min = .6, max = 1.;
+			float heightFactor = min + (max - min) * (cells[cellId].pos.y - baseHeight) / mapSize.y;
+			Vector3 color = (cells[cellId].type == Map::Cell::Type::WATER ? Vector3::VEC_K : Vector3::VEC_J);
+
+			*p = color.x * heightFactor * 255.f;
+			*(p + 1) = color.y * heightFactor * 255.f;
+			*(p + 2) = color.z * heightFactor * 255.f;
+		}
+
+		stbi_write_jpg(string(mapFolder + "minimap.jpg").c_str(), width, height, numChannels, imgData, 100);
+	}
+
+	void MapEditorAppState::MapEditor::generateMapScript(vector<Map::Cell> &cells){
 		int numWaterBodies = map->getNodeParent()->getNumChildren() - 1;
-		string mapScript = "map = {\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
-		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = 100, z = " + to_string(mapSize.y) + "},\n";
+		vector<Player*> players = Game::getSingleton()->getPlayers();
+
+		string mapScript = "map = {\nlights = {\n";
+
+		for(Node *light : map->getLights()){
+			mapScript += "{type = " + to_string((int)light->getLight(0)->getLightType());
+
+			if(light->getLight(0)->getLightType() == Light::Type::DIRECTIONAL){
+				Vector3 dir = light->getGlobalAxis(2);
+				mapScript += ", dir = {x = " + to_string(dir.x) + ", y = " + to_string(dir.y) + "z = " + to_string(dir.z) + "}";
+			}
+
+			Vector3 color = light->getLight(0)->getColor();
+			mapScript += ", color = {x = " + to_string(color.x) + ", y = " + to_string(color.y) + ", z = " + to_string(color.z) + "}},";
+		}
+
+		Vector3 mapSize = map->getMapSize();
+		mapScript += "}\nnumWaterBodies = " + to_string(numWaterBodies) + ",\n";
+		mapScript += "size = {x = " + to_string(mapSize.x) + ", y = " + to_string(mapSize.y) + ", z = " + to_string(mapSize.z) + "},\n";
 		mapScript += "impassibleNodeValue = " + to_string(IMPASS_NODE_VAL) + ",\n";
 		mapScript += "numPlayers = " + to_string(players.size()) + ",\n";
 
@@ -449,7 +500,7 @@ namespace battleship{
 				mapScript += "units = {\n";
 
 				for(int j = 0; j < numUnits; j++){
-					Unit *unit = getPlayer(i)->getUnit(j);
+					Unit *unit = Game::getSingleton()->getPlayer(i)->getUnit(j);
 
 					string idStr = "id = " + to_string(unit->getId());
 
@@ -468,7 +519,6 @@ namespace battleship{
 			mapScript += "}\n";
 		}
 
-		vector<Map::Cell> cells = generateMapCells();
 		mapScript += "},\nnumCells = " + to_string(cells.size()) + ",\n";
 		mapScript += "cells = {\n";
 
@@ -519,7 +569,7 @@ namespace battleship{
 			Vector3 size = ((Quad*)waterNode->getMesh(0))->getSize();
 			mapScript += 
 				"{pos = {x = " + to_string(pos.x) + ", y = " + to_string(pos.y) + ", z = " + to_string(pos.z) + "},\
-				size = {x = " + to_string(size.x) + ", y = " + to_string(size.y) + "}, albedo = \"water.jpg\"},";
+				size = {x = " + to_string(size.x) + ", y = " + to_string(size.y) + "}, albedo = \"water.png\"},";
 		}
 
 		mapScript += "}\n}";
@@ -537,8 +587,10 @@ namespace battleship{
 		create_directory(mapFolder);
 		copy_file(assetsPath + DEFAULT_TEXTURE, mapFolder + map->getMapName() + ".jpg");
 
+		vector<Map::Cell> cells = generateMapCells();
 		generateLandmassXml();
-		generateMapScript();
+		generateMapScript(cells);
+		generateMinimap(mapFolder, cells);
 	}
 
 	void MapEditorAppState::MapEditor::togglePush(bool push){
@@ -549,7 +601,7 @@ namespace battleship{
 			int numVerts = 3 * meshData.numTris;
 
 			for(int i = 0; i < numVerts; i++)
-				oldLandmassVertHeights[i] = meshData.vertices[i].pos.y;
+				oldLandmassVertHeights[i] = meshData.vertices[i].pos->y;
 		}
 	}
 
@@ -610,7 +662,7 @@ namespace battleship{
 		switch((Bind)bind){
 			case Bind::LOOK_AROUND:
 				if(ufCtr->isPlacingFrames()){
-					Player *player = mapEditor->getPlayer(0);
+					Player *player = Game::getSingleton()->getPlayer(0);
 					GameObjectFrame &frame = ufCtr->getGameObjectFrame(0);
 					Model *model = frame.getModel();
 					Vector3 pos = model->getPosition();
@@ -643,7 +695,13 @@ namespace battleship{
 					Vector2 cursorPos = getCursorPos();
 					Vector3 endPos = screenToSpace(cursorPos);
 
-					vector<RayCaster::CollisionResult> results = RayCaster::cast(startPos, (endPos - startPos).norm(), Root::getSingleton()->getRootNode());
+					vector<RayCaster::CollisionResult> results = RayCaster::cast(
+							startPos, 
+							(endPos - startPos).norm(), 
+							Root::getSingleton()->getRootNode(),
+						   	0, 
+							configData::DIST_FROM_RAY
+					);
 
 					if(cursorPos.y < GameManager::getSingleton()->getHeight() - mapEditor->getGuiThreshold()){
 						bool push = !results.empty();
@@ -725,5 +783,9 @@ namespace battleship{
 
 				break;
 		}
+	}
+
+	void MapEditorAppState::onRawMouseWheelScroll(bool up){
+		CameraController::getSingleton()->zoomCamera(up);
 	}
 }

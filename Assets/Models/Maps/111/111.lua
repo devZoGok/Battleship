@@ -1,18 +1,40 @@
 map = {
+	lights = {
+		{type = 3, color = {x = .9, y = .9, z = .9}},
+	},
 numWaterBodies = 1,
 size = {x = 123.000000, y = 100, z = 123.000000},
 impassibleNodeValue = 65535,
-numPlayers = 1,
-numSpawnPoints = 1,
 spawnPoints = {
-{x = 0.000000, y = 0.000000, z = 0.000000},
+	{x = -50.000000, y = 0.000000, z = -50.000000},
+	{x = 0.000000, y = 0.000000, z = 0.000000},
 },
 players = {
 {
-numResourceDeposits = 0,
-resourceDeposits = {
+	resourceDeposits = {},
+	units = {{id = UnitId.ENGINEER, pos = {x = -30.000000, y = 0.000000, z = -30.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}}},
 },
-numUnits = 0,
+{
+	resourceDeposits = {},
+	units = {
+		--{id = UnitId.ENGINEER, pos = {x = 30.000000, y = 0.000000, z = 30.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.POINT_DEFENSE, pos = {x = 50.000000, y = 0.000000, z = 40.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}, buildStatus = 100},
+		{id = UnitId.TANK, pos = {x = 40.000000, y = 0.000000, z = 30.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		{id = UnitId.WAR_MECH, pos = {x = 40.000000, y = 0.000000, z = 40.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		{id = UnitId.ARTILLERY, pos = {x = 30.000000, y = 0.000000, z = 40.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		{id = UnitId.TRADE_CENTER, pos = {x = 10.000000, y = 0.000000, z = 40.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.SCOUT_TRANSPORT, pos = {x = 20.000000, y = 0.000000, z = 40.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.HOVER_TRANSPORT, pos = {x = 10.000000, y = 0.000000, z = 40.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.RESOURCE_ROVER, pos = {x = 0.000000, y = 0.000000, z = 40.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.TACTICAL_CRUISER, pos = {x = 5.000000, y = 0.000000, z = 0.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.CHEAP_CRUISER, pos = {x = -5.000000, y = 0.000000, z = 0.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.DEFENSIVE_CRUISER, pos = {x = 0.00000, y = 0.000000, z = 5.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.TRANSPORT_CRUISER, pos = {x = 0.00000, y = 0.000000, z = -5.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.CHAMPION_CARRIER, pos = {x = 0.00000, y = 0.000000, z = 15.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.HEAVY_CARRIER, pos = {x = 20.00000, y = 0.000000, z = 0.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		--{id = UnitId.STEALTH_SUBMARINE, pos = {x = 10.00000, y = 0.000000, z = 5.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+		{id = UnitId.MISSILE_SUBMARINE, pos = {x = 10.00000, y = 0.000000, z = -5.000000}, rot = {w = 1.000000, x = 0.000000, y = 0.000000, z = 0.000000}},
+	},
 }
 },
 numCells = 312,
@@ -333,5 +355,5 @@ cells = {
 skybox = "Skybox1",
 terrain = {model = "111.xml", albedo = "111.jpg"},
 waterbodies = {
-{pos = {x = 7.296803, y = -0.948949, z = 6.370515},				size = {x = 42.873222, y = 42.948956}, albedo = "water.jpg"},}
+{pos = {x = 7.296803, y = -0.948949, z = 6.370515},				size = {x = 42.873222, y = 42.948956}, albedo = "water.png"},}
 }

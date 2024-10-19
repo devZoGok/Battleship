@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "structure.h"
+#include "projectile.h"
 #include "stateManager.h"
 #include "activeGameState.h"
 #include "resourceDeposit.h"
@@ -11,15 +12,45 @@ namespace battleship{
 	using namespace gameBase;
 	using namespace std;
 
-    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : difficulty(diff), faction(fac), team(t), color(col), cpuPlayer(cpuPl), spawnPoint(sp), name(n) {}
+    Player::Player(int diff, int fac, int t, Vector3 col, bool cpuPl, Vector3 sp, string n) : 
+		difficulty(diff), 
+		faction(fac), 
+		team(t), 
+		color(col), 
+		cpuPlayer(cpuPl), 
+		spawnPoint(sp), 
+		name("pl"), 
+		refineds(30000), 
+		trader(new Trader())
+	{
+		colorMaterial = new Material(Root::getSingleton()->getLibPath() + "texture");
+		colorMaterial->addBoolUniform("lightingEnabled", true);
+		colorMaterial->addBoolUniform("texturingEnabled", false);
+		colorMaterial->addVec4Uniform("diffuseColor", Vector4(color.x, color.y, color.z, 1));
+	}
 
-    Player::~Player() {}
+    Player::~Player() {
+		delete colorMaterial;
+	}
 
     void Player::update() {
-		vector<Unit*> units = this->units;
+		trader->update();
 
-		for(Unit *u : units)
-			u->update();
+		vector<Unit*> units = this->units; 
+		for(Unit *u : units){
+			if(!u->isRemove())
+				u->update();
+			else
+				removeUnit(u);
+		}
+
+		vector<Projectile*> projectiles = this->projectiles; 
+		for(Projectile *proj : projectiles){
+			if(!proj->isRemove())
+				proj->update();
+			else
+				removeProjectile(proj);
+		}
 
 		for(ResourceDeposit *rd : resourceDeposits)
 			rd->update();
@@ -41,7 +72,11 @@ namespace battleship{
 				color = Vector3::VEC_K;
 				break;
       	    case Order::TYPE::BUILD:
+      	    case Order::TYPE::SUPPLY:
 				color = Vector3(1, 1, 0);
+      	        break;
+      	    case Order::TYPE::HACK:
+				color = Vector3(1, 0, 1);
       	        break;
       	}
 
@@ -119,20 +154,81 @@ namespace battleship{
 		resourceDeposits.erase(resourceDeposits.begin() + id);
 	}
 
-	vector<Unit*> Player::getSelectedUnitsByClass(UnitClass uc){
-		vector<Unit*> selectedUnits = getSelectedUnits(), unitsByClass;
+	void Player::removeProjectile(Projectile *proj){
+		for(int i = 0; i < projectiles.size(); i++)
+			if(proj == projectiles[i]){
+				removeProjectile(i);
+				break;
+			}
+	}
 
-		for(Unit *u : selectedUnits)
-			if(u->getUnitClass() == uc)
-				unitsByClass.push_back(u);
-
-		return unitsByClass;
+	void Player::removeProjectile(int id){
+		delete projectiles[id];
+		projectiles.erase(projectiles.begin() + id);
 	}
 
 	void Player::selectUnits(vector<Unit*> selUnits){
-		for(Unit *u : selUnits){
-			selectedUnits.push_back(u);
-			u->select();
+		for(Unit *u : selUnits)
+			if(find(selectedUnits.begin(), selectedUnits.end(), u) == selectedUnits.end()){
+				selectedUnits.push_back(u);
+				u->select();
+			}
+	}
+
+	vector<Unit*> Player::getUnitsById(int id, int numUnits){
+		vector<Unit*> idUnits;
+
+		for(Unit *unit : units){
+			if(numUnits != -1 && idUnits.size() == numUnits)
+				break;
+
+			if(unit->getId() == id)
+				idUnits.push_back(unit);
+		}
+
+		return idUnits;
+	}
+
+	vector<Unit*> Player::getUnitsByClass(UnitClass uc, int numUnits){
+		vector<Unit*> ucUnits;
+
+		for(Unit *unit : units){
+			if(numUnits != -1 && ucUnits.size() == numUnits)
+				break;
+
+			if(unit->getUnitClass() == uc)
+				ucUnits.push_back(unit);
+		}
+
+		return ucUnits;
+	}
+
+	void Player::addTechnology(int techId){
+		technologies.push_back(techId);
+	}
+
+	int Player::getResource(ResourceType type){
+		switch(type){
+			case ResourceType::REFINEDS:
+				return refineds;
+			case ResourceType::WEALTH:
+				return wealth;
+			case ResourceType::RESEARCH:
+				return research;
+		}
+	}
+
+	void Player::updateResource(ResourceType type, int ammount, bool add){
+		switch(type){
+			case ResourceType::REFINEDS:
+				refineds = (add ? refineds + ammount : ammount);
+				break;
+			case ResourceType::WEALTH:
+				wealth = (add ? wealth + ammount : ammount);
+				break;
+			case ResourceType::RESEARCH:
+				research = (add ? research + ammount : ammount);
+				break;
 		}
 	}
 }

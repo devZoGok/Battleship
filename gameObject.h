@@ -12,19 +12,22 @@ namespace sf{
 
 namespace battleship{
 	class Player;
+	class Unit;
 
 	class GameObject{
 		public:
 			enum class Type{UNIT, PROJECTILE, RESOURCE_DEPOSIT};
 
-			GameObject(Type t, int i, Player *pl, vb01::Vector3 vec, vb01::Quaternion quat) : type(t), id(i), player(pl), pos(vec), rot(quat){}
+			GameObject(Type, int, Player*, vb01::Vector3, vb01::Quaternion);
 			~GameObject(){}
+			virtual void reinit();
 			virtual void update();
         	virtual void select(){}
 			void placeAt(vb01::Vector3);
 			void orientAt(vb01::Quaternion);
 			std::string getGameObjTableName();
-			vb01::Vector2 calculateSelectionRect();
+			void updateGameStats(Unit*);
+			static sf::Sound* prepareSfx(sf::SoundBuffer*, std::string);
         	inline vb01::Vector2 getScreenPos(){return screenPos;}
 			inline vb01::Vector3 getCorner(int i){return corners[i];}
 			inline bool isSelectable(){return selectable;}
@@ -35,6 +38,7 @@ namespace battleship{
 			inline float getHeight() {return height;}
 			inline float getLength() {return length;}
 			inline vb01::Model* getModel() {return model;}
+			inline void setPlayer(Player *pl){player = pl;}
 			inline Player* getPlayer(){return player;}
 			inline void toggleDebugging(bool d){this->debugging=d;}
 			inline vb01::Vector3 getDirVec() {return dirVec;}
@@ -42,15 +46,16 @@ namespace battleship{
 			inline vb01::Vector3 getUpVec() {return upVec;}
         	inline int getId() {return id;}
 			inline Type getType(){return type;}
-		private:
-			int sortCorners(std::vector<vb01::Vector2>&, bool, bool);
+			inline vb01::Node* getHitbox(){return hitbox;}
+			inline bool isRemove(){return remove;}
 		protected:
 			virtual void initProperties();
 			virtual void destroyModel();
 			virtual void initModel(bool = true);
+			virtual void initHitbox();
+			virtual void destroyHitbox();
 			virtual void destroySound();
 			virtual void initSound();
-			sf::Sound* prepareSfx(sf::SoundBuffer*, std::string);
 
 			Type type;
 			int id;
@@ -58,10 +63,11 @@ namespace battleship{
 			sf::SoundBuffer *deathSfxBuffer;
 			sf::Sound *deathSfx;
 			vb01::Model *model = nullptr;
+			vb01::Node *hitbox = nullptr;
 			vb01::Vector3 pos = vb01::Vector3(0, 0, 0), upVec = vb01::Vector3(0, 1, 0), dirVec = vb01::Vector3(0, 0, 1), leftVec = vb01::Vector3(1, 0, 0), corners[8];
 			vb01::Vector2 screenPos;
 			vb01::Quaternion rot;
-			bool selectable = false, debugging = false;
+			bool selectable = false, debugging = false, remove = false;
 			float width, height, length;
 	};
 }

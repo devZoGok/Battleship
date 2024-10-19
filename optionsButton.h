@@ -7,7 +7,7 @@
 namespace battleship {
     class OptionsButton : public vb01Gui::Button {
     public:
-        OptionsButton(vb01::Vector2, vb01::Vector2, std::string, bool);
+        OptionsButton(vb01::Vector3, vb01::Vector2, std::string, bool);
         virtual void onClick();
     };
 }

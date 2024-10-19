@@ -35,6 +35,7 @@ namespace battleship{
 			GameObjectFrameController(){}
 			void paintSelect(vb01::Vector3, float, float);
 			void placeGameObjectFrame(int, vb01::Vector3, float, float);
+			void snapToObj(GameObjectFrame&, GameObject::Type, int, float);
 
 			std::vector<GameObjectFrame> gameObjectFrames;
 			vb01::Vector3 paintSelectRowStart, rowDir;

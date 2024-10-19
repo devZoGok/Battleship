@@ -5,8 +5,7 @@ gui = {
 		guiType = GuiType.TEXT,
 		text = 'Defeat',
 		name = 'D',
-		pos = {x = 100, y = 100},
-		zIndex = 0,
+		pos = {x = 100, y = 100, z = 0},
 		scale = 1,
 		font = 'batang.ttf',
 		fontFirstChar = 0,
@@ -15,13 +14,12 @@ gui = {
 	},
 	{
 		guiType = GuiType.GUI_RECTANGLE,
-		pos = {x = 100, y = 200},
-		zIndex = 1,
+		pos = {x = 100, y = 200, z = .1},
 		size = {x = 600, y = 600},
 		color = {x = 0, y = 0, z = 0, w = 0.1}
 	},
 	{
-		pos = {x = 110, y = 350},
+		pos = {x = 110, y = 350, z = 0},
 		size = Size,
 		guiType = GuiType.BUTTON,
 		name = 'Leave',

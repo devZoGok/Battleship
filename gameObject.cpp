@@ -1,10 +1,13 @@
 #include "gameObject.h"
 #include "gameManager.h"
 #include "defConfigs.h"
+#include "unit.h"
+#include "player.h"
 
 #include <solUtil.h>
 
 #include <material.h>
+#include <box.h>
 
 #include <SFML/Audio.hpp>
 
@@ -15,6 +18,19 @@ namespace battleship{
 	using namespace vb01;
 	using namespace gameBase;
 	using namespace configData;
+
+	GameObject::GameObject(Type t, int i, Player *pl, vb01::Vector3 vec, vb01::Quaternion quat) : type(t), id(i), player(pl), pos(vec), rot(quat){}
+
+	void GameObject::reinit(){
+		placeAt(pos);
+		orientAt(rot);
+
+		if(hitbox){
+			Box *hbMesh = (Box*)hitbox->getMesh(0);
+			hbMesh->setSize(Vector3(width, height, length));
+			hbMesh->updateVerts(hbMesh->getMeshBase());
+		}
+	}
 
 	void GameObject::update(){
 		leftVec = model->getGlobalAxis(0);
@@ -33,17 +49,35 @@ namespace battleship{
 		rot = rotQuat;
     }
 
+	//TODO remove neccessity to create a material for an invisible mesh
+	void GameObject::initHitbox(){
+		Box *box = new Box(Vector3(width, height, length));
+		box->setWireframe(true);
+
+		Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
+		mat->addBoolUniform("texturingEnabled", false);
+		mat->addVec4Uniform("diffuseColor", Vector4(1, 1, 1, 1));
+		box->setMaterial(mat);
+
+		sol::table gameObjTable = generateView()[GameObject::getGameObjTableName()][id + 1];
+		sol::table offsetPosTable = gameObjTable["hitboxOffset"];
+		hitbox = new Node(Vector3(offsetPosTable["x"], offsetPosTable["y"], offsetPosTable["z"]));
+		hitbox->attachMesh(box);
+		hitbox->setVisible(true);
+		model->attachChild(hitbox);
+	}
+
+	void GameObject::destroyHitbox(){
+		hitbox->dettachMesh(0);
+		model->dettachChild(hitbox);
+		delete hitbox;
+	}
+
 	void GameObject::initProperties(){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-
-		for(int i = 0; i < 8; i++){
-			sol::table cornerTable = SOL_LUA_STATE["unitCornerPoints"][id + 1][i + 1];
-			corners[i] = Vector3(cornerTable["x"], cornerTable["y"], cornerTable["z"]);
-		}
-
-        width = corners[0].x - corners[1].x;
-        height = corners[4].y - corners[0].y;
-        length = corners[3].z - corners[0].z;
+		sol::table sizeTable = generateView()[GameObject::getGameObjTableName()][id + 1]["size"];
+        width = sizeTable["x"];
+        height = sizeTable["y"];
+        length = sizeTable["z"];
 	}
 	
 	void GameObject::destroyModel(){
@@ -51,10 +85,11 @@ namespace battleship{
 		delete model;
 	}
 
+	//TODO improve DEFAULT_TEXTURE handling
 	void GameObject::initModel(bool textured){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-		string basePath = SOL_LUA_STATE["basePath"][id + 1];
-		string meshPath = SOL_LUA_STATE["meshPath"][id + 1];
+		sol::table gameObjTable = generateView()[GameObject::getGameObjTableName()][id + 1];
+		string basePath = gameObjTable["basePath"];
+		string meshPath = gameObjTable["meshPath"];
 
 		model = new Model(basePath + meshPath);
 		Root *root = Root::getSingleton();
@@ -63,10 +98,12 @@ namespace battleship{
 		Material *mat = new Material(libPath + "texture");
 
 		if(textured){
-			string f[]{GameManager::getSingleton()->getPath() + configData::DEFAULT_TEXTURE};
+			string albedoPath = gameObjTable["albedoPath"].get_or(configData::DEFAULT_TEXTURE);
+			string f[]{albedoPath == configData::DEFAULT_TEXTURE ? GameManager::getSingleton()->getPath() + albedoPath : basePath + albedoPath};
     		Texture *diffuseTexture = new Texture(f, 1, false);
 			mat->addBoolUniform("texturingEnabled", true);
-			mat->addBoolUniform("lightingEnabled", false);
+			mat->addBoolUniform("lightingEnabled", true);
+			mat->addBoolUniform("constLightingEnabled", false);
 			mat->addTexUniform("textures[0]", diffuseTexture, true);
 		}
 		else{
@@ -77,16 +114,33 @@ namespace battleship{
 		}
 
 		model->setMaterial(mat);
+		sol::optional<sol::table> colNodeOpt = gameObjTable["colorNodes"];
+
+		if(player && colNodeOpt != sol::nullopt){
+			sol::table colNodeTbl = gameObjTable["colorNodes"];
+			int numColorNodes = colNodeTbl.size();
+
+			for(int i = 0; i < numColorNodes; i++){
+				string name = colNodeTbl[i + 1];
+				Node *node = model->findDescendant(name, true);
+
+				if(!node) continue;
+
+				vector<Mesh*> meshes = node->getMeshes();
+
+				for(Mesh *mesh : meshes)
+					mesh->setMaterial(player->getColorMaterial());
+			}
+		}
+
 		root->getRootNode()->attachChild(model);
 	}
 
+	//TODO implement death SFX destruction 
 	void GameObject::destroySound(){
 	}
 
-	sf::Sound* GameObject::prepareSfx(sf::SoundBuffer *buffer, string key){
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-        string sfxPath = SOL_LUA_STATE[key][id + 1];
-
+	sf::Sound* GameObject::prepareSfx(sf::SoundBuffer *buffer, string sfxPath){
 		sf::Sound *sfx = nullptr;
 
         if(buffer->loadFromFile(sfxPath.c_str())){
@@ -99,7 +153,8 @@ namespace battleship{
 
 	void GameObject::initSound(){
 		deathSfxBuffer = new sf::SoundBuffer();
-		deathSfx = prepareSfx(deathSfxBuffer, "deathSfx");
+		string sfxPath = generateView()[getGameObjTableName()][id + 1]["deathSfx"];
+		deathSfx = prepareSfx(deathSfxBuffer, sfxPath);
 	}
 
 	string GameObject::getGameObjTableName(){
@@ -113,36 +168,18 @@ namespace battleship{
 		}
 	}
 
-	int GameObject::sortCorners(vector<Vector2> &cornersOnScreen, bool vertical, bool max){
-		const int NUM_CORNERS = cornersOnScreen.size();
-		int ans = 0;
+	void GameObject::updateGameStats(Unit *targetUnit){
+		if(targetUnit->getHealth() <= targetUnit->getDeathHp()){
+			Player *targUnitPlayer = targetUnit->getPlayer();
 
-		for(int i = 0; i < NUM_CORNERS; i++){
-			if(vertical && ((max && cornersOnScreen[ans].y < cornersOnScreen[i].y) || (!max && cornersOnScreen[ans].y > cornersOnScreen[i].y)))
-				ans = i;
-			else if(!vertical && ((max && cornersOnScreen[ans].x < cornersOnScreen[i].x) || (!max && cornersOnScreen[ans].x > cornersOnScreen[i].x)))
-				ans = i;
+			if(targetUnit->isVehicle()){
+				player->incVehiclesDestroyed();
+				targUnitPlayer->incVehiclesLost();
+			}
+			else{
+				player->incStructuresDestroyed();
+				targUnitPlayer->incStructuresLost();
+			}
 		}
-
-		return ans;
-	}
-
-	Vector2 GameObject::calculateSelectionRect(){
-		const int NUM_CORNERS = 8;
-		vector<Vector2> cornersOnScreen;
-
-		for(int i = 0; i < NUM_CORNERS; i++){
-			Vector3 cornerInWorld = leftVec * corners[i].x + upVec * corners[i].y + dirVec * corners[i].z;
-			cornersOnScreen.push_back(spaceToScreen(cornerInWorld));
-		}
-
-		int leftMostPointId = sortCorners(cornersOnScreen, false, false);
-		int rightMostPointId = sortCorners(cornersOnScreen, false, true);
-		int topMostPointId = sortCorners(cornersOnScreen, true, false);
-		int bottomMostPointId = sortCorners(cornersOnScreen, true, true);
-
-		float sizeX = cornersOnScreen[rightMostPointId].x - cornersOnScreen[leftMostPointId].x;
-		float sizeY = cornersOnScreen[bottomMostPointId].y - cornersOnScreen[topMostPointId].y;
-		return Vector2(sizeX, sizeY);
 	}
 }

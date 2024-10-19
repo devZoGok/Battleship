@@ -40,8 +40,6 @@ namespace battleship{
 					void exportMap();
 					void prepareTerrainObjects(int = 0, int = -1);
 					void togglePush(bool);
-					inline void addPlayer(Player *pl){players.push_back(pl);}
-					inline Player* getPlayer(int id){return players[id];}
 					inline vb01::Node* getSelectedNode(){return selectedTerrainNode;}
 					inline float getGuiThreshold(){return guiThreshold;}
 					inline float getCircleRadius(){return circleRadius;}
@@ -62,11 +60,11 @@ namespace battleship{
 					void toggleSelection(vb01::Node*, bool);
 					std::vector<Map::Cell> generateMapCells();
 					void generateLandmassXml();
-					void generateMapScript();
+					void generateMinimap(std::string, std::vector<Map::Cell>&);
+					void generateMapScript(std::vector<Map::Cell>&);
 					void prepareTerrainObject(vb01::u32**, Map::Cell*, int[3], float, bool);
 
 					Map *map;
-					std::vector<Player*> players;
 					vb01::Node *selectedTerrainNode = nullptr;
 					TransformAxis transformAxis = X_AXIS;
 					vb01Gui::Listbox *skyListbox = nullptr;
@@ -76,7 +74,6 @@ namespace battleship{
 					const int NUM_SUBDIVS = 100;
 					float circleRadius = MIN_RADIUS, guiThreshold = 200;
 					vb01::Vector3 pushPos = vb01::Vector3::VEC_ZERO;
-					vb01::Vector2 mapSize;
 					std::vector<vb01::Texture*> skyTextures, landmassTextures, waterTextures;
 			};
 
@@ -86,6 +83,7 @@ namespace battleship{
 			void onDettached();
 			void onAction(int, bool);
 			void onAnalog(int, float);
+			void onRawMouseWheelScroll(bool);
 			inline MapEditor* getMapEditor(){return mapEditor;}
 		private:
 			MapEditor *mapEditor = nullptr;

@@ -9,7 +9,7 @@ namespace battleship{
 	using namespace vb01;
 	using namespace vb01Gui;
 
-	SinglePlayerButton::SinglePlayerButton(Vector2 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_S, true) {}
+	SinglePlayerButton::SinglePlayerButton(Vector3 pos, Vector2 size, string name) : Button(pos, size, name, GameManager::getSingleton()->getPath() + "Fonts/batang.ttf", GLFW_KEY_S, true) {}
 	
 	void SinglePlayerButton::onMouseOver(){
 		setColor(Vector4(.8, .8, .8, 1));

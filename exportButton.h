@@ -6,7 +6,7 @@
 namespace battleship{
 	class ExportButton : public vb01Gui::Button{
 		public:
-			ExportButton(vb01::Vector2 pos, vb01::Vector2 size);
+			ExportButton(vb01::Vector3 pos, vb01::Vector2 size);
 			void onClick();
 	};
 }

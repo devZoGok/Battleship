@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include <rayCaster.h>
 #include <vector.h>
 #include <util.h>
 
@@ -11,6 +12,10 @@ namespace vb01{
 	class Model;
 	class Material;
 	class Node;
+}
+
+namespace vb01Gui{
+	class Button;
 }
 
 namespace battleship{
@@ -38,15 +43,37 @@ namespace battleship{
 		
 			Cell(){}
 			Cell(vb01::Vector3 p, Type t, std::vector<Edge> e = std::vector<Edge>{}, std::vector<int> uc = std::vector<int>{}): pos(p), type(t), edges(e), underWaterCellIds(uc){}
-			int getEdgeWeight(int);
+		};
+
+		class Minimap{
+			public:
+				static Minimap* getSingleton();
+				~Minimap();
+				void update();
+				void load();
+				void unload();
+				inline vb01::u8* getOldMinimapImage(){return oldImageData;}
+			private:
+				Minimap();
+				vb01::Node* initIcon(vb01::Vector3, std::string);
+				void updateCamFrame(vb01Gui::Button*);
+				void updateImage(vb01Gui::Button*);
+
+				vb01::u8 *oldImageData = nullptr;
+				vb01::Node *camFrame = nullptr;
+				std::vector<vb01::Node*> depositIcons;
+				vb01::Node* camIcon = nullptr;
 		};
 
 		static Map* getSingleton();
         ~Map(){}
+		static std::vector<Edge> generateAdjacentNodeEdges(int, int, int, int, int);
         void update();
-        void load(std::string, bool = false);
+        void load(std::string);
+        void create(std::string);
         void unload();
-		int getCellId(vb01::Vector3);
+		std::vector<vb01::RayCaster::CollisionResult> raycastTerrain(vb01::Vector3, vb01::Vector3, bool);
+		int getCellId(vb01::Vector3, bool = true);
 		bool isPointWithinTerrainObject(vb01::Vector3, int);
 		void loadPlayerGameObjects();
 		inline std::string getMapName(){return mapName;}
@@ -54,8 +81,14 @@ namespace battleship{
 		inline vb01::Vector3 getCellSize(){return CELL_SIZE;}
 		inline int getNumSpawnPoints(){return spawnPoints.size();}
 		inline vb01::Vector3 getSpawnPoint(int i){return spawnPoints[i];}
+		inline void setMapSize(vb01::Vector3 s){this->mapSize = s;}
+		inline vb01::Vector3 getMapSize(){return mapSize;}
 		inline void addSpawnPoint(vb01::Vector3 sp){spawnPoints.push_back(sp);}
 		inline std::vector<Map::Cell>& getCells(){return cells;}
+		inline vb01::Node* getLight(int i){return lights[i];}
+		inline std::vector<vb01::Node*> getLights(){return lights;}
+		inline float getBaseHeight(){return baseHeight;}
+		inline void setBaseHeight(float bh){this->baseHeight = bh;}
     private:
 		std::string mapTable = "map";
 		vb01::Node *terrainNode = nullptr, *cellNode = nullptr;
@@ -64,15 +97,19 @@ namespace battleship{
 		vb01::Vector3 CELL_SIZE = vb01::Vector3(7, 7, 7), mapSize;
 		std::vector<vb01::Vector3> spawnPoints;
 		std::vector<Cell> cells;
+		float baseHeight;
+		std::vector<vb01::Node*> lights;
 
         Map(){}
-		void preprareScene();
+		void preprareScene(bool);
 		void loadSpawnPoints();
+		void loadLights();
 		void loadSkybox();
 		void loadCells();
 		void loadTerrainObject(int);
 		void unloadTerrainObjects();
 		void unloadCells();
+		void unloadLights();
 		void unloadSkybox();
 		void unloadPlayerObjects();
 		void destroyScene();

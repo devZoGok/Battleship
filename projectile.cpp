@@ -1,125 +1,121 @@
-#include <algorithm>
-
 #include <node.h>
 #include <model.h>
 #include <material.h>
 #include <quaternion.h>
+#include <particleEmitter.h>
 
 #include <stateManager.h>
 
 #include "game.h"
 #include "unit.h"
 #include "util.h"
+#include "player.h"
 #include "projectile.h"
 #include "defConfigs.h"
+#include "resourceDeposit.h"
 #include "inGameAppState.h"
-#include "fx.h"
 
 using namespace std;
 using namespace vb01;
 
 namespace battleship{
+	using namespace vb01;
 	using namespace configData;
 	using namespace gameBase;
 
-    Projectile::Projectile(Unit *unit, Node *node, Vector3 pos, Vector3 dir, Vector3 left, Vector3 up, int id, int weaponTypeId, int weaponId) : GameObject(GameObject::Type::PROJECTILE, id, unit->getPlayer(), pos, Quaternion::QUAT_W){
-        this->unit = unit;
-        this->id = id;
-        this->weaponTypeId = weaponTypeId;
-        this->pos = pos;
-        initPos = pos;
-
-        dirVec = dir;
-        leftVec = left;
-        upVec = up;
-
-		initProperties(weaponId);
-		initModel(node);
+    Projectile::Projectile(Unit *un, int id, Vector3 pos, Quaternion rot) : GameObject(GameObject::Type::PROJECTILE, id, un->getPlayer(), pos, rot), unit(un), initPos(pos){
+		initProperties();
+		initModel();
 		initSound();
+		placeAt(pos);
+		orientAt(rot);
     }
 
     Projectile::~Projectile(){
-    }
-
-	void Projectile::initProperties(int weaponId){
-		GameObject::initProperties();
-
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-        rayLength = SOL_LUA_STATE["rayLength"][id + 1][weaponTypeId + 1][weaponId + 1];
-        damage = SOL_LUA_STATE["damage"][id + 1][weaponTypeId + 1][weaponId + 1];
-        speed = SOL_LUA_STATE["speed"][id + 1][weaponTypeId + 1][weaponId + 1];
+		destroySound();
+		destroyModel();
 	}
 
-	void Projectile::initModel(Node *node){
-        if(!node){
-			sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-			string meshPath = SOL_LUA_STATE["meshPath"][id + 1][weaponTypeId + 1];
-			this->node = new Model(meshPath);
+	void Projectile::reinit(){
+		destroySound();
+		destroyModel();
 
-			Material *mat = new Material(Root::getSingleton()->getLibPath() + "texture");
-			mat->addBoolUniform("lightingEnabled", false);
+		initProperties();
 
-			string diffTexPath = SOL_LUA_STATE["diffuseMapTextPath"][id + 1][weaponTypeId + 1];
-			string f[]{diffTexPath};
-            Texture *diffuseTexture = new Texture(f, 1, false);
-			mat->addTexUniform("textures[0]", diffuseTexture, true);
+		initModel();
+		initSound();
 
-			this->node->setMaterial(mat);
-        }
+		GameObject::reinit();
+	}
 
-        this->node->setPosition(pos);
+	void Projectile::initProperties(){
+		GameObject::initProperties();
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
+		sol::table projTable = generateView()[GameObject::getGameObjTableName()][id + 1];
+        rayLength = projTable["rayLength"];
+        directHitDamage = projTable["directHitDamage"]; directHitDamage += game->calcAbilFromTech(Ability::Type::DIRECT_HIT_DAMAGE, currTechs, (int)GameObject::type, id);
+
+		string explKey = "explosion";
+        explosionDamage = projTable[explKey]["damage"]; explosionDamage += game->calcAbilFromTech(Ability::Type::EXPLOSION_DAMAGE, currTechs, (int)GameObject::type, id);
+        explosionRadius = projTable[explKey]["radius"]; explosionRadius += game->calcAbilFromTech(Ability::Type::EXPLOSION_RADIUS, currTechs, (int)GameObject::type, id);
+        speed = projTable["speed"];
+		rotAngle = projTable["rotAngle"].get_or(0.0);
 	}
 
 	void Projectile::initSound(){
-		GameManager *gm = GameManager::getSingleton();
-
-		sol::table SOL_LUA_STATE = generateView()[GameObject::getGameObjTableName()];
-		string unitName = SOL_LUA_STATE["name"][id + 1];
-		string projectileName = SOL_LUA_STATE["projectileName"][id + 1][weaponTypeId + 1];
-        string p1 = gm->getPath() + "Sounds/" + unitName + "s/" + projectileName + ".ogg";
-        string p2 = gm->getPath() + "Sounds/Explosions/explosion03" + to_string(rand() % 4) + ".ogg";
-
-        shotSfxBuffer = new sf::SoundBuffer();
         explosionSfxBuffer = new sf::SoundBuffer();
-
-        if(shotSfxBuffer->loadFromFile(p1.c_str())){
-            shotSfx = new sf::Sound(*shotSfxBuffer);
-            shotSfx->play();
-        }
-
-        if(explosionSfxBuffer->loadFromFile(p2.c_str()))
-            explosionSfx = new sf::Sound(*explosionSfxBuffer);
+        string sfxPath = generateView()[GameObject::getGameObjTableName()][id + 1]["explosion"]["sfx"];
+		explosionSfx = GameObject::prepareSfx(explosionSfxBuffer, sfxPath);
 	}
-    
+
     void Projectile::update() {
-        if(unit->isDebuggable())
-            debug();
+		GameObject::update();
+		placeAt(pos + speed * dirVec);
 
-        checkForCollision();
+        if(!remove){
+			checkSurfaceCollision();
+			if(remove) return;
+			checkUnitCollision();
+		}
     }
 
-    void Projectile::checkForCollision() {
-    }
+	void Projectile::checkUnitCollision(){
+		vector<Player*> players = Game::getSingleton()->getPlayers();
+		vector<Unit*> targetUnits;
+		vector<Node*> targetNodes;
 
-    void Projectile::explode(Node *collNode) {
-        exploded = true;
+		for(Player *pl : players){
+			vector<Unit*> units = pl->getUnits();
 
-        for (Player *p : Game::getSingleton()->getPlayers()) {
-            for (Unit *u : p->getUnits())
-                if (collNode == u->getNode())
-                    u->takeDamage(damage);
-        }
+			for(Unit *u : units)
+				if(unit && unit != u){
+					targetUnits.push_back(u);
+					targetNodes.push_back(u->getHitbox());
+				}
+		}
 
-		StateManager *sm = GameManager::getSingleton()->getStateManager();
-        InGameAppState *inGameState = ((InGameAppState*)sm->getAppStateByType((int)AppStateType::IN_GAME_STATE));
-		string path = GameManager::getSingleton()->getPath() + "Sounds/Explosions/explosion0" + to_string(rand() % 4) + ".ogg";
-    }
-    
+		vector<RayCaster::CollisionResult> results = RayCaster::cast(pos, dirVec, targetNodes, rayLength);
+
+		if(!results.empty()){
+			for(int i = 0; i < targetNodes.size(); i++)
+				if(targetNodes[i]->getMesh(0) == results[0].mesh){
+					targetUnits[i]->takeDamage(directHitDamage);
+					Game::getSingleton()->explode(pos, explosionDamage, explosionRadius, explosionSfx);
+					remove = true;
+				}
+		}
+	}
+
+	void Projectile::checkSurfaceCollision(){
+		Map *map = Map::getSingleton();
+		int cellId = map->getCellId(pos, false);
+
+		if(map->getCells()[cellId].type == Map::Cell::LAND)
+			remove = true;
+	}
+
     void Projectile::debug(){
-    }
-    
-    void Projectile::orientProjectile(Quaternion rot){
-		node->setOrientation(rot);
-		this->rot = rot;
     }
 }

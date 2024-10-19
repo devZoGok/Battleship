@@ -4,11 +4,15 @@
 #include <vector>
 
 #include "gameManager.h"
+#include "trader.h"
 #include "unit.h"
 
 namespace battleship{
 	class ResourceDeposit;
 	class Projectile;
+	class Unit;
+
+	enum class ResourceType{REFINEDS, WEALTH, RESEARCH};
 
     class Player {
     public:
@@ -19,9 +23,16 @@ namespace battleship{
 		void removeUnit(Unit*);
 		void removeUnit(int);
 		void removeResourceDeposit(int);
+		void removeProjectile(int);
+		void removeProjectile(Projectile*);
         bool isThisPlayersUnit(GameObject*);
-		std::vector<Unit*> getSelectedUnitsByClass(UnitClass);
 		void selectUnits(std::vector<Unit*>);
+		std::vector<Unit*> getUnitsById(int, int = -1);
+		std::vector<Unit*> getUnitsByClass(UnitClass, int = -1);
+		void addTechnology(int);
+		int getResource(ResourceType);
+		void updateResource(ResourceType, int, bool);
+		inline Trader* getTrader(){return trader;}
 		inline void deselectUnits(){selectedUnits.clear();}
 		inline Unit* getSelectedUnit(int id){return selectedUnits[id];}
 		inline std::vector<Unit*> getSelectedUnits(){return selectedUnits;}
@@ -32,6 +43,9 @@ namespace battleship{
 		inline std::vector<ResourceDeposit*>& getResourceDeposits(){return resourceDeposits;}
         inline void addResourceDeposit(ResourceDeposit *rd){resourceDeposits.push_back(rd);}
 		inline int getNumResourceDeposits(){return resourceDeposits.size();}
+		inline void addProjectile(Projectile *proj){projectiles.push_back(proj);}
+		inline int getNumProjectiles(){return projectiles.size();}
+        inline std::vector<Projectile*>& getProjectiles(){return projectiles;}
         inline Unit* getUnit(int i){return units[i];}
         inline std::vector<Unit*>& getUnits(){return units;}
         inline void setTeam(int t){team = t;}
@@ -39,15 +53,6 @@ namespace battleship{
         inline int getNumUnits(){return units.size();}
         inline int getFaction(){return faction;}
         inline vb01::Vector3 getSpawnPoint(){return spawnPoint;}
-		inline int getRefineds(){return refineds;}
-		inline void setRefineds(int ref){this->refineds = ref;}
-		inline void addRefineds(int ref){this->refineds += ref;}
-		inline int getWealth(){return wealth;}
-		inline void setWealth(int w){this->wealth = w;}
-		inline void addWealth(int w){this->wealth += w;}
-		inline int getResearch(){return research;}
-		inline void setResearch(int r){this->research = r;}
-		inline void addResearch(int r){this->research += r;}
 		inline bool isCpuPlayer(){return cpuPlayer;}
 		inline int getNumVehiclesBuilt(){return vehiclesBuilt;}
 		inline int getNumVehiclesDestroyed(){return vehiclesDestroyed;}
@@ -63,14 +68,23 @@ namespace battleship{
 		inline void incStructuresLost(){structuresLost++;}
 		inline vb01::Vector3 getColor(){return color;}
 		inline std::string getName(){return name;}
+		inline vb01::Material* getColorMaterial(){return colorMaterial;}
+		inline std::vector<int> getTechnologies(){return technologies;}
     private:
 		bool cpuPlayer = false;
-        int refineds = 0, wealth = 0, research = 0, faction, difficulty, team, luaPlayerId, vehiclesBuilt = 0, vehiclesDestroyed = 0, vehiclesLost = 0, structuresBuilt = 0, structuresDestroyed = 0, structuresLost = 0;
+		std::vector<int> technologies;
+		int luaPlayerId;
+        int refineds = 0, wealth = 0, research = 0;
+		int faction, difficulty, team;
+		int vehiclesBuilt = 0, vehiclesDestroyed = 0, vehiclesLost = 0;
+		int structuresBuilt = 0, structuresDestroyed = 0, structuresLost = 0;
+		Trader *trader = nullptr; 
 		std::string name;
         std::vector<Unit*> units, selectedUnits;
 		std::vector<Projectile*> projectiles;
 		std::vector<ResourceDeposit*> resourceDeposits;
         vb01::Vector3 spawnPoint, color;
+		vb01::Material *colorMaterial = nullptr;
 
 		int getOrderLineId(Order::TYPE, vb01::Vector3, vb01::Vector3);
     };

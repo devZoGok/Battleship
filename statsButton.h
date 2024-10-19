@@ -6,7 +6,7 @@
 namespace battleship {
 	class StatsButton : public vb01Gui::Button{
 		public:
-			StatsButton(vb01::Vector2, vb01::Vector2, std::string, int, std::string);
+			StatsButton(vb01::Vector3, vb01::Vector2, std::string, int, std::string);
 			void onClick();
 		private:
 			void addPlayerDataGuiElements(int);

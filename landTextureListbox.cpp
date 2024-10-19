@@ -15,7 +15,7 @@ namespace battleship{
 	using namespace vb01Gui;
 	using namespace gameBase;
 	
-	LandTextureListbox::LandTextureListbox(Vector2 pos, Vector2 size, vector<string> lines, int maxDisplay, std::string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
+	LandTextureListbox::LandTextureListbox(Vector3 pos, Vector2 size, vector<string> lines, int maxDisplay, std::string fontPath) : Listbox(pos, size, lines, maxDisplay, fontPath){}
 	
 	void LandTextureListbox::onClose(){
 		StateManager *sm = GameManager::getSingleton()->getStateManager();

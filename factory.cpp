@@ -1,32 +1,51 @@
 #include "factory.h"
 #include "player.h"
+#include "game.h"
 #include "gameObjectFactory.h"
 #include "activeGameState.h"
 
 #include <stateManager.h>
+#include <solUtil.h>
 
 #include <vector>
 
 namespace battleship{
 	using namespace vb01;
 	using namespace std;
+	using namespace gameBase;
 
-	Factory::Factory(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus) : Structure(player, id, pos, rot, buildStatus){
-		initProperties();
-	}
-
-	void Factory::initProperties(){
-	}
+	Factory::Factory(Player *player, int id, Vector3 pos, Quaternion rot, int buildStatus, Unit::State state) : Structure(player, id, pos, rot, buildStatus, state){}
 
 	void Factory::update(){
 		Structure::update();
+
+		if(!isComplete()) return;
 
 		if(!unitQueue.empty())
 			train();
 	}
 
-	void Factory::appendToQueue(int uc){
-		unitQueue.push_back(uc);
+	//TODO replace repetetive string literals
+	void Factory::initProperties(){
+		Structure::initProperties();
+		Game *game = Game::getSingleton();
+		vector<int> currTechs = player->getTechnologies();
+
+	}
+
+	int Factory::getNumQueueUnitsById(int unitId){
+		int numUnits = 0;
+
+		for(int qu : unitQueue)
+			if(qu == unitId)
+				numUnits++;
+
+		return numUnits;
+	}
+
+	void Factory::appendToQueue(int buId){
+		if(buId < buildableUnits.size() && buildableUnits[buId].buildable)
+			unitQueue.push_back(buildableUnits[buId].id);
 	}
 
 	void Factory::train(){
@@ -42,9 +61,12 @@ namespace battleship{
 			bool mainPlayerSelecting = (activeState && find(selectingPlayers.begin(), selectingPlayers.end(), mainPlayer) != selectingPlayers.end());
 
 			Unit::displayUnitStats(buildStatusForeground, buildStatusBackground, trainingStatus, 100, mainPlayer == player && mainPlayerSelecting, Vector2(0, -10));
+			sol::table targTable = generateView()["units"][unitQueue[0] + 1];
+			int costRate = (int)targTable["cost"] / 100, trainRate = (int)targTable["buildTime"] / 100;
 
-			if(canTrain()){
+			if(player->getResource(ResourceType::REFINEDS) >= costRate && getTime() - lastTrainTime > trainRate){
 				trainingStatus++;
+				player->updateResource(ResourceType::REFINEDS, -costRate, true);
 				lastTrainTime = getTime();
 			}
 

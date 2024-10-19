@@ -20,13 +20,13 @@ namespace battleship{
 		using namespace gameBase;
 
   		const std::string DEFAULT_TEXTURE = "Textures/defaultTexture.jpg";
-  		const double camPanSpeed = .1, cellLength = 14, cellWidth = 14, cellDepth = 7;
-		const int maxNumGroups = 10;
+  		const double camPanSpeed = .5, CAMERA_DISTANCE = 100, CAMERA_ZOOM_INCREMENT = 1, cellLength = 14, cellWidth = 14, cellDepth = 7, DIST_FROM_RAY = 20;
+		const int maxNumGroups = 10, NUM_MAX_ZOOMS = 75;
 		const vb01::u32 IMPASS_NODE_VAL = 65535;
 
   		const static int numAppStates = 4;
   		const static int numStaticBinds[numAppStates]{6, 0, 5, 19};
-  		const static int numConfBinds[numAppStates]{0, 1, 23, 0};
+  		const static int numConfBinds[numAppStates]{0, 1, 27, 0};
 		const static int maxStaticBinds = 19;
 		const static int maxConfBinds = 23;
 		const static int numScripts = 5;
@@ -36,10 +36,9 @@ namespace battleship{
 			CORE_MAIN,
 			GUI_MAIN,
 			OPTIONS,
-			UNIT_DATA,
-			VEHICLE_DATA,
-			STRUCTURE_DATA,
 			RESOURCE_DATA,
+			PROJECTILE_DATA,
+			UNIT_DATA,
 			AI_AGENT,
 			PLAYER
 		};
@@ -47,12 +46,14 @@ namespace battleship{
 			"Scripts/Core/main.lua",
 			"Scripts/Gui/main.lua",
 			"Scripts/Core/options.lua",
-			"Scripts/GameObjects/Units/unitData.lua",
-			"Scripts/GameObjects/Units/vehicleData.lua",
-			"Scripts/GameObjects/Units/structureData.lua",
 			"Scripts/GameObjects/resourceData.lua",
+			"Scripts/GameObjects/Projectiles/projectileData.lua",
+			"Scripts/GameObjects/Units/unitData.lua",
 			"Scripts/aiAgent.lua",
-			"Scripts/Core/player.lua"
+			"Scripts/Core/player.lua",
+			"Scripts/Technologies/technologyData.lua",
+			"Scripts/Abilities/abilityData.lua",
+			"Scripts/Trading/traderData.lua"
 		};
 
   		const static Bind staticBinds[numAppStates][maxStaticBinds]{

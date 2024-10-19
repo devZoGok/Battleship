@@ -8,9 +8,9 @@
 
 #include <solUtil.h>
 
-#include "gameManager.h"
 #include "gameObject.h"
-#include "projectile.h"
+#include "buildableUnit.h"
+#include "fxManager.h"
 
 namespace sf{
 	class SoundBuffer;
@@ -21,6 +21,7 @@ namespace vb01{
 	class Mesh;
 	class Quad;
 	class Node;
+	class Light;
 	class Camera;
 }
 
@@ -28,13 +29,15 @@ namespace battleship{
     class Player;
 	class Unit;
 	class Vehicle;
+	class Structure;
 	class Factory;
-	class Transport;
-	class PointDefense;
+	class Cruiser;
 	class Engineer;
+	class PointDefense;
+	class Projectile;
     
     struct Order {
-        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH};
+        enum class TYPE {ATTACK, BUILD, MOVE, GARRISON, EJECT, PATROL, LAUNCH, SUPPLY, HACK};
 			struct Target{
 				Unit *unit = nullptr;
 				vb01::Vector3 pos;
@@ -45,78 +48,147 @@ namespace battleship{
 
         TYPE type;
 		int lineId = -1;
+		bool playerAssigned = true;
 		vb01::Vector3 direction;
         std::vector<Target> targets;
 
 		Order(){}
-		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1) : type(t), lineId(lid), targets(targ), direction(dir){}
+		Order(TYPE t, std::vector<Target> targ, vb01::Vector3 dir, int lid = -1, bool pa = true) : type(t), playerAssigned(pa), lineId(lid), targets(targ), direction(dir){}
     };
     
     enum class MoveDir {LEFT, UP, FORW};
     enum class Corner {FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT};
-    enum class UnitClass {WAR_MECH, TANK, ARTILLERY, ENGINEER, TRANSPORT, CARGO_SHIP, CARRIER, SUBMARINE, LAND_FACTORY, NAVAL_FACTORY, MARKET, LAB, POINT_DEFENSE};
     enum class UnitType {UNDERWATER, SEA_LEVEL, HOVER, LAND, AIR, NONE = -1};
+    enum class UnitClass {
+		WAR_MECH,
+	   	TANK,
+	   	ARTILLERY,
+	   	ENGINEER,
+	   	TRANSPORT,
+	   	RESOURCE_ROVER,
+	   	CRUISER,
+	   	CARRIER,
+	   	SUBMARINE,
+	   	LAND_FACTORY,
+	   	NAVAL_FACTORY,
+	   	TRADE_CENTER,
+	   	LAB,
+	   	POINT_DEFENSE,
+	   	EXTRACTOR,
+	   	REFINERY,
+		FORT
+	};
     
     class Unit : public GameObject{
     public:
+		class Weapon{
+			public:
+				enum class Type{HITSCAN, SHELL, TORPEDO, CRUISE_MISSILE, HACK};
+
+				Weapon(Unit*, sol::table, int);
+				~Weapon();
+				virtual void update();
+				virtual void fire(Order);
+				inline Type getType(){return type;}
+				inline int getProjectileId(){return projId;}
+				inline int getRateOfFire(){return rateOfFire;}
+				inline int getDamage(){return damage;}
+				inline int getMinRange(){return minRange;}
+				inline int getMaxRange(){return maxRange;}
+				inline Unit* getUnit(){return unit;}
+			private:
+				Type type;
+				int id, projId = -1, rateOfFire, damage = 0;
+				float minRange = 0, maxRange;
+				vb01::Vector3 projPos;
+				vb01::Quaternion projRot;
+				vb01::s64 lastFireTime = 0;
+				Unit *unit = nullptr;
+				FxManager::Fx *fireFx = nullptr;
+				static std::string LASER_FLAG;
+
+				void initProjectileData(sol::table);
+				FxManager::Fx* initFx(sol::table, std::string, bool);
+				void useFx(FxManager::Fx*, vb01::Vector3, bool);
+				inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
+		};
+
 		struct GarrisonSlot{
 			Vehicle *vehicle = nullptr;
+			int category;
 			vb01::Node *background, *foreground;
 			vb01::Vector2 offset;
 
-			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), vehicle(v){}
+			GarrisonSlot(vb01::Node *bg, vb01::Node *fg, vb01::Vector2 off, int cat, Vehicle *v = nullptr) : background(bg), foreground(fg), offset(off), category(cat), vehicle(v){}
 		};
 
-        Unit(Player*, int, vb01::Vector3, vb01::Quaternion);
+		enum class Armor {CAST, COMBINED, MECHANIC, SHELL, STEEL};
+		enum class State {CHASE, STAND_GROUND, HOLD_FIRE};
+
+        Unit(Player*, int, vb01::Vector3, vb01::Quaternion, State = State::STAND_GROUND);
         virtual ~Unit();
         virtual void update();
-        virtual void blowUp();
         virtual void halt();
 		void updateGarrison(Vehicle*, bool);
         virtual void select();
         void setOrder(Order);
         std::vector<Projectile*> getProjectiles();
         virtual void addOrder(Order);
-		virtual void reinit();
+		bool canGarrison(Vehicle*);
+		void initLosLight();
+		void destroyLosLight();
+		inline void setState(State s){state = s;}
 		inline Engineer* toEngineer(){return (Engineer*)this;}
-		inline Transport* toTransport(){return (Transport*)this;}
+		inline Structure* toStructure(){return (Structure*)this;}
 		inline Factory* toFactory(){return (Factory*)this;}
+		inline Cruiser* toCruiser(){return (Cruiser*)this;}
 		inline PointDefense* toPointDefense(){return (PointDefense*)this;}
 		inline int getNumGarrisonSlots(){return garrisonSlots.size();}
 		inline const std::vector<GarrisonSlot>& getGarrisonSlots(){return garrisonSlots;}
-        inline vb01::Vector3* getPosPtr() {return &pos;}
         inline float getLineOfSight() {return lineOfSight;}
-        inline vb01::Model* getNode() {return model;}
         inline UnitType getType() {return type;}
         inline UnitClass getUnitClass() {return unitClass;}
         inline void takeDamage(int damage) {health -= damage;}
         inline int getPlayerId() {return playerId;}
 		inline int getHealth(){return health;}
-		inline bool isVehicle(){return gameBase::generateView()["units"]["isVehicle"][id + 1];}
+		inline int getDeathHp(){return DEATH_HP;}
+		inline bool isVehicle(){return vehicle;}
 		inline bool isTargetToTheRight(vb01::Vector3 dir, vb01::Vector3 lv){return lv.getAngleBetween(dir) > vb01::PI / 2;}
+		inline Order getOrder(int i){return orders[i];}
+		inline int getNumOrders(){return orders.size();}
+		inline std::string getGuiScreen(){return guiScreen;}
+		inline BuildableUnit getBuildableUnit(int i){return buildableUnits[i];}
+		inline vb01::Node* getLosLightNode(){return losLightNode;}
     private:
 		void renderOrderLine(bool);
         void updateScreenCoordinates();
-		void init();
+		void initWeapons();
+		void destroyWeapons();
         inline bool canDisplayOrderLine(){return vb01::getTime() - orderLineDispTime < orderVecDispLength;}
 
         const int orderVecDispLength = 2000, DEATH_HP = 0;
         sf::SoundBuffer *selectionSfxBuffer;
         sf::Sound *selectionSfx = nullptr;
-		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr;
+		vb01::Node *hpBackgroundNode = nullptr, *hpForegroundNode = nullptr, *losLightNode = nullptr;
+		bool vehicle;
     protected:
         UnitClass unitClass;
         UnitType type;
         std::vector<Order> orders;
-		sf::SoundBuffer *fireSfxBuffer;
-		sf::Sound *fireSfx = nullptr;
-        int health, damage, maxHealth, cost, id, playerId, lenHpBar = 200, rateOfFire;
-        s64 orderLineDispTime = 0, lastFireTime = 0;
-        float lineOfSight, range;
+		std::string guiScreen = "";
+        int health, maxHealth, playerId, lenHpBar = 200;
+		vb01::s64 orderLineDispTime = 0, lastFireTime = 0;
+        float lineOfSight;
+		std::vector<Armor> armorTypes;
+		std::vector<Weapon*> weapons;
 		std::vector<GarrisonSlot> garrisonSlots;
+		std::vector<BuildableUnit> buildableUnits;
+		State state = State::STAND_GROUND;
 
 		std::vector<Player*> getSelectingPlayers();
         void removeOrder(int);
+		virtual void targetUnitsAutomatically();
+		virtual void reinit();
 		virtual void initProperties();
 		virtual void destroySound();
 		virtual void initSound();
@@ -128,13 +200,14 @@ namespace battleship{
         virtual void build(Order){}
         virtual void move(Order){}
         virtual void patrol(Order){}
-        virtual void launch(Order){}
+        virtual void launch(Order);
+		virtual void supply(Order){}
+		virtual void hack(Order){}
 		float calculateRotation(vb01::Vector3, float, float);
-		virtual void fire();
 		void removeBar(vb01::Node*);
 		vb01::Node* createBar(vb01::Vector2, vb01::Vector2, vb01::Vector4);
         void displayUnitStats(vb01::Node*, vb01::Node*, int, int, bool, vb01::Vector2 offset = vb01::Vector2::VEC_ZERO);
-		inline bool canFire(){return vb01::getTime() - lastFireTime > rateOfFire;}
+		inline std::vector<Armor> getArmorTypes(){return armorTypes;}
     };
 }
 

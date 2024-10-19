@@ -1,6 +1,7 @@
 #include "addResourceCommand.h"
 #include "game.h"
 #include "player.h"
+#include "trader.h"
 
 namespace battleship{
 	void AddResourceCommand::validate(){
@@ -22,18 +23,7 @@ namespace battleship{
 
 	void AddResourceCommand::addResource(){
 		Player *player = Game::getSingleton()->getPlayer(playerId);
-
-		switch(resourceId){
-			case 0:
-				player->addRefineds(resourceAmmount);
-				break;
-			case 1:
-				player->addWealth(resourceAmmount);
-				break;
-			case 2:
-				player->addResearch(resourceAmmount);
-				break;
-		}
+		player->updateResource(ResourceType(resourceId), resourceAmmount, true);
 	}
 
 	void AddResourceCommand::execute(){

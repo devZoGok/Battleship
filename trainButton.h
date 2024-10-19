@@ -6,10 +6,10 @@
 namespace battleship{
 	class TrainButton : public UnitButton{
 		public:
-			TrainButton(vb01::Vector2, vb01::Vector2, std::string, int, std::string, int, int);
+			TrainButton(vb01::Vector3, vb01::Vector2, std::string, int, std::string, int, int);
 			void onClick();
 		private:
-			int factoryId, trainableUnitId;
+			int slotId;
 	};
 }
 

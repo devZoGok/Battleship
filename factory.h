@@ -15,20 +15,19 @@ namespace battleship{
 
 	class Factory : public Structure{
 		public:
-			Factory(Player*, int, vb01::Vector3, vb01::Quaternion, int = 0);
+			Factory(Player*, int, vb01::Vector3, vb01::Quaternion, int = 0, Unit::State = Unit::State::STAND_GROUND);
 			~Factory(){}
 			void update();
+			int getNumQueueUnitsById(int);
 			void appendToQueue(int);
 			inline std::vector<int> getQueue(){return unitQueue;}
 		private:
-			const int MAX_LEN_QUEUE = 10;
-			int trainingStatus = 0, rateOfTraining = 50;
-			vb01::s64 lastTrainTime = 0;
 			std::vector<int> unitQueue;
+			int maxLenQueue, trainingStatus = 0;
+			vb01::s64 lastTrainTime = 0;
 
-			void train();
 			void initProperties();
-			inline bool canTrain(){return vb01::getTime() - lastTrainTime > rateOfTraining;}
+			void train();
 	};
 }
 

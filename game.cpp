@@ -5,9 +5,13 @@
 #include "activeGameState.h"
 #include "inGameAppState.h"
 #include "concreteGuiManager.h"
+#include "fxManager.h"
 #include "defConfigs.h"
 
+#include <algorithm>
+
 #include <assetManager.h>
+#include <particleEmitter.h>
 
 #include <stateManager.h>
 
@@ -79,35 +83,9 @@ namespace battleship{
 				endGame(false);
 		}
 
-		for(Projectile *proj : projectiles)
-			proj->update();
-
-		for(int i = 0; i < fx.size(); i++){
-			if(getTime() - fx[i].initTime > fx[i].vfxTime)
-				removeFx(i, true);
-
-			if(getTime() - fx[i].initTime > fx[i].sfxTime)
-				removeFx(i, false);
-		}
+		FxManager::getSingleton()->update();
 	}
 
-	//TODO remove the bool flag
-	void Game::removeFx(int id, bool vfx){
-		const sf::SoundBuffer *buffer = fx[id].sfx->getBuffer();
-
-		if(!vfx){
-			fx[id].sfx->stop();
-			delete fx[id].sfx;
-			delete buffer;
-			fx.erase(fx.begin() + id);
-		}
-
-		if(fx[id].peNode && vfx){
-			Root::getSingleton()->getRootNode()->dettachChild(fx[id].peNode);
-			delete fx[id].peNode;
-			fx[id].peNode = nullptr;
-		}
-	}
 
 	void Game::removeAllElements(){
 		resetLuaGameObjects();
@@ -135,15 +113,180 @@ namespace battleship{
 				generateView().script_file(gm->getPath() + f);
 
 			guiManager->readLuaScreenScript("inGame.lua", activeState->getButtons());
-			AssetManager::getSingleton()->load(gm->getPath() + (string)generateView()["modelPrefix"], true);
+			sol::state_view SOL_LUA_VIEW = generateView();
+			string gop = SOL_LUA_VIEW["gameObjPrefix"], vfxp = SOL_LUA_VIEW["vfxPrefix"];
+			AssetManager::getSingleton()->load(gm->getPath() + gop, true);
+			AssetManager::getSingleton()->load(gm->getPath() + vfxp, true);
 
-			for(Player *p : Game::getSingleton()->getPlayers())
-				for(Unit *u : p->getUnits())
-					u->reinit();
+			vector<GameObject*> gameObjs;
+
+			for(Player *pl : Game::getSingleton()->getPlayers()){
+				for(Unit *u : pl->getUnits())
+					gameObjs.push_back((GameObject*)u);
+
+				for(Projectile *proj : pl->getProjectiles())
+					gameObjs.push_back((GameObject*)proj);
+
+				for(ResourceDeposit *dep : pl->getResourceDeposits())
+					gameObjs.push_back((GameObject*)dep);
+			}
+
+			for(GameObject *obj : gameObjs)
+				obj->reinit();
 
             gm->getStateManager()->attachAppState(activeState);
         }
 
 		paused = !paused;
+	}
+
+	void Game::explode(Vector3 pos, int damage, float radius, sf::Sound *explosionSfx){
+		if(!(damage == 0 || radius == 0))
+			for(Player *pl : players){
+				for(Unit *un : pl->getUnits()){
+					float distance = un->getPos().getDistanceFrom(pos);
+
+					if(distance < radius)
+						un->takeDamage(int(damage * (1.f - distance / radius)));
+				}
+			}
+
+		Root *root = Root::getSingleton();
+
+		const int numFrames = 1;
+		string p[numFrames];
+
+		for(int i = 0; i < numFrames; i++)
+			p[i] = GameManager::getSingleton()->getPath() + "Textures/Explosion/explosion07.png";
+
+		Texture *tex = new Texture(p, numFrames, false);
+
+		Material *mat = new Material(root->getLibPath() + "particle");
+		mat->addTexUniform("tex", tex, true);
+
+		ParticleEmitter *pe = new ParticleEmitter(1);
+		pe->setMaterial(mat);
+		pe->setLowLife(3);
+		pe->setHighLife(3);
+		pe->setSize(10 * Vector2::VEC_IJ);
+		pe->setSpeed(0);
+
+		Node *node = new Node(pos + Vector3(0, 2, 0));
+		node->attachParticleEmitter(pe);
+		node->lookAt(Vector3::VEC_J, Vector3::VEC_K);
+		root->getRootNode()->attachChild(node);
+
+		typedef FxManager::Fx Fx;
+		typedef FxManager::Fx::Component Component;
+		FxManager::getSingleton()->addFx(new Fx(vector<Component>{Component((void*)node, true, 50), Component((void*)explosionSfx, false, 2500)}));
+	}
+
+	void Game::changeUnitPlayer(Unit *unit, Player *newPlayer){
+		Player *oldPlayer = unit->getPlayer();
+		vector<Unit*> &oldPlayerUnits = oldPlayer->getUnits();
+		int oldId = -1;
+
+		for(int i = 0; i < oldPlayerUnits.size(); i++)
+			if(oldPlayerUnits[i] == unit){
+				oldId = i;
+				break;
+			}
+
+		oldPlayerUnits.erase(oldPlayerUnits.begin() + oldId);
+		newPlayer->addUnit(unit);
+		unit->setPlayer(newPlayer);
+		unit->halt();
+	}
+
+	vector<int> Game::parseTechTable(int tid, string key, string numVarKey, string varKey){
+		sol::state_view SOL_LUA_VIEW = generateView();
+		SOL_LUA_VIEW.script(numVarKey + " = #" + key + "[" + to_string(tid + 1) + "]." + varKey);
+		int numVar = SOL_LUA_VIEW[numVarKey];
+		sol::table techTable = SOL_LUA_VIEW[key][tid + 1];
+
+		vector<int> varVec;
+
+		for(int i = 0; i < numVar; i++)
+			varVec.push_back(techTable[varKey][i + 1]);
+
+		return varVec;
+	}
+
+	//TODO clean this method up
+	void Game::initTechnologies(){
+		technologies.clear();
+
+		sol::state_view SOL_LUA_VIEW = generateView();
+		string techKey = "technologies";
+		SOL_LUA_VIEW.script("numTechs = #" + techKey);
+		int numTechs = SOL_LUA_VIEW["numTechs"]; 
+
+		for(int i = 0; i < numTechs; i++){
+			sol::table techTable = SOL_LUA_VIEW[techKey][i + 1];
+
+			Technology t;
+			t.cost = techTable["cost"];
+			t.name = techTable["name"];
+			t.icon = techTable["icon"];
+			t.description = techTable["description"];
+			t.parents = parseTechTable(i, techKey, "numParents", "parents");
+			t.abilities = parseTechTable(i, techKey, "numAbilities", "abilities");
+
+			technologies.push_back(t);
+		}
+
+		techKey = "abilities";
+		SOL_LUA_VIEW.script("numAbilities = #" + techKey);
+		int numAbilities = SOL_LUA_VIEW["numAbilities"]; 
+
+		for(int i = 0; i < numAbilities; i++){
+			sol::table techTable = SOL_LUA_VIEW[techKey][i + 1];
+
+			Ability ability;
+			ability.type = techTable["type"];
+			ability.ammount = techTable["ammount"].get_or(0.0);
+			ability.gameObjType = techTable["gameObjType"];
+			ability.gameObjIds = parseTechTable(i, techKey, "numGameObjIds", "gameObjIds");
+			abilities.push_back(ability);
+		}
+	}
+
+	float Game::calcAbilFromTech(Ability::Type type, vector<int> techResearch, int gameObjType, int unitId){
+		float ammount = 0;
+
+		for(int techId : techResearch)
+			for(int abilId : technologies[techId].abilities)
+				if(
+					abilities[abilId].type == type &&
+					abilities[abilId].gameObjType == gameObjType && 
+					find(abilities[abilId].gameObjIds.begin(), abilities[abilId].gameObjIds.end(), unitId) != abilities[abilId].gameObjIds.end()
+				){
+					ammount += abilities[abilId].ammount;
+				}
+
+		return ammount;
+	}
+
+	bool Game::isUnitUnlocked(vector<int> techResearch, int unitId){
+		for(int techId : techResearch){
+			for(int abilId : technologies[techId].abilities){
+				vector<int> ids = abilities[abilId].gameObjIds;
+
+				if(find(ids.begin(), ids.end(), unitId) != ids.end())
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	vector<TradeOffer*> Game::findTradeOffers(Player *pl1, Player *pl2){
+		vector<TradeOffer*> offers;
+
+		for(TradeOffer *to : tradeOffers)
+			if((to->initPlayer == pl1 || to->recPlayer == pl1) && (to->initPlayer == pl2 || to->recPlayer == pl2))
+				offers.push_back(to);
+
+		return offers;
 	}
 }

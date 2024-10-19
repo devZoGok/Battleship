@@ -1,10 +1,86 @@
+TechId = {
+	APT = 0,
+	FPT = 1,
+	CRUISERS = 2,
+	EFT = 3,
+	ST_SUB = 4,
+	ROBO = 5,
+	PCT = 6,
+	CARRIERS = 7,
+	TANKS = 8
+}
+
 technologies = {
 	{
-		name = '',
-		cost = 10,
+		name = 'Advanced power technology',
+		cost = 1000,
 		icon = '',
 		description = '',
+		parents = {},
 		abilities = {0},
-		units = {}
-	}
+	},
+	{
+		name = 'Fusion power technology',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.APT},
+		abilities = {},
+	},
+	{
+		name = 'Cruiser technology',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.FPT},
+		abilities = {},
+	},
+	{
+		name = 'Energy field technology',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.APT},
+		abilities = {},
+	},
+	{
+		name = 'Stealth technology',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.EFT},
+		abilities = {},
+	},
+	{
+		name = 'Robotics',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.EFT},
+		abilities = {},
+	},
+	{
+		name = 'Plasma casting technology',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.APT},
+		abilities = {},
+	},
+	{
+		name = 'Carrier technology',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.PCT},
+		abilities = {},
+	},
+	{
+		name = 'Tank technology',
+		cost = 1000,
+		icon = '',
+		description = '',
+		parents = {TechId.PCT},
+		abilities = {},
+	},
 }
